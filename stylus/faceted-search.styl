@@ -1,0 +1,57 @@
+.faceted-search
+	max-width 300px
+	
+	form
+	
+		.facet
+			border-bottom 1px solid white
+			background #F1F1F1
+
+		& .facet:first-child
+			border-top-left-radius 8px
+			border-top-right-radius 8px
+
+		& .facet:last-child 
+			border-bottom-left-radius 8px
+			border-bottom-right-radius 8px
+
+		h3
+			margin-top 0
+			color black
+
+		input[type=text]
+			border 1px solid #DDD
+			border-radius 4px
+			padding-left 4%
+			margin 0
+			width 96%
+
+			&#search
+				height 24px
+				
+				&.loading
+					background white url('../images/faceted-search/images/loader.gif') no-repeat
+					background-position right 2% center
+
+
+		button
+			vertical_gradient(#DDD, #F1F1F1)
+			color #666
+			border 0
+			box-shadow 1px 1px 1px #BDBDBD
+			border-radius 6px
+			margin-top -1px
+			cursor pointer
+			height 28px
+			width 100%
+			min-width 50px
+
+			&:active
+				vertical_gradient(#F1F1F1, #DDD)
+				box-shadow -1px -1px 1px #BDBDBD
+
+		.align.middle
+			line-height 24px
+
+			& *
+				vertical-align middle

@@ -1,0 +1,10 @@
+| <% _.each(items, function(item) { %>
+| <% var someId = generateID(); %>
+li.item
+	.row.span6
+		.cell.span5
+			input(id!="<%= someId %>", type="checkbox", name!="<%= someId %>")
+			label(for!="<%= someId %>") <%= item.get('name') %>
+		.cell.span1.right
+			.count <%= item.get('count') %>
+| <% }); %>

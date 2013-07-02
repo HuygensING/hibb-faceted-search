@@ -1,0 +1,41 @@
+.faceted-search
+	.facet
+		h3
+			padding 0
+			margin 0
+
+	.facet.list
+		h3
+			cursor pointer
+			
+		.body
+			max-height 200px
+			overflow auto
+		
+		nav
+			ul
+				padding 0
+				margin 0
+				list-style none
+
+				li
+					font-size 0.8em
+					cursor pointer
+					display inline-block
+
+		ul.items
+			list-style none
+
+			li.item
+				white-space nowrap
+
+				label, .count
+					color #555
+
+				input[type="checkbox"], label
+					white-space normal
+					margin 0
+					display inline-block
+
+				:checked + label
+					color #000
