@@ -1,0 +1,36 @@
+{
+  "name": "faceted-search",
+  "version": "0.0.0",
+  "author": {
+    "name": "",
+    "email": "",
+    "url": "https://github.com/Gijsjan"
+  },
+  "main": "app/index.js",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/Gijsjan/generator-backbone-amd.git"
+  },
+  "scripts": {
+    "test": "node ./.test/bin/server.js",
+    "start": "coffee ./server.coffee",
+    "start-stage": "coffee ./server.coffee stage"
+  },
+  "devDependencies": {
+    "coffee-script": "*",
+    "stylus": "*",
+    "jade": "*",
+    "express": "*",
+    "underscore": "~1.4.4",
+    "grunt": "*",
+    "grunt-shell": "*",
+    "grunt-contrib-watch": "*",
+    "grunt-contrib-coffee": "*",
+    "grunt-contrib-jade": "*",
+    "grunt-contrib-stylus": "*",
+    "grunt-contrib-requirejs": "~0.4.1",
+    "grunt-contrib-copy": "~0.4.1",
+    "grunt-text-replace": "~0.3.6",
+    "grunt-contrib-uglify": "~0.2.2"
+  }
+}

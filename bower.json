@@ -1,0 +1,17 @@
+{
+  "name": "faceted-search",
+  "version": "0.0.0",
+  "dependencies": {
+    "requirejs": "*",
+    "requirejs-text": "*",
+    "requirejs-domready": "*",
+    "jquery": "*",
+    "underscore-amd": "*",
+    "backbone-amd": "*"
+  },
+  "devDependencies": {
+    "mocha": "*",
+    "chai": "*",
+    "underscore": "~1.4.4"
+  }
+}
