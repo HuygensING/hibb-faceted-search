@@ -104,16 +104,19 @@ module.exports = (grunt) ->
 		requirejs:
 			compile:
 				options:
-					name: 'views/faceted-search'
+					name: 'main'
+					exclude: ['backbone', 'domready', 'jquery', 'text', 'underscore'] # Managers and helpers should be excluded, but how?
 					baseUrl: "dev/js"
 					preserveLicenseComments: false
-					out: "stage/js/faceted-search.js"
+					out: "stage/js/main.js"
 					paths:
 						'backbone': '../lib/backbone-amd/backbone-min'
 						'domready': '../lib/requirejs-domready/domReady'
 						'jquery': '../lib/jquery/jquery.min'
 						'text': '../lib/requirejs-text/text'
 						'underscore': '../lib/underscore-amd/underscore-min'
+						'managers': '../lib/managers/dev'
+						'helpers': '../lib/helpers/dev'
 						'html': '../html'
 
 		uglify:

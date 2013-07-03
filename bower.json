@@ -7,7 +7,9 @@
     "requirejs-domready": "*",
     "jquery": "*",
     "underscore-amd": "*",
-    "backbone-amd": "*"
+    "backbone-amd": "*",
+    "helpers": "git@github.com:Gijsjan/helpers.git",
+    "managers": "git@github.com:Gijsjan/managers.git"
   },
   "devDependencies": {
     "mocha": "*",

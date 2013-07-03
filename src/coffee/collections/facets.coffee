@@ -1,7 +1,7 @@
 define (require) ->
 
 	Models =
-		Facet: require 'modules/faceted-search/models/facet'
+		Facet: require 'models/facet'
 
 	Collections =
 		Base: require 'collections/base'

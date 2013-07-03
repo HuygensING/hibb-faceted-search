@@ -4,7 +4,7 @@ define (require) ->
 		Base: require 'views/base'
 
 	Templates =
-		Facet: require 'text!html/modules/faceted-search/facet.html'
+		Facet: require 'text!html/facet.html'
 
 	class Facet extends Views.Base
 

@@ -1,12 +1,12 @@
 define (require) ->
 	Models = 
-        Main: require 'modules/faceted-search/models/main'
+        Main: require 'models/main'
 
 	Views = 
-		Facet: require 'modules/faceted-search/views/facet'
+		Facet: require 'views/facet'
 
 	Templates =
-		Search: require 'text!html/modules/faceted-search/search.html'
+		Search: require 'text!html/search.html'
 
 	class Search extends Views.Facet
 

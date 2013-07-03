@@ -1,0 +1,14 @@
+
+<% _.each(items, function(item) { %>
+<% var someId = generateID(); %>
+<li class="item">
+  <div class="row span6">
+    <div class="cell span5">
+      <input id="<%= someId %>" type="checkbox" name="<%= someId %>"/>
+      <label for="<%= someId %>"><%= item.get('name') %></label>
+    </div>
+    <div class="cell span1 right">
+      <div class="count"><%= item.get('count') %></div>
+    </div>
+  </div>
+</li><% }); %>

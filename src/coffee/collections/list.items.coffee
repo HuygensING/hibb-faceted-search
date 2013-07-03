@@ -1,7 +1,7 @@
 define (require) ->
 
 	Models =
-		ListItem: require 'modules/faceted-search/models/list.item'
+		ListItem: require 'models/list.item'
 
 	Collections =
 		Base: require 'collections/base'

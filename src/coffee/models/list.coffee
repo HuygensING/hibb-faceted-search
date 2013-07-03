@@ -4,7 +4,7 @@ define (require) ->
 		Base: require 'models/base'
 
 	Collections = 
-		ListItems: require 'modules/faceted-search/collections/list.items'
+		ListItems: require 'collections/list.items'
 
 	class List extends Models.Base
 

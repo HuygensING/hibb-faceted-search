@@ -3,17 +3,17 @@ define (require) ->
 	Fn = require 'helpers/fns'
 
 	Views = 
-		Facet: require 'modules/faceted-search/views/facet'
+		Facet: require 'views/facet'
 
 	Models =
-		List: require 'modules/faceted-search/models/list'
+		List: require 'models/list'
 
 	Collections = 
-		Facets: require 'modules/faceted-search/collections/facets'
+		Facets: require 'collections/facets'
 
 	Templates =
-		List: require 'text!html/modules/faceted-search/facet/list.html'
-		Items: require 'text!html/modules/faceted-search/facet/list.items.html'
+		List: require 'text!html/facet/list.html'
+		Items: require 'text!html/facet/list.items.html'
 
 	class ListFacet extends Views.Facet
 
