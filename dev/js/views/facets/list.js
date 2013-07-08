@@ -101,7 +101,7 @@
           items: items,
           generateID: Fn.generateID
         });
-        return this.$('.body ul.items').html(rtpl);
+        return this.$('.body .items ul').html(rtpl);
       };
 
       return ListFacet;

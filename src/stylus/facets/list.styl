@@ -8,10 +8,6 @@
 		h3
 			cursor pointer
 			
-		.body
-			max-height 200px
-			overflow auto
-		
 		nav
 			ul
 				padding 0
@@ -23,19 +19,23 @@
 					cursor pointer
 					display inline-block
 
-		ul.items
-			list-style none
+		.items
+			max-height 200px
+			overflow auto
+			
+			ul
+				list-style none
 
-			li.item
-				white-space nowrap
+				li.item
+					white-space nowrap
 
-				label, .count
-					color #555
+					label, .count
+						color #555
 
-				input[type="checkbox"], label
-					white-space normal
-					margin 0
-					display inline-block
+					input[type="checkbox"], label
+						white-space normal
+						margin 0
+						display inline-block
 
-				:checked + label
-					color #000
+					:checked + label
+						color #000

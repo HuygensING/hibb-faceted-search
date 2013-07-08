@@ -794,7 +794,7 @@ define('text!html/facet.html',[],function () { return '<div class="placeholder p
 
 }).call(this);
 
-define('text!html/facet/list.html',[],function () { return '\n<header>\n  <h3><%= title %></h3>\n</header>\n<div class="body">\n  <div class="row span2 align middle">\n    <div class="cell span1 center">\n      <input type="text" name="listsearch" class="listsearch"/>\n    </div>\n    <div class="cell span1 right">\n      <nav>\n        <ul>\n          <li class="all">All </li>\n          <li class="none">None </li>\n        </ul>\n      </nav>\n    </div>\n  </div>\n  <ul class="items"></ul>\n</div>';});
+define('text!html/facet/list.html',[],function () { return '\n<header>\n  <h3><%= title %></h3>\n</header>\n<div class="body">\n  <div class="row span2 align middle">\n    <div class="cell span1 center">\n      <input type="text" name="listsearch" class="listsearch"/>\n    </div>\n    <div class="cell span1 right">\n      <nav>\n        <ul>\n          <li class="all">All </li>\n          <li class="none">None</li>\n        </ul>\n      </nav>\n    </div>\n  </div>\n  <div class="items">\n    <ul></ul>\n  </div>\n</div>';});
 
 define('text!html/facet/list.items.html',[],function () { return '\n<% _.each(items, function(item) { %>\n<% var someId = generateID(); %>\n<li class="item">\n  <div class="row span6">\n    <div class="cell span5">\n      <input id="<%= someId %>" type="checkbox" name="<%= someId %>"/>\n      <label for="<%= someId %>"><%= item.get(\'name\') %></label>\n    </div>\n    <div class="cell span1 right">\n      <div class="count"><%= item.get(\'count\') %></div>\n    </div>\n  </div>\n</li><% }); %>';});
 
@@ -901,7 +901,7 @@ define('text!html/facet/list.items.html',[],function () { return '\n<% _.each(it
           items: items,
           generateID: Fn.generateID
         });
-        return this.$('.body ul.items').html(rtpl);
+        return this.$('.body .items ul').html(rtpl);
       };
 
       return ListFacet;

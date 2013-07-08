@@ -72,5 +72,5 @@ define (require) ->
 				items: items
 				generateID: Fn.generateID
 
-			@$('.body ul.items').html rtpl
+			@$('.body .items ul').html rtpl
 

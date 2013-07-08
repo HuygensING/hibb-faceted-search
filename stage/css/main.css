@@ -13,14 +13,14 @@
 
 .faceted-search .facet h3{padding:0;margin:0}
 .faceted-search .facet.list h3{cursor:pointer}
-.faceted-search .facet.list .body{max-height:200px;overflow:auto}
 .faceted-search .facet.list nav ul{padding:0;margin:0;list-style:none;}
 .faceted-search .facet.list nav ul li{font-size:.8em;cursor:pointer;display:inline-block}
-.faceted-search .facet.list ul.items{list-style:none;}
-.faceted-search .facet.list ul.items li.item{white-space:nowrap;}
-.faceted-search .facet.list ul.items li.item label,.faceted-search .facet.list ul.items li.item .count{color:#555}
-.faceted-search .facet.list ul.items li.item input[type="checkbox"],.faceted-search .facet.list ul.items li.item label{white-space:normal;margin:0;display:inline-block}
-.faceted-search .facet.list ul.items li.item :checked + label{color:#000}
+.faceted-search .facet.list .items{max-height:200px;overflow:auto;}
+.faceted-search .facet.list .items ul{list-style:none;}
+.faceted-search .facet.list .items ul li.item{white-space:nowrap;}
+.faceted-search .facet.list .items ul li.item label,.faceted-search .facet.list .items ul li.item .count{color:#555}
+.faceted-search .facet.list .items ul li.item input[type="checkbox"],.faceted-search .facet.list .items ul li.item label{white-space:normal;margin:0;display:inline-block}
+.faceted-search .facet.list .items ul li.item :checked + label{color:#000}
 
 .row{font-size:0;}
 .row *{vertical-align:top}
