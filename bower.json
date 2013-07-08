@@ -2,6 +2,7 @@
   "name": "faceted-search",
   "version": "0.0.0",
   "dependencies": {
+    "almond": "*",
     "requirejs": "*",
     "requirejs-text": "*",
     "requirejs-domready": "*",

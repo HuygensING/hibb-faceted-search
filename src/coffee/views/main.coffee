@@ -1,18 +1,3 @@
-# require.config 
-#     paths:
-#         'backbone': '../lib/backbone-amd/backbone-min'
-#         'domready': '../lib/requirejs-domready/domReady'
-#         'jquery': '../lib/jquery/jquery.min'
-#         'text': '../lib/requirejs-text/text'
-#         'underscore': '../lib/underscore-amd/underscore-min'
-#         # 'ajax': '../lib/managers/dev/ajax'
-#         'managers': '../lib/managers/dev'
-#         'helpers': '../lib/helpers/dev'
-#         'html': '../html'
-
-# require ['views/main'], (fs) ->
-#     console.log require 'jquery'
-#     console.log fs
 define (require) ->
 
     Models = 
@@ -39,9 +24,7 @@ define (require) ->
             @options = _.extend @defaultOptions(), options
 
             @model = Models.Main
-            @model.set 'baseUrl', @options.baseUrl
-            @model.set 'searchUrl', @options.searchUrl
-            @model.set 'token', @options.token
+            @model.set 'url', @options.url
 
             @render()
 

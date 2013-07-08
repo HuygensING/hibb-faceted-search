@@ -101,23 +101,32 @@ module.exports = (grunt) ->
 		# 			to: '<script src="/js/require.js"></script><script src="/js/main.js"></script>'
 		# 		]
 
+
 		requirejs:
 			compile:
 				options:
-					name: 'main'
-					exclude: ['backbone', 'domready', 'jquery', 'text', 'underscore'] # Managers and helpers should be excluded, but how?
 					baseUrl: "dev/js"
+					name: '../lib/almond/almond'
+					include: 'main'
+					# insertRequire: ['main']
+					exclude: ['backbone', 'jquery', 'text', 'underscore', 'helpers/fns'] # Managers and helpers should be excluded, but how?
 					preserveLicenseComments: false
 					out: "stage/js/main.js"
+					optimize: 'none'
 					paths:
 						'backbone': '../lib/backbone-amd/backbone-min'
-						'domready': '../lib/requirejs-domready/domReady'
+						# 'domready': '../lib/requirejs-domready/domReady'
 						'jquery': '../lib/jquery/jquery.min'
 						'text': '../lib/requirejs-text/text'
 						'underscore': '../lib/underscore-amd/underscore-min'
+						# 'ajax': '../lib/managers/dev/ajax'
 						'managers': '../lib/managers/dev'
 						'helpers': '../lib/helpers/dev'
 						'html': '../html'
+					# wrap: true
+					wrap:
+						startFile: 'wrap.start.js'
+						endFile: 'wrap.end.js'
 
 		uglify:
 			requirejs:

@@ -15,7 +15,7 @@
 
       return Base;
 
-    })(Backbone.Models);
+    })(Backbone.View);
   });
 
 }).call(this);

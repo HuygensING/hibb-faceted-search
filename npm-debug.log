@@ -1,0 +1,30 @@
+0 info it worked if it ends with ok
+1 verbose cli [ '/usr/local/bin/node', '/usr/local/bin/npm', 'start' ]
+2 info using npm@1.2.15
+3 info using node@v0.10.2
+4 verbose node symlink /usr/local/bin/node
+5 verbose read json /home/gijs/Projects/faceted-search/package.json
+6 verbose run-script [ 'prestart', 'start', 'poststart' ]
+7 info prestart faceted-search@0.0.0
+8 info start faceted-search@0.0.0
+9 verbose unsafe-perm in lifecycle true
+10 silly exec sh "-c" "coffee ./server.coffee"
+11 silly sh,-c,coffee ./server.coffee,/home/gijs/Projects/faceted-search spawning
+12 info faceted-search@0.0.0 Failed to exec start script
+13 error faceted-search@0.0.0 start: `coffee ./server.coffee`
+13 error `sh "-c" "coffee ./server.coffee"` failed with 1
+14 error Failed at the faceted-search@0.0.0 start script.
+14 error This is most likely a problem with the faceted-search package,
+14 error not with npm itself.
+14 error Tell the author that this fails on your system:
+14 error     coffee ./server.coffee
+14 error You can get their info via:
+14 error     npm owner ls faceted-search
+14 error There is likely additional logging output above.
+15 error System Linux 3.5.0-17-generic
+16 error command "/usr/local/bin/node" "/usr/local/bin/npm" "start"
+17 error cwd /home/gijs/Projects/faceted-search
+18 error node -v v0.10.2
+19 error npm -v 1.2.15
+20 error code ELIFECYCLE
+21 verbose exit [ 1, true ]

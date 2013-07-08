@@ -1,4 +1,9 @@
 define (require) ->
 	Backbone = require 'backbone'
 
-	class Base extends Backbone.Models
+	Pubsub = require 'managers/pubsub'
+
+	class Base extends Backbone.Model
+
+		initialize: ->
+			_.extend @, Pubsub

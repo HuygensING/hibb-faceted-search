@@ -3,8 +3,8 @@
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
   define(function(require) {
-    var FacetedSearch, Models, ajax, _ref;
-    ajax = require('managers/ajax');
+    var Ajax, FacetedSearch, Models, _ref;
+    Ajax = require('managers/ajax');
     Models = {
       Base: require('models/base')
     };
@@ -23,17 +23,21 @@
       };
 
       FacetedSearch.prototype.query = function(queryData, cb) {
-        var fetchResults, jqXHR,
+        var ajax, fetchResults, jqXHR,
           _this = this;
+        ajax = new Ajax({
+          baseUrl: this.get('baseUrl'),
+          token: this.get('token')
+        });
         fetchResults = function(key) {
           var jqXHR;
           jqXHR = ajax.get({
-            url: _this.get('url') + '/' + key
+            url: _this.get('searchUrl') + '/' + key
           });
           return jqXHR.done(cb);
         };
         jqXHR = ajax.post({
-          url: this.get('url'),
+          url: this.get('searchUrl'),
           contentType: 'application/json; charset=utf-8',
           processData: false,
           data: JSON.stringify(queryData)

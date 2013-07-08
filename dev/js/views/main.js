@@ -35,9 +35,7 @@
         FacetedSearch.__super__.initialize.apply(this, arguments);
         this.options = _.extend(this.defaultOptions(), options);
         this.model = Models.Main;
-        this.model.set('baseUrl', this.options.baseUrl);
-        this.model.set('searchUrl', this.options.searchUrl);
-        this.model.set('token', this.options.token);
+        this.model.set('url', this.options.url);
         return this.render();
       };
 
