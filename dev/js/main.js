@@ -5,7 +5,7 @@
   define(function(require) {
     var FacetedSearch, Models, Templates, Views, _ref;
     Models = {
-      Main: require('models/main')
+      query: require('models/query')
     };
     Views = {
       Base: require('views/base'),
@@ -35,36 +35,35 @@
         var _this = this;
         FacetedSearch.__super__.initialize.apply(this, arguments);
         this.options = _.extend(this.defaultOptions(), options);
-        this.model = Models.Main;
-        this.model.set('baseUrl', this.options.baseUrl);
-        this.model.set('searchUrl', this.options.searchUrl);
-        this.model.set('token', this.options.token);
+        Models.query.baseUrl = this.options.baseUrl;
+        Models.query.searchUrl = this.options.searchUrl;
+        Models.query.token = this.options.token;
         this.subscribe('faceted-search:results', function(results) {
+          _this.renderFacets(results);
           return _this.trigger('faceted-search:results', results);
+        });
+        this.subscribe('facet:list:changed', function(data) {
+          return Models.query.addFacetValues(data);
         });
         return this.render();
       };
 
       FacetedSearch.prototype.render = function() {
-        var rtpl, search,
-          _this = this;
+        var rtpl, search;
         rtpl = _.template(Templates.FacetedSearch);
         this.$el.html(rtpl);
         if (this.options.search) {
           search = new Views.Search();
-          this.$('form').html(search.$el);
+          this.$('.search-placeholder').html(search.$el);
         }
-        this.model.query({}, function(data) {
-          _this.publish('faceted-search:results', data);
-          _this.facets = data.facets;
-          return _this.renderFacets();
-        });
+        Models.query.fetch();
         return this;
       };
 
-      FacetedSearch.prototype.renderFacets = function() {
-        var data, index, list, _ref1, _results;
-        _ref1 = this.facets;
+      FacetedSearch.prototype.renderFacets = function(data) {
+        var index, list, _ref1, _results;
+        this.$('.facets').html('');
+        _ref1 = data.facets;
         _results = [];
         for (index in _ref1) {
           if (!__hasProp.call(_ref1, index)) continue;
@@ -72,7 +71,7 @@
           list = new Views.List({
             attrs: data
           });
-          _results.push(this.$('form').append(list.$el));
+          _results.push(this.$('.facets').append(list.$el));
         }
         return _results;
       };

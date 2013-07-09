@@ -143,13 +143,13 @@ module.exports = (grunt) ->
 				tasks: ['coffee:test', 'shell:mocha-phantomjs']
 			coffee:
 				files: 'src/coffee/**/*.coffee'
-				tasks: 'coffee:compile'
+				tasks: ['coffee:compile', 'build']
 			jade:
 				files: ['src/index.jade', 'src/jade/**/*.jade']
-				tasks: 'jade:compile'
+				tasks: ['jade:compile', 'build']
 			stylus:
 				files: ['src/stylus/**/*.styl']
-				tasks: 'stylus:compile'
+				tasks: ['stylus:compile', 'build']
 
 	#############
 	### TASKS ###
@@ -174,7 +174,7 @@ module.exports = (grunt) ->
 		# 'replace:html' # Copy and replace index.html
 		'copy:css' # Copy main.css
 		# 'copy:module_images'
-		'uglify:requirejs' # Minify and copy require.js
+		# 'uglify:requirejs' # Minify and copy require.js
 		'shell:symlink_images'
 		'requirejs:compile' # Run r.js
 		# 'shell:rsync' # Rsync to test server (without json/)

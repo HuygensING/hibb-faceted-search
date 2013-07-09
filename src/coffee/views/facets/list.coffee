@@ -8,9 +8,6 @@ define (require) ->
 	Models =
 		List: require 'models/list'
 
-	Collections = 
-		Facets: require 'collections/facets'
-
 	Templates =
 		List: require 'text!html/facet/list.html'
 		Items: require 'text!html/facet/list.items.html'
@@ -26,6 +23,7 @@ define (require) ->
 			'click li.none': 'deselectAll'
 			'click h3': 'toggleBody'
 			'keyup input.listsearch': 'showResults'
+			'change input[type="checkbox"]': 'checkChanged'
 
 		toggleBody: (ev) ->
 			console.log $(ev.currentTarget).parents('.list')
@@ -46,6 +44,15 @@ define (require) ->
 			@filtered_items = @model.get('options').filter (item) ->
 				re.test item.get('name')
 			@renderListItems()
+
+		checkChanged: (ev) ->
+			checked = @el.querySelectorAll('input[type="checkbox"]:checked')
+			values = []
+			values.push c.getAttribute 'data-value' for c in checked # Is looping over all checked more efficient than toggling value in array?
+
+			@publish 'facet:list:changed',
+				name: @model.get 'name'
+				values: values
 
 		initialize: (options) ->
 			super
@@ -73,4 +80,3 @@ define (require) ->
 				generateID: Fn.generateID
 
 			@$('.body .items ul').html rtpl
-

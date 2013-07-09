@@ -3,16 +3,13 @@
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
   define(function(require) {
-    var Collections, Fn, ListFacet, Models, Templates, Views, _ref;
+    var Fn, ListFacet, Models, Templates, Views, _ref;
     Fn = require('helpers/fns');
     Views = {
       Facet: require('views/facet')
     };
     Models = {
       List: require('models/list')
-    };
-    Collections = {
-      Facets: require('collections/facets')
     };
     Templates = {
       List: require('text!html/facet/list.html'),
@@ -35,7 +32,8 @@
           'click li.all': 'selectAll',
           'click li.none': 'deselectAll',
           'click h3': 'toggleBody',
-          'keyup input.listsearch': 'showResults'
+          'keyup input.listsearch': 'showResults',
+          'change input[type="checkbox"]': 'checkChanged'
         };
       };
 
@@ -74,6 +72,20 @@
           return re.test(item.get('name'));
         });
         return this.renderListItems();
+      };
+
+      ListFacet.prototype.checkChanged = function(ev) {
+        var c, checked, values, _i, _len;
+        checked = this.el.querySelectorAll('input[type="checkbox"]:checked');
+        values = [];
+        for (_i = 0, _len = checked.length; _i < _len; _i++) {
+          c = checked[_i];
+          values.push(c.getAttribute('data-value'));
+        }
+        return this.publish('facet:list:changed', {
+          name: this.model.get('name'),
+          values: values
+        });
       };
 
       ListFacet.prototype.initialize = function(options) {

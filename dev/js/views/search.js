@@ -5,7 +5,7 @@
   define(function(require) {
     var Models, Search, Templates, Views, _ref;
     Models = {
-      Main: require('models/main')
+      query: require('models/query')
     };
     Views = {
       Facet: require('views/facet')
@@ -31,7 +31,7 @@
         var _this = this;
         ev.preventDefault();
         this.$('#search').addClass('loading');
-        return this.model.query({
+        return Models.query.fetch({
           term: this.$('input#search').val(),
           textLayers: ['Diplomatic']
         }, function(results) {
@@ -42,7 +42,6 @@
 
       Search.prototype.initialize = function() {
         Search.__super__.initialize.apply(this, arguments);
-        this.model = Models.Main;
         return this.render();
       };
 

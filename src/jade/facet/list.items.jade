@@ -3,7 +3,7 @@
 li.item
 	.row.span6
 		.cell.span5
-			input(id!="<%= someId %>", type="checkbox", name!="<%= someId %>")
+			input(id!="<%= someId %>", type="checkbox", name!="<%= someId %>", data-value!="<%= item.get('name') %>")
 			label(for!="<%= someId %>") <%= item.get('name') %>
 		.cell.span1.right
 			.count <%= item.get('count') %>

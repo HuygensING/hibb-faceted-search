@@ -1,6 +1,6 @@
 define (require) ->
 	Models = 
-        Main: require 'models/main'
+    	query: require 'models/query'
 
 	Views = 
 		Facet: require 'views/facet'
@@ -20,7 +20,7 @@ define (require) ->
 
 			@$('#search').addClass 'loading'
 
-			@model.query
+			Models.query.fetch
 				term: @$('input#search').val()
 				textLayers: ['Diplomatic']
 			,
@@ -29,29 +29,9 @@ define (require) ->
 					@$('#search').removeClass 'loading'
 					@publish 'faceted-search:results', results
 
-            # {
-#   "term": "bla bloe z*",
-#   "facetValues": [
-#     {
-#       "name": "metadata_folio_number",
-#       "values": [ "191", "192" ],
-#     }
-#   ],
-#   "sort": "score",
-#   "sortDir": "asc",
-#   "fuzzy": false,
-#   "caseSensitive": false,
-#   "textLayers": [
-#     "Diplomatic"
-#   ],
-#   "searchInAnnotations": false
-# }
-
 
 		initialize: ->
 			super
-
-			@model = Models.Main
 
 			@render()
 

@@ -1,22 +1,7 @@
-# require.config 
-#     paths:
-#         'backbone': '../lib/backbone-amd/backbone-min'
-#         'domready': '../lib/requirejs-domready/domReady'
-#         'jquery': '../lib/jquery/jquery.min'
-#         'text': '../lib/requirejs-text/text'
-#         'underscore': '../lib/underscore-amd/underscore-min'
-#         # 'ajax': '../lib/managers/dev/ajax'
-#         'managers': '../lib/managers/dev'
-#         'helpers': '../lib/helpers/dev'
-#         'html': '../html'
-
-# require ['views/main'], (fs) ->
-#     console.log require 'jquery'
-#     console.log fs
 define (require) ->
 
     Models = 
-        Main: require 'models/main'
+        query: require 'models/query'
 
     Views =
         Base: require 'views/base'
@@ -38,16 +23,23 @@ define (require) ->
 
             @options = _.extend @defaultOptions(), options
 
-            @model = Models.Main
-            @model.set 'baseUrl', @options.baseUrl
-            @model.set 'searchUrl', @options.searchUrl
-            @model.set 'token', @options.token
+            
+            Models.query.baseUrl = @options.baseUrl
+            Models.query.searchUrl = @options.searchUrl
+            Models.query.token = @options.token
 
+            # TMP: cuz of a bug in r.js Backbone must be build with the faceted-search
+            # But that means a project and the faceted-search are using two different instances of Backbone
+            # and thus publish/subscribe will not work
             @subscribe 'faceted-search:results', (results) =>
-                # TMP: cuz of a bug in r.js Backbone must be build with the faceted-search
-                # But that means a project and the faceted-search are using two different instances of Backbone
-                # and thus publish/subscribe will not work
+                @renderFacets results
                 @trigger 'faceted-search:results', results 
+
+            @subscribe 'facet:list:changed', (data) =>
+                Models.query.addFacetValues data
+                # Models.query.get('data').facetValues.push data
+                # console.log Models.query.get('data').facetValues
+
 
             @render()
 
@@ -57,21 +49,23 @@ define (require) ->
 
             if @options.search
                 search = new Views.Search()
-                @$('form').html search.$el
+                @$('.search-placeholder').html search.$el
 
             # TODO: Show message to user when render fails
-            @model.query {}, (data) =>
-                @publish 'faceted-search:results', data
-                @facets = data.facets
-                @renderFacets()
+            Models.query.fetch()
+                # @facets = data.facets
+                # @renderFacets()
 
             @
 
         # fetchFacets: ->
 
-        renderFacets: ->
+        renderFacets: (data) ->
+            # console.log data
+            @$('.facets').html ''
+
             # TODO: Add Views.List to Collections.Facets
             # TODO: Add Views.Boolean
-            for own index, data of @facets
+            for own index, data of data.facets
                 list = new Views.List attrs: data
-                @$('form').append list.$el
+                @$('.facets').append list.$el
