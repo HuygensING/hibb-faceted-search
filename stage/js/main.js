@@ -1436,7 +1436,8 @@ define('text!html/search.html',[],function () { return '<header><h3>Text search<
           textLayers: ['Diplomatic']
         }, function(results) {
           _this.$('#search').removeClass('loading');
-          return _this.publish('faceted-search:results', results);
+          _this.publish('faceted-search:results', results);
+          return _this.trigger('faceted-search:results', results);
         });
       };
 

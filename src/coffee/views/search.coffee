@@ -29,6 +29,10 @@ define (require) ->
 					@$('#search').removeClass 'loading'
 					@publish 'faceted-search:results', results
 
+					# TMP: cuz of a bug in r.js Backbone must be build with the faceted-search
+					# But that means a project and the faceted-search are using two different instances of Backbone
+					# and thus publish/subscribe will not work
+					@trigger 'faceted-search:results', results 
 
             # {
 #   "term": "bla bloe z*",
