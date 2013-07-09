@@ -9,13 +9,13 @@
     //     return _;
     // });
 
-    define('text', function() { return text; });
+    define('text', function () { return text; });
 
     define('backbone', function () { return Backbone; });
 
-    define('helpers/fns', function() { return Fn; })
+    define('helpers/fns', function () { return Fn; });
 
-    define('managers/ajax', function() { return ajax; })
+    define('managers/ajax', function () { return ajax; });
 
     // console.log(require('main'))
     // return 'toet';
