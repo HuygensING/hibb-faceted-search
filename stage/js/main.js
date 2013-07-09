@@ -1,18 +1,16 @@
 (function (root, factory) {
     if (typeof define === 'function' && define.amd) {
-        //Allow using this built library as an AMD module
-        //in another project. That other project will only
-        //see this AMD call, not the internal modules in
-        //the closure below.
-        define(['jquery', 'backbone', 'text', 'helpers/fns', 'managers/ajax'], factory);
-        // define(factory);
+
+        define(factory);
+        // define(['jquery', 'backbone', 'text', 'helpers/fns', 'managers/ajax'], factory);
+
     } else {
-        //Browser globals case. Just assign the
-        //result to a property on the global.
-        root.libGlobalName = factory();
+
+        root['faceted-search'] = factory();
     }
-}(this, function ($, Backbone, text, Fn, ajax) {
-    //almond, and your modules will be inlined here
+}(this, function () {
+// }(this, function ($, Backbone, text, Fn, ajax) {
+
 /**
  * almond 0.2.5 Copyright (c) 2011-2012, The Dojo Foundation All Rights Reserved.
  * Available via the MIT or new BSD license.
@@ -1545,26 +1543,16 @@ define('text!html/faceted-search.html',[],function () { return '<form></form>';}
   });
 
 }).call(this);
-    //The modules for your project will be inlined above
-    //this snippet. Ask almond to synchronously require the
-    //module value for 'main' here and return it as the
-    //value to use for the public API for the built file.
-    // console.log(require('views/main'))
-    define('jquery', function () { return $; });
-    
-    // define('underscore', function () {
-    //     return _;
-    // });
 
-    define('text', function () { return text; });
+    // define('jquery', function () { return $; });
 
-    define('backbone', function () { return Backbone; });
+    // define('text', function () { return text; });
 
-    define('helpers/fns', function () { return Fn; });
+    // define('backbone', function () { return Backbone; });
 
-    define('managers/ajax', function () { return ajax; });
+    // define('helpers/fns', function () { return Fn; });
 
-    // console.log(require('main'))
-    // return 'toet';
+    // define('managers/ajax', function () { return ajax; });
+
     return require('main');
 }));

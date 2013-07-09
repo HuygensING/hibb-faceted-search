@@ -1,23 +1,13 @@
-    //The modules for your project will be inlined above
-    //this snippet. Ask almond to synchronously require the
-    //module value for 'main' here and return it as the
-    //value to use for the public API for the built file.
-    // console.log(require('views/main'))
-    define('jquery', function () { return $; });
-    
-    // define('underscore', function () {
-    //     return _;
-    // });
 
-    define('text', function () { return text; });
+    // define('jquery', function () { return $; });
 
-    define('backbone', function () { return Backbone; });
+    // define('text', function () { return text; });
 
-    define('helpers/fns', function () { return Fn; });
+    // define('backbone', function () { return Backbone; });
 
-    define('managers/ajax', function () { return ajax; });
+    // define('helpers/fns', function () { return Fn; });
 
-    // console.log(require('main'))
-    // return 'toet';
+    // define('managers/ajax', function () { return ajax; });
+
     return require('main');
 }));
