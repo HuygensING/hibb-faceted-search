@@ -109,7 +109,7 @@ module.exports = (grunt) ->
 					name: '../lib/almond/almond'
 					include: 'main'
 					# insertRequire: ['main']
-					exclude: ['backbone', 'jquery', 'text', 'underscore'] # Managers and helpers should be excluded, but how?
+					# exclude: ['backbone', 'jquery', 'text', 'underscore', 'helpers/fns', 'managers/ajax'] # Managers and helpers should be excluded, but how?
 					preserveLicenseComments: false
 					out: "stage/js/main.js"
 					optimize: 'none'
