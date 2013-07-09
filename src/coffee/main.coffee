@@ -43,6 +43,12 @@ define (require) ->
             @model.set 'searchUrl', @options.searchUrl
             @model.set 'token', @options.token
 
+            @subscribe 'faceted-search:results', (results) =>
+                # TMP: cuz of a bug in r.js Backbone must be build with the faceted-search
+                # But that means a project and the faceted-search are using two different instances of Backbone
+                # and thus publish/subscribe will not work
+                @trigger 'faceted-search:results', results 
+
             @render()
 
         render: ->
@@ -55,6 +61,7 @@ define (require) ->
 
             # TODO: Show message to user when render fails
             @model.query {}, (data) =>
+                @publish 'faceted-search:results', data
                 @facets = data.facets
                 @renderFacets()
 

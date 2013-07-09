@@ -32,12 +32,16 @@
       };
 
       FacetedSearch.prototype.initialize = function(options) {
+        var _this = this;
         FacetedSearch.__super__.initialize.apply(this, arguments);
         this.options = _.extend(this.defaultOptions(), options);
         this.model = Models.Main;
         this.model.set('baseUrl', this.options.baseUrl);
         this.model.set('searchUrl', this.options.searchUrl);
         this.model.set('token', this.options.token);
+        this.subscribe('faceted-search:results', function(results) {
+          return _this.trigger('faceted-search:results', results);
+        });
         return this.render();
       };
 
@@ -51,6 +55,7 @@
           this.$('form').html(search.$el);
         }
         this.model.query({}, function(data) {
+          _this.publish('faceted-search:results', data);
           _this.facets = data.facets;
           return _this.renderFacets();
         });
