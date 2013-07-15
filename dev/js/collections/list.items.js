@@ -20,6 +20,26 @@
 
       ListItems.prototype.model = Models.ListItem;
 
+      ListItems.prototype.comparator = function(model) {
+        return -1 * parseInt(model.get('count'), 10);
+      };
+
+      ListItems.prototype.updateOptions = function(newOptions) {
+        var _this = this;
+        this.each(function(option) {
+          return option.set('count', 0);
+        });
+        _.each(newOptions, function(newOption) {
+          var opt;
+          if (newOption.name === '') {
+            newOption.name = '<i>(empty)</i>';
+          }
+          opt = _this.get(newOption.name);
+          return opt.set('count', newOption.count);
+        });
+        return this.sort();
+      };
+
       return ListItems;
 
     })(Collections.Base);

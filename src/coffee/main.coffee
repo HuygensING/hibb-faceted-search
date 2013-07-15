@@ -16,8 +16,6 @@ define (require) ->
         facetData: []
         facetViews: {}
 
-        className: 'faceted-search'
-
         defaultOptions: ->
             search: true
 
@@ -56,9 +54,9 @@ define (require) ->
 
         renderFacets: (data) ->
             # console.log data
-            @$('.facets').html ''
+            # @$('.facets').html ''
 
-            console.log data.facets
+            # console.log data.facets
             # TODO: Add Views.List to Collections.Facets
             # TODO: Add Views.Boolean
             if not @facetData.length
@@ -69,6 +67,6 @@ define (require) ->
                     @$('.facets').append @facetViews[data.name].$el
             else
                 for own index, data of data.facets
-                    @facetViews[data.name].update()
+                    @facetViews[data.name].update(data)
                     # view.update data.facets
 

@@ -12,6 +12,7 @@ define (require) ->
 		baseUrl: ''
 		searchUrl: ''
 		token: ''
+		facetValues: {}
 		
 		defaults: ->
 			term: '*'
@@ -40,16 +41,23 @@ define (require) ->
 #   ],
 #   "searchInAnnotations": false
 # }
+		# set: (attrs, options) ->
+		# 	options = _.values options if attrs is 'facetValues'
+
+		# 	super attrs, options
 
 		initialize: ->
 			super 
 
 			@on 'change:facetValues', @fetch, @
-			
+
 			@subscribe 'facet:list:changed', (data) =>
-				fv = _.reject @get('facetValues'), (val) -> val.name is data.name
-				fv.push data
-				@set 'facetValues', fv
+				if data.values.length
+					@facetValues[data.name] = data
+				else
+					delete @facetValues[data.name]
+
+				@set 'facetValues', _.values @facetValues
 
 				# @fetch()
 
