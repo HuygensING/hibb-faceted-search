@@ -15,9 +15,19 @@
         return _ref;
       }
 
+      ListItem.prototype.idAttribute = 'name';
+
+      ListItem.prototype.defaults = function() {
+        return {
+          name: '',
+          count: 0,
+          checked: false
+        };
+      };
+
       ListItem.prototype.parse = function(attrs) {
         if (!attrs.name) {
-          attrs.name = '<i>empty</i>';
+          attrs.name = '<i>(empty)</i>';
         }
         return attrs;
       };

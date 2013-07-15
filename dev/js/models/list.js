@@ -3,12 +3,9 @@
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
   define(function(require) {
-    var Collections, List, Models, _ref;
+    var List, Models, _ref;
     Models = {
       Base: require('models/base')
-    };
-    Collections = {
-      ListItems: require('collections/list.items')
     };
     return List = (function(_super) {
       __extends(List, _super);
@@ -18,12 +15,7 @@
         return _ref;
       }
 
-      List.prototype.parse = function(attrs) {
-        attrs.options = new Collections.ListItems(attrs.options, {
-          parse: true
-        });
-        return attrs;
-      };
+      List.prototype.idAttribute = 'name';
 
       return List;
 

@@ -27,8 +27,6 @@
 
       FacetedSearch.prototype.facetViews = {};
 
-      FacetedSearch.prototype.className = 'faceted-search';
-
       FacetedSearch.prototype.defaultOptions = function() {
         return {
           search: true
@@ -63,8 +61,6 @@
 
       FacetedSearch.prototype.renderFacets = function(data) {
         var index, _ref1, _ref2, _results, _results1;
-        this.$('.facets').html('');
-        console.log(data.facets);
         if (!this.facetData.length) {
           this.facetData = data.facets;
           _ref1 = data.facets;
@@ -84,7 +80,7 @@
           for (index in _ref2) {
             if (!__hasProp.call(_ref2, index)) continue;
             data = _ref2[index];
-            _results1.push(this.facetViews[data.name].update());
+            _results1.push(this.facetViews[data.name].update(data));
           }
           return _results1;
         }

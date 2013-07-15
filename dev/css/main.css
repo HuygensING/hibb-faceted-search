@@ -11,7 +11,8 @@
 .faceted-search form .align.middle{line-height:24px;}
 .faceted-search form .align.middle *{vertical-align:middle}
 
-.faceted-search .facet h3{padding:0;margin:0}
+.faceted-search .facet h3{padding:0;margin:0;display:inline}
+.faceted-search .facet small{color:#555;margin-left:4%}
 .faceted-search .facet.list h3{cursor:pointer}
 .faceted-search .facet.list nav ul{padding:0;margin:0;list-style:none;}
 .faceted-search .facet.list nav ul li{font-size:.8em;cursor:pointer;display:inline-block}

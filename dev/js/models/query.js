@@ -23,6 +23,8 @@
 
       Query.prototype.token = '';
 
+      Query.prototype.facetValues = {};
+
       Query.prototype.defaults = function() {
         return {
           term: '*',
@@ -36,12 +38,12 @@
         Query.__super__.initialize.apply(this, arguments);
         this.on('change:facetValues', this.fetch, this);
         return this.subscribe('facet:list:changed', function(data) {
-          var fv;
-          fv = _.reject(_this.get('facetValues'), function(val) {
-            return val.name === data.name;
-          });
-          fv.push(data);
-          return _this.set('facetValues', fv);
+          if (data.values.length) {
+            _this.facetValues[data.name] = data;
+          } else {
+            delete _this.facetValues[data.name];
+          }
+          return _this.set('facetValues', _.values(_this.facetValues));
         });
       };
 

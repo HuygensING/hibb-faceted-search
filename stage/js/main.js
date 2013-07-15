@@ -648,6 +648,8 @@ try{Ut=i.href}catch(an){Ut=o.createElement("a"),Ut.href="",Ut=Ut.href}Xt=tn.exec
 
       Query.prototype.token = '';
 
+      Query.prototype.facetValues = {};
+
       Query.prototype.defaults = function() {
         return {
           term: '*',
@@ -661,12 +663,12 @@ try{Ut=i.href}catch(an){Ut=o.createElement("a"),Ut.href="",Ut=Ut.href}Xt=tn.exec
         Query.__super__.initialize.apply(this, arguments);
         this.on('change:facetValues', this.fetch, this);
         return this.subscribe('facet:list:changed', function(data) {
-          var fv;
-          fv = _.reject(_this.get('facetValues'), function(val) {
-            return val.name === data.name;
-          });
-          fv.push(data);
-          return _this.set('facetValues', fv);
+          if (data.values.length) {
+            _this.facetValues[data.name] = data;
+          } else {
+            delete _this.facetValues[data.name];
+          }
+          return _this.set('facetValues', _.values(_this.facetValues));
         });
       };
 
@@ -741,6 +743,131 @@ try{Ut=i.href}catch(an){Ut=o.createElement("a"),Ut.href="",Ut=Ut.href}Xt=tn.exec
       return BaseView;
 
     })(Backbone.View);
+  });
+
+}).call(this);
+
+(function() {
+  var __hasProp = {}.hasOwnProperty,
+    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
+
+  define('models/list',['require','models/base'],function(require) {
+    var List, Models, _ref;
+    Models = {
+      Base: require('models/base')
+    };
+    return List = (function(_super) {
+      __extends(List, _super);
+
+      function List() {
+        _ref = List.__super__.constructor.apply(this, arguments);
+        return _ref;
+      }
+
+      List.prototype.idAttribute = 'name';
+
+      return List;
+
+    })(Models.Base);
+  });
+
+}).call(this);
+
+(function() {
+  var __hasProp = {}.hasOwnProperty,
+    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
+
+  define('models/list.item',['require','models/base'],function(require) {
+    var ListItem, Models, _ref;
+    Models = {
+      Base: require('models/base')
+    };
+    return ListItem = (function(_super) {
+      __extends(ListItem, _super);
+
+      function ListItem() {
+        _ref = ListItem.__super__.constructor.apply(this, arguments);
+        return _ref;
+      }
+
+      ListItem.prototype.idAttribute = 'name';
+
+      ListItem.prototype.defaults = function() {
+        return {
+          name: '',
+          count: 0,
+          checked: false
+        };
+      };
+
+      ListItem.prototype.parse = function(attrs) {
+        if (!attrs.name) {
+          attrs.name = '<i>(empty)</i>';
+        }
+        return attrs;
+      };
+
+      return ListItem;
+
+    })(Models.Base);
+  });
+
+}).call(this);
+
+(function() {
+  define('collections/base',['require','backbone'],function(require) {
+    var Backbone;
+    Backbone = require('backbone');
+    return Backbone.Collection;
+  });
+
+}).call(this);
+
+(function() {
+  var __hasProp = {}.hasOwnProperty,
+    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
+
+  define('collections/list.items',['require','models/list.item','collections/base'],function(require) {
+    var Collections, ListItems, Models, _ref;
+    Models = {
+      ListItem: require('models/list.item')
+    };
+    Collections = {
+      Base: require('collections/base')
+    };
+    return ListItems = (function(_super) {
+      __extends(ListItems, _super);
+
+      function ListItems() {
+        _ref = ListItems.__super__.constructor.apply(this, arguments);
+        return _ref;
+      }
+
+      ListItems.prototype.model = Models.ListItem;
+
+      ListItems.prototype.comparator = function(model) {
+        return -1 * parseInt(model.get('count'), 10);
+      };
+
+      ListItems.prototype.updateOptions = function(newOptions) {
+        var _this = this;
+        this.each(function(option) {
+          return option.set('count', 0);
+        });
+        _.each(newOptions, function(newOption) {
+          var opt;
+          if (newOption.name === '') {
+            newOption.name = '<i>(empty)</i>';
+          }
+          opt = _this.get(newOption.name);
+          return opt.set('count', newOption.count);
+        });
+        return this.sort();
+      };
+
+      return ListItems;
+
+    })(Collections.Base);
   });
 
 }).call(this);
@@ -1155,125 +1282,108 @@ define('text!html/facet.html',[],function () { return '<div class="placeholder p
 
 }).call(this);
 
-(function() {
-  var __hasProp = {}.hasOwnProperty,
-    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
+define('text!html/facet/list.html',[],function () { return '\n<header>\n  <h3><%= title %></h3><small></small>\n</header>\n<div class="body">\n  <div class="row span2 align middle">\n    <div class="cell span1 center">\n      <input type="text" name="listsearch" class="listsearch"/>\n    </div>\n    <div class="cell span1 right">\n      <nav>\n        <ul>\n          <li class="all">All </li>\n          <li class="none">None</li>\n        </ul>\n      </nav>\n    </div>\n  </div>\n  <div class="items">\n    <ul></ul>\n  </div>\n</div>';});
 
-  define('models/list.item',['require','models/base'],function(require) {
-    var ListItem, Models, _ref;
-    Models = {
-      Base: require('models/base')
-    };
-    return ListItem = (function(_super) {
-      __extends(ListItem, _super);
-
-      function ListItem() {
-        _ref = ListItem.__super__.constructor.apply(this, arguments);
-        return _ref;
-      }
-
-      ListItem.prototype.parse = function(attrs) {
-        if (!attrs.name) {
-          attrs.name = '<i>empty</i>';
-        }
-        return attrs;
-      };
-
-      return ListItem;
-
-    })(Models.Base);
-  });
-
-}).call(this);
-
-(function() {
-  define('collections/base',['require','backbone'],function(require) {
-    var Backbone;
-    Backbone = require('backbone');
-    return Backbone.Collection;
-  });
-
-}).call(this);
+define('text!html/facet/list.options.html',[],function () { return '\n<ul>\n  <% _.each(options, function(option) { %>\n  <% var someId = generateID(); %>\n  <% console.log(option.get(\'checked\')); %>\n  <% var checked = (option.get(\'checked\') === true) ? \'checked\' : \'\'; %>\n  <li class="item">\n    <div class="row span6">\n      <div class="cell span5">\n        <input id="<%= someId %>" type="checkbox" name="<%= someId %>" data-value="<%= option.id %>" checked="<%= checked %>"/>\n        <label for="<%= someId %>"><%= option.id %></label>\n      </div>\n      <div class="cell span1 right">\n        <div class="count"><%= option.get(\'count\') %></div>\n      </div>\n    </div>\n  </li><% }); %>\n</ul>';});
 
 (function() {
   var __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
-  define('collections/list.items',['require','models/list.item','collections/base'],function(require) {
-    var Collections, ListItems, Models, _ref;
-    Models = {
-      ListItem: require('models/list.item')
-    };
-    Collections = {
-      Base: require('collections/base')
-    };
-    return ListItems = (function(_super) {
-      __extends(ListItems, _super);
-
-      function ListItems() {
-        _ref = ListItems.__super__.constructor.apply(this, arguments);
-        return _ref;
-      }
-
-      ListItems.prototype.model = Models.ListItem;
-
-      return ListItems;
-
-    })(Collections.Base);
-  });
-
-}).call(this);
-
-(function() {
-  var __hasProp = {}.hasOwnProperty,
-    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
-
-  define('models/list',['require','models/base','collections/list.items'],function(require) {
-    var Collections, List, Models, _ref;
-    Models = {
-      Base: require('models/base')
-    };
-    Collections = {
-      ListItems: require('collections/list.items')
-    };
-    return List = (function(_super) {
-      __extends(List, _super);
-
-      function List() {
-        _ref = List.__super__.constructor.apply(this, arguments);
-        return _ref;
-      }
-
-      List.prototype.parse = function(attrs) {
-        attrs.options = new Collections.ListItems(attrs.options, {
-          parse: true
-        });
-        return attrs;
-      };
-
-      return List;
-
-    })(Models.Base);
-  });
-
-}).call(this);
-
-define('text!html/facet/list.html',[],function () { return '\n<header>\n  <h3><%= title %></h3>\n</header>\n<div class="body">\n  <div class="row span2 align middle">\n    <div class="cell span1 center">\n      <input type="text" name="listsearch" class="listsearch"/>\n    </div>\n    <div class="cell span1 right">\n      <nav>\n        <ul>\n          <li class="all">All </li>\n          <li class="none">None</li>\n        </ul>\n      </nav>\n    </div>\n  </div>\n  <div class="items">\n    <ul></ul>\n  </div>\n</div>';});
-
-define('text!html/facet/list.items.html',[],function () { return '\n<% _.each(items, function(item) { %>\n<% var someId = generateID(); %>\n<li class="item">\n  <div class="row span6">\n    <div class="cell span5">\n      <input id="<%= someId %>" type="checkbox" name="<%= someId %>" data-value="<%= item.get(\'name\') %>"/>\n      <label for="<%= someId %>"><%= item.get(\'name\') %></label>\n    </div>\n    <div class="cell span1 right">\n      <div class="count"><%= item.get(\'count\') %></div>\n    </div>\n  </div>\n</li><% }); %>';});
-
-(function() {
-  var __hasProp = {}.hasOwnProperty,
-    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
-
-  define('views/facets/list',['require','helpers/fns','views/facet','models/list','text!html/facet/list.html','text!html/facet/list.items.html'],function(require) {
-    var Fn, ListFacet, Models, Templates, Views, _ref;
+  define('views/facets/list.options',['require','helpers/fns','views/base','models/query','models/list','text!html/facet/list.html','text!html/facet/list.options.html'],function(require) {
+    var Fn, ListOptions, Models, Templates, Views, _ref;
     Fn = require('helpers/fns');
     Views = {
-      Facet: require('views/facet')
+      Base: require('views/base')
     };
     Models = {
+      query: require('models/query'),
       List: require('models/list')
+    };
+    Templates = {
+      List: require('text!html/facet/list.html'),
+      Items: require('text!html/facet/list.options.html')
+    };
+    return ListOptions = (function(_super) {
+      __extends(ListOptions, _super);
+
+      function ListOptions() {
+        _ref = ListOptions.__super__.constructor.apply(this, arguments);
+        return _ref;
+      }
+
+      ListOptions.prototype.filtered_items = [];
+
+      ListOptions.prototype.events = function() {
+        return {
+          'change input[type="checkbox"]': 'checkChanged'
+        };
+      };
+
+      ListOptions.prototype.checkChanged = function(ev) {
+        var model, value;
+        value = ev.currentTarget.getAttribute('data-value');
+        model = this.collection.get(value);
+        return model.set('checked', true);
+      };
+
+      ListOptions.prototype.initialize = function() {
+        ListOptions.__super__.initialize.apply(this, arguments);
+        this.listenTo(this.collection, 'sort', this.render);
+        return this.render();
+      };
+
+      ListOptions.prototype.render = function() {
+        var options, rtpl;
+        options = this.filtered_items.length > 0 ? this.filtered_items : this.collection.models;
+        rtpl = _.template(Templates.Items, {
+          options: options,
+          generateID: Fn.generateID
+        });
+        return this.$el.html(rtpl);
+      };
+
+      /*
+      		Called by parent (ListFacet) when user types in the search input
+      */
+
+
+      ListOptions.prototype.filterOptions = function(value) {
+        var re;
+        re = new RegExp(value, 'i');
+        this.filtered_items = this.collection.filter(function(item) {
+          return re.test(item.id);
+        });
+        this.trigger('filter:finished');
+        return this.render();
+      };
+
+      return ListOptions;
+
+    })(Views.Base);
+  });
+
+}).call(this);
+
+define('text!html/facet/list.items.html',[],function () { return '\n<% _.each(options, function(option) { %>\n<% var someId = generateID(); %>\n<li class="item">\n  <div class="row span6">\n    <div class="cell span5">\n      <input id="<%= someId %>" type="checkbox" name="<%= someId %>" data-value="<%= option.get(\'name\') %>"/>\n      <label for="<%= someId %>"><%= option.get(\'name\') %></label>\n    </div>\n    <div class="cell span1 right">\n      <div class="count"><%= option.get(\'count\') %></div>\n    </div>\n  </div>\n</li><% }); %>';});
+
+(function() {
+  var __hasProp = {}.hasOwnProperty,
+    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
+
+  define('views/facets/list',['require','helpers/fns','models/query','models/list','collections/list.items','views/facet','views/facets/list.options','text!html/facet/list.html','text!html/facet/list.items.html'],function(require) {
+    var Collections, Fn, ListFacet, Models, Templates, Views, _ref;
+    Fn = require('helpers/fns');
+    Models = {
+      query: require('models/query'),
+      List: require('models/list')
+    };
+    Collections = {
+      Options: require('collections/list.items')
+    };
+    Views = {
+      Facet: require('views/facet'),
+      Options: require('views/facets/list.options')
     };
     Templates = {
       List: require('text!html/facet/list.html'),
@@ -1287,6 +1397,8 @@ define('text!html/facet/list.items.html',[],function () { return '\n<% _.each(it
         return _ref;
       }
 
+      ListFacet.prototype.checked = [];
+
       ListFacet.prototype.filtered_items = [];
 
       ListFacet.prototype.className = 'facet list';
@@ -1296,13 +1408,13 @@ define('text!html/facet/list.items.html',[],function () { return '\n<% _.each(it
           'click li.all': 'selectAll',
           'click li.none': 'deselectAll',
           'click h3': 'toggleBody',
-          'keyup input.listsearch': 'showResults',
-          'change input[type="checkbox"]': 'checkChanged'
+          'keyup input.listsearch': function(ev) {
+            return this.optionsView.filterOptions(ev.currentTarget.value);
+          }
         };
       };
 
       ListFacet.prototype.toggleBody = function(ev) {
-        console.log($(ev.currentTarget).parents('.list'));
         return $(ev.currentTarget).parents('.list').find('.body').slideToggle();
       };
 
@@ -1328,33 +1440,10 @@ define('text!html/facet/list.items.html',[],function () { return '\n<% _.each(it
         return _results;
       };
 
-      ListFacet.prototype.showResults = function(ev) {
-        var re, value;
-        value = ev.currentTarget.value;
-        re = new RegExp(value, 'i');
-        this.filtered_items = this.model.get('options').filter(function(item) {
-          return re.test(item.get('name'));
-        });
-        return this.renderListItems();
-      };
-
-      ListFacet.prototype.checkChanged = function(ev) {
-        var c, checked, values, _i, _len;
-        checked = this.el.querySelectorAll('input[type="checkbox"]:checked');
-        values = [];
-        for (_i = 0, _len = checked.length; _i < _len; _i++) {
-          c = checked[_i];
-          values.push(c.getAttribute('data-value'));
-        }
-        return this.publish('facet:list:changed', {
-          name: this.model.get('name'),
-          values: values
-        });
-      };
-
       ListFacet.prototype.initialize = function(options) {
         ListFacet.__super__.initialize.apply(this, arguments);
-        this.model = new Models.List(options.attrs, {
+        this.model = new Models.List(options.attrs);
+        this.collection = new Collections.Options(options.attrs.options, {
           parse: true
         });
         return this.render();
@@ -1365,23 +1454,42 @@ define('text!html/facet/list.items.html',[],function () { return '\n<% _.each(it
         ListFacet.__super__.render.apply(this, arguments);
         rtpl = _.template(Templates.List, this.model.attributes);
         this.$('.placeholder').html(rtpl);
-        this.renderListItems();
+        this.optionsView = new Views.Options({
+          el: this.$('.items'),
+          collection: this.collection
+        });
+        this.listenTo(this.optionsView, 'filter:finished', this.renderFilteredOptionCount);
+        return this.listenTo(this.collection, 'change:checked', this.optionChecked);
+      };
+
+      ListFacet.prototype.optionChecked = function() {
+        var checked;
+        checked = [];
+        this.optionsView.collection.each(function(model) {
+          if (model.get('checked')) {
+            return checked.push(model.id);
+          }
+        });
+        return this.publish('facet:list:changed', {
+          name: this.model.get('name'),
+          values: checked
+        });
+      };
+
+      ListFacet.prototype.renderFilteredOptionCount = function() {
+        var collectionLength, filteredLength;
+        filteredLength = this.optionsView.filtered_items.length;
+        collectionLength = this.optionsView.collection.length;
+        if (filteredLength === 0 || filteredLength === collectionLength) {
+          this.$('header small').html('');
+        } else {
+          this.$('header small').html(filteredLength + ' of ' + collectionLength);
+        }
         return this;
       };
 
-      ListFacet.prototype.update = function() {
-        return this.renderListItems();
-      };
-
-      ListFacet.prototype.renderListItems = function() {
-        var items, rtpl;
-        items = this.filtered_items.length > 0 ? this.filtered_items : this.model.get('options').models;
-        rtpl = _.template(Templates.Items, {
-          model: this.model.attributes,
-          items: items,
-          generateID: Fn.generateID
-        });
-        return this.$('.body .items ul').html(rtpl);
+      ListFacet.prototype.update = function(attrs) {
+        return this.optionsView.collection.updateOptions(attrs.options);
       };
 
       return ListFacet;
@@ -1454,7 +1562,7 @@ define('text!html/search.html',[],function () { return '<header><h3>Text search<
 
 }).call(this);
 
-define('text!html/faceted-search.html',[],function () { return '\n<form>\n  <div class="search-placeholder"></div>\n  <div class="facets"></div>\n</form>';});
+define('text!html/faceted-search.html',[],function () { return '\n<div class="faceted-search">\n  <form>\n    <div class="search-placeholder"></div>\n    <div class="facets"></div>\n  </form>\n</div>';});
 
 (function() {
   var __hasProp = {}.hasOwnProperty,
@@ -1484,8 +1592,6 @@ define('text!html/faceted-search.html',[],function () { return '\n<form>\n  <div
       FacetedSearch.prototype.facetData = [];
 
       FacetedSearch.prototype.facetViews = {};
-
-      FacetedSearch.prototype.className = 'faceted-search';
 
       FacetedSearch.prototype.defaultOptions = function() {
         return {
@@ -1521,8 +1627,6 @@ define('text!html/faceted-search.html',[],function () { return '\n<form>\n  <div
 
       FacetedSearch.prototype.renderFacets = function(data) {
         var index, _ref1, _ref2, _results, _results1;
-        this.$('.facets').html('');
-        console.log(data.facets);
         if (!this.facetData.length) {
           this.facetData = data.facets;
           _ref1 = data.facets;
@@ -1542,7 +1646,7 @@ define('text!html/faceted-search.html',[],function () { return '\n<form>\n  <div
           for (index in _ref2) {
             if (!__hasProp.call(_ref2, index)) continue;
             data = _ref2[index];
-            _results1.push(this.facetViews[data.name].update());
+            _results1.push(this.facetViews[data.name].update(data));
           }
           return _results1;
         }

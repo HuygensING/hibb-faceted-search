@@ -3,13 +3,18 @@
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
   define(function(require) {
-    var Fn, ListFacet, Models, Templates, Views, _ref;
+    var Collections, Fn, ListFacet, Models, Templates, Views, _ref;
     Fn = require('helpers/fns');
-    Views = {
-      Facet: require('views/facet')
-    };
     Models = {
+      query: require('models/query'),
       List: require('models/list')
+    };
+    Collections = {
+      Options: require('collections/list.items')
+    };
+    Views = {
+      Facet: require('views/facet'),
+      Options: require('views/facets/list.options')
     };
     Templates = {
       List: require('text!html/facet/list.html'),
@@ -23,6 +28,8 @@
         return _ref;
       }
 
+      ListFacet.prototype.checked = [];
+
       ListFacet.prototype.filtered_items = [];
 
       ListFacet.prototype.className = 'facet list';
@@ -32,13 +39,13 @@
           'click li.all': 'selectAll',
           'click li.none': 'deselectAll',
           'click h3': 'toggleBody',
-          'keyup input.listsearch': 'showResults',
-          'change input[type="checkbox"]': 'checkChanged'
+          'keyup input.listsearch': function(ev) {
+            return this.optionsView.filterOptions(ev.currentTarget.value);
+          }
         };
       };
 
       ListFacet.prototype.toggleBody = function(ev) {
-        console.log($(ev.currentTarget).parents('.list'));
         return $(ev.currentTarget).parents('.list').find('.body').slideToggle();
       };
 
@@ -64,33 +71,10 @@
         return _results;
       };
 
-      ListFacet.prototype.showResults = function(ev) {
-        var re, value;
-        value = ev.currentTarget.value;
-        re = new RegExp(value, 'i');
-        this.filtered_items = this.model.get('options').filter(function(item) {
-          return re.test(item.get('name'));
-        });
-        return this.renderListItems();
-      };
-
-      ListFacet.prototype.checkChanged = function(ev) {
-        var c, checked, values, _i, _len;
-        checked = this.el.querySelectorAll('input[type="checkbox"]:checked');
-        values = [];
-        for (_i = 0, _len = checked.length; _i < _len; _i++) {
-          c = checked[_i];
-          values.push(c.getAttribute('data-value'));
-        }
-        return this.publish('facet:list:changed', {
-          name: this.model.get('name'),
-          values: values
-        });
-      };
-
       ListFacet.prototype.initialize = function(options) {
         ListFacet.__super__.initialize.apply(this, arguments);
-        this.model = new Models.List(options.attrs, {
+        this.model = new Models.List(options.attrs);
+        this.collection = new Collections.Options(options.attrs.options, {
           parse: true
         });
         return this.render();
@@ -101,23 +85,42 @@
         ListFacet.__super__.render.apply(this, arguments);
         rtpl = _.template(Templates.List, this.model.attributes);
         this.$('.placeholder').html(rtpl);
-        this.renderListItems();
+        this.optionsView = new Views.Options({
+          el: this.$('.items'),
+          collection: this.collection
+        });
+        this.listenTo(this.optionsView, 'filter:finished', this.renderFilteredOptionCount);
+        return this.listenTo(this.collection, 'change:checked', this.optionChecked);
+      };
+
+      ListFacet.prototype.optionChecked = function() {
+        var checked;
+        checked = [];
+        this.optionsView.collection.each(function(model) {
+          if (model.get('checked')) {
+            return checked.push(model.id);
+          }
+        });
+        return this.publish('facet:list:changed', {
+          name: this.model.get('name'),
+          values: checked
+        });
+      };
+
+      ListFacet.prototype.renderFilteredOptionCount = function() {
+        var collectionLength, filteredLength;
+        filteredLength = this.optionsView.filtered_items.length;
+        collectionLength = this.optionsView.collection.length;
+        if (filteredLength === 0 || filteredLength === collectionLength) {
+          this.$('header small').html('');
+        } else {
+          this.$('header small').html(filteredLength + ' of ' + collectionLength);
+        }
         return this;
       };
 
-      ListFacet.prototype.update = function() {
-        return this.renderListItems();
-      };
-
-      ListFacet.prototype.renderListItems = function() {
-        var items, rtpl;
-        items = this.filtered_items.length > 0 ? this.filtered_items : this.model.get('options').models;
-        rtpl = _.template(Templates.Items, {
-          model: this.model.attributes,
-          items: items,
-          generateID: Fn.generateID
-        });
-        return this.$('.body .items ul').html(rtpl);
+      ListFacet.prototype.update = function(attrs) {
+        return this.optionsView.collection.updateOptions(attrs.options);
       };
 
       return ListFacet;
