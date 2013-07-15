@@ -5,7 +5,7 @@ define (require) ->
 
 	Models =
 		Base: require 'models/base'
-
+		options: require 'models/options'
 
 	class Query extends Models.Base
 
@@ -14,13 +14,14 @@ define (require) ->
 		token: ''
 		
 		defaults: ->
-			term: '*'
-			facetValues: []
+			Models.options.get 'defaultQuery'
+			# term: '*'
+			# facetValues: []
 			# sort: 'score'
 			# sortDir: 'asc'
 			# fuzzy: false
 			# caseSensitive: false
-			textLayers: ["Diplomatic"]
+			# textLayers: ["Diplomatic"]
 			# searchInAnnotations: false
 
 # {
@@ -42,7 +43,9 @@ define (require) ->
 # }
 
 		initialize: ->
-			super 
+			super
+
+
 
 			@on 'change:facetValues', @fetch, @
 			
@@ -54,7 +57,7 @@ define (require) ->
 				# @fetch()
 
 		getQueryData: ->
-			if @get('facetValues').length then JSON.stringify @attributes else '{}'
+			if @get('facetValues').length then JSON.stringify @attributes else @defaults()
 
 		fetch: ->
 			ajax = new Ajax
