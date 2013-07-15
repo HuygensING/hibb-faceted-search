@@ -7,7 +7,8 @@
     Ajax = require('managers/ajax');
     Fn = require('helpers/fns');
     Models = {
-      Base: require('models/base')
+      Base: require('models/base'),
+      options: require('models/options')
     };
     Query = (function(_super) {
       __extends(Query, _super);
@@ -26,11 +27,7 @@
       Query.prototype.facetValues = {};
 
       Query.prototype.defaults = function() {
-        return {
-          term: '*',
-          facetValues: [],
-          textLayers: ["Diplomatic"]
-        };
+        return Models.options.get('defaultQuery');
       };
 
       Query.prototype.initialize = function() {
@@ -48,11 +45,9 @@
       };
 
       Query.prototype.getQueryData = function() {
-        if (this.get('facetValues').length) {
-          return JSON.stringify(this.attributes);
-        } else {
-          return '{}';
-        }
+        var data;
+        data = this.get('facetValues').length ? this.attributes : this.defaults();
+        return JSON.stringify(data);
       };
 
       Query.prototype.fetch = function() {

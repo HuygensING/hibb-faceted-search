@@ -7,7 +7,7 @@ define (require) ->
 		List: require 'models/list'
 
 	Collections = 
-		Options: require 'collections/list.items'
+		Options: require 'collections/list.options'
 
 	Views = 
 		Facet: require 'views/facet'
@@ -15,7 +15,7 @@ define (require) ->
 
 	Templates =
 		List: require 'text!html/facet/list.html'
-		Items: require 'text!html/facet/list.items.html'
+		# Items: require 'text!html/facet/list.options.html'
 
 	class ListFacet extends Views.Facet
 
@@ -43,24 +43,6 @@ define (require) ->
 			checkboxes = @el.querySelectorAll('input[type="checkbox"]')
 			cb.checked = false for cb in checkboxes
 
-		# 	value = ev.currentTarget.value
-		# 	re = new RegExp value, 'i'
-		# 	@filtered_items = @model.get('options').filter (item) ->
-		# 		re.test item.get('name')
-		# 	@renderListItems()
-
-		# checkChanged: (ev) ->
-		# 	console.log @model.get 'options'
-		# 	@checked.length = 0
-		# 	@checked.push checkbox.getAttribute 'data-value' for checkbox in @el.querySelectorAll('input[type="checkbox"]:checked') # Is looping over all checked more efficient than toggling value in array?
-
-		# 	# Deepcopy data, otherwise values is passed by reference
-		# 	data = Fn.deepCopy
-		# 		name: @model.get 'name'
-		# 		values: @checked
-				
-		# 	@publish 'facet:list:changed', data
-
 		initialize: (options) ->
 			super
 
@@ -71,8 +53,9 @@ define (require) ->
 
 		render: ->
 			super
-
-			rtpl = _.template Templates.List, @model.attributes
+			data = @model.attributes
+			data = _.extend data, 'generateID': ->
+			rtpl = _.template Templates.List, data
 			@$('.placeholder').html rtpl
 
 			@optionsView = new Views.Options
@@ -101,28 +84,4 @@ define (require) ->
 
 			@
 
-		update: (attrs) -> @optionsView.collection.updateOptions(attrs.options)
-			# @model.updateOptions attrs
-			# console.log _.clone(@model.attributes)
-			# @renderListItems()
-
-		# renderListItems: ->
-		# 	items = if @filtered_items.length > 0 then @filtered_items else @model.get('options').models
-
-		# 	rtpl = _.template Templates.Items, 
-		# 		model: @model.attributes
-		# 		items: items
-		# 		generateID: Fn.generateID
-
-		# 	@$('.body .items ul').html rtpl
-
-		# 	@recheckCheckboxes()
-
-		# ###
-		# When the list is re-rendered, the checkboxes are unchecked
-		# ###
-		# recheckCheckboxes: ->
-		# 	checkedOptions = Models.query.facetValues[@model.id]
-		# 	if checkedOptions?
-		# 		_.each checkedOptions.values, (value) =>
-		# 			@$('input[data-value="'+value+'"]').prop 'checked', true
+		update: (newOptions) -> @optionsView.collection.updateOptions(newOptions)

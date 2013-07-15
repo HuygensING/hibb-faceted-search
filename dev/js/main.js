@@ -5,7 +5,8 @@
   define(function(require) {
     var FacetedSearch, Models, Templates, Views, _ref;
     Models = {
-      query: require('models/query')
+      query: require('models/query'),
+      options: require('models/options')
     };
     Views = {
       Base: require('views/base'),
@@ -27,16 +28,9 @@
 
       FacetedSearch.prototype.facetViews = {};
 
-      FacetedSearch.prototype.defaultOptions = function() {
-        return {
-          search: true
-        };
-      };
-
       FacetedSearch.prototype.initialize = function(options) {
         var _this = this;
         FacetedSearch.__super__.initialize.apply(this, arguments);
-        this.options = _.extend(this.defaultOptions(), options);
         Models.query.baseUrl = this.options.baseUrl;
         Models.query.searchUrl = this.options.searchUrl;
         Models.query.token = this.options.token;
@@ -80,7 +74,7 @@
           for (index in _ref2) {
             if (!__hasProp.call(_ref2, index)) continue;
             data = _ref2[index];
-            _results1.push(this.facetViews[data.name].update(data));
+            _results1.push(this.facetViews[data.name].update(data.options));
           }
           return _results1;
         }

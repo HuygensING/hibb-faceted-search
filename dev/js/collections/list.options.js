@@ -5,7 +5,7 @@
   define(function(require) {
     var Collections, ListItems, Models, _ref;
     Models = {
-      ListItem: require('models/list.item')
+      Option: require('models/list.option')
     };
     Collections = {
       Base: require('collections/base')
@@ -18,7 +18,7 @@
         return _ref;
       }
 
-      ListItems.prototype.model = Models.ListItem;
+      ListItems.prototype.model = Models.Option;
 
       ListItems.prototype.comparator = function(model) {
         return -1 * parseInt(model.get('count'), 10);

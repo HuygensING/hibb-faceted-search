@@ -1,0 +1,3 @@
+<ul><% _.each(options, function(option) { %>
+<% var someId = generateID(); %>
+<% var checked = (option.get('checked')) ? 'checked' : ''; %><li class="item"><div class="row span6"><div class="cell span5"><input id="<%= someId %>" name="<%= someId %>" type="checkbox" data-value="<%= option.id %>" <%= checked %>><label for="<%= someId %>"><%= option.id %></label></div><div class="cell span1 right"><div class="count"><%= option.get('count') %></div></div></div></li><% }); %></ul>

@@ -23,7 +23,8 @@ define (require) ->
 		checkChanged: (ev) ->
 			value = ev.currentTarget.getAttribute 'data-value'
 			model = @collection.get value
-			model.set 'checked', true
+			checked = $(ev.currentTarget).prop 'checked' # Is the target checked true/false?
+			model.set 'checked', checked
 
 		initialize: ->
 			super

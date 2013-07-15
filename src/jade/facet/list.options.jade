@@ -1,12 +1,11 @@
 ul
 	| <% _.each(options, function(option) { %>
 	| <% var someId = generateID(); %>
-	| <% console.log(option.get('checked')); %>
-	| <% var checked = (option.get('checked') === true) ? ', checked' : ''; %>
+	| <% var checked = (option.get('checked')) ? 'checked' : ''; %>
 	li.item
 		.row.span6
 			.cell.span5
-				input(id!="<%= someId %>", type="checkbox", name!="<%= someId %>", data-value!="<%= option.id %>"<%= checked %>)
+				| <input id="<%= someId %>" name="<%= someId %>" type="checkbox" data-value="<%= option.id %>" <%= checked %>>
 				label(for!="<%= someId %>") <%= option.id %>
 			.cell.span1.right
 				.count <%= option.get('count') %>

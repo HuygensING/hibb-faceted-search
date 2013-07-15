@@ -1,14 +1,14 @@
 define (require) ->
 
 	Models =
-		ListItem: require 'models/list.item'
+		Option: require 'models/list.option'
 
 	Collections =
 		Base: require 'collections/base'
 
 	class ListItems extends Collections.Base
 
-		model: Models.ListItem
+		model: Models.Option
 
 		comparator: (model) ->
 			-1 * parseInt model.get('count'), 10

@@ -33,10 +33,11 @@
       };
 
       ListOptions.prototype.checkChanged = function(ev) {
-        var model, value;
+        var checked, model, value;
         value = ev.currentTarget.getAttribute('data-value');
         model = this.collection.get(value);
-        return model.set('checked', true);
+        checked = $(ev.currentTarget).prop('checked');
+        return model.set('checked', checked);
       };
 
       ListOptions.prototype.initialize = function() {

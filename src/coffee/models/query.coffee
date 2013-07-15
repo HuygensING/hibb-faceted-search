@@ -65,7 +65,8 @@ define (require) ->
 				# @fetch()
 
 		getQueryData: ->
-			if @get('facetValues').length then JSON.stringify @attributes else @defaults()
+			data = if @get('facetValues').length then @attributes else @defaults()
+			JSON.stringify data
 
 		fetch: ->
 			ajax = new Ajax

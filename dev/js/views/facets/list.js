@@ -10,15 +10,14 @@
       List: require('models/list')
     };
     Collections = {
-      Options: require('collections/list.items')
+      Options: require('collections/list.options')
     };
     Views = {
       Facet: require('views/facet'),
       Options: require('views/facets/list.options')
     };
     Templates = {
-      List: require('text!html/facet/list.html'),
-      Items: require('text!html/facet/list.items.html')
+      List: require('text!html/facet/list.html')
     };
     return ListFacet = (function(_super) {
       __extends(ListFacet, _super);
@@ -81,9 +80,13 @@
       };
 
       ListFacet.prototype.render = function() {
-        var rtpl;
+        var data, rtpl;
         ListFacet.__super__.render.apply(this, arguments);
-        rtpl = _.template(Templates.List, this.model.attributes);
+        data = this.model.attributes;
+        data = _.extend(data, {
+          'generateID': function() {}
+        });
+        rtpl = _.template(Templates.List, data);
         this.$('.placeholder').html(rtpl);
         this.optionsView = new Views.Options({
           el: this.$('.items'),
@@ -119,8 +122,8 @@
         return this;
       };
 
-      ListFacet.prototype.update = function(attrs) {
-        return this.optionsView.collection.updateOptions(attrs.options);
+      ListFacet.prototype.update = function(newOptions) {
+        return this.optionsView.collection.updateOptions(newOptions);
       };
 
       return ListFacet;

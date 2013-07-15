@@ -11,9 +11,20 @@ module.exports = (grunt) ->
 				options:
 					stdout: true
 					stderr: true
-			emptydir:
+			emptystage:
 				command:
 					'rm -rf stage/*'
+
+			emptydev:
+				command:
+					'rm -rf dev/*'
+
+			bowerinstall:
+				command:
+					'bower install'
+				options:
+					stdout: true
+					stderr: true
 			# rsync:
 			# 	command:
 			# 		'rsync --copy-links --compress --archive --verbose --checksum --chmod=a+r elaborate4@hi14hingtest.huygens.knaw.nl:UNKNOWN'
@@ -32,7 +43,8 @@ module.exports = (grunt) ->
 					cwd: 'src/coffee'
 					src: '**/*.coffee'
 					dest: 'dev/js'
-					ext: '.js'
+					rename: (dest, src) -> 
+						dest + '/' + src.replace(/.coffee/, '.js') # Use rename to preserve multiple dots in filenames (nav.user.coffee => nav.user.js)
 				,
 					'.test/tests.js': ['.test/head.coffee', 'test/**/*.coffee']
 				]
@@ -53,7 +65,8 @@ module.exports = (grunt) ->
 					cwd: 'src/jade'
 					src: '**/*.jade'
 					dest: 'dev/html'
-					ext: '.html'			
+					rename: (dest, src) -> 
+						dest + '/' + src.replace(/.jade/, '.html') # Use rename to preserve multiple dots in filenames (nav.user.coffee => nav.user.js)
 				,
 				# 	expand: true
 				# 	cwd: 'src/coffee/modules'
@@ -65,7 +78,7 @@ module.exports = (grunt) ->
 				# 		a.splice(1, 1) # Remove jade folder
 				# 		dest + '/' + a.join('/') # Concat dest = 'dev/html/modules' with 'moduleName/tpl.jade'
 				# ,
-					# 'dev/index.html': 'src/index.jade'
+					'dev/index.html': 'src/index.jade'
 				]
 			compile:
 				options:
@@ -168,9 +181,10 @@ module.exports = (grunt) ->
 	grunt.registerTask('default', ['shell:mocha-phantomjs']);
 
 	grunt.registerTask('init', ['coffee:init', 'jade:init', 'stylus:compile']);
+	grunt.registerTask('compile-src', ['shell:emptydev', 'shell:bowerinstall', 'init']);
 
 	grunt.registerTask 'build', [
-		'shell:emptydir'
+		'shell:emptystage'
 		# 'replace:html' # Copy and replace index.html
 		'copy:css' # Copy main.css
 		# 'copy:module_images'

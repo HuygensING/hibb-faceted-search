@@ -6,5 +6,6 @@ define (require) ->
 			search: true
 			defaultQuery:
 				term: '*'
+				facetValues: []
 
 	new Options()
