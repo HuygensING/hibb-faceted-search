@@ -14,7 +14,7 @@ define (require) ->
 		token: ''
 		
 		defaults: ->
-			term: ''
+			term: '*'
 			facetValues: []
 			# sort: 'score'
 			# sortDir: 'asc'
@@ -41,12 +41,17 @@ define (require) ->
 #   "searchInAnnotations": false
 # }
 
-		addFacetValues: (data) ->
-			fv = _.reject @get('facetValues'), (val) -> val.name is data.name
-			fv.push data
-			@set 'facetValues', fv
+		initialize: ->
+			super 
 
-			@fetch()
+			@on 'change:facetValues', @fetch, @
+			
+			@subscribe 'facet:list:changed', (data) =>
+				fv = _.reject @get('facetValues'), (val) -> val.name is data.name
+				fv.push data
+				@set 'facetValues', fv
+
+				# @fetch()
 
 		getQueryData: ->
 			if @get('facetValues').length then JSON.stringify @attributes else '{}'
@@ -62,7 +67,7 @@ define (require) ->
 
 				jqXHR.done (data) =>
 					@publish 'faceted-search:results', data
-			console.log @getQueryData()
+
 			jqXHR = ajax.post
 				url: @searchUrl
 				contentType: 'application/json; charset=utf-8'

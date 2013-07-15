@@ -71,6 +71,9 @@ define (require) ->
 
 			@
 
+		update: ->
+			@renderListItems()
+
 		renderListItems: ->
 			items = if @filtered_items.length > 0 then @filtered_items else @model.get('options').models
 

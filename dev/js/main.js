@@ -23,6 +23,10 @@
         return _ref;
       }
 
+      FacetedSearch.prototype.facetData = [];
+
+      FacetedSearch.prototype.facetViews = {};
+
       FacetedSearch.prototype.className = 'faceted-search';
 
       FacetedSearch.prototype.defaultOptions = function() {
@@ -42,9 +46,6 @@
           _this.renderFacets(results);
           return _this.trigger('faceted-search:results', results);
         });
-        this.subscribe('facet:list:changed', function(data) {
-          return Models.query.addFacetValues(data);
-        });
         return this.render();
       };
 
@@ -61,19 +62,32 @@
       };
 
       FacetedSearch.prototype.renderFacets = function(data) {
-        var index, list, _ref1, _results;
+        var index, _ref1, _ref2, _results, _results1;
         this.$('.facets').html('');
-        _ref1 = data.facets;
-        _results = [];
-        for (index in _ref1) {
-          if (!__hasProp.call(_ref1, index)) continue;
-          data = _ref1[index];
-          list = new Views.List({
-            attrs: data
-          });
-          _results.push(this.$('.facets').append(list.$el));
+        console.log(data.facets);
+        if (!this.facetData.length) {
+          this.facetData = data.facets;
+          _ref1 = data.facets;
+          _results = [];
+          for (index in _ref1) {
+            if (!__hasProp.call(_ref1, index)) continue;
+            data = _ref1[index];
+            this.facetViews[data.name] = new Views.List({
+              attrs: data
+            });
+            _results.push(this.$('.facets').append(this.facetViews[data.name].$el));
+          }
+          return _results;
+        } else {
+          _ref2 = data.facets;
+          _results1 = [];
+          for (index in _ref2) {
+            if (!__hasProp.call(_ref2, index)) continue;
+            data = _ref2[index];
+            _results1.push(this.facetViews[data.name].update());
+          }
+          return _results1;
         }
-        return _results;
       };
 
       return FacetedSearch;

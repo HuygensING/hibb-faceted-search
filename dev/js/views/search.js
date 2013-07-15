@@ -31,12 +31,11 @@
         var _this = this;
         ev.preventDefault();
         this.$('#search').addClass('loading');
-        return Models.query.fetch({
-          term: this.$('input#search').val(),
-          textLayers: ['Diplomatic']
-        }, function(results) {
-          _this.$('#search').removeClass('loading');
-          return _this.publish('faceted-search:results', results);
+        Models.query.set('term', this.$('input#search').val());
+        Models.query.set('textLayers', ['Diplomatic']);
+        Models.query.fetch();
+        return this.subscribe('faceted-search:results', function(results) {
+          return _this.$('#search').removeClass('loading');
         });
       };
 

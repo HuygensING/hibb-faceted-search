@@ -20,14 +20,12 @@ define (require) ->
 
 			@$('#search').addClass 'loading'
 
-			Models.query.fetch
-				term: @$('input#search').val()
-				textLayers: ['Diplomatic']
-			,
-				(results) =>
-					# TODO: Update facets
-					@$('#search').removeClass 'loading'
-					@publish 'faceted-search:results', results
+			Models.query.set 'term', @$('input#search').val()
+			Models.query.set 'textLayers', ['Diplomatic']
+			Models.query.fetch()
+
+			@subscribe 'faceted-search:results', (results) =>
+				@$('#search').removeClass 'loading'
 
 
 		initialize: ->

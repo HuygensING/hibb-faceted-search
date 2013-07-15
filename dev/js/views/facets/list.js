@@ -105,6 +105,10 @@
         return this;
       };
 
+      ListFacet.prototype.update = function() {
+        return this.renderListItems();
+      };
+
       ListFacet.prototype.renderListItems = function() {
         var items, rtpl;
         items = this.filtered_items.length > 0 ? this.filtered_items : this.model.get('options').models;

@@ -25,20 +25,24 @@
 
       Query.prototype.defaults = function() {
         return {
-          term: '',
+          term: '*',
           facetValues: [],
           textLayers: ["Diplomatic"]
         };
       };
 
-      Query.prototype.addFacetValues = function(data) {
-        var fv;
-        fv = _.reject(this.get('facetValues'), function(val) {
-          return val.name === data.name;
+      Query.prototype.initialize = function() {
+        var _this = this;
+        Query.__super__.initialize.apply(this, arguments);
+        this.on('change:facetValues', this.fetch, this);
+        return this.subscribe('facet:list:changed', function(data) {
+          var fv;
+          fv = _.reject(_this.get('facetValues'), function(val) {
+            return val.name === data.name;
+          });
+          fv.push(data);
+          return _this.set('facetValues', fv);
         });
-        fv.push(data);
-        this.set('facetValues', fv);
-        return this.query();
       };
 
       Query.prototype.getQueryData = function() {
@@ -49,7 +53,7 @@
         }
       };
 
-      Query.prototype.query = function() {
+      Query.prototype.fetch = function() {
         var ajax, fetchResults, jqXHR,
           _this = this;
         ajax = new Ajax({
@@ -65,7 +69,6 @@
             return _this.publish('faceted-search:results', data);
           });
         };
-        console.log(this.getQueryData());
         jqXHR = ajax.post({
           url: this.searchUrl,
           contentType: 'application/json; charset=utf-8',

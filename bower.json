@@ -9,8 +9,8 @@
     "jquery": "*",
     "underscore-amd": "*",
     "backbone-amd": "*",
-    "helpers": "git@github.com:Gijsjan/helpers.git",
-    "managers": "git@github.com:Gijsjan/managers.git"
+    "helpers": "https://github.com/Gijsjan/helpers.git",
+    "managers": "https://github.com/Gijsjan/managers.git"
   },
   "devDependencies": {
     "mocha": "*",

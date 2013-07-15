@@ -13,13 +13,16 @@ define (require) ->
 
     class FacetedSearch extends Views.Base
 
+        facetData: []
+        facetViews: {}
+
         className: 'faceted-search'
 
         defaultOptions: ->
             search: true
 
         initialize: (options) ->
-            super
+            super # ANTIPATTERN
 
             @options = _.extend @defaultOptions(), options
 
@@ -35,11 +38,6 @@ define (require) ->
                 @renderFacets results
                 @trigger 'faceted-search:results', results 
 
-            @subscribe 'facet:list:changed', (data) =>
-                Models.query.addFacetValues data
-                # Models.query.get('data').facetValues.push data
-                # console.log Models.query.get('data').facetValues
-
 
             @render()
 
@@ -53,19 +51,24 @@ define (require) ->
 
             # TODO: Show message to user when render fails
             Models.query.fetch()
-                # @facets = data.facets
-                # @renderFacets()
 
             @
-
-        # fetchFacets: ->
 
         renderFacets: (data) ->
             # console.log data
             @$('.facets').html ''
 
+            console.log data.facets
             # TODO: Add Views.List to Collections.Facets
             # TODO: Add Views.Boolean
-            for own index, data of data.facets
-                list = new Views.List attrs: data
-                @$('.facets').append list.$el
+            if not @facetData.length
+                @facetData = data.facets
+
+                for own index, data of data.facets
+                    @facetViews[data.name] = new Views.List attrs: data
+                    @$('.facets').append @facetViews[data.name].$el
+            else
+                for own index, data of data.facets
+                    @facetViews[data.name].update()
+                    # view.update data.facets
+
