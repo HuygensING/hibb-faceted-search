@@ -80,7 +80,6 @@ define (require) ->
 				# @fetch()
 
 		fetch: ->
-			console.log @get 'queryOptions'
 			ajax = new Ajax
 				baseUrl: @get 'baseUrl'
 				token: @get 'token'
