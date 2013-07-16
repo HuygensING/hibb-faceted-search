@@ -31,13 +31,11 @@
       FacetedSearch.prototype.queryOptions = function() {
         return {
           term: '*',
-          facetValues: [],
           sort: 'score',
-          sortDir: 'asc',
           fuzzy: false,
+          facetValues: [],
           caseSensitive: false,
-          textLayers: ["Diplomatic"],
-          searchInAnnotations: false
+          sortDir: 'textLayers'
         };
       };
 

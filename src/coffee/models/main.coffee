@@ -19,13 +19,13 @@ define (require) ->
 
 		queryOptions: ->
 			term: '*'
-			facetValues: []
 			sort: 'score'
-			sortDir: 'asc'
 			fuzzy: false
+			facetValues: []
 			caseSensitive: false
-			textLayers: ["Diplomatic"]
-			searchInAnnotations: false
+			sortDir: 'textLayers'
+			# asc: ["Diplomatic"]
+			# searchInAnnotations: false
 
 		getQueryOption: (attr) ->
 			@get('queryOptions')[attr]
