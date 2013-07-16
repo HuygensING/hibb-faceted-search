@@ -23,7 +23,7 @@ define (require) ->
 			fuzzy: false
 			facetValues: []
 			caseSensitive: false
-			sortDir: 'textLayers'
+			# sortDir: 'textLayers'
 			# asc: ["Diplomatic"]
 			# searchInAnnotations: false
 
