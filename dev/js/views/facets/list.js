@@ -6,7 +6,6 @@
     var Collections, Fn, ListFacet, Models, Templates, Views, _ref;
     Fn = require('helpers/fns');
     Models = {
-      query: require('models/query'),
       List: require('models/list')
     };
     Collections = {

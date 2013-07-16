@@ -6,12 +6,12 @@ define (require) ->
 		Base: require 'views/base'
 
 	Models =
-		query: require 'models/query'
+		# query: require 'models/query'
 		List: require 'models/list'
 
 	Templates =
 		List: require 'text!html/facet/list.html'
-		Items: require 'text!html/facet/list.options.html'
+		Options: require 'text!html/facet/list.options.html'
 
 	class ListOptions extends Views.Base
 
@@ -36,7 +36,7 @@ define (require) ->
 		render: ->
 			options = if @filtered_items.length > 0 then @filtered_items else @collection.models
 
-			rtpl = _.template Templates.Items, 
+			rtpl = _.template Templates.Options, 
 				options: options
 				generateID: Fn.generateID
 

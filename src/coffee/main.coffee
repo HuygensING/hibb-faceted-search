@@ -1,8 +1,8 @@
 define (require) ->
 
 	Models = 
-			query: require 'models/query'
-			options: require 'models/options'
+			FacetedSearch: require 'models/main'
+			# options: require 'models/options'
 
 	Views =
 			Base: require 'views/base'
@@ -19,17 +19,18 @@ define (require) ->
 		initialize: (options) ->
 			super # ANTIPATTERN
 
-			# for k, v of options
-			# 	Models.options.set k, _.extend(Models.options.get(k), v)
-						
-			Models.query.baseUrl = @options.baseUrl
-			Models.query.searchUrl = @options.searchUrl
-			Models.query.token = @options.token
+			@model = new Models.FacetedSearch options
+
+
+			# Models.query.baseUrl = @options.baseUrl
+			# Models.query.searchUrl = @options.searchUrl
+			# Models.query.token = @options.token
 
 			# TMP: cuz of a bug in r.js Backbone must be build with the faceted-search
 			# But that means a project and the faceted-search are using two different instances of Backbone
 			# and thus publish/subscribe will not work
 			@subscribe 'faceted-search:results', (results) =>
+				console.log results
 				@renderFacets results
 				@trigger 'faceted-search:results', results 
 
@@ -39,12 +40,12 @@ define (require) ->
 			rtpl = _.template Templates.FacetedSearch
 			@$el.html rtpl
 
-			if @options.search
+			if @model.get 'search'
 				search = new Views.Search()
 				@$('.search-placeholder').html search.$el
 
 			# TODO: Show message to user when render fails
-			Models.query.fetch()
+			@model.fetch()
 
 			@
 
@@ -65,3 +66,18 @@ define (require) ->
 					@facetViews[data.name].update(data.options)
 				# view.update data.facets
 
+
+
+
+# define (require) ->
+
+# 	Models = 
+# 		options: require 'models/options'
+
+# 	Views =
+# 		FS: require 'views/main'
+
+# 	(options) ->
+# 		Models.options.extendDefaults options
+
+# 		new Views.FS options

@@ -1,53 +1,70 @@
 # define (require) ->
 
-#     Models = 
-#         Main: require 'models/main'
+# 	Models = 
+# 			query: require 'models/query'
+# 			options: require 'models/options'
 
-#     Views =
-#         Base: require 'views/base'
-#         List: require 'views/facets/list'
-#         Search: require 'views/search'
+# 	Views =
+# 			Base: require 'views/base'
+# 			List: require 'views/facets/list'
+# 			Search: require 'views/search'
 
-#     Templates =
-#         FacetedSearch: require 'text!html/faceted-search.html'
+# 	Templates =
+# 			FacetedSearch: require 'text!html/faceted-search.html'
 
-#     class FacetedSearch extends Views.Base
+# 	class FacetedSearch extends Views.Base
+# 		facetData: []
+# 		facetViews: {}
 
-#         className: 'faceted-search'
+# 		initialize: (options) ->
+# 			super # ANTIPATTERN
 
-#         defaultOptions: ->
-#             search: true
+# 			# Models.options.extendDefaults options
+# 			# for k, v of options
+# 			# 	Models.options.set k, _.extend(Models.options.get(k), v) 
+						
+# 			Models.query.baseUrl = @options.baseUrl
+# 			Models.query.searchUrl = @options.searchUrl
+# 			Models.query.token = @options.token
 
-#         initialize: (options) ->
-#             super
+# 			console.log Models.options.attributes
 
-#             @options = _.extend @defaultOptions(), options
+# 			# TMP: cuz of a bug in r.js Backbone must be build with the faceted-search
+# 			# But that means a project and the faceted-search are using two different instances of Backbone
+# 			# and thus publish/subscribe will not work
+# 			@subscribe 'faceted-search:results', (results) =>
+# 				@renderFacets results
+# 				@trigger 'faceted-search:results', results 
 
-#             @model = Models.Main
-#             @model.set 'url', @options.url
+# 			@render()
 
-#             @render()
+# 		render: ->
+# 			rtpl = _.template Templates.FacetedSearch
+# 			@$el.html rtpl
 
-#         render: ->
-#             rtpl = _.template Templates.FacetedSearch
-#             @$el.html rtpl
+# 			if Models.options.get 'search'
+# 				search = new Views.Search()
+# 				@$('.search-placeholder').html search.$el
 
-#             if @options.search
-#                 search = new Views.Search()
-#                 @$('form').html search.$el
+# 			# TODO: Show message to user when render fails
+# 			Models.query.fetch()
 
-#             # TODO: Show message to user when render fails
-#             @model.query {}, (data) =>
-#                 @facets = data.facets
-#                 @renderFacets()
+# 			@
 
-#             @
+# 		renderFacets: (data) ->
+# 			# console.log data
+# 			# @$('.facets').html ''
 
-#         # fetchFacets: ->
+# 			# TODO: Add Views.List to Collections.Facets
+# 			# TODO: Add Views.Boolean
+# 			if not @facetData.length
+# 				@facetData = data.facets
 
-#         renderFacets: ->
-#             # TODO: Add Views.List to Collections.Facets
-#             # TODO: Add Views.Boolean
-#             for own index, data of @facets
-#                 list = new Views.List attrs: data
-#                 @$('form').append list.$el
+# 				for own index, data of data.facets
+# 					@facetViews[data.name] = new Views.List attrs: data
+# 					@$('.facets').append @facetViews[data.name].$el
+# 			else
+# 				for own index, data of data.facets
+# 					@facetViews[data.name].update(data.options)
+# 				# view.update data.facets
+

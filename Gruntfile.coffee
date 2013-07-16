@@ -126,12 +126,12 @@ module.exports = (grunt) ->
 					# exclude: ['backbone'] # Managers and helpers should be excluded, but how?
 					preserveLicenseComments: false
 					out: "stage/js/main.js"
-					optimize: 'none'
+					# optimize: 'none'
 					paths:
 						# 'domready': '../lib/requirejs-domready/domReady'
 						'jquery': '../lib/jquery/jquery.min'
-						'underscore': '../lib/underscore-amd/underscore-min'
-						'backbone': '../lib/backbone-amd/backbone-min'
+						'underscore': '../lib/underscore-amd/underscore'
+						'backbone': '../lib/backbone-amd/backbone'
 						'text': '../lib/requirejs-text/text'
 						# 'ajax': '../lib/managers/dev/ajax'
 						'managers': '../lib/managers/dev'

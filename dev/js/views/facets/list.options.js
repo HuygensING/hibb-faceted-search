@@ -9,12 +9,11 @@
       Base: require('views/base')
     };
     Models = {
-      query: require('models/query'),
       List: require('models/list')
     };
     Templates = {
       List: require('text!html/facet/list.html'),
-      Items: require('text!html/facet/list.options.html')
+      Options: require('text!html/facet/list.options.html')
     };
     return ListOptions = (function(_super) {
       __extends(ListOptions, _super);
@@ -49,7 +48,7 @@
       ListOptions.prototype.render = function() {
         var options, rtpl;
         options = this.filtered_items.length > 0 ? this.filtered_items : this.collection.models;
-        rtpl = _.template(Templates.Items, {
+        rtpl = _.template(Templates.Options, {
           options: options,
           generateID: Fn.generateID
         });

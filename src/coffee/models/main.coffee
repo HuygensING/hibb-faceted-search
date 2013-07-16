@@ -5,25 +5,38 @@ define (require) ->
 
 	Models =
 		Base: require 'models/base'
-		options: require 'models/options'
+		# options: require 'models/options'
 
-	class Query extends Models.Base
-
-		baseUrl: ''
-		searchUrl: ''
-		token: ''
+	class FacetedSearch extends Models.Base
 		facetValues: {}
+
 		
 		defaults: ->
-			Models.options.get 'defaultQuery'
-			# term: '*'
-			# facetValues: []
-			# sort: 'score'
-			# sortDir: 'asc'
-			# fuzzy: false
-			# caseSensitive: false
-			# textLayers: ["Diplomatic"]
-			# searchInAnnotations: false
+			search: true
+			baseUrl: ''
+			searchUrl: ''
+			token: ''
+
+		queryOptions: ->
+			term: '*'
+			facetValues: []
+			sort: 'score'
+			sortDir: 'asc'
+			fuzzy: false
+			caseSensitive: false
+			textLayers: ["Diplomatic"]
+			searchInAnnotations: false
+
+		getQueryOption: (attr) ->
+			@get('queryOptions')[attr]
+
+		setQueryOption: (attr, value) ->
+			qo = @get 'queryOptions'
+			qo[attr] = value
+			@set 'queryOptions', qo
+			@trigger 'change:queryOptions'
+		
+		# defaults: -> Models.options.get 'defaultQuery'
 
 # {
 #   "term": "bla bloe z*",
@@ -50,9 +63,9 @@ define (require) ->
 		initialize: ->
 			super
 
+			@set 'queryOptions', _.extend @queryOptions(), @get('queryOptions')
 
-
-			@on 'change:facetValues', @fetch, @
+			@on 'change:queryOptions', @fetch, @
 
 			@subscribe 'facet:list:changed', (data) =>
 				if data.values.length
@@ -60,31 +73,30 @@ define (require) ->
 				else
 					delete @facetValues[data.name]
 
-				@set 'facetValues', _.values @facetValues
+				# fv = @get('defaultQuery').facetValues
+
+				@setQueryOption 'facetValues', _.values @facetValues
 
 				# @fetch()
 
-		getQueryData: ->
-			data = if @get('facetValues').length then @attributes else @defaults()
-			JSON.stringify data
-
 		fetch: ->
+			console.log @get 'queryOptions'
 			ajax = new Ajax
-				baseUrl: @baseUrl
-				token: @token
+				baseUrl: @get 'baseUrl'
+				token: @get 'token'
 
 			fetchResults = (key) => # GET results from the server
 				jqXHR = ajax.get
-					url: @searchUrl + '/' + key
+					url: @get('searchUrl') + '/' + key
 
 				jqXHR.done (data) =>
 					@publish 'faceted-search:results', data
 
 			jqXHR = ajax.post
-				url: @searchUrl
+				url: @get 'searchUrl'
 				contentType: 'application/json; charset=utf-8'
 				processData: false
-				data: @getQueryData()
+				data: JSON.stringify @get 'queryOptions'
 
 			jqXHR.done (data) ->
 				fetchResults data.key
@@ -110,5 +122,3 @@ define (require) ->
 		# 	ajaxArgs = $.extend ajaxArgs, args
 
 		# 	$.ajax ajaxArgs
-
-	new Query()

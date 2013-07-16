@@ -5,8 +5,7 @@
   define(function(require) {
     var FacetedSearch, Models, Templates, Views, _ref;
     Models = {
-      query: require('models/query'),
-      options: require('models/options')
+      FacetedSearch: require('models/main')
     };
     Views = {
       Base: require('views/base'),
@@ -31,10 +30,9 @@
       FacetedSearch.prototype.initialize = function(options) {
         var _this = this;
         FacetedSearch.__super__.initialize.apply(this, arguments);
-        Models.query.baseUrl = this.options.baseUrl;
-        Models.query.searchUrl = this.options.searchUrl;
-        Models.query.token = this.options.token;
+        this.model = new Models.FacetedSearch(options);
         this.subscribe('faceted-search:results', function(results) {
+          console.log(results);
           _this.renderFacets(results);
           return _this.trigger('faceted-search:results', results);
         });
@@ -45,11 +43,11 @@
         var rtpl, search;
         rtpl = _.template(Templates.FacetedSearch);
         this.$el.html(rtpl);
-        if (this.options.search) {
+        if (this.model.get('search')) {
           search = new Views.Search();
           this.$('.search-placeholder').html(search.$el);
         }
-        Models.query.fetch();
+        this.model.fetch();
         return this;
       };
 

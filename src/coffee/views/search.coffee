@@ -1,6 +1,6 @@
 define (require) ->
-	Models = 
-    	query: require 'models/query'
+	# Models = 
+ #    	query: require 'models/query'
 
 	Views = 
 		Facet: require 'views/facet'

@@ -3,7 +3,7 @@ define (require) ->
 	Fn = require 'helpers/fns'
 
 	Models =
-		query: require 'models/query'
+		# query: require 'models/query'
 		List: require 'models/list'
 
 	Collections = 
