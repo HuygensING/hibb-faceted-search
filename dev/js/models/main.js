@@ -55,9 +55,8 @@
           if (options.facetValue.values.length) {
             facetValues.push(options.facetValue);
           }
-          options = {
-            facetValues: facetValues
-          };
+          options.facetValues = facetValues;
+          delete options.facetValue;
         }
         _results = [];
         for (attr in options) {
@@ -74,25 +73,22 @@
       };
 
       FacetedSearch.prototype.sync = function(method, model, options) {
-        var fetchResults, jqXHR,
+        var jqXHR,
           _this = this;
         if (method === 'read') {
           ajax.token = this.get('token');
-          fetchResults = function(url) {
-            var jqXHR;
-            jqXHR = ajax.get({
-              url: url
-            });
-            return jqXHR.done(options.success);
-          };
           jqXHR = ajax.post({
             url: this.get('baseUrl') + this.get('searchUrl'),
             data: JSON.stringify(this.get('queryOptions')),
             dataType: 'text'
           });
           jqXHR.done(function(data, textStatus, jqXHR) {
+            var xhr;
             if (jqXHR.status === 201) {
-              return fetchResults(jqXHR.getResponseHeader('Location'));
+              xhr = ajax.get({
+                url: jqXHR.getResponseHeader('Location')
+              });
+              return xhr.done(options.success);
             }
           });
           return jqXHR.fail(function(jqXHR, textStatus, errorThrown) {

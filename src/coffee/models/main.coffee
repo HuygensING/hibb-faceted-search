@@ -40,7 +40,7 @@ define (require) ->
 			if options.facetValue?
 				facetValues = _.reject @getQueryOption('facetValues'), (data) -> data.name is options.facetValue.name
 				facetValues.push options.facetValue if options.facetValue.values.length # Only push if there are values (values is empty when last checkbox is unchecked)
-				options.facetValues: facetValues # Add facetValues to options
+				options.facetValues = facetValues # Add facetValues to options
 				delete options.facetValue # The single facetValue is not send to the server
 
 			@setQueryOption attr, value for own attr, value of options
@@ -50,24 +50,9 @@ define (require) ->
 
 			@set 'queryOptions', _.extend @queryOptions(), @get('queryOptions')
 
-			# @subscribe 'facet:list:changed', (data) =>
-			# 	console.log data
-			# 	if data.values.length
-			# 		@facetValues[data.name] = data
-			# 	else
-			# 		delete @facetValues[data.name]
-
-			# 	@setQueryOption 'facetValues', _.values @facetValues
-
 		sync: (method, model, options) ->
 			if method is 'read'
 				ajax.token = @get 'token'
-
-				fetchResults = (url) => # GET results from the server
-					jqXHR = ajax.get url: url
-					jqXHR.done options.success
-					# jqXHR.done (data) =>
-					# 	@publish 'faceted-search:results', data
 
 				jqXHR = ajax.post
 					url: @get('baseUrl') + @get('searchUrl')
@@ -76,7 +61,8 @@ define (require) ->
 
 				jqXHR.done (data, textStatus, jqXHR) =>
 					if jqXHR.status is 201
-						fetchResults jqXHR.getResponseHeader('Location')
+						xhr = ajax.get url: jqXHR.getResponseHeader('Location')
+						xhr.done options.success
 
 				jqXHR.fail (jqXHR, textStatus, errorThrown) =>
 					console.log jqXHR
