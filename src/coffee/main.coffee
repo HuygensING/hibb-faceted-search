@@ -32,7 +32,9 @@ define (require) ->
 			@subscribe 'faceted-search:results', (results) =>
 				console.log results
 				@renderFacets results
-				@trigger 'faceted-search:results', results 
+				@trigger 'faceted-search:results', results
+
+			@subscribe 'unauthorized', => @trigger 'unauthorized'
 
 			@render()
 

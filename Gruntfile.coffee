@@ -11,6 +11,7 @@ module.exports = (grunt) ->
 				options:
 					stdout: true
 					stderr: true
+
 			emptystage:
 				command:
 					'rm -rf stage/*'
@@ -19,22 +20,28 @@ module.exports = (grunt) ->
 				command:
 					'rm -rf dev/*'
 
+			# rsync:
+			# 	command:
+			# 		'rsync --copy-links --compress --archive --verbose --checksum --exclude=.svn --chmod=a+r stage/ elaborate4@hi14hingtest.huygens.knaw.nl:elab4testFE/'
+			# 	options:
+			# 		stdout: true
+
+			symlink_dev_images:
+				command: [
+					'cd dev'
+					'ln -s ../images images'
+				].join '&&'
+			symlink_stage_images:
+				command: [
+					'cd stage'
+					'ln -s ../images images'
+				].join '&&'
+
 			bowerinstall:
-				command:
-					'bower install'
+				command: 'bower install'
 				options:
 					stdout: true
 					stderr: true
-			# rsync:
-			# 	command:
-			# 		'rsync --copy-links --compress --archive --verbose --checksum --chmod=a+r elaborate4@hi14hingtest.huygens.knaw.nl:UNKNOWN'
-			# 	options:
-			# 		stdout: true
-			symlink_images:
-				command: [
-					'cd stage'
-					'ln -s ../dev/images images'
-				].join '&&'
 
 		coffee:
 			init:
@@ -68,16 +75,6 @@ module.exports = (grunt) ->
 					rename: (dest, src) -> 
 						dest + '/' + src.replace(/.jade/, '.html') # Use rename to preserve multiple dots in filenames (nav.user.coffee => nav.user.js)
 				,
-				# 	expand: true
-				# 	cwd: 'src/coffee/modules'
-				# 	src: '**/*.jade'
-				# 	dest: 'dev/html/modules'
-				# 	ext: '.html'
-				# 	rename: (dest, src) ->
-				# 		a = src.split('/') # src = moduleName/jade/tpl.jade
-				# 		a.splice(1, 1) # Remove jade folder
-				# 		dest + '/' + a.join('/') # Concat dest = 'dev/html/modules' with 'moduleName/tpl.jade'
-				# ,
 					'dev/index.html': 'src/index.jade'
 				]
 			compile:
@@ -90,20 +87,27 @@ module.exports = (grunt) ->
 					paths: ['src/stylus/import']
 					import: ['variables', 'functions']
 				files:
-					'dev/css/main.css': ['src/stylus/**/*.styl', '!src/stylus/import/*.styl']
+					'dev/css/main.css': [
+						'src/stylus/**/*.styl'
+						'!src/stylus/import/*.styl'
+					]
+		
+		# concat:
+		# 	css:
+		# 		src: [
+		# 			'dev/lib/normalize-css/normalize.css'
+		# 			'dev/css/project.css'
+		# 			'dev/lib/faceted-search/dev/css/main.css'
+		# 		]
+		# 		dest:
+		# 			'dev/css/main.css'
 
-		copy:
-			css:
-				files: [
-					'stage/css/main.css': 'dev/css/main.css'
-				]
-			# module_images:
-			# 	files: [
-			# 		expand: true
-			# 		cwd: 'src/coffee/modules/'
-			# 		src: ['**/*.gif', '**/*.png', '**/*.jpg']
-			# 		dest: 'dev/images/'
-			# 	]
+		cssmin:
+			stage:
+				files:
+					'stage/css/main.css': [
+						'dev/css/main.css'
+					]
 
 		# replace:
 		# 	html:
@@ -111,9 +115,8 @@ module.exports = (grunt) ->
 		# 		dest: 'stage/index.html'
 		# 		replacements: [
 		# 			from: '<script data-main="/js/main" src="/lib/requirejs/require.js"></script>'
-		# 			to: '<script src="/js/require.js"></script><script src="/js/main.js"></script>'
+		# 			to: '<script src="/js/main.js"></script>'
 		# 		]
-
 
 		requirejs:
 			compile:
@@ -122,18 +125,15 @@ module.exports = (grunt) ->
 					name: '../lib/almond/almond'
 					include: 'main'
 					# insertRequire: ['main']
-					# exclude: ['backbone', 'jquery', 'text', 'underscore', 'helpers/fns', 'managers/ajax'] # Managers and helpers should be excluded, but how?
-					# exclude: ['backbone'] # Managers and helpers should be excluded, but how?
+					# exclude: ['backbone', 'jquery', 'underscore', 'helpers/fns'] # Managers and helpers should be excluded, but how?
 					preserveLicenseComments: false
 					out: "stage/js/main.js"
-					# optimize: 'none'
+					optimize: 'none'
 					paths:
-						# 'domready': '../lib/requirejs-domready/domReady'
 						'jquery': '../lib/jquery/jquery.min'
 						'underscore': '../lib/underscore-amd/underscore'
 						'backbone': '../lib/backbone-amd/backbone'
 						'text': '../lib/requirejs-text/text'
-						# 'ajax': '../lib/managers/dev/ajax'
 						'managers': '../lib/managers/dev'
 						'helpers': '../lib/helpers/dev'
 						'html': '../html'
@@ -141,11 +141,6 @@ module.exports = (grunt) ->
 					wrap:
 						startFile: 'wrap.start.js'
 						endFile: 'wrap.end.js'
-
-		uglify:
-			requirejs:
-				files:
-					'stage/js/require.js': 'dev/lib/requirejs/require.js'
 
 		watch:
 			options:
@@ -164,6 +159,8 @@ module.exports = (grunt) ->
 				files: ['src/stylus/**/*.styl']
 				tasks: ['stylus:compile', 'build']
 
+
+
 	#############
 	### TASKS ###
 	#############
@@ -175,25 +172,30 @@ module.exports = (grunt) ->
 	grunt.loadNpmTasks 'grunt-contrib-requirejs'
 	grunt.loadNpmTasks 'grunt-contrib-copy'
 	grunt.loadNpmTasks 'grunt-contrib-uglify'
+	grunt.loadNpmTasks 'grunt-contrib-cssmin'
+	grunt.loadNpmTasks 'grunt-contrib-concat'
 	grunt.loadNpmTasks 'grunt-shell'
 	grunt.loadNpmTasks 'grunt-text-replace'
 
 	grunt.registerTask('default', ['shell:mocha-phantomjs']);
 
-	grunt.registerTask('init', ['coffee:init', 'jade:init', 'stylus:compile']);
-	grunt.registerTask('compile-src', ['shell:emptydev', 'shell:bowerinstall', 'init']);
-
-	grunt.registerTask 'build', [
-		'shell:emptystage'
-		# 'replace:html' # Copy and replace index.html
-		'copy:css' # Copy main.css
-		# 'copy:module_images'
-		# 'uglify:requirejs' # Minify and copy require.js
-		'shell:symlink_images'
-		'requirejs:compile' # Run r.js
-		# 'shell:rsync' # Rsync to test server (without json/)
+	# Compile src/ to dev/ (empty dir, install deps, compile coffee, jade, stylus)
+	grunt.registerTask 'compile', [
+		'shell:emptydev' # rm -rf dev/
+		'shell:bowerinstall' # Get dependencies first, cuz css needs to be included (and maybe images?)
+		'coffee:init'
+		'jade:init'
+		'stylus:compile'
+		'shell:symlink_dev_images' # Symlink from images/ to dev/images
 	]
 
+	# Build dev/ to stage/ (empty dir, run r.js)
+	grunt.registerTask 'build', [
+		'shell:emptystage'
+		'cssmin:stage'
+		'shell:symlink_stage_images'
+		'requirejs:compile' # Run r.js
+	]
 
 
 
@@ -211,15 +213,15 @@ module.exports = (grunt) ->
 				destPath = 'dev'+srcPath.replace(new RegExp(type, 'g'), 'js').substr(3);
 
 			if type is 'jade'
-				if srcPath.substr(0, 18) is 'src/coffee/modules' # If the .jade comes from a module
-					a = srcPath.split('/')
-					a[0] = 'dev'
-					a[1] = 'html'
-					a.splice(4, 1)
-					destPath = a.join('/')
-					destPath = destPath.slice(0, -4) + 'html'
-				else # If the .jade comes from the main app
-					destPath = 'dev'+srcPath.replace(new RegExp(type, 'g'), 'html').substr(3);
+				# if srcPath.substr(0, 18) is 'src/coffee/modules' # If the .jade comes from a module
+				# 	a = srcPath.split('/')
+				# 	a[0] = 'dev'
+				# 	a[1] = 'html'
+				# 	a.splice(4, 1)
+				# 	destPath = a.join('/')
+				# 	destPath = destPath.slice(0, -4) + 'html'
+				# else # If the .jade comes from the main app
+				destPath = 'dev'+srcPath.replace(new RegExp(type, 'g'), 'html').substr(3);
 
 			if type? and action is 'changed' or action is 'added'
 				data = {}

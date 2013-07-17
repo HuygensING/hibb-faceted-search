@@ -1,11 +1,8 @@
 define (require) ->
-
-	Ajax = require 'managers/ajax'
-	Fn = require 'helpers/fns'
+	ajax = require 'managers/ajax'
 
 	Models =
 		Base: require 'models/base'
-		# options: require 'models/options'
 
 	class FacetedSearch extends Models.Base
 		facetValues: {}
@@ -35,9 +32,45 @@ define (require) ->
 			qo[attr] = value
 			@set 'queryOptions', qo
 			@trigger 'change:queryOptions'
-		
-		# defaults: -> Models.options.get 'defaultQuery'
 
+		initialize: ->
+			super
+
+			@set 'queryOptions', _.extend @queryOptions(), @get('queryOptions')
+
+			@on 'change:queryOptions', @fetch, @
+
+			@subscribe 'facet:list:changed', (data) =>
+				if data.values.length
+					@facetValues[data.name] = data
+				else
+					delete @facetValues[data.name]
+
+				@setQueryOption 'facetValues', _.values @facetValues
+
+		fetch: ->
+			ajax.token = @get 'token'
+
+			fetchResults = (url) => # GET results from the server
+				jqXHR = ajax.get url: url
+				jqXHR.done (data) =>
+					@publish 'faceted-search:results', data
+
+			jqXHR = ajax.post
+				url: @get('baseUrl') + @get('searchUrl')
+				data: JSON.stringify @get 'queryOptions'
+				dataType: 'text'
+
+			jqXHR.done (data, textStatus, jqXHR) =>
+				if jqXHR.status is 201
+					fetchResults jqXHR.getResponseHeader('Location')
+
+			jqXHR.fail (jqXHR, textStatus, errorThrown) =>
+				console.log jqXHR
+				if jqXHR.status is 401
+					@publish 'unauthorized'
+
+# EXAMPLE QUERY:
 # {
 #   "term": "bla bloe z*",
 #   "facetValues": [
@@ -55,69 +88,3 @@ define (require) ->
 #   ],
 #   "searchInAnnotations": false
 # }
-		# set: (attrs, options) ->
-		# 	options = _.values options if attrs is 'facetValues'
-
-		# 	super attrs, options
-
-		initialize: ->
-			super
-
-			@set 'queryOptions', _.extend @queryOptions(), @get('queryOptions')
-
-			@on 'change:queryOptions', @fetch, @
-
-			@subscribe 'facet:list:changed', (data) =>
-				if data.values.length
-					@facetValues[data.name] = data
-				else
-					delete @facetValues[data.name]
-
-				# fv = @get('defaultQuery').facetValues
-
-				@setQueryOption 'facetValues', _.values @facetValues
-
-				# @fetch()
-
-		fetch: ->
-			ajax = new Ajax
-				baseUrl: @get 'baseUrl'
-				token: @get 'token'
-
-			fetchResults = (key) => # GET results from the server
-				jqXHR = ajax.get
-					url: @get('searchUrl') + '/' + key
-
-				jqXHR.done (data) =>
-					@publish 'faceted-search:results', data
-
-			jqXHR = ajax.post
-				url: @get 'searchUrl'
-				contentType: 'application/json; charset=utf-8'
-				processData: false
-				data: JSON.stringify @get 'queryOptions'
-
-			jqXHR.done (data) ->
-				fetchResults data.key
-
-			jqXHR.fail (jqXHR, textStatus, errorThrown) =>
-				if jqXHR.status is 401
-					@publish 'unauthorized'
-
-		# ajaxget: (args) ->
-		# 	@fire 'get', args
-
-		# ajaxpost: (args) ->
-		# 	@fire 'post', args
-
-		# fire: (type, args) ->
-		# 	ajaxArgs =
-		# 		type: type
-		# 		dataType: 'json'
-		# 		beforeSend: (xhr) =>
-		# 			token = @get 'token'
-		# 			xhr.setRequestHeader 'Authorization', "SimpleAuth #{token}"
-
-		# 	ajaxArgs = $.extend ajaxArgs, args
-
-		# 	$.ajax ajaxArgs

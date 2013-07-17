@@ -3,9 +3,8 @@
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
   define(function(require) {
-    var Ajax, FacetedSearch, Fn, Models, _ref;
-    Ajax = require('managers/ajax');
-    Fn = require('helpers/fns');
+    var FacetedSearch, Models, ajax, _ref;
+    ajax = require('managers/ajax');
     Models = {
       Base: require('models/base')
     };
@@ -34,8 +33,7 @@
           sort: 'score',
           fuzzy: false,
           facetValues: [],
-          caseSensitive: false,
-          sortDir: 'textLayers'
+          caseSensitive: false
         };
       };
 
@@ -67,32 +65,30 @@
       };
 
       FacetedSearch.prototype.fetch = function() {
-        var ajax, fetchResults, jqXHR,
+        var fetchResults, jqXHR,
           _this = this;
-        console.log(this.get('queryOptions'));
-        ajax = new Ajax({
-          baseUrl: this.get('baseUrl'),
-          token: this.get('token')
-        });
-        fetchResults = function(key) {
+        ajax.token = this.get('token');
+        fetchResults = function(url) {
           var jqXHR;
           jqXHR = ajax.get({
-            url: _this.get('searchUrl') + '/' + key
+            url: url
           });
           return jqXHR.done(function(data) {
             return _this.publish('faceted-search:results', data);
           });
         };
         jqXHR = ajax.post({
-          url: this.get('searchUrl'),
-          contentType: 'application/json; charset=utf-8',
-          processData: false,
-          data: JSON.stringify(this.get('queryOptions'))
+          url: this.get('baseUrl') + this.get('searchUrl'),
+          data: JSON.stringify(this.get('queryOptions')),
+          dataType: 'text'
         });
-        jqXHR.done(function(data) {
-          return fetchResults(data.key);
+        jqXHR.done(function(data, textStatus, jqXHR) {
+          if (jqXHR.status === 201) {
+            return fetchResults(jqXHR.getResponseHeader('Location'));
+          }
         });
         return jqXHR.fail(function(jqXHR, textStatus, errorThrown) {
+          console.log(jqXHR);
           if (jqXHR.status === 401) {
             return _this.publish('unauthorized');
           }

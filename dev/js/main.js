@@ -36,6 +36,9 @@
           _this.renderFacets(results);
           return _this.trigger('faceted-search:results', results);
         });
+        this.subscribe('unauthorized', function() {
+          return _this.trigger('unauthorized');
+        });
         return this.render();
       };
 

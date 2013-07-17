@@ -12,9 +12,7 @@
     "url": "git://github.com/Gijsjan/generator-backbone-amd.git"
   },
   "scripts": {
-    "test": "node ./.test/bin/server.js",
-    "start": "coffee ./server.coffee",
-    "start-stage": "coffee ./server.coffee stage"
+    "test": "node ./.test/bin/server.js"
   },
   "devDependencies": {
     "coffee-script": "*",
@@ -31,6 +29,8 @@
     "grunt-contrib-requirejs": "~0.4.1",
     "grunt-contrib-copy": "~0.4.1",
     "grunt-text-replace": "~0.3.6",
-    "grunt-contrib-uglify": "~0.2.2"
+    "grunt-contrib-uglify": "~0.2.2",
+    "grunt-contrib-cssmin": "~0.6.1",
+    "grunt-contrib-concat": "~0.3.0"
   }
 }
