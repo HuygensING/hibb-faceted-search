@@ -31,11 +31,6 @@
         var _this = this;
         FacetedSearch.__super__.initialize.apply(this, arguments);
         this.model = new Models.FacetedSearch(options);
-        this.subscribe('faceted-search:results', function(results) {
-          console.log(results);
-          _this.renderFacets(results);
-          return _this.trigger('faceted-search:results', results);
-        });
         this.subscribe('unauthorized', function() {
           return _this.trigger('unauthorized');
         });
@@ -49,36 +44,49 @@
         if (this.model.get('search')) {
           search = new Views.Search();
           this.$('.search-placeholder').html(search.$el);
+          this.listenTo(search, 'change', this.fetchResults);
         }
-        this.model.fetch();
+        this.fetchResults();
         return this;
       };
 
+      FacetedSearch.prototype.fetchResults = function(queryOptions) {
+        var _this = this;
+        if (queryOptions == null) {
+          queryOptions = {};
+        }
+        this.model.setQueryOptions(queryOptions);
+        return this.model.fetch({
+          success: function(model, response, options) {
+            _this.renderFacets(response);
+            return _this.trigger('faceted-search:results', response);
+          }
+        });
+      };
+
       FacetedSearch.prototype.renderFacets = function(data) {
-        var index, _ref1, _ref2, _results, _results1;
+        var index, _ref1, _ref2;
         if (!this.facetData.length) {
           this.facetData = data.facets;
           _ref1 = data.facets;
-          _results = [];
           for (index in _ref1) {
             if (!__hasProp.call(_ref1, index)) continue;
             data = _ref1[index];
             this.facetViews[data.name] = new Views.List({
               attrs: data
             });
-            _results.push(this.$('.facets').append(this.facetViews[data.name].$el));
+            this.listenTo(this.facetViews[data.name], 'change', this.fetchResults);
+            this.$('.facets').append(this.facetViews[data.name].$el);
           }
-          return _results;
         } else {
           _ref2 = data.facets;
-          _results1 = [];
           for (index in _ref2) {
             if (!__hasProp.call(_ref2, index)) continue;
             data = _ref2[index];
-            _results1.push(this.facetViews[data.name].update(data.options));
+            this.facetViews[data.name].update(data.options);
           }
-          return _results1;
         }
+        return this.publish('faceted-search:facets-rendered');
       };
 
       return FacetedSearch;

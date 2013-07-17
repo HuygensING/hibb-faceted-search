@@ -1,7 +1,4 @@
 define (require) ->
-	# Models = 
- #    	query: require 'models/query'
-
 	Views = 
 		Facet: require 'views/facet'
 
@@ -20,11 +17,11 @@ define (require) ->
 
 			@$('#search').addClass 'loading'
 
-			Models.query.set 'term', @$('input#search').val()
-			Models.query.set 'textLayers', ['Diplomatic']
-			Models.query.fetch()
+			@trigger 'change', 
+				term: @$('#search').val()
+				textLayers: ['Diplomatic']
 
-			@subscribe 'faceted-search:results', (results) =>
+			@subscribe 'faceted-search:facets-rendered', => 
 				@$('#search').removeClass 'loading'
 
 

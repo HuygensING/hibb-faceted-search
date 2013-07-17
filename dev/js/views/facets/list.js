@@ -98,14 +98,16 @@
       ListFacet.prototype.optionChecked = function() {
         var checked;
         checked = [];
-        this.optionsView.collection.each(function(model) {
+        this.collection.each(function(model) {
           if (model.get('checked')) {
             return checked.push(model.id);
           }
         });
-        return this.publish('facet:list:changed', {
-          name: this.model.get('name'),
-          values: checked
+        return this.trigger('change', {
+          facetValue: {
+            name: this.model.get('name'),
+            values: checked
+          }
         });
       };
 

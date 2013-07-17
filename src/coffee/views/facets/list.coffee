@@ -67,11 +67,12 @@ define (require) ->
 
 		optionChecked: ->
 			checked = []
-			@optionsView.collection.each (model) -> checked.push model.id if model.get 'checked'
+			@collection.each (model) -> checked.push model.id if model.get 'checked'
 
-			@publish 'facet:list:changed',
-				name: @model.get 'name'
-				values: checked
+			@trigger 'change',
+				facetValue:
+					name: @model.get 'name'
+					values: checked
 
 		renderFilteredOptionCount: ->
 			filteredLength = @optionsView.filtered_items.length

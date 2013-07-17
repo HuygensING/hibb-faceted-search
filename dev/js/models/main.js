@@ -23,17 +23,14 @@
           search: true,
           baseUrl: '',
           searchUrl: '',
-          token: ''
+          token: null
         };
       };
 
       FacetedSearch.prototype.queryOptions = function() {
         return {
           term: '*',
-          sort: 'score',
-          fuzzy: false,
-          facetValues: [],
-          caseSensitive: false
+          facetValues: []
         };
       };
 
@@ -49,50 +46,62 @@
         return this.trigger('change:queryOptions');
       };
 
-      FacetedSearch.prototype.initialize = function() {
-        var _this = this;
-        FacetedSearch.__super__.initialize.apply(this, arguments);
-        this.set('queryOptions', _.extend(this.queryOptions(), this.get('queryOptions')));
-        this.on('change:queryOptions', this.fetch, this);
-        return this.subscribe('facet:list:changed', function(data) {
-          if (data.values.length) {
-            _this.facetValues[data.name] = data;
-          } else {
-            delete _this.facetValues[data.name];
+      FacetedSearch.prototype.setQueryOptions = function(options) {
+        var attr, facetValues, value, _results;
+        if (options.facetValue != null) {
+          facetValues = _.reject(this.getQueryOption('facetValues'), function(data) {
+            return data.name === options.facetValue.name;
+          });
+          if (options.facetValue.values.length) {
+            facetValues.push(options.facetValue);
           }
-          return _this.setQueryOption('facetValues', _.values(_this.facetValues));
-        });
+          options = {
+            facetValues: facetValues
+          };
+        }
+        _results = [];
+        for (attr in options) {
+          if (!__hasProp.call(options, attr)) continue;
+          value = options[attr];
+          _results.push(this.setQueryOption(attr, value));
+        }
+        return _results;
       };
 
-      FacetedSearch.prototype.fetch = function() {
+      FacetedSearch.prototype.initialize = function() {
+        FacetedSearch.__super__.initialize.apply(this, arguments);
+        return this.set('queryOptions', _.extend(this.queryOptions(), this.get('queryOptions')));
+      };
+
+      FacetedSearch.prototype.sync = function(method, model, options) {
         var fetchResults, jqXHR,
           _this = this;
-        ajax.token = this.get('token');
-        fetchResults = function(url) {
-          var jqXHR;
-          jqXHR = ajax.get({
-            url: url
+        if (method === 'read') {
+          ajax.token = this.get('token');
+          fetchResults = function(url) {
+            var jqXHR;
+            jqXHR = ajax.get({
+              url: url
+            });
+            return jqXHR.done(options.success);
+          };
+          jqXHR = ajax.post({
+            url: this.get('baseUrl') + this.get('searchUrl'),
+            data: JSON.stringify(this.get('queryOptions')),
+            dataType: 'text'
           });
-          return jqXHR.done(function(data) {
-            return _this.publish('faceted-search:results', data);
+          jqXHR.done(function(data, textStatus, jqXHR) {
+            if (jqXHR.status === 201) {
+              return fetchResults(jqXHR.getResponseHeader('Location'));
+            }
           });
-        };
-        jqXHR = ajax.post({
-          url: this.get('baseUrl') + this.get('searchUrl'),
-          data: JSON.stringify(this.get('queryOptions')),
-          dataType: 'text'
-        });
-        jqXHR.done(function(data, textStatus, jqXHR) {
-          if (jqXHR.status === 201) {
-            return fetchResults(jqXHR.getResponseHeader('Location'));
-          }
-        });
-        return jqXHR.fail(function(jqXHR, textStatus, errorThrown) {
-          console.log(jqXHR);
-          if (jqXHR.status === 401) {
-            return _this.publish('unauthorized');
-          }
-        });
+          return jqXHR.fail(function(jqXHR, textStatus, errorThrown) {
+            console.log(jqXHR);
+            if (jqXHR.status === 401) {
+              return _this.publish('unauthorized');
+            }
+          });
+        }
       };
 
       return FacetedSearch;

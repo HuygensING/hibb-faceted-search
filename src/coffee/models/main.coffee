@@ -12,14 +12,15 @@ define (require) ->
 			search: true
 			baseUrl: ''
 			searchUrl: ''
-			token: ''
+			token: null
 
 		queryOptions: ->
 			term: '*'
-			sort: 'score'
-			fuzzy: false
 			facetValues: []
-			caseSensitive: false
+			# sort: 'score'
+			# fuzzy: false
+			# caseSensitive: false
+
 			# sortDir: 'textLayers'
 			# asc: ["Diplomatic"]
 			# searchInAnnotations: false
@@ -33,42 +34,55 @@ define (require) ->
 			@set 'queryOptions', qo
 			@trigger 'change:queryOptions'
 
+		setQueryOptions: (options) ->
+			# Facets individually send a facetValue, but the server wants them combined in a 'facetValues'
+			# Replace facetValue in facetValues and remove original facetValue
+			if options.facetValue?
+				facetValues = _.reject @getQueryOption('facetValues'), (data) -> data.name is options.facetValue.name
+				facetValues.push options.facetValue if options.facetValue.values.length # Only push if there are values (values is empty when last checkbox is unchecked)
+				options.facetValues: facetValues # Add facetValues to options
+				delete options.facetValue # The single facetValue is not send to the server
+
+			@setQueryOption attr, value for own attr, value of options
+
 		initialize: ->
 			super
 
 			@set 'queryOptions', _.extend @queryOptions(), @get('queryOptions')
 
-			@on 'change:queryOptions', @fetch, @
+			# @subscribe 'facet:list:changed', (data) =>
+			# 	console.log data
+			# 	if data.values.length
+			# 		@facetValues[data.name] = data
+			# 	else
+			# 		delete @facetValues[data.name]
 
-			@subscribe 'facet:list:changed', (data) =>
-				if data.values.length
-					@facetValues[data.name] = data
-				else
-					delete @facetValues[data.name]
+			# 	@setQueryOption 'facetValues', _.values @facetValues
 
-				@setQueryOption 'facetValues', _.values @facetValues
+		sync: (method, model, options) ->
+			if method is 'read'
+				ajax.token = @get 'token'
 
-		fetch: ->
-			ajax.token = @get 'token'
+				fetchResults = (url) => # GET results from the server
+					jqXHR = ajax.get url: url
+					jqXHR.done options.success
+					# jqXHR.done (data) =>
+					# 	@publish 'faceted-search:results', data
 
-			fetchResults = (url) => # GET results from the server
-				jqXHR = ajax.get url: url
-				jqXHR.done (data) =>
-					@publish 'faceted-search:results', data
+				jqXHR = ajax.post
+					url: @get('baseUrl') + @get('searchUrl')
+					data: JSON.stringify @get 'queryOptions'
+					dataType: 'text'
 
-			jqXHR = ajax.post
-				url: @get('baseUrl') + @get('searchUrl')
-				data: JSON.stringify @get 'queryOptions'
-				dataType: 'text'
+				jqXHR.done (data, textStatus, jqXHR) =>
+					if jqXHR.status is 201
+						fetchResults jqXHR.getResponseHeader('Location')
 
-			jqXHR.done (data, textStatus, jqXHR) =>
-				if jqXHR.status is 201
-					fetchResults jqXHR.getResponseHeader('Location')
-
-			jqXHR.fail (jqXHR, textStatus, errorThrown) =>
-				console.log jqXHR
-				if jqXHR.status is 401
-					@publish 'unauthorized'
+				jqXHR.fail (jqXHR, textStatus, errorThrown) =>
+					console.log jqXHR
+					if jqXHR.status is 401
+						@publish 'unauthorized'
+				
 
 # EXAMPLE QUERY:
 # {

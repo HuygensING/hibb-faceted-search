@@ -28,10 +28,11 @@
         var _this = this;
         ev.preventDefault();
         this.$('#search').addClass('loading');
-        Models.query.set('term', this.$('input#search').val());
-        Models.query.set('textLayers', ['Diplomatic']);
-        Models.query.fetch();
-        return this.subscribe('faceted-search:results', function(results) {
+        this.trigger('change', {
+          term: this.$('#search').val(),
+          textLayers: ['Diplomatic']
+        });
+        return this.subscribe('faceted-search:facets-rendered', function() {
           return _this.$('#search').removeClass('loading');
         });
       };
