@@ -17,7 +17,7 @@ define (require) ->
 			@each (option) => option.set 'count', 0
 
 			_.each newOptions, (newOption) =>
-				newOption.name = '<i>(empty)</i>' if newOption.name is '' # Bugprone what if somebody changes the default empty name?
+				# newOption.name = '<i>(empty)</i>' if newOption.name is '' # Bugprone what if somebody changes the default empty name?
 				opt = @get newOption.name
 				opt.set 'count', newOption.count
 

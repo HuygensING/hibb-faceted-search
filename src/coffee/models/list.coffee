@@ -1,8 +1,6 @@
 define (require) ->
 
 	Models =
-		Base: require 'models/base'
+		Facet: require 'models/facet'
 
-	class List extends Models.Base
-
-		idAttribute: 'name'
+	class List extends Models.Facet

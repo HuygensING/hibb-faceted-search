@@ -31,9 +31,6 @@
         });
         _.each(newOptions, function(newOption) {
           var opt;
-          if (newOption.name === '') {
-            newOption.name = '<i>(empty)</i>';
-          }
           opt = _this.get(newOption.name);
           return opt.set('count', newOption.count);
         });

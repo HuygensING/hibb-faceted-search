@@ -1,0 +1,57 @@
+.facet
+	
+
+.faceted-search
+	
+	.facet
+		header
+			margin-bottom 10px
+
+			h3
+				padding 0
+				margin 0
+				display inline
+				cursor pointer
+
+			small
+				color #555
+				margin-left 4%
+			
+			.options
+				display none
+				background-color darken(backgroundcolor, 5%)
+				padding 2%
+				margin-top 10px
+				box-shadow 1px 1px 4px #BDBDBD
+				border-radius 4px
+
+				small.optioncount
+					margin-left 8px
+			
+
+		.options
+			max-height 200px
+			overflow auto
+			
+			ul
+				list-style none
+
+				li.option
+					white-space nowrap
+
+					[data-count="0"]
+						label
+							color lighten(#555, 50%)
+						.count
+							color lighten(#555, 80%)
+
+					label, .count
+						color #555
+
+					input[type="checkbox"], label
+						white-space normal
+						margin 0
+						display inline-block
+
+					:checked + label
+						color #000

@@ -16,3 +16,6 @@ define (require) ->
 			@$el.html rtpl
 
 			@
+
+		# Override in child
+		update: (newOptions) -> console.log newOptions

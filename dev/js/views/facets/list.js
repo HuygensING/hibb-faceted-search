@@ -3,8 +3,7 @@
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
   define(function(require) {
-    var Collections, Fn, ListFacet, Models, Templates, Views, _ref;
-    Fn = require('helpers/fns');
+    var Collections, ListFacet, Models, Templates, Views, _ref;
     Models = {
       List: require('models/list')
     };
@@ -39,12 +38,18 @@
           'click h3': 'toggleBody',
           'keyup input.listsearch': function(ev) {
             return this.optionsView.filterOptions(ev.currentTarget.value);
-          }
+          },
+          'click header small': 'toggleOptions'
         };
       };
 
+      ListFacet.prototype.toggleOptions = function(ev) {
+        this.$('header .options').slideToggle();
+        return this.$('.options .listsearch').focus();
+      };
+
       ListFacet.prototype.toggleBody = function(ev) {
-        return $(ev.currentTarget).parents('.list').find('.body').slideToggle();
+        return $(ev.currentTarget).parents('.facet').find('.body').slideToggle();
       };
 
       ListFacet.prototype.selectAll = function() {
@@ -79,36 +84,21 @@
       };
 
       ListFacet.prototype.render = function() {
-        var data, rtpl;
+        var rtpl,
+          _this = this;
         ListFacet.__super__.render.apply(this, arguments);
-        data = this.model.attributes;
-        data = _.extend(data, {
-          'generateID': function() {}
-        });
-        rtpl = _.template(Templates.List, data);
+        rtpl = _.template(Templates.List, this.model.attributes);
         this.$('.placeholder').html(rtpl);
         this.optionsView = new Views.Options({
-          el: this.$('.items'),
-          collection: this.collection
+          el: this.$('.body .options'),
+          collection: this.collection,
+          facetName: this.model.get('name')
         });
         this.listenTo(this.optionsView, 'filter:finished', this.renderFilteredOptionCount);
-        return this.listenTo(this.collection, 'change:checked', this.optionChecked);
-      };
-
-      ListFacet.prototype.optionChecked = function() {
-        var checked;
-        checked = [];
-        this.collection.each(function(model) {
-          if (model.get('checked')) {
-            return checked.push(model.id);
-          }
+        this.listenTo(this.optionsView, 'change', function(data) {
+          return _this.trigger('change', data);
         });
-        return this.trigger('change', {
-          facetValue: {
-            name: this.model.get('name'),
-            values: checked
-          }
-        });
+        return this;
       };
 
       ListFacet.prototype.renderFilteredOptionCount = function() {
@@ -116,9 +106,11 @@
         filteredLength = this.optionsView.filtered_items.length;
         collectionLength = this.optionsView.collection.length;
         if (filteredLength === 0 || filteredLength === collectionLength) {
-          this.$('header small').html('');
+          this.$('header .options .listsearch').addClass('nonefound');
+          this.$('header small.optioncount').html('');
         } else {
-          this.$('header small').html(filteredLength + ' of ' + collectionLength);
+          this.$('header .options .listsearch').removeClass('nonefound');
+          this.$('header small.optioncount').html(filteredLength + ' of ' + collectionLength);
         }
         return this;
       };

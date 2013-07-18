@@ -21,7 +21,12 @@
       Search.prototype.className = 'facet search';
 
       Search.prototype.events = {
-        'click button.search': 'search'
+        'click button.search': 'search',
+        'click header small': 'toggleOptions'
+      };
+
+      Search.prototype.toggleOptions = function(ev) {
+        return this.$('.options').slideToggle();
       };
 
       Search.prototype.search = function(ev) {

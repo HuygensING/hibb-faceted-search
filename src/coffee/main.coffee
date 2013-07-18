@@ -5,8 +5,9 @@ define (require) ->
 
 	Views =
 		Base: require 'views/base'
-		List: require 'views/facets/list'
 		Search: require 'views/search'
+		List: require 'views/facets/list'
+		Boolean: require 'views/facets/boolean'
 
 	Templates =
 			FacetedSearch: require 'text!html/faceted-search.html'
@@ -46,17 +47,19 @@ define (require) ->
 					@trigger 'faceted-search:results', response
 		
 		renderFacets: (data) ->
-			# TODO: Add Views.Boolean
+			map =
+				BOOLEAN: Views.Boolean
+				LIST: Views.List
+
 			if not @facetData.length
 				@facetData = data.facets
 
-				for own index, data of data.facets
-					@facetViews[data.name] = new Views.List attrs: data
-					@listenTo @facetViews[data.name], 'change', @fetchResults
-					@$('.facets').append @facetViews[data.name].$el
+				for own index, facetData of data.facets
+					@facetViews[facetData.name] = new map[facetData.type] attrs: facetData
+					@listenTo @facetViews[facetData.name], 'change', @fetchResults
+					@$('.facets').append @facetViews[facetData.name].$el
 			else
 				for own index, data of data.facets
 					@facetViews[data.name].update(data.options)
-				# view.update data.facets
 
 			@publish 'faceted-search:facets-rendered'

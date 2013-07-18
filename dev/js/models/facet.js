@@ -15,6 +15,8 @@
         return _ref;
       }
 
+      Facet.prototype.idAttribute = 'name';
+
       return Facet;
 
     })(Models.Base);

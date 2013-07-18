@@ -1,6 +1,33 @@
 
 <header>
-  <h3>Text search</h3>
+  <h3>Text search</h3><small>more</small>
+  <div class="options">
+    <div class="row span1 align middle">
+      <div class="cell span1">
+        <input id="matchcase" type="checkbox" name="matchcase"/>
+        <label for="matchcase">Match case</label>
+      </div>
+    </div>
+    <div class="row span1">
+      <div class="cell span1">
+        <h4>Text layers</h4>
+      </div>
+    </div>
+    <div class="row span3 align middle">
+      <div class="cell span1">
+        <input id="textlayer_diplomatic" type="checkbox" name="textlayer_diplomatic"/>
+        <label for="textlayer_diplomatic">Diplomatic</label>
+      </div>
+      <div class="cell span1">
+        <input id="textlayer_critical" type="checkbox" name="textlayer_critical"/>
+        <label for="textlayer_critical">Critical</label>
+      </div>
+      <div class="cell span1">
+        <input id="textlayer_comments" type="checkbox" name="textlayer_comments"/>
+        <label for="textlayer_comments">Comments</label>
+      </div>
+    </div>
+  </div>
 </header>
 <div class="body">
   <div class="row span4 align middle">
@@ -12,9 +39,5 @@
     <div class="cell span1">
       <button class="search">Search</button>
     </div>
-  </div><br/>
-  <div class="align middle">
-    <input id="matchcase" type="checkbox" name="matchcase"/>
-    <label for="matchcase">Match case</label>
   </div>
 </div>

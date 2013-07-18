@@ -1,15 +1,19 @@
 header
 	h3 <%= title %>
-	small
+	small more
+
+	.options
+		.row.span4.align.middle
+			.cell.span2
+				input.listsearch(type="text", name="listsearch")
+			.cell.span1
+				small.optioncount
+			.cell.span1.right
+				nav
+					ul
+						li.all All 
+						li.none None
 
 .body
-	.row.span2.align.middle
-		.cell.span1.center
-			input.listsearch(type="text", name="listsearch")
-		.cell.span1.right
-			nav
-				ul
-					li.all All 
-					li.none None
-	.items
+	.options
 		ul

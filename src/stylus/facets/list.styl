@@ -1,47 +1,16 @@
-.faceted-search
-	.facet
-		h3
+.facet.list
+
+	.listsearch.nonefound
+		color #D10000 // dark red
+
+	nav
+		ul
 			padding 0
 			margin 0
-			display inline
+			list-style none
 
-		small
-			color #555
-			margin-left 4%
-
-
-	.facet.list
-		h3
-			cursor pointer
-			
-		nav
-			ul
-				padding 0
-				margin 0
-				list-style none
-
-				li
-					font-size 0.8em
-					cursor pointer
-					display inline-block
-
-		.items
-			max-height 200px
-			overflow auto
-			
-			ul
-				list-style none
-
-				li.item
-					white-space nowrap
-
-					label, .count
-						color #555
-
-					input[type="checkbox"], label
-						white-space normal
-						margin 0
-						display inline-block
-
-					:checked + label
-						color #000
+			li
+				font-size 0.8em
+				cursor pointer
+				display inline-block
+				margin-left 2px

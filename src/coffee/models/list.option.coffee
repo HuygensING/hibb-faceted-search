@@ -9,10 +9,10 @@ define (require) ->
 		defaults: ->
 			name: ''
 			count: 0
+			total: 0
 			checked: false
 
 		parse: (attrs) ->
-			if not attrs.name
-				attrs.name = '<i>(empty)</i>'
-
+			attrs.total = attrs.count
+			
 			attrs

@@ -4,3 +4,5 @@ define (require) ->
 		Base: require 'models/base'
 		
 	class Facet extends Models.Base
+
+		idAttribute: 'name'

@@ -9,8 +9,9 @@
     };
     Views = {
       Base: require('views/base'),
+      Search: require('views/search'),
       List: require('views/facets/list'),
-      Search: require('views/search')
+      Boolean: require('views/facets/boolean')
     };
     Templates = {
       FacetedSearch: require('text!html/faceted-search.html')
@@ -65,18 +66,22 @@
       };
 
       FacetedSearch.prototype.renderFacets = function(data) {
-        var index, _ref1, _ref2;
+        var facetData, index, map, _ref1, _ref2;
+        map = {
+          BOOLEAN: Views.Boolean,
+          LIST: Views.List
+        };
         if (!this.facetData.length) {
           this.facetData = data.facets;
           _ref1 = data.facets;
           for (index in _ref1) {
             if (!__hasProp.call(_ref1, index)) continue;
-            data = _ref1[index];
-            this.facetViews[data.name] = new Views.List({
-              attrs: data
+            facetData = _ref1[index];
+            this.facetViews[facetData.name] = new map[facetData.type]({
+              attrs: facetData
             });
-            this.listenTo(this.facetViews[data.name], 'change', this.fetchResults);
-            this.$('.facets').append(this.facetViews[data.name].$el);
+            this.listenTo(this.facetViews[facetData.name], 'change', this.fetchResults);
+            this.$('.facets').append(this.facetViews[facetData.name].$el);
           }
         } else {
           _ref2 = data.facets;

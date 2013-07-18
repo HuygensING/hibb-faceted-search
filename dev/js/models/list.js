@@ -5,7 +5,7 @@
   define(function(require) {
     var List, Models, _ref;
     Models = {
-      Base: require('models/base')
+      Facet: require('models/facet')
     };
     return List = (function(_super) {
       __extends(List, _super);
@@ -15,11 +15,9 @@
         return _ref;
       }
 
-      List.prototype.idAttribute = 'name';
-
       return List;
 
-    })(Models.Base);
+    })(Models.Facet);
   });
 
 }).call(this);

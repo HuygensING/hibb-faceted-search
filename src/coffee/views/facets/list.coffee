@@ -1,9 +1,6 @@
 define (require) ->
 
-	Fn = require 'helpers/fns'
-
 	Models =
-		# query: require 'models/query'
 		List: require 'models/list'
 
 	Collections = 
@@ -15,7 +12,6 @@ define (require) ->
 
 	Templates =
 		List: require 'text!html/facet/list.html'
-		# Items: require 'text!html/facet/list.options.html'
 
 	class ListFacet extends Views.Facet
 
@@ -30,10 +26,15 @@ define (require) ->
 			'click li.none': 'deselectAll'
 			'click h3': 'toggleBody'
 			'keyup input.listsearch': (ev) -> @optionsView.filterOptions ev.currentTarget.value
-			# 'change input[type="checkbox"]': 'checkChanged'
+			'click header small': 'toggleOptions'
+
+
+		toggleOptions: (ev) ->
+			@$('header .options').slideToggle()
+			@$('.options .listsearch').focus()
 
 		toggleBody: (ev) ->
-			$(ev.currentTarget).parents('.list').find('.body').slideToggle()
+			$(ev.currentTarget).parents('.facet').find('.body').slideToggle()
 
 		selectAll: ->
 			checkboxes = @el.querySelectorAll('input[type="checkbox"]')
@@ -53,35 +54,31 @@ define (require) ->
 
 		render: ->
 			super
-			data = @model.attributes
-			data = _.extend data, 'generateID': ->
-			rtpl = _.template Templates.List, data
+
+			rtpl = _.template Templates.List, @model.attributes
 			@$('.placeholder').html rtpl
 
 			@optionsView = new Views.Options
-				el: @$('.items')
+				el: @$('.body .options')
 				collection: @collection
+				facetName: @model.get 'name'
 
 			@listenTo @optionsView, 'filter:finished', @renderFilteredOptionCount
-			@listenTo @collection, 'change:checked', @optionChecked
+			@listenTo @optionsView, 'change', (data) => @trigger 'change', data # Trigger optionsView change event on this object
 
-		optionChecked: ->
-			checked = []
-			@collection.each (model) -> checked.push model.id if model.get 'checked'
+			@
 
-			@trigger 'change',
-				facetValue:
-					name: @model.get 'name'
-					values: checked
-
+		# Renders the count of the filtered options next to the facets title
 		renderFilteredOptionCount: ->
 			filteredLength = @optionsView.filtered_items.length
 			collectionLength = @optionsView.collection.length
 
 			if filteredLength is 0 or filteredLength is collectionLength
-				@$('header small').html ''
+				@$('header .options .listsearch').addClass 'nonefound'
+				@$('header small.optioncount').html ''
 			else
-				@$('header small').html filteredLength + ' of ' + collectionLength
+				@$('header .options .listsearch').removeClass 'nonefound'
+				@$('header small.optioncount').html filteredLength + ' of ' + collectionLength
 
 			@
 

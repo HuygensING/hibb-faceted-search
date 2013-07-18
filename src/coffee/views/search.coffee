@@ -11,6 +11,10 @@ define (require) ->
 
 		events:
 			'click button.search': 'search'
+			'click header small': 'toggleOptions'
+
+		toggleOptions: (ev) ->
+			@$('.options').slideToggle()
 
 		search: (ev) ->
 			ev.preventDefault()

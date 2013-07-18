@@ -21,14 +21,13 @@
         return {
           name: '',
           count: 0,
+          total: 0,
           checked: false
         };
       };
 
       ListItem.prototype.parse = function(attrs) {
-        if (!attrs.name) {
-          attrs.name = '<i>(empty)</i>';
-        }
+        attrs.total = attrs.count;
         return attrs;
       };
 

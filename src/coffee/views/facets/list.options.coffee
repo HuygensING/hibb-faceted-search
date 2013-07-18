@@ -1,12 +1,11 @@
 define (require) ->
 
-	Fn = require 'helpers/fns'
+	Fn = require 'helpers/general'
 
 	Views = 
 		Base: require 'views/base'
 
 	Models =
-		# query: require 'models/query'
 		List: require 'models/list'
 
 	Templates =
@@ -21,10 +20,13 @@ define (require) ->
 			'change input[type="checkbox"]': 'checkChanged'
 
 		checkChanged: (ev) ->
-			value = ev.currentTarget.getAttribute 'data-value'
-			model = @collection.get value
-			checked = $(ev.currentTarget).prop 'checked' # Is the target checked true/false?
-			model.set 'checked', checked
+			id = ev.currentTarget.getAttribute 'data-value'
+			@collection.get(id).set 'checked', ev.currentTarget.checked
+
+			@trigger 'change',
+				facetValue:
+					name: @options.facetName
+					values: _.map @$('input:checked'), (input) -> input.getAttribute 'data-value'
 
 		initialize: ->
 			super

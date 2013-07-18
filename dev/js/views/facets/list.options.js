@@ -4,7 +4,7 @@
 
   define(function(require) {
     var Fn, ListOptions, Models, Templates, Views, _ref;
-    Fn = require('helpers/fns');
+    Fn = require('helpers/general');
     Views = {
       Base: require('views/base')
     };
@@ -32,11 +32,17 @@
       };
 
       ListOptions.prototype.checkChanged = function(ev) {
-        var checked, model, value;
-        value = ev.currentTarget.getAttribute('data-value');
-        model = this.collection.get(value);
-        checked = $(ev.currentTarget).prop('checked');
-        return model.set('checked', checked);
+        var id;
+        id = ev.currentTarget.getAttribute('data-value');
+        this.collection.get(id).set('checked', ev.currentTarget.checked);
+        return this.trigger('change', {
+          facetValue: {
+            name: this.options.facetName,
+            values: _.map(this.$('input:checked'), function(input) {
+              return input.getAttribute('data-value');
+            })
+          }
+        });
       };
 
       ListOptions.prototype.initialize = function() {

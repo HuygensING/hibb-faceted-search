@@ -25,6 +25,10 @@
         return this;
       };
 
+      Facet.prototype.update = function(newOptions) {
+        return console.log(newOptions);
+      };
+
       return Facet;
 
     })(Views.Base);
