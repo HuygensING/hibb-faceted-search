@@ -1,7 +1,10 @@
 define (require) ->
 
+	config = require 'config'
+
 	Models = 
 		FacetedSearch: require 'models/main'
+		RestClient: require 'models/restclient'
 
 	Views =
 		Base: require 'views/base'
@@ -13,13 +16,12 @@ define (require) ->
 			FacetedSearch: require 'text!html/faceted-search.html'
 
 	class FacetedSearch extends Views.Base
-		facetData: []
-		facetViews: {}
-
 		initialize: (options) ->
 			super # ANTIPATTERN
 
-			@model = new Models.FacetedSearch options
+			_.extend config, options
+
+			@model = new Models.FacetedSearch config.queryOptions
 
 			@subscribe 'unauthorized', => @trigger 'unauthorized'
 
@@ -29,7 +31,7 @@ define (require) ->
 			rtpl = _.template Templates.FacetedSearch
 			@$el.html rtpl
 
-			if @model.get 'search'
+			if config.search
 				search = new Views.Search()
 				@$('.search-placeholder').html search.$el
 				@listenTo search, 'change', @fetchResults
@@ -39,27 +41,26 @@ define (require) ->
 			@
 
 		fetchResults: (queryOptions={}) ->
-			@model.setQueryOptions queryOptions
-
-			@model.fetch
-				success: (model, response, options) =>
-					@renderFacets response
-					@trigger 'faceted-search:results', response
-		
+			@model.set queryOptions
+			@model.fetch success: => @renderFacets()
+					
+		facetViews: {}
+		firstRender: true
 		renderFacets: (data) ->
 			map =
 				BOOLEAN: Views.Boolean
 				LIST: Views.List
 
-			if not @facetData.length
-				@facetData = data.facets
+			if @firstRender # TODO: make serverResponse a collectoin and check length (if length is 1 then it's the first render)
+				@firstRender = false
 
-				for own index, facetData of data.facets
+				for own index, facetData of @model.serverResponse.facets
 					@facetViews[facetData.name] = new map[facetData.type] attrs: facetData
 					@listenTo @facetViews[facetData.name], 'change', @fetchResults
 					@$('.facets').append @facetViews[facetData.name].$el
 			else
-				for own index, data of data.facets
+				for own index, data of @model.serverResponse.facets
 					@facetViews[data.name].update(data.options)
 
-			@publish 'faceted-search:facets-rendered'
+			@trigger 'faceted-search:results', @model.serverResponse # Trigger for external use
+			@publish 'faceted-search:results', @model.serverResponse # Publish for internal use

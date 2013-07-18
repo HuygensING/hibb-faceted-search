@@ -25,8 +25,7 @@ define (require) ->
 				term: @$('#search').val()
 				textLayers: ['Diplomatic']
 
-			@subscribe 'faceted-search:facets-rendered', => 
-				@$('#search').removeClass 'loading'
+			@subscribe 'faceted-search:results', => @$('#search').removeClass 'loading'
 
 
 		initialize: ->

@@ -419,6 +419,18 @@ var requirejs, require, define;
 
 define("../lib/almond/almond", function(){});
 
+(function() {
+  define('config',['require'],function(require) {
+    return {
+      search: true,
+      baseUrl: '',
+      searchUrl: '',
+      token: null
+    };
+  });
+
+}).call(this);
+
 /*! jQuery v2.0.3 | (c) 2005, 2013 jQuery Foundation, Inc. | jquery.org/license
 //@ sourceMappingURL=jquery-2.0.3.min.map
 */
@@ -3335,8 +3347,9 @@ define("../lib/almond/almond", function(){});
   var __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
-  define('models/main',['require','managers/ajax','models/base'],function(require) {
-    var FacetedSearch, Models, ajax, _ref;
+  define('models/main',['require','config','managers/ajax','models/base'],function(require) {
+    var FacetedSearch, Models, ajax, config, _ref;
+    config = require('config');
     ajax = require('managers/ajax');
     Models = {
       Base: require('models/base')
@@ -3349,70 +3362,23 @@ define("../lib/almond/almond", function(){});
         return _ref;
       }
 
-      FacetedSearch.prototype.facetValues = {};
+      FacetedSearch.prototype.serverResponse = {};
 
       FacetedSearch.prototype.defaults = function() {
-        return {
-          search: true,
-          baseUrl: '',
-          searchUrl: '',
-          token: null
-        };
-      };
-
-      FacetedSearch.prototype.queryOptions = function() {
         return {
           term: '*',
           facetValues: []
         };
       };
 
-      FacetedSearch.prototype.getQueryOption = function(attr) {
-        return this.get('queryOptions')[attr];
-      };
-
-      FacetedSearch.prototype.setQueryOption = function(attr, value) {
-        var qo;
-        qo = this.get('queryOptions');
-        qo[attr] = value;
-        this.set('queryOptions', qo);
-        return this.trigger('change:queryOptions');
-      };
-
-      FacetedSearch.prototype.setQueryOptions = function(options) {
-        var attr, facetValues, value, _results;
-        if (options.facetValue != null) {
-          facetValues = _.reject(this.getQueryOption('facetValues'), function(data) {
-            return data.name === options.facetValue.name;
-          });
-          if (options.facetValue.values.length) {
-            facetValues.push(options.facetValue);
-          }
-          options.facetValues = facetValues;
-          delete options.facetValue;
-        }
-        _results = [];
-        for (attr in options) {
-          if (!__hasProp.call(options, attr)) continue;
-          value = options[attr];
-          _results.push(this.setQueryOption(attr, value));
-        }
-        return _results;
-      };
-
-      FacetedSearch.prototype.initialize = function() {
-        FacetedSearch.__super__.initialize.apply(this, arguments);
-        return this.set('queryOptions', _.extend(this.queryOptions(), this.get('queryOptions')));
-      };
-
       FacetedSearch.prototype.sync = function(method, model, options) {
         var jqXHR,
           _this = this;
         if (method === 'read') {
-          ajax.token = this.get('token');
+          ajax.token = config.token;
           jqXHR = ajax.post({
-            url: this.get('baseUrl') + this.get('searchUrl'),
-            data: JSON.stringify(this.get('queryOptions')),
+            url: config.baseUrl + config.searchUrl,
+            data: JSON.stringify(this.attributes),
             dataType: 'text'
           });
           jqXHR.done(function(data, textStatus, jqXHR) {
@@ -3425,12 +3391,31 @@ define("../lib/almond/almond", function(){});
             }
           });
           return jqXHR.fail(function(jqXHR, textStatus, errorThrown) {
-            console.log(jqXHR);
             if (jqXHR.status === 401) {
               return _this.publish('unauthorized');
             }
           });
         }
+      };
+
+      FacetedSearch.prototype.parse = function(attrs) {
+        this.serverResponse = attrs;
+        return {};
+      };
+
+      FacetedSearch.prototype.set = function(attrs, options) {
+        var facetValues;
+        if (attrs.facetValue != null) {
+          facetValues = _.reject(this.get('facetValues'), function(data) {
+            return data.name === attrs.facetValue.name;
+          });
+          if (attrs.facetValue.values.length) {
+            facetValues.push(attrs.facetValue);
+          }
+          attrs.facetValues = facetValues;
+          delete attrs.facetValue;
+        }
+        return FacetedSearch.__super__.set.call(this, attrs, options);
       };
 
       return FacetedSearch;
@@ -3439,6 +3424,13 @@ define("../lib/almond/almond", function(){});
   });
 
 }).call(this);
+
+(function() {
+
+
+}).call(this);
+
+define("models/restclient", function(){});
 
 (function() {
   var __hasProp = {}.hasOwnProperty,
@@ -3922,7 +3914,7 @@ define('text!html/search.html',[],function () { return '\n<header>\n  <h3>Text s
           term: this.$('#search').val(),
           textLayers: ['Diplomatic']
         });
-        return this.subscribe('faceted-search:facets-rendered', function() {
+        return this.subscribe('faceted-search:results', function() {
           return _this.$('#search').removeClass('loading');
         });
       };
@@ -4548,10 +4540,12 @@ define('text!html/faceted-search.html',[],function () { return '<div class="face
   var __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
-  define('main',['require','models/main','views/base','views/search','views/facets/list','views/facets/boolean','text!html/faceted-search.html'],function(require) {
-    var FacetedSearch, Models, Templates, Views, _ref;
+  define('main',['require','config','models/main','models/restclient','views/base','views/search','views/facets/list','views/facets/boolean','text!html/faceted-search.html'],function(require) {
+    var FacetedSearch, Models, Templates, Views, config, _ref;
+    config = require('config');
     Models = {
-      FacetedSearch: require('models/main')
+      FacetedSearch: require('models/main'),
+      RestClient: require('models/restclient')
     };
     Views = {
       Base: require('views/base'),
@@ -4570,14 +4564,11 @@ define('text!html/faceted-search.html',[],function () { return '<div class="face
         return _ref;
       }
 
-      FacetedSearch.prototype.facetData = [];
-
-      FacetedSearch.prototype.facetViews = {};
-
       FacetedSearch.prototype.initialize = function(options) {
         var _this = this;
         FacetedSearch.__super__.initialize.apply(this, arguments);
-        this.model = new Models.FacetedSearch(options);
+        _.extend(config, options);
+        this.model = new Models.FacetedSearch(config.queryOptions);
         this.subscribe('unauthorized', function() {
           return _this.trigger('unauthorized');
         });
@@ -4588,7 +4579,7 @@ define('text!html/faceted-search.html',[],function () { return '<div class="face
         var rtpl, search;
         rtpl = _.template(Templates.FacetedSearch);
         this.$el.html(rtpl);
-        if (this.model.get('search')) {
+        if (config.search) {
           search = new Views.Search();
           this.$('.search-placeholder').html(search.$el);
           this.listenTo(search, 'change', this.fetchResults);
@@ -4602,14 +4593,17 @@ define('text!html/faceted-search.html',[],function () { return '<div class="face
         if (queryOptions == null) {
           queryOptions = {};
         }
-        this.model.setQueryOptions(queryOptions);
+        this.model.set(queryOptions);
         return this.model.fetch({
-          success: function(model, response, options) {
-            _this.renderFacets(response);
-            return _this.trigger('faceted-search:results', response);
+          success: function() {
+            return _this.renderFacets();
           }
         });
       };
+
+      FacetedSearch.prototype.facetViews = {};
+
+      FacetedSearch.prototype.firstRender = true;
 
       FacetedSearch.prototype.renderFacets = function(data) {
         var facetData, index, map, _ref1, _ref2;
@@ -4617,9 +4611,9 @@ define('text!html/faceted-search.html',[],function () { return '<div class="face
           BOOLEAN: Views.Boolean,
           LIST: Views.List
         };
-        if (!this.facetData.length) {
-          this.facetData = data.facets;
-          _ref1 = data.facets;
+        if (this.firstRender) {
+          this.firstRender = false;
+          _ref1 = this.model.serverResponse.facets;
           for (index in _ref1) {
             if (!__hasProp.call(_ref1, index)) continue;
             facetData = _ref1[index];
@@ -4630,14 +4624,15 @@ define('text!html/faceted-search.html',[],function () { return '<div class="face
             this.$('.facets').append(this.facetViews[facetData.name].$el);
           }
         } else {
-          _ref2 = data.facets;
+          _ref2 = this.model.serverResponse.facets;
           for (index in _ref2) {
             if (!__hasProp.call(_ref2, index)) continue;
             data = _ref2[index];
             this.facetViews[data.name].update(data.options);
           }
         }
-        return this.publish('faceted-search:facets-rendered');
+        this.trigger('faceted-search:results', this.model.serverResponse);
+        return this.publish('faceted-search:results', this.model.serverResponse);
       };
 
       return FacetedSearch;

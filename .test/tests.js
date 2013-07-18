@@ -92,6 +92,16 @@ define(function(require) {
       return it("", function() {});
     });
   });
+  describe("", function() {
+    return describe("", function() {
+      return it("", function() {});
+    });
+  });
+  describe("", function() {
+    return describe("", function() {
+      return it("", function() {});
+    });
+  });
   return describe("", function() {
     return describe("", function() {
       return it("", function() {});

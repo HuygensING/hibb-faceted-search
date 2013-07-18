@@ -37,7 +37,7 @@
           term: this.$('#search').val(),
           textLayers: ['Diplomatic']
         });
-        return this.subscribe('faceted-search:facets-rendered', function() {
+        return this.subscribe('faceted-search:results', function() {
           return _this.$('#search').removeClass('loading');
         });
       };

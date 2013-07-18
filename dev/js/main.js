@@ -3,9 +3,11 @@
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
   define(function(require) {
-    var FacetedSearch, Models, Templates, Views, _ref;
+    var FacetedSearch, Models, Templates, Views, config, _ref;
+    config = require('config');
     Models = {
-      FacetedSearch: require('models/main')
+      FacetedSearch: require('models/main'),
+      RestClient: require('models/restclient')
     };
     Views = {
       Base: require('views/base'),
@@ -24,14 +26,11 @@
         return _ref;
       }
 
-      FacetedSearch.prototype.facetData = [];
-
-      FacetedSearch.prototype.facetViews = {};
-
       FacetedSearch.prototype.initialize = function(options) {
         var _this = this;
         FacetedSearch.__super__.initialize.apply(this, arguments);
-        this.model = new Models.FacetedSearch(options);
+        _.extend(config, options);
+        this.model = new Models.FacetedSearch(config.queryOptions);
         this.subscribe('unauthorized', function() {
           return _this.trigger('unauthorized');
         });
@@ -42,7 +41,7 @@
         var rtpl, search;
         rtpl = _.template(Templates.FacetedSearch);
         this.$el.html(rtpl);
-        if (this.model.get('search')) {
+        if (config.search) {
           search = new Views.Search();
           this.$('.search-placeholder').html(search.$el);
           this.listenTo(search, 'change', this.fetchResults);
@@ -56,14 +55,17 @@
         if (queryOptions == null) {
           queryOptions = {};
         }
-        this.model.setQueryOptions(queryOptions);
+        this.model.set(queryOptions);
         return this.model.fetch({
-          success: function(model, response, options) {
-            _this.renderFacets(response);
-            return _this.trigger('faceted-search:results', response);
+          success: function() {
+            return _this.renderFacets();
           }
         });
       };
+
+      FacetedSearch.prototype.facetViews = {};
+
+      FacetedSearch.prototype.firstRender = true;
 
       FacetedSearch.prototype.renderFacets = function(data) {
         var facetData, index, map, _ref1, _ref2;
@@ -71,9 +73,9 @@
           BOOLEAN: Views.Boolean,
           LIST: Views.List
         };
-        if (!this.facetData.length) {
-          this.facetData = data.facets;
-          _ref1 = data.facets;
+        if (this.firstRender) {
+          this.firstRender = false;
+          _ref1 = this.model.serverResponse.facets;
           for (index in _ref1) {
             if (!__hasProp.call(_ref1, index)) continue;
             facetData = _ref1[index];
@@ -84,14 +86,15 @@
             this.$('.facets').append(this.facetViews[facetData.name].$el);
           }
         } else {
-          _ref2 = data.facets;
+          _ref2 = this.model.serverResponse.facets;
           for (index in _ref2) {
             if (!__hasProp.call(_ref2, index)) continue;
             data = _ref2[index];
             this.facetViews[data.name].update(data.options);
           }
         }
-        return this.publish('faceted-search:facets-rendered');
+        this.trigger('faceted-search:results', this.model.serverResponse);
+        return this.publish('faceted-search:results', this.model.serverResponse);
       };
 
       return FacetedSearch;
