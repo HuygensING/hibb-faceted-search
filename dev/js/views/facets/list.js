@@ -3,7 +3,8 @@
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
   define(function(require) {
-    var Collections, ListFacet, Models, Templates, Views, _ref;
+    var Collections, Fn, ListFacet, Models, Templates, Views, _ref;
+    Fn = require('helpers/general');
     Models = {
       List: require('models/list')
     };
@@ -116,7 +117,7 @@
       };
 
       ListFacet.prototype.update = function(newOptions) {
-        return this.optionsView.collection.updateOptions(newOptions);
+        return this.collection.updateOptions(newOptions);
       };
 
       return ListFacet;

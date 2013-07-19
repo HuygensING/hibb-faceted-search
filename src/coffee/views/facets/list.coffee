@@ -1,5 +1,7 @@
 define (require) ->
 
+	Fn = require 'helpers/general'
+
 	Models =
 		List: require 'models/list'
 
@@ -82,4 +84,10 @@ define (require) ->
 
 			@
 
-		update: (newOptions) -> @optionsView.collection.updateOptions(newOptions)
+		update: (newOptions) ->
+			# console.log @model.get('name')
+			# if @model.get('name') is 'facet_s_subject'
+			# 	console.log @collection
+			# 	console.log newOptions
+
+			@collection.updateOptions(newOptions)

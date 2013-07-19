@@ -20,12 +20,19 @@
 
       ListItems.prototype.model = Models.Option;
 
+      ListItems.prototype.parse = function(attrs) {
+        return attrs;
+      };
+
       ListItems.prototype.comparator = function(model) {
         return -1 * parseInt(model.get('count'), 10);
       };
 
       ListItems.prototype.updateOptions = function(newOptions) {
         var _this = this;
+        if (newOptions == null) {
+          newOptions = [];
+        }
         this.each(function(option) {
           return option.set('count', 0);
         });

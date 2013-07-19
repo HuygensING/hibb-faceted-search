@@ -30,6 +30,8 @@
         var _this = this;
         FacetedSearch.__super__.initialize.apply(this, arguments);
         _.extend(config, options);
+        this.facetViews = {};
+        this.firstRender = true;
         this.model = new Models.FacetedSearch(config.queryOptions);
         this.subscribe('unauthorized', function() {
           return _this.trigger('unauthorized');
@@ -62,10 +64,6 @@
           }
         });
       };
-
-      FacetedSearch.prototype.facetViews = {};
-
-      FacetedSearch.prototype.firstRender = true;
 
       FacetedSearch.prototype.renderFacets = function(data) {
         var facetData, index, map, _ref1, _ref2;

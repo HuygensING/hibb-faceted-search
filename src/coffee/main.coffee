@@ -16,10 +16,14 @@ define (require) ->
 			FacetedSearch: require 'text!html/faceted-search.html'
 
 	class FacetedSearch extends Views.Base
+
 		initialize: (options) ->
 			super # ANTIPATTERN
 
 			_.extend config, options
+
+			@facetViews = {}
+			@firstRender = true
 
 			@model = new Models.FacetedSearch config.queryOptions
 
@@ -44,8 +48,6 @@ define (require) ->
 			@model.set queryOptions
 			@model.fetch success: => @renderFacets()
 					
-		facetViews: {}
-		firstRender: true
 		renderFacets: (data) ->
 			map =
 				BOOLEAN: Views.Boolean
@@ -58,9 +60,18 @@ define (require) ->
 					@facetViews[facetData.name] = new map[facetData.type] attrs: facetData
 					@listenTo @facetViews[facetData.name], 'change', @fetchResults
 					@$('.facets').append @facetViews[facetData.name].$el
+
+				# console.log @facetViews
 			else
+				# console.log 'server response', @model.serverResponse
 				for own index, data of @model.serverResponse.facets
 					@facetViews[data.name].update(data.options)
+
+				# _.each @facetViews, (view, name) =>
+				# 	facetInResponse = _.findWhere @model.serverResponse.facets, name: name
+				# 	@facetViews[name].update() if not facetInResponse?
+				# # console.log 'empties', empties
+
 
 			@trigger 'faceted-search:results', @model.serverResponse # Trigger for external use
 			@publish 'faceted-search:results', @model.serverResponse # Publish for internal use
