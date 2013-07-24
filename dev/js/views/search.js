@@ -34,8 +34,7 @@
         ev.preventDefault();
         this.$('#search').addClass('loading');
         this.trigger('change', {
-          term: this.$('#search').val(),
-          textLayers: ['Diplomatic']
+          term: this.$('#search').val()
         });
         return this.subscribe('faceted-search:results', function() {
           return _this.$('#search').removeClass('loading');

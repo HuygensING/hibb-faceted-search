@@ -3874,7 +3874,7 @@ define('text!html/facet.html',[],function () { return '<div class="placeholder p
 
 }).call(this);
 
-define('text!html/search.html',[],function () { return '<header><h3>Text search</h3><small>more</small><div class="options"><div class="row span1 align middle"><div class="cell span1"><input id="matchcase" type="checkbox" name="matchcase"/><label for="matchcase">Match case</label></div></div><div class="row span1"><div class="cell span1"><h4>Text layers</h4></div></div><div class="row span3 align middle"><div class="cell span1"><input id="textlayer_diplomatic" type="checkbox" name="textlayer_diplomatic"/><label for="textlayer_diplomatic">Diplomatic</label></div><div class="cell span1"><input id="textlayer_critical" type="checkbox" name="textlayer_critical"/><label for="textlayer_critical">Critical</label></div><div class="cell span1"><input id="textlayer_comments" type="checkbox" name="textlayer_comments"/><label for="textlayer_comments">Comments</label></div></div></div></header><div class="body"><div class="row span4 align middle"><div class="cell span3"><div class="padr4"><input id="search" type="text" name="search"/></div></div><div class="cell span1"><button class="search">Search</button></div></div></div>';});
+define('text!html/search.html',[],function () { return '\n<header>\n  <h3>Text search</h3><small>more</small>\n  <div class="options">\n    <div class="row span1 align middle">\n      <div class="cell span1">\n        <input id="matchcase" type="checkbox" name="matchcase"/>\n        <label for="matchcase">Match case</label>\n      </div>\n    </div>\n  </div>\n</header>\n<div class="body">\n  <div class="row span4 align middle">\n    <div class="cell span3">\n      <div class="padr4">\n        <input id="search" type="text" name="search"/>\n      </div>\n    </div>\n    <div class="cell span1">\n      <button class="search">Search</button>\n    </div>\n  </div>\n</div>';});
 
 (function() {
   var __hasProp = {}.hasOwnProperty,
@@ -3912,8 +3912,7 @@ define('text!html/search.html',[],function () { return '<header><h3>Text search<
         ev.preventDefault();
         this.$('#search').addClass('loading');
         this.trigger('change', {
-          term: this.$('#search').val(),
-          textLayers: ['Diplomatic']
+          term: this.$('#search').val()
         });
         return this.subscribe('faceted-search:results', function() {
           return _this.$('#search').removeClass('loading');
@@ -4149,7 +4148,7 @@ define('text!html/search.html',[],function () { return '<header><h3>Text search<
 
 }).call(this);
 
-define('text!html/facet/list.html',[],function () { return '<header><h3><%= title %></h3><small>more</small><div class="options"><div class="row span4 align middle"><div class="cell span2"><input type="text" name="listsearch" class="listsearch"/></div><div class="cell span1"><small class="optioncount"></small></div><div class="cell span1 right"><nav><ul><li class="all">All </li><li class="none">None</li></ul></nav></div></div></div></header><div class="body"><div class="options"><ul></ul></div></div>';});
+define('text!html/facet/list.html',[],function () { return '\n<header>\n  <h3 data-name="<%= name %>"><%= title %></h3><small>more</small>\n  <div class="options">\n    <div class="row span4 align middle">\n      <div class="cell span2">\n        <input type="text" name="listsearch" class="listsearch"/>\n      </div>\n      <div class="cell span1"><small class="optioncount"></small></div>\n      <div class="cell span1 right">\n        <nav>\n          <ul>\n            <li class="all">All </li>\n            <li class="none">None</li>\n          </ul>\n        </nav>\n      </div>\n    </div>\n  </div>\n</header>\n<div class="body">\n  <div class="options">\n    <ul></ul>\n  </div>\n</div>';});
 
 define('text!html/facet/list.options.html',[],function () { return '<ul><% _.each(options, function(option) { %>\n<% var randomId = generateID(); %>\n<% var checked = (option.get(\'checked\')) ? \'checked\' : \'\'; %>\n<% var count = (option.get(\'count\') === 0) ? option.get(\'total\') : option.get(\'count\'); %>\n<% var labelText = (option.id === \':empty\') ? \'<i>(empty)</i>\' : option.id %><li class="option"><div data-count="<%= option.get(\'count\') %>" class="row span6"><div class="cell span5"><input id="<%= randomId %>" name="<%= randomId %>" type="checkbox" data-value="<%= option.id %>" <%= checked %>><label for="<%= randomId %>"><%= labelText %></label></div><div class="cell span1 right"><div class="count"><%= count %></div></div></div></li><% }); %></ul>';});
 
@@ -4463,7 +4462,7 @@ define('text!html/facet/list.options.html',[],function () { return '<ul><% _.eac
 
 }).call(this);
 
-define('text!html/facet/boolean.html',[],function () { return '<header><h3><%= title %></h3></header><div class="body"><div class="options"><ul><% _.each(options, function(option) { %><li class="option"><div class="row span6"><div class="cell span5"><input id="<%= name %>_<%= option.name %>" name="<%= name %>_<%= option.name %>" type="checkbox" data-value="<%= option.name %>"><label for="<%= name %>_<%= option.name %>"><%= ucfirst(option.name) %></label></div><div class="cell span1 right"><div class="count"><%= option.count %></div></div></div></li><% }); %></ul></div></div>';});
+define('text!html/facet/boolean.html',[],function () { return '\n<header>\n  <h3 data-name="<%= name %>"><%= title %></h3>\n</header>\n<div class="body">\n  <div class="options">\n    <ul><% _.each(options, function(option) { %>\n      <li class="option">\n        <div class="row span6">\n          <div class="cell span5"><input id="<%= name %>_<%= option.name %>" name="<%= name %>_<%= option.name %>" type="checkbox" data-value="<%= option.name %>">\n            <label for="<%= name %>_<%= option.name %>"><%= ucfirst(option.name) %></label>\n          </div>\n          <div class="cell span1 right">\n            <div class="count"><%= option.count %></div>\n          </div>\n        </div>\n      </li><% }); %>\n    </ul>\n  </div>\n</div>';});
 
 (function() {
   var __hasProp = {}.hasOwnProperty,
@@ -4543,13 +4542,114 @@ define('text!html/facet/boolean.html',[],function () { return '<header><h3><%= t
 
 }).call(this);
 
+(function() {
+  var __hasProp = {}.hasOwnProperty,
+    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
+
+  define('models/date',['require','models/facet'],function(require) {
+    var DateFacet, Models, _ref;
+    Models = {
+      Facet: require('models/facet')
+    };
+    return DateFacet = (function(_super) {
+      __extends(DateFacet, _super);
+
+      function DateFacet() {
+        _ref = DateFacet.__super__.constructor.apply(this, arguments);
+        return _ref;
+      }
+
+      DateFacet.prototype.parse = function(attrs) {
+        console.log(attrs);
+        attrs.options = _.map(_.pluck(attrs.options, 'name'), function(option) {
+          return option.substr(0, 4);
+        });
+        attrs.options = _.unique(attrs.options);
+        attrs.options.sort();
+        return attrs;
+      };
+
+      return DateFacet;
+
+    })(Models.Facet);
+  });
+
+}).call(this);
+
+define('text!html/facet/date.html',[],function () { return '\n<header>\n  <h3 data-name="<%= name %>"><%= title %></h3>\n</header>\n<div class="body">\n  <label>From:</label>\n  <select><% _.each(options, function(option) { %>\n    <option><%= option %></option><% }); %>\n  </select>\n  <label>To:</label>\n  <select><% _.each(options.reverse(), function(option) { %>\n    <option><%= option %></option><% }); %>\n  </select>\n</div>';});
+
+(function() {
+  var __hasProp = {}.hasOwnProperty,
+    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
+
+  define('views/facets/date',['require','helpers/string','models/date','views/facet','text!html/facet/date.html'],function(require) {
+    var DateFacet, Models, StringFn, Templates, Views, _ref;
+    StringFn = require('helpers/string');
+    Models = {
+      Date: require('models/date')
+    };
+    Views = {
+      Facet: require('views/facet')
+    };
+    Templates = {
+      Date: require('text!html/facet/date.html')
+    };
+    return DateFacet = (function(_super) {
+      __extends(DateFacet, _super);
+
+      function DateFacet() {
+        _ref = DateFacet.__super__.constructor.apply(this, arguments);
+        return _ref;
+      }
+
+      DateFacet.prototype.className = 'facet date';
+
+      DateFacet.prototype.events = function() {
+        return {
+          'click h3': 'toggleBody'
+        };
+      };
+
+      DateFacet.prototype.toggleBody = function(ev) {
+        return $(ev.currentTarget).parents('.facet').find('.body').slideToggle();
+      };
+
+      DateFacet.prototype.initialize = function(options) {
+        DateFacet.__super__.initialize.apply(this, arguments);
+        this.model = new Models.Date(options.attrs, {
+          parse: true
+        });
+        this.listenTo(this.model, 'change:options', this.render);
+        console.log(this.model);
+        return this.render();
+      };
+
+      DateFacet.prototype.render = function() {
+        var rtpl;
+        DateFacet.__super__.render.apply(this, arguments);
+        rtpl = _.template(Templates.Date, _.extend(this.model.attributes, {
+          ucfirst: StringFn.ucfirst
+        }));
+        this.$('.placeholder').html(rtpl);
+        return this;
+      };
+
+      DateFacet.prototype.update = function(newOptions) {};
+
+      return DateFacet;
+
+    })(Views.Facet);
+  });
+
+}).call(this);
+
 define('text!html/faceted-search.html',[],function () { return '<div class="faceted-search"><form><div class="search-placeholder"></div><div class="facets"></div></form></div>';});
 
 (function() {
   var __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
-  define('main',['require','config','models/main','models/restclient','views/base','views/search','views/facets/list','views/facets/boolean','text!html/faceted-search.html'],function(require) {
+  define('main',['require','config','models/main','models/restclient','views/base','views/search','views/facets/list','views/facets/boolean','views/facets/date','text!html/faceted-search.html'],function(require) {
     var FacetedSearch, Models, Templates, Views, config, _ref;
     config = require('config');
     Models = {
@@ -4559,8 +4659,11 @@ define('text!html/faceted-search.html',[],function () { return '<div class="face
     Views = {
       Base: require('views/base'),
       Search: require('views/search'),
-      List: require('views/facets/list'),
-      Boolean: require('views/facets/boolean')
+      Facets: {
+        List: require('views/facets/list'),
+        Boolean: require('views/facets/boolean'),
+        Date: require('views/facets/date')
+      }
     };
     Templates = {
       FacetedSearch: require('text!html/faceted-search.html')
@@ -4615,8 +4718,9 @@ define('text!html/faceted-search.html',[],function () { return '<div class="face
       FacetedSearch.prototype.renderFacets = function(data) {
         var facetData, index, map, _ref1, _ref2;
         map = {
-          BOOLEAN: Views.Boolean,
-          LIST: Views.List
+          BOOLEAN: Views.Facets.Boolean,
+          LIST: Views.Facets.List,
+          DATE: Views.Facets.Date
         };
         if (this.firstRender) {
           this.firstRender = false;

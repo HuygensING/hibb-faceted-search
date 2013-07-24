@@ -23,7 +23,7 @@ define (require) ->
 
 			@trigger 'change', 
 				term: @$('#search').val()
-				textLayers: ['Diplomatic']
+				# textLayers: ['Diplomatic']
 
 			@subscribe 'faceted-search:results', => @$('#search').removeClass 'loading'
 

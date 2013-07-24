@@ -9,8 +9,10 @@ define (require) ->
 	Views =
 		Base: require 'views/base'
 		Search: require 'views/search'
-		List: require 'views/facets/list'
-		Boolean: require 'views/facets/boolean'
+		Facets:
+			List: require 'views/facets/list'
+			Boolean: require 'views/facets/boolean'
+			Date: require 'views/facets/date'
 
 	Templates =
 			FacetedSearch: require 'text!html/faceted-search.html'
@@ -50,8 +52,9 @@ define (require) ->
 					
 		renderFacets: (data) ->
 			map =
-				BOOLEAN: Views.Boolean
-				LIST: Views.List
+				BOOLEAN: Views.Facets.Boolean
+				LIST: Views.Facets.List
+				DATE: Views.Facets.Date
 
 			if @firstRender # TODO: make serverResponse a collectoin and check length (if length is 1 then it's the first render)
 				@firstRender = false

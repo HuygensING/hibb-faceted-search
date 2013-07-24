@@ -10,6 +10,8 @@
 .facet .facet .options ul li.option [data-count="0"] .count,.faceted-search .facet .options ul li.option [data-count="0"] .count{color:#ddd}
 .facet .facet .options ul li.option label,.faceted-search .facet .options ul li.option label,.facet .facet .options ul li.option .count,.faceted-search .facet .options ul li.option .count{color:#555}
 .facet .facet .options ul li.option input[type="checkbox"],.faceted-search .facet .options ul li.option input[type="checkbox"],.facet .facet .options ul li.option label,.faceted-search .facet .options ul li.option label{white-space:normal;margin:0;display:inline-block}
+.facet .facet .options ul li.option input[type="checkbox"],.faceted-search .facet .options ul li.option input[type="checkbox"]{margin-top:2px}
+.facet .facet .options ul li.option label,.faceted-search .facet .options ul li.option label{padding:0 4px}
 .facet .facet .options ul li.option :checked + label,.faceted-search .facet .options ul li.option :checked + label{color:#000}
 
 .facet.list .listsearch.nonefound{color:#d10000}

@@ -12,8 +12,11 @@
     Views = {
       Base: require('views/base'),
       Search: require('views/search'),
-      List: require('views/facets/list'),
-      Boolean: require('views/facets/boolean')
+      Facets: {
+        List: require('views/facets/list'),
+        Boolean: require('views/facets/boolean'),
+        Date: require('views/facets/date')
+      }
     };
     Templates = {
       FacetedSearch: require('text!html/faceted-search.html')
@@ -68,8 +71,9 @@
       FacetedSearch.prototype.renderFacets = function(data) {
         var facetData, index, map, _ref1, _ref2;
         map = {
-          BOOLEAN: Views.Boolean,
-          LIST: Views.List
+          BOOLEAN: Views.Facets.Boolean,
+          LIST: Views.Facets.List,
+          DATE: Views.Facets.Date
         };
         if (this.firstRender) {
           this.firstRender = false;
