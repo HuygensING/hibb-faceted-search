@@ -7,26 +7,26 @@ header
 			.cell.span1.casesensitive
 				input#cb_casesensitive(type="checkbox", name="cb_casesensitive", data-prop="caseSensitive")
 				label(for="cb_casesensitive") Match case
-		//- <% console.log(searchInAnnotations !== undefined); %>
-		<% if (searchInAnnotations !== undefined || searchInTranscriptions !== undefined) { %>
-		<% cb_searchin_annotations_checked = (searchInAnnotations) ? ' checked ' : '' %>
-		<% cb_searchin_transcriptions_checked = (searchInTranscriptions) ? ' checked ' : '' %>
+		<% console.log('searchInAnnotations' in searchOptions); %>
+		<% if ('searchInAnnotations' in searchOptions || 'searchInTranscriptions' in searchOptions) { %>
+		<% cb_searchin_annotations_checked = ('searchInAnnotations' in searchOptions && searchOptions.searchInAnnotations) ? ' checked ' : '' %>
+		<% cb_searchin_transcriptions_checked = ('searchInTranscriptions' in searchOptions && searchOptions.searchInTranscriptions) ? ' checked ' : '' %>
 		.row.span1
 			.cell.span1
 				h4 Search in
 				ul.searchins
-					<% if (searchInAnnotations !== undefined) { %>
+					<% if ('searchInAnnotations' in searchOptions) { %>
 					li.searchin
 						| <input id="cb_searchin_annotations" type="checkbox" data-prop="searchInAnnotations"<%= cb_searchin_annotations_checked %>>
 						label(for!="cb_searchin_annotations") Annotations
 					<% } %>
-					<% if (searchInTranscriptions !== undefined) { %>
+					<% if ('searchInTranscriptions' in searchOptions) { %>
 					li.searchin
 						| <input id="cb_searchin_transcriptions" type="checkbox" data-prop="searchInTranscriptions"<%= cb_searchin_transcriptions_checked %>>
 						label(for!="cb_searchin_transcriptions") Transcriptions
 					<% } %>
 		<% } %>
-		<% if (textLayers) { %>
+		<% if ('textLayers' in searchOptions) { %>
 		.row.span1
 			.cell.span1
 				h4 Text layers

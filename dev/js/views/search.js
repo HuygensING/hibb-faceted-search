@@ -56,7 +56,9 @@
         var checkboxes, rtpl,
           _this = this;
         Search.__super__.render.apply(this, arguments);
-        rtpl = _.template(Templates.Search, this.model.attributes);
+        rtpl = _.template(Templates.Search, {
+          searchOptions: this.model.attributes
+        });
         this.$('.placeholder').html(rtpl);
         checkboxes = this.$(':checkbox');
         checkboxes.change(function(ev) {

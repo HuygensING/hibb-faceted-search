@@ -72,6 +72,20 @@
         }
       };
 
+      FacetedSearch.prototype.setCursor = function(direction, cb, context) {
+        var jqXHR,
+          _this = this;
+        if (this.serverResponse[direction]) {
+          jqXHR = ajax.get({
+            url: this.serverResponse[direction]
+          });
+          return jqXHR.done(function(response) {
+            _this.serverResponse = response;
+            return cb.call(context, response);
+          });
+        }
+      };
+
       return FacetedSearch;
 
     })(Models.Base);

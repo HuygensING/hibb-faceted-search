@@ -44,7 +44,13 @@ define (require) ->
 				jqXHR.fail (jqXHR, textStatus, errorThrown) =>
 					if jqXHR.status is 401
 						@publish 'unauthorized'
-				
+
+		setCursor: (direction, cb, context) ->
+			if @serverResponse[direction]
+				jqXHR = ajax.get url: @serverResponse[direction]
+				jqXHR.done (response) =>
+					@serverResponse = response
+					cb.call context, response
 
 # EXAMPLE QUERY:
 # {

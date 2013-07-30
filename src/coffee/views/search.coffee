@@ -63,7 +63,7 @@ define (require) ->
 		render: ->
 			super
 
-			rtpl = _.template Templates.Search, @model.attributes
+			rtpl = _.template Templates.Search, searchOptions: @model.attributes
 			@$('.placeholder').html rtpl
 
 			checkboxes = @$(':checkbox')

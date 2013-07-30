@@ -74,6 +74,19 @@
         });
       };
 
+      FacetedSearch.prototype.next = function() {
+        return this.model.setCursor('_next', this.publishResult, this);
+      };
+
+      FacetedSearch.prototype.prev = function() {
+        return this.model.setCursor('_prev', this.publishResult, this);
+      };
+
+      FacetedSearch.prototype.publishResult = function(result) {
+        this.trigger('faceted-search:results', result);
+        return this.publish('faceted-search:results', result);
+      };
+
       FacetedSearch.prototype.renderFacets = function(data) {
         var facetData, fragment, index, _ref1, _ref2;
         this.$('.loader').hide();
@@ -84,11 +97,15 @@
           for (index in _ref1) {
             if (!__hasProp.call(_ref1, index)) continue;
             facetData = _ref1[index];
-            this.facetViews[facetData.name] = new config.facetViewMap[facetData.type]({
-              attrs: facetData
-            });
-            this.listenTo(this.facetViews[facetData.name], 'change', this.fetchResults);
-            fragment.appendChild(this.facetViews[facetData.name].el);
+            if (facetData.type in config.facetViewMap) {
+              this.facetViews[facetData.name] = new config.facetViewMap[facetData.type]({
+                attrs: facetData
+              });
+              this.listenTo(this.facetViews[facetData.name], 'change', this.fetchResults);
+              fragment.appendChild(this.facetViews[facetData.name].el);
+            } else {
+              console.error('Unknown facetView', facetData.type);
+            }
           }
           this.$('.facets').html(fragment);
         } else {
@@ -99,8 +116,7 @@
             this.facetViews[data.name].update(data.options);
           }
         }
-        this.trigger('faceted-search:results', this.model.serverResponse);
-        return this.publish('faceted-search:results', this.model.serverResponse);
+        return this.publishResult(this.model.serverResponse);
       };
 
       return FacetedSearch;

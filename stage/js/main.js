@@ -4585,6 +4585,20 @@ define('text!html/facet/date.html',[],function () { return '<header><h3 data-nam
         }
       };
 
+      FacetedSearch.prototype.setCursor = function(direction, cb, context) {
+        var jqXHR,
+          _this = this;
+        if (this.serverResponse[direction]) {
+          jqXHR = ajax.get({
+            url: this.serverResponse[direction]
+          });
+          return jqXHR.done(function(response) {
+            _this.serverResponse = response;
+            return cb.call(context, response);
+          });
+        }
+      };
+
       return FacetedSearch;
 
     })(Models.Base);
@@ -4630,7 +4644,7 @@ define("models/restclient", function(){});
 
 }).call(this);
 
-define('text!html/search.html',[],function () { return '\n<header>\n  <h3>Text search</h3><small>&#8711;</small>\n  <div class="options">\n    <div class="row span1 align middle">\n      <div class="cell span1 casesensitive">\n        <input id="cb_casesensitive" type="checkbox" name="cb_casesensitive" data-prop="caseSensitive"/>\n        <label for="cb_casesensitive">Match case</label>\n      </div>\n    </div><% if (searchInAnnotations !== undefined || searchInTranscriptions !== undefined) { %>\n    <% cb_searchin_annotations_checked = (searchInAnnotations) ? \' checked \' : \'\' %>\n    <% cb_searchin_transcriptions_checked = (searchInTranscriptions) ? \' checked \' : \'\' %>\n    <div class="row span1">\n      <div class="cell span1">\n        <h4>Search in</h4>\n        <ul class="searchins"><% if (searchInAnnotations !== undefined) { %>\n          <li class="searchin"><input id="cb_searchin_annotations" type="checkbox" data-prop="searchInAnnotations"<%= cb_searchin_annotations_checked %>>\n            <label for="cb_searchin_annotations">Annotations</label>\n          </li><% } %>\n          <% if (searchInTranscriptions !== undefined) { %>\n          <li class="searchin"><input id="cb_searchin_transcriptions" type="checkbox" data-prop="searchInTranscriptions"<%= cb_searchin_transcriptions_checked %>>\n            <label for="cb_searchin_transcriptions">Transcriptions</label>\n          </li><% } %>\n        </ul>\n      </div>\n    </div><% } %>\n    <% if (textLayers) { %>\n    <div class="row span1">\n      <div class="cell span1">\n        <h4>Text layers</h4>\n        <ul class="textlayers"><% _.each(textLayers, function(tl) { %>\n          <li class="textlayer">\n            <input id="cb_textlayer_<%= tl %>" type="checkbox" data-proparr="textLayers"/>\n            <label for="cb_textlayer_<%= tl %>"><%= tl %></label>\n          </li><% }); %>\n        </ul>\n      </div>\n    </div><% } %>\n  </div>\n</header>\n<div class="body">\n  <div class="row span4 align middle">\n    <div class="cell span3">\n      <div class="padr4">\n        <input id="search" type="text" name="search"/>\n      </div>\n    </div>\n    <div class="cell span1">\n      <button class="search">Search</button>\n    </div>\n  </div>\n</div>';});
+define('text!html/search.html',[],function () { return '\n<header>\n  <h3>Text search</h3><small>&#8711;</small>\n  <div class="options">\n    <div class="row span1 align middle">\n      <div class="cell span1 casesensitive">\n        <input id="cb_casesensitive" type="checkbox" name="cb_casesensitive" data-prop="caseSensitive"/>\n        <label for="cb_casesensitive">Match case</label>\n      </div>\n    </div><% console.log(\'searchInAnnotations\' in searchOptions); %>\n    <% if (\'searchInAnnotations\' in searchOptions || \'searchInTranscriptions\' in searchOptions) { %>\n    <% cb_searchin_annotations_checked = (\'searchInAnnotations\' in searchOptions && searchOptions.searchInAnnotations) ? \' checked \' : \'\' %>\n    <% cb_searchin_transcriptions_checked = (\'searchInTranscriptions\' in searchOptions && searchOptions.searchInTranscriptions) ? \' checked \' : \'\' %>\n    <div class="row span1">\n      <div class="cell span1">\n        <h4>Search in</h4>\n        <ul class="searchins"><% if (\'searchInAnnotations\' in searchOptions) { %>\n          <li class="searchin"><input id="cb_searchin_annotations" type="checkbox" data-prop="searchInAnnotations"<%= cb_searchin_annotations_checked %>>\n            <label for="cb_searchin_annotations">Annotations</label>\n          </li><% } %>\n          <% if (\'searchInTranscriptions\' in searchOptions) { %>\n          <li class="searchin"><input id="cb_searchin_transcriptions" type="checkbox" data-prop="searchInTranscriptions"<%= cb_searchin_transcriptions_checked %>>\n            <label for="cb_searchin_transcriptions">Transcriptions</label>\n          </li><% } %>\n        </ul>\n      </div>\n    </div><% } %>\n    <% if (\'textLayers\' in searchOptions) { %>\n    <div class="row span1">\n      <div class="cell span1">\n        <h4>Text layers</h4>\n        <ul class="textlayers"><% _.each(textLayers, function(tl) { %>\n          <li class="textlayer">\n            <input id="cb_textlayer_<%= tl %>" type="checkbox" data-proparr="textLayers"/>\n            <label for="cb_textlayer_<%= tl %>"><%= tl %></label>\n          </li><% }); %>\n        </ul>\n      </div>\n    </div><% } %>\n  </div>\n</header>\n<div class="body">\n  <div class="row span4 align middle">\n    <div class="cell span3">\n      <div class="padr4">\n        <input id="search" type="text" name="search"/>\n      </div>\n    </div>\n    <div class="cell span1">\n      <button class="search">Search</button>\n    </div>\n  </div>\n</div>';});
 
 (function() {
   var __hasProp = {}.hasOwnProperty,
@@ -4690,7 +4704,9 @@ define('text!html/search.html',[],function () { return '\n<header>\n  <h3>Text s
         var checkboxes, rtpl,
           _this = this;
         Search.__super__.render.apply(this, arguments);
-        rtpl = _.template(Templates.Search, this.model.attributes);
+        rtpl = _.template(Templates.Search, {
+          searchOptions: this.model.attributes
+        });
         this.$('.placeholder').html(rtpl);
         checkboxes = this.$(':checkbox');
         checkboxes.change(function(ev) {
@@ -4794,6 +4810,19 @@ define('text!html/faceted-search.html',[],function () { return '\n<div class="fa
         });
       };
 
+      FacetedSearch.prototype.next = function() {
+        return this.model.setCursor('_next', this.publishResult, this);
+      };
+
+      FacetedSearch.prototype.prev = function() {
+        return this.model.setCursor('_prev', this.publishResult, this);
+      };
+
+      FacetedSearch.prototype.publishResult = function(result) {
+        this.trigger('faceted-search:results', result);
+        return this.publish('faceted-search:results', result);
+      };
+
       FacetedSearch.prototype.renderFacets = function(data) {
         var facetData, fragment, index, _ref1, _ref2;
         this.$('.loader').hide();
@@ -4804,11 +4833,15 @@ define('text!html/faceted-search.html',[],function () { return '\n<div class="fa
           for (index in _ref1) {
             if (!__hasProp.call(_ref1, index)) continue;
             facetData = _ref1[index];
-            this.facetViews[facetData.name] = new config.facetViewMap[facetData.type]({
-              attrs: facetData
-            });
-            this.listenTo(this.facetViews[facetData.name], 'change', this.fetchResults);
-            fragment.appendChild(this.facetViews[facetData.name].el);
+            if (facetData.type in config.facetViewMap) {
+              this.facetViews[facetData.name] = new config.facetViewMap[facetData.type]({
+                attrs: facetData
+              });
+              this.listenTo(this.facetViews[facetData.name], 'change', this.fetchResults);
+              fragment.appendChild(this.facetViews[facetData.name].el);
+            } else {
+              console.error('Unknown facetView', facetData.type);
+            }
           }
           this.$('.facets').html(fragment);
         } else {
@@ -4819,8 +4852,7 @@ define('text!html/faceted-search.html',[],function () { return '\n<div class="fa
             this.facetViews[data.name].update(data.options);
           }
         }
-        this.trigger('faceted-search:results', this.model.serverResponse);
-        return this.publish('faceted-search:results', this.model.serverResponse);
+        return this.publishResult(this.model.serverResponse);
       };
 
       return FacetedSearch;

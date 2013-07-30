@@ -41,7 +41,7 @@ define (require) ->
 		render: ->
 			rtpl = _.template Templates.FacetedSearch
 			@$el.html rtpl
-
+ 
 			@$('.loader').fadeIn('slow')
 
 			if config.search
@@ -56,6 +56,13 @@ define (require) ->
 		fetchResults: (queryOptions={}) ->
 			@model.set queryOptions
 			@model.fetch success: => @renderFacets()
+
+		next: -> @model.setCursor '_next', @publishResult, @
+		prev: -> @model.setCursor '_prev', @publishResult, @
+
+		publishResult: (result) ->
+			@trigger 'faceted-search:results', result # Trigger for external use
+			@publish 'faceted-search:results', result # Publish for internal use
 					
 		renderFacets: (data) ->
 			@$('.loader').hide()
@@ -66,16 +73,19 @@ define (require) ->
 				fragment = document.createDocumentFragment()
 
 				for own index, facetData of @model.serverResponse.facets
-					@facetViews[facetData.name] = new config.facetViewMap[facetData.type] attrs: facetData
-					@listenTo @facetViews[facetData.name], 'change', @fetchResults
-					fragment.appendChild @facetViews[facetData.name].el
-					# @$('.facets').append @facetViews[facetData.name].$el
+					if facetData.type of config.facetViewMap
+						@facetViews[facetData.name] = new config.facetViewMap[facetData.type] attrs: facetData
+						@listenTo @facetViews[facetData.name], 'change', @fetchResults
+						fragment.appendChild @facetViews[facetData.name].el
+						# @$('.facets').append @facetViews[facetData.name].$el
+					else 
+						console.error 'Unknown facetView', facetData.type
 
 				@$('.facets').html fragment
 			else
 				for own index, data of @model.serverResponse.facets
 					@facetViews[data.name].update(data.options)
 
-
-			@trigger 'faceted-search:results', @model.serverResponse # Trigger for external use
-			@publish 'faceted-search:results', @model.serverResponse # Publish for internal use
+			@publishResult @model.serverResponse
+			# @trigger 'faceted-search:results', @model.serverResponse # Trigger for external use
+			# @publish 'faceted-search:results', @model.serverResponse # Publish for internal use
