@@ -14,9 +14,22 @@
 				cursor pointer
 
 			small
-				color #555
+				cursor pointer
+				float right
+				color #888
 				margin-left 4%
-			
+				-webkit-transform rotate(90deg)
+				-moz-transform rotate(90deg)
+				transform rotate(90deg)
+				-webkit-transition -webkit-transform 500ms
+				-moz-transition -moz-transform 500ms
+				transition transform 500ms
+
+				&.active
+					-webkit-transform rotate(0deg)
+					-moz-transform rotate(0deg)
+					transform rotate(0deg)			
+
 			.options
 				display none
 				background-color darken(backgroundcolor, 5%)
@@ -24,6 +37,9 @@
 				margin-top 10px
 				box-shadow 1px 1px 4px #BDBDBD
 				border-radius 4px
+
+				h4
+					margin-top 12px
 
 				small.optioncount
 					margin-left 8px

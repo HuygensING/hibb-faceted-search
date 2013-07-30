@@ -22,12 +22,17 @@ define (require) ->
 		initialize: (options) ->
 			super # ANTIPATTERN
 
+			facetViewMap = options.facetViewMap
+			delete options.facetViewMap
+
 			_.extend config, options
+			_.extend config.facetViewMap, facetViewMap
 
 			@facetViews = {}
 			@firstRender = true
 
-			@model = new Models.FacetedSearch config.queryOptions
+			queryOptions = _.extend config.queryOptions, config.textSearchOptions
+			@model = new Models.FacetedSearch queryOptions
 
 			@subscribe 'unauthorized', => @trigger 'unauthorized'
 
@@ -36,6 +41,8 @@ define (require) ->
 		render: ->
 			rtpl = _.template Templates.FacetedSearch
 			@$el.html rtpl
+
+			@$('.loader').fadeIn('slow')
 
 			if config.search
 				search = new Views.Search()
@@ -51,29 +58,23 @@ define (require) ->
 			@model.fetch success: => @renderFacets()
 					
 		renderFacets: (data) ->
-			map =
-				BOOLEAN: Views.Facets.Boolean
-				LIST: Views.Facets.List
-				DATE: Views.Facets.Date
+			@$('.loader').hide()
 
-			if @firstRender # TODO: make serverResponse a collectoin and check length (if length is 1 then it's the first render)
+			if @firstRender # TODO: make a collection of serverResponses (or a hash?) and check length (if length is 1 then it's the first render)
 				@firstRender = false
 
-				for own index, facetData of @model.serverResponse.facets
-					@facetViews[facetData.name] = new map[facetData.type] attrs: facetData
-					@listenTo @facetViews[facetData.name], 'change', @fetchResults
-					@$('.facets').append @facetViews[facetData.name].$el
+				fragment = document.createDocumentFragment()
 
-				# console.log @facetViews
+				for own index, facetData of @model.serverResponse.facets
+					@facetViews[facetData.name] = new config.facetViewMap[facetData.type] attrs: facetData
+					@listenTo @facetViews[facetData.name], 'change', @fetchResults
+					fragment.appendChild @facetViews[facetData.name].el
+					# @$('.facets').append @facetViews[facetData.name].$el
+
+				@$('.facets').html fragment
 			else
-				# console.log 'server response', @model.serverResponse
 				for own index, data of @model.serverResponse.facets
 					@facetViews[data.name].update(data.options)
-
-				# _.each @facetViews, (view, name) =>
-				# 	facetInResponse = _.findWhere @model.serverResponse.facets, name: name
-				# 	@facetViews[name].update() if not facetInResponse?
-				# # console.log 'empties', empties
 
 
 			@trigger 'faceted-search:results', @model.serverResponse # Trigger for external use

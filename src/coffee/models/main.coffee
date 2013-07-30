@@ -11,8 +11,21 @@ define (require) ->
 		serverResponse: {} # Make into collection? With caching?
 
 		defaults: ->
-			term: '*'
 			facetValues: []
+
+		parse: (attrs) ->
+			@serverResponse = attrs
+			
+			{}
+
+		set: (attrs, options) ->
+			if attrs.facetValue?
+				facetValues = _.reject @get('facetValues'), (data) -> data.name is attrs.facetValue.name
+				facetValues.push attrs.facetValue if attrs.facetValue.values.length # Only push if there are values (values is empty when last checkbox is unchecked)
+				attrs.facetValues = facetValues # Add facetValues to options
+				delete attrs.facetValue # The single facetValue is not send to the server
+
+			super attrs, options
 
 		sync: (method, model, options) ->
 			if method is 'read'
@@ -31,57 +44,6 @@ define (require) ->
 				jqXHR.fail (jqXHR, textStatus, errorThrown) =>
 					if jqXHR.status is 401
 						@publish 'unauthorized'
-
-		parse: (attrs) ->
-			@serverResponse = attrs
-			
-			{}
-
-		# queryOptions: ->
-		# 	term: '*'
-		# 	facetValues: []
-		# 	# sort: 'score'
-		# 	# fuzzy: false
-		# 	# caseSensitive: false
-
-		# 	# sortDir: 'textLayers'
-		# 	# asc: ["Diplomatic"]
-		# 	# searchInAnnotations: false
-
-		# getQueryOption: (attr) ->
-		# 	@get('queryOptions')[attr]
-
-		# setQueryOption: (attr, value) ->
-		# 	qo = @get 'queryOptions'
-		# 	qo[attr] = value
-		# 	@set 'queryOptions', qo
-		# 	@trigger 'change:queryOptions'
-
-		# setQueryOptions: (options) ->
-		# 	# Facets individually send a facetValue, but the server wants them combined in a 'facetValues'
-		# 	# Replace facetValue in facetValues and remove original facetValue
-		# 	if options.facetValue?
-		# 		facetValues = _.reject @getQueryOption('facetValues'), (data) -> data.name is options.facetValue.name
-		# 		facetValues.push options.facetValue if options.facetValue.values.length # Only push if there are values (values is empty when last checkbox is unchecked)
-		# 		options.facetValues = facetValues # Add facetValues to options
-		# 		delete options.facetValue # The single facetValue is not send to the server
-
-		# 	@setQueryOption attr, value for own attr, value of options
-
-		set: (attrs, options) ->
-			if attrs.facetValue?
-				facetValues = _.reject @get('facetValues'), (data) -> data.name is attrs.facetValue.name
-				facetValues.push attrs.facetValue if attrs.facetValue.values.length # Only push if there are values (values is empty when last checkbox is unchecked)
-				attrs.facetValues = facetValues # Add facetValues to options
-				delete attrs.facetValue # The single facetValue is not send to the server
-
-			super attrs, options
-
-
-		# initialize: ->
-		# 	super
-
-		# 	@set 'queryOptions', _.extend @queryOptions(), @get('queryOptions')
 				
 
 # EXAMPLE QUERY:

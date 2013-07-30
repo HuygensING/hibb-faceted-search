@@ -32,6 +32,7 @@ define (require) ->
 
 
 		toggleOptions: (ev) ->
+			@$('header small').toggleClass('active')
 			@$('header .options').slideToggle()
 			@$('.options .listsearch').focus()
 

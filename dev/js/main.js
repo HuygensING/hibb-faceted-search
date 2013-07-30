@@ -30,12 +30,17 @@
       }
 
       FacetedSearch.prototype.initialize = function(options) {
-        var _this = this;
+        var facetViewMap, queryOptions,
+          _this = this;
         FacetedSearch.__super__.initialize.apply(this, arguments);
+        facetViewMap = options.facetViewMap;
+        delete options.facetViewMap;
         _.extend(config, options);
+        _.extend(config.facetViewMap, facetViewMap);
         this.facetViews = {};
         this.firstRender = true;
-        this.model = new Models.FacetedSearch(config.queryOptions);
+        queryOptions = _.extend(config.queryOptions, config.textSearchOptions);
+        this.model = new Models.FacetedSearch(queryOptions);
         this.subscribe('unauthorized', function() {
           return _this.trigger('unauthorized');
         });
@@ -46,6 +51,7 @@
         var rtpl, search;
         rtpl = _.template(Templates.FacetedSearch);
         this.$el.html(rtpl);
+        this.$('.loader').fadeIn('slow');
         if (config.search) {
           search = new Views.Search();
           this.$('.search-placeholder').html(search.$el);
@@ -69,24 +75,22 @@
       };
 
       FacetedSearch.prototype.renderFacets = function(data) {
-        var facetData, index, map, _ref1, _ref2;
-        map = {
-          BOOLEAN: Views.Facets.Boolean,
-          LIST: Views.Facets.List,
-          DATE: Views.Facets.Date
-        };
+        var facetData, fragment, index, _ref1, _ref2;
+        this.$('.loader').hide();
         if (this.firstRender) {
           this.firstRender = false;
+          fragment = document.createDocumentFragment();
           _ref1 = this.model.serverResponse.facets;
           for (index in _ref1) {
             if (!__hasProp.call(_ref1, index)) continue;
             facetData = _ref1[index];
-            this.facetViews[facetData.name] = new map[facetData.type]({
+            this.facetViews[facetData.name] = new config.facetViewMap[facetData.type]({
               attrs: facetData
             });
             this.listenTo(this.facetViews[facetData.name], 'change', this.fetchResults);
-            this.$('.facets').append(this.facetViews[facetData.name].$el);
+            fragment.appendChild(this.facetViews[facetData.name].el);
           }
+          this.$('.facets').html(fragment);
         } else {
           _ref2 = this.model.serverResponse.facets;
           for (index in _ref2) {

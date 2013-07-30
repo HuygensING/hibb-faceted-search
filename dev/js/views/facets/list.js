@@ -45,6 +45,7 @@
       };
 
       ListFacet.prototype.toggleOptions = function(ev) {
+        this.$('header small').toggleClass('active');
         this.$('header .options').slideToggle();
         return this.$('.options .listsearch').focus();
       };

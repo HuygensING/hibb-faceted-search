@@ -1,7 +1,9 @@
 .facet .facet header,.faceted-search .facet header{margin-bottom:10px;}
 .facet .facet header h3,.faceted-search .facet header h3{padding:0;margin:0;display:inline;cursor:pointer}
-.facet .facet header small,.faceted-search .facet header small{color:#555;margin-left:4%}
+.facet .facet header small,.faceted-search .facet header small{cursor:pointer;float:right;color:#888;margin-left:4%;-webkit-transform:rotate(90deg);-moz-transform:rotate(90deg);transform:rotate(90deg);-webkit-transition:-webkit-transform 500ms;-moz-transition:-moz-transform 500ms;transition:transform 500ms;}
+.facet .facet header small.active,.faceted-search .facet header small.active{-webkit-transform:rotate(0);-moz-transform:rotate(0);transform:rotate(0)}
 .facet .facet header .options,.faceted-search .facet header .options{display:none;background-color:#e5e5e5;padding:2%;margin-top:10px;box-shadow:1px 1px 4px #bdbdbd;border-radius:4px;}
+.facet .facet header .options h4,.faceted-search .facet header .options h4{margin-top:12px}
 .facet .facet header .options small.optioncount,.faceted-search .facet header .options small.optioncount{margin-left:8px}
 .facet .facet .options,.faceted-search .facet .options{max-height:200px;overflow:auto;}
 .facet .facet .options ul,.faceted-search .facet .options ul{list-style:none;}
@@ -269,6 +271,7 @@
 .padb10{padding-bottom:10%}
 
 .faceted-search{max-width:300px;}
+.faceted-search input[type="checkbox"]{margin:0;padding:0}
 .faceted-search form .facet{border-bottom:1px solid #fff;background:#f1f1f1}
 .faceted-search form .facet:first-child{border-top-left-radius:8px;border-top-right-radius:8px}
 .faceted-search form .facet:last-child{border-bottom-left-radius:8px;border-bottom-right-radius:8px}

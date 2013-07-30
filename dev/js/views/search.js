@@ -3,7 +3,11 @@
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
   define(function(require) {
-    var Search, Templates, Views, _ref;
+    var Models, Search, Templates, Views, config, _ref;
+    config = require('config');
+    Models = {
+      Search: require('models/search')
+    };
     Views = {
       Facet: require('views/facet')
     };
@@ -21,8 +25,8 @@
       Search.prototype.className = 'facet search';
 
       Search.prototype.events = {
-        'click button.search': 'search',
-        'click header small': 'toggleOptions'
+        'click header small': 'toggleOptions',
+        'click button.search': 'search'
       };
 
       Search.prototype.toggleOptions = function(ev) {
@@ -41,16 +45,33 @@
         });
       };
 
-      Search.prototype.initialize = function() {
+      Search.prototype.initialize = function(options) {
         Search.__super__.initialize.apply(this, arguments);
+        this.model = new Models.Search(config.textSearchOptions);
+        console.log(this.model.attributes);
         return this.render();
       };
 
       Search.prototype.render = function() {
-        var rtpl;
+        var checkboxes, rtpl,
+          _this = this;
         Search.__super__.render.apply(this, arguments);
-        rtpl = _.template(Templates.Search);
+        rtpl = _.template(Templates.Search, this.model.attributes);
         this.$('.placeholder').html(rtpl);
+        checkboxes = this.$(':checkbox');
+        checkboxes.change(function(ev) {
+          _.each(checkboxes, function(cb) {
+            var checked, prop;
+            prop = cb.getAttribute('data-prop');
+            console.log(prop);
+            if (prop != null) {
+              checked = $(cb).attr('checked') === 'checked' ? true : false;
+              console.log(cb.checked);
+              return _this.model.set(prop, checked);
+            }
+          });
+          return console.log(_this.model.attributes);
+        });
         return this;
       };
 

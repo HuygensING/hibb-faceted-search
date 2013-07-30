@@ -419,18 +419,6 @@ var requirejs, require, define;
 
 define("../lib/almond/almond", function(){});
 
-(function() {
-  define('config',['require'],function(require) {
-    return {
-      search: true,
-      baseUrl: '',
-      searchUrl: '',
-      token: null
-    };
-  });
-
-}).call(this);
-
 /*! jQuery v2.0.3 | (c) 2005, 2013 jQuery Foundation, Inc. | jquery.org/license
 //@ sourceMappingURL=jquery.min.map
 */
@@ -439,37 +427,57 @@ define("../lib/almond/almond", function(){});
 },delegate:function(e,t,n,r){return this.on(t,e,n,r)},undelegate:function(e,t,n){return 1===arguments.length?this.off(e,"**"):this.off(t,e||"**",n)}});var Xt,Ut,Yt=x.now(),Vt=/\?/,Gt=/#.*$/,Jt=/([?&])_=[^&]*/,Qt=/^(.*?):[ \t]*([^\r\n]*)$/gm,Kt=/^(?:about|app|app-storage|.+-extension|file|res|widget):$/,Zt=/^(?:GET|HEAD)$/,en=/^\/\//,tn=/^([\w.+-]+:)(?:\/\/([^\/?#:]*)(?::(\d+)|)|)/,nn=x.fn.load,rn={},on={},sn="*/".concat("*");try{Ut=i.href}catch(an){Ut=o.createElement("a"),Ut.href="",Ut=Ut.href}Xt=tn.exec(Ut.toLowerCase())||[];function un(e){return function(t,n){"string"!=typeof t&&(n=t,t="*");var r,i=0,o=t.toLowerCase().match(w)||[];if(x.isFunction(n))while(r=o[i++])"+"===r[0]?(r=r.slice(1)||"*",(e[r]=e[r]||[]).unshift(n)):(e[r]=e[r]||[]).push(n)}}function ln(e,t,n,r){var i={},o=e===on;function s(a){var u;return i[a]=!0,x.each(e[a]||[],function(e,a){var l=a(t,n,r);return"string"!=typeof l||o||i[l]?o?!(u=l):undefined:(t.dataTypes.unshift(l),s(l),!1)}),u}return s(t.dataTypes[0])||!i["*"]&&s("*")}function cn(e,t){var n,r,i=x.ajaxSettings.flatOptions||{};for(n in t)t[n]!==undefined&&((i[n]?e:r||(r={}))[n]=t[n]);return r&&x.extend(!0,e,r),e}x.fn.load=function(e,t,n){if("string"!=typeof e&&nn)return nn.apply(this,arguments);var r,i,o,s=this,a=e.indexOf(" ");return a>=0&&(r=e.slice(a),e=e.slice(0,a)),x.isFunction(t)?(n=t,t=undefined):t&&"object"==typeof t&&(i="POST"),s.length>0&&x.ajax({url:e,type:i,dataType:"html",data:t}).done(function(e){o=arguments,s.html(r?x("<div>").append(x.parseHTML(e)).find(r):e)}).complete(n&&function(e,t){s.each(n,o||[e.responseText,t,e])}),this},x.each(["ajaxStart","ajaxStop","ajaxComplete","ajaxError","ajaxSuccess","ajaxSend"],function(e,t){x.fn[t]=function(e){return this.on(t,e)}}),x.extend({active:0,lastModified:{},etag:{},ajaxSettings:{url:Ut,type:"GET",isLocal:Kt.test(Xt[1]),global:!0,processData:!0,async:!0,contentType:"application/x-www-form-urlencoded; charset=UTF-8",accepts:{"*":sn,text:"text/plain",html:"text/html",xml:"application/xml, text/xml",json:"application/json, text/javascript"},contents:{xml:/xml/,html:/html/,json:/json/},responseFields:{xml:"responseXML",text:"responseText",json:"responseJSON"},converters:{"* text":String,"text html":!0,"text json":x.parseJSON,"text xml":x.parseXML},flatOptions:{url:!0,context:!0}},ajaxSetup:function(e,t){return t?cn(cn(e,x.ajaxSettings),t):cn(x.ajaxSettings,e)},ajaxPrefilter:un(rn),ajaxTransport:un(on),ajax:function(e,t){"object"==typeof e&&(t=e,e=undefined),t=t||{};var n,r,i,o,s,a,u,l,c=x.ajaxSetup({},t),p=c.context||c,f=c.context&&(p.nodeType||p.jquery)?x(p):x.event,h=x.Deferred(),d=x.Callbacks("once memory"),g=c.statusCode||{},m={},y={},v=0,b="canceled",T={readyState:0,getResponseHeader:function(e){var t;if(2===v){if(!o){o={};while(t=Qt.exec(i))o[t[1].toLowerCase()]=t[2]}t=o[e.toLowerCase()]}return null==t?null:t},getAllResponseHeaders:function(){return 2===v?i:null},setRequestHeader:function(e,t){var n=e.toLowerCase();return v||(e=y[n]=y[n]||e,m[e]=t),this},overrideMimeType:function(e){return v||(c.mimeType=e),this},statusCode:function(e){var t;if(e)if(2>v)for(t in e)g[t]=[g[t],e[t]];else T.always(e[T.status]);return this},abort:function(e){var t=e||b;return n&&n.abort(t),k(0,t),this}};if(h.promise(T).complete=d.add,T.success=T.done,T.error=T.fail,c.url=((e||c.url||Ut)+"").replace(Gt,"").replace(en,Xt[1]+"//"),c.type=t.method||t.type||c.method||c.type,c.dataTypes=x.trim(c.dataType||"*").toLowerCase().match(w)||[""],null==c.crossDomain&&(a=tn.exec(c.url.toLowerCase()),c.crossDomain=!(!a||a[1]===Xt[1]&&a[2]===Xt[2]&&(a[3]||("http:"===a[1]?"80":"443"))===(Xt[3]||("http:"===Xt[1]?"80":"443")))),c.data&&c.processData&&"string"!=typeof c.data&&(c.data=x.param(c.data,c.traditional)),ln(rn,c,t,T),2===v)return T;u=c.global,u&&0===x.active++&&x.event.trigger("ajaxStart"),c.type=c.type.toUpperCase(),c.hasContent=!Zt.test(c.type),r=c.url,c.hasContent||(c.data&&(r=c.url+=(Vt.test(r)?"&":"?")+c.data,delete c.data),c.cache===!1&&(c.url=Jt.test(r)?r.replace(Jt,"$1_="+Yt++):r+(Vt.test(r)?"&":"?")+"_="+Yt++)),c.ifModified&&(x.lastModified[r]&&T.setRequestHeader("If-Modified-Since",x.lastModified[r]),x.etag[r]&&T.setRequestHeader("If-None-Match",x.etag[r])),(c.data&&c.hasContent&&c.contentType!==!1||t.contentType)&&T.setRequestHeader("Content-Type",c.contentType),T.setRequestHeader("Accept",c.dataTypes[0]&&c.accepts[c.dataTypes[0]]?c.accepts[c.dataTypes[0]]+("*"!==c.dataTypes[0]?", "+sn+"; q=0.01":""):c.accepts["*"]);for(l in c.headers)T.setRequestHeader(l,c.headers[l]);if(c.beforeSend&&(c.beforeSend.call(p,T,c)===!1||2===v))return T.abort();b="abort";for(l in{success:1,error:1,complete:1})T[l](c[l]);if(n=ln(on,c,t,T)){T.readyState=1,u&&f.trigger("ajaxSend",[T,c]),c.async&&c.timeout>0&&(s=setTimeout(function(){T.abort("timeout")},c.timeout));try{v=1,n.send(m,k)}catch(C){if(!(2>v))throw C;k(-1,C)}}else k(-1,"No Transport");function k(e,t,o,a){var l,m,y,b,w,C=t;2!==v&&(v=2,s&&clearTimeout(s),n=undefined,i=a||"",T.readyState=e>0?4:0,l=e>=200&&300>e||304===e,o&&(b=pn(c,T,o)),b=fn(c,b,T,l),l?(c.ifModified&&(w=T.getResponseHeader("Last-Modified"),w&&(x.lastModified[r]=w),w=T.getResponseHeader("etag"),w&&(x.etag[r]=w)),204===e||"HEAD"===c.type?C="nocontent":304===e?C="notmodified":(C=b.state,m=b.data,y=b.error,l=!y)):(y=C,(e||!C)&&(C="error",0>e&&(e=0))),T.status=e,T.statusText=(t||C)+"",l?h.resolveWith(p,[m,C,T]):h.rejectWith(p,[T,C,y]),T.statusCode(g),g=undefined,u&&f.trigger(l?"ajaxSuccess":"ajaxError",[T,c,l?m:y]),d.fireWith(p,[T,C]),u&&(f.trigger("ajaxComplete",[T,c]),--x.active||x.event.trigger("ajaxStop")))}return T},getJSON:function(e,t,n){return x.get(e,t,n,"json")},getScript:function(e,t){return x.get(e,undefined,t,"script")}}),x.each(["get","post"],function(e,t){x[t]=function(e,n,r,i){return x.isFunction(n)&&(i=i||r,r=n,n=undefined),x.ajax({url:e,type:t,dataType:i,data:n,success:r})}});function pn(e,t,n){var r,i,o,s,a=e.contents,u=e.dataTypes;while("*"===u[0])u.shift(),r===undefined&&(r=e.mimeType||t.getResponseHeader("Content-Type"));if(r)for(i in a)if(a[i]&&a[i].test(r)){u.unshift(i);break}if(u[0]in n)o=u[0];else{for(i in n){if(!u[0]||e.converters[i+" "+u[0]]){o=i;break}s||(s=i)}o=o||s}return o?(o!==u[0]&&u.unshift(o),n[o]):undefined}function fn(e,t,n,r){var i,o,s,a,u,l={},c=e.dataTypes.slice();if(c[1])for(s in e.converters)l[s.toLowerCase()]=e.converters[s];o=c.shift();while(o)if(e.responseFields[o]&&(n[e.responseFields[o]]=t),!u&&r&&e.dataFilter&&(t=e.dataFilter(t,e.dataType)),u=o,o=c.shift())if("*"===o)o=u;else if("*"!==u&&u!==o){if(s=l[u+" "+o]||l["* "+o],!s)for(i in l)if(a=i.split(" "),a[1]===o&&(s=l[u+" "+a[0]]||l["* "+a[0]])){s===!0?s=l[i]:l[i]!==!0&&(o=a[0],c.unshift(a[1]));break}if(s!==!0)if(s&&e["throws"])t=s(t);else try{t=s(t)}catch(p){return{state:"parsererror",error:s?p:"No conversion from "+u+" to "+o}}}return{state:"success",data:t}}x.ajaxSetup({accepts:{script:"text/javascript, application/javascript, application/ecmascript, application/x-ecmascript"},contents:{script:/(?:java|ecma)script/},converters:{"text script":function(e){return x.globalEval(e),e}}}),x.ajaxPrefilter("script",function(e){e.cache===undefined&&(e.cache=!1),e.crossDomain&&(e.type="GET")}),x.ajaxTransport("script",function(e){if(e.crossDomain){var t,n;return{send:function(r,i){t=x("<script>").prop({async:!0,charset:e.scriptCharset,src:e.url}).on("load error",n=function(e){t.remove(),n=null,e&&i("error"===e.type?404:200,e.type)}),o.head.appendChild(t[0])},abort:function(){n&&n()}}}});var hn=[],dn=/(=)\?(?=&|$)|\?\?/;x.ajaxSetup({jsonp:"callback",jsonpCallback:function(){var e=hn.pop()||x.expando+"_"+Yt++;return this[e]=!0,e}}),x.ajaxPrefilter("json jsonp",function(t,n,r){var i,o,s,a=t.jsonp!==!1&&(dn.test(t.url)?"url":"string"==typeof t.data&&!(t.contentType||"").indexOf("application/x-www-form-urlencoded")&&dn.test(t.data)&&"data");return a||"jsonp"===t.dataTypes[0]?(i=t.jsonpCallback=x.isFunction(t.jsonpCallback)?t.jsonpCallback():t.jsonpCallback,a?t[a]=t[a].replace(dn,"$1"+i):t.jsonp!==!1&&(t.url+=(Vt.test(t.url)?"&":"?")+t.jsonp+"="+i),t.converters["script json"]=function(){return s||x.error(i+" was not called"),s[0]},t.dataTypes[0]="json",o=e[i],e[i]=function(){s=arguments},r.always(function(){e[i]=o,t[i]&&(t.jsonpCallback=n.jsonpCallback,hn.push(i)),s&&x.isFunction(o)&&o(s[0]),s=o=undefined}),"script"):undefined}),x.ajaxSettings.xhr=function(){try{return new XMLHttpRequest}catch(e){}};var gn=x.ajaxSettings.xhr(),mn={0:200,1223:204},yn=0,vn={};e.ActiveXObject&&x(e).on("unload",function(){for(var e in vn)vn[e]();vn=undefined}),x.support.cors=!!gn&&"withCredentials"in gn,x.support.ajax=gn=!!gn,x.ajaxTransport(function(e){var t;return x.support.cors||gn&&!e.crossDomain?{send:function(n,r){var i,o,s=e.xhr();if(s.open(e.type,e.url,e.async,e.username,e.password),e.xhrFields)for(i in e.xhrFields)s[i]=e.xhrFields[i];e.mimeType&&s.overrideMimeType&&s.overrideMimeType(e.mimeType),e.crossDomain||n["X-Requested-With"]||(n["X-Requested-With"]="XMLHttpRequest");for(i in n)s.setRequestHeader(i,n[i]);t=function(e){return function(){t&&(delete vn[o],t=s.onload=s.onerror=null,"abort"===e?s.abort():"error"===e?r(s.status||404,s.statusText):r(mn[s.status]||s.status,s.statusText,"string"==typeof s.responseText?{text:s.responseText}:undefined,s.getAllResponseHeaders()))}},s.onload=t(),s.onerror=t("error"),t=vn[o=yn++]=t("abort"),s.send(e.hasContent&&e.data||null)},abort:function(){t&&t()}}:undefined});var xn,bn,wn=/^(?:toggle|show|hide)$/,Tn=RegExp("^(?:([+-])=|)("+b+")([a-z%]*)$","i"),Cn=/queueHooks$/,kn=[An],Nn={"*":[function(e,t){var n=this.createTween(e,t),r=n.cur(),i=Tn.exec(t),o=i&&i[3]||(x.cssNumber[e]?"":"px"),s=(x.cssNumber[e]||"px"!==o&&+r)&&Tn.exec(x.css(n.elem,e)),a=1,u=20;if(s&&s[3]!==o){o=o||s[3],i=i||[],s=+r||1;do a=a||".5",s/=a,x.style(n.elem,e,s+o);while(a!==(a=n.cur()/r)&&1!==a&&--u)}return i&&(s=n.start=+s||+r||0,n.unit=o,n.end=i[1]?s+(i[1]+1)*i[2]:+i[2]),n}]};function En(){return setTimeout(function(){xn=undefined}),xn=x.now()}function Sn(e,t,n){var r,i=(Nn[t]||[]).concat(Nn["*"]),o=0,s=i.length;for(;s>o;o++)if(r=i[o].call(n,t,e))return r}function jn(e,t,n){var r,i,o=0,s=kn.length,a=x.Deferred().always(function(){delete u.elem}),u=function(){if(i)return!1;var t=xn||En(),n=Math.max(0,l.startTime+l.duration-t),r=n/l.duration||0,o=1-r,s=0,u=l.tweens.length;for(;u>s;s++)l.tweens[s].run(o);return a.notifyWith(e,[l,o,n]),1>o&&u?n:(a.resolveWith(e,[l]),!1)},l=a.promise({elem:e,props:x.extend({},t),opts:x.extend(!0,{specialEasing:{}},n),originalProperties:t,originalOptions:n,startTime:xn||En(),duration:n.duration,tweens:[],createTween:function(t,n){var r=x.Tween(e,l.opts,t,n,l.opts.specialEasing[t]||l.opts.easing);return l.tweens.push(r),r},stop:function(t){var n=0,r=t?l.tweens.length:0;if(i)return this;for(i=!0;r>n;n++)l.tweens[n].run(1);return t?a.resolveWith(e,[l,t]):a.rejectWith(e,[l,t]),this}}),c=l.props;for(Dn(c,l.opts.specialEasing);s>o;o++)if(r=kn[o].call(l,e,c,l.opts))return r;return x.map(c,Sn,l),x.isFunction(l.opts.start)&&l.opts.start.call(e,l),x.fx.timer(x.extend(u,{elem:e,anim:l,queue:l.opts.queue})),l.progress(l.opts.progress).done(l.opts.done,l.opts.complete).fail(l.opts.fail).always(l.opts.always)}function Dn(e,t){var n,r,i,o,s;for(n in e)if(r=x.camelCase(n),i=t[r],o=e[n],x.isArray(o)&&(i=o[1],o=e[n]=o[0]),n!==r&&(e[r]=o,delete e[n]),s=x.cssHooks[r],s&&"expand"in s){o=s.expand(o),delete e[r];for(n in o)n in e||(e[n]=o[n],t[n]=i)}else t[r]=i}x.Animation=x.extend(jn,{tweener:function(e,t){x.isFunction(e)?(t=e,e=["*"]):e=e.split(" ");var n,r=0,i=e.length;for(;i>r;r++)n=e[r],Nn[n]=Nn[n]||[],Nn[n].unshift(t)},prefilter:function(e,t){t?kn.unshift(e):kn.push(e)}});function An(e,t,n){var r,i,o,s,a,u,l=this,c={},p=e.style,f=e.nodeType&&Lt(e),h=q.get(e,"fxshow");n.queue||(a=x._queueHooks(e,"fx"),null==a.unqueued&&(a.unqueued=0,u=a.empty.fire,a.empty.fire=function(){a.unqueued||u()}),a.unqueued++,l.always(function(){l.always(function(){a.unqueued--,x.queue(e,"fx").length||a.empty.fire()})})),1===e.nodeType&&("height"in t||"width"in t)&&(n.overflow=[p.overflow,p.overflowX,p.overflowY],"inline"===x.css(e,"display")&&"none"===x.css(e,"float")&&(p.display="inline-block")),n.overflow&&(p.overflow="hidden",l.always(function(){p.overflow=n.overflow[0],p.overflowX=n.overflow[1],p.overflowY=n.overflow[2]}));for(r in t)if(i=t[r],wn.exec(i)){if(delete t[r],o=o||"toggle"===i,i===(f?"hide":"show")){if("show"!==i||!h||h[r]===undefined)continue;f=!0}c[r]=h&&h[r]||x.style(e,r)}if(!x.isEmptyObject(c)){h?"hidden"in h&&(f=h.hidden):h=q.access(e,"fxshow",{}),o&&(h.hidden=!f),f?x(e).show():l.done(function(){x(e).hide()}),l.done(function(){var t;q.remove(e,"fxshow");for(t in c)x.style(e,t,c[t])});for(r in c)s=Sn(f?h[r]:0,r,l),r in h||(h[r]=s.start,f&&(s.end=s.start,s.start="width"===r||"height"===r?1:0))}}function Ln(e,t,n,r,i){return new Ln.prototype.init(e,t,n,r,i)}x.Tween=Ln,Ln.prototype={constructor:Ln,init:function(e,t,n,r,i,o){this.elem=e,this.prop=n,this.easing=i||"swing",this.options=t,this.start=this.now=this.cur(),this.end=r,this.unit=o||(x.cssNumber[n]?"":"px")},cur:function(){var e=Ln.propHooks[this.prop];return e&&e.get?e.get(this):Ln.propHooks._default.get(this)},run:function(e){var t,n=Ln.propHooks[this.prop];return this.pos=t=this.options.duration?x.easing[this.easing](e,this.options.duration*e,0,1,this.options.duration):e,this.now=(this.end-this.start)*t+this.start,this.options.step&&this.options.step.call(this.elem,this.now,this),n&&n.set?n.set(this):Ln.propHooks._default.set(this),this}},Ln.prototype.init.prototype=Ln.prototype,Ln.propHooks={_default:{get:function(e){var t;return null==e.elem[e.prop]||e.elem.style&&null!=e.elem.style[e.prop]?(t=x.css(e.elem,e.prop,""),t&&"auto"!==t?t:0):e.elem[e.prop]},set:function(e){x.fx.step[e.prop]?x.fx.step[e.prop](e):e.elem.style&&(null!=e.elem.style[x.cssProps[e.prop]]||x.cssHooks[e.prop])?x.style(e.elem,e.prop,e.now+e.unit):e.elem[e.prop]=e.now}}},Ln.propHooks.scrollTop=Ln.propHooks.scrollLeft={set:function(e){e.elem.nodeType&&e.elem.parentNode&&(e.elem[e.prop]=e.now)}},x.each(["toggle","show","hide"],function(e,t){var n=x.fn[t];x.fn[t]=function(e,r,i){return null==e||"boolean"==typeof e?n.apply(this,arguments):this.animate(qn(t,!0),e,r,i)}}),x.fn.extend({fadeTo:function(e,t,n,r){return this.filter(Lt).css("opacity",0).show().end().animate({opacity:t},e,n,r)},animate:function(e,t,n,r){var i=x.isEmptyObject(e),o=x.speed(t,n,r),s=function(){var t=jn(this,x.extend({},e),o);(i||q.get(this,"finish"))&&t.stop(!0)};return s.finish=s,i||o.queue===!1?this.each(s):this.queue(o.queue,s)},stop:function(e,t,n){var r=function(e){var t=e.stop;delete e.stop,t(n)};return"string"!=typeof e&&(n=t,t=e,e=undefined),t&&e!==!1&&this.queue(e||"fx",[]),this.each(function(){var t=!0,i=null!=e&&e+"queueHooks",o=x.timers,s=q.get(this);if(i)s[i]&&s[i].stop&&r(s[i]);else for(i in s)s[i]&&s[i].stop&&Cn.test(i)&&r(s[i]);for(i=o.length;i--;)o[i].elem!==this||null!=e&&o[i].queue!==e||(o[i].anim.stop(n),t=!1,o.splice(i,1));(t||!n)&&x.dequeue(this,e)})},finish:function(e){return e!==!1&&(e=e||"fx"),this.each(function(){var t,n=q.get(this),r=n[e+"queue"],i=n[e+"queueHooks"],o=x.timers,s=r?r.length:0;for(n.finish=!0,x.queue(this,e,[]),i&&i.stop&&i.stop.call(this,!0),t=o.length;t--;)o[t].elem===this&&o[t].queue===e&&(o[t].anim.stop(!0),o.splice(t,1));for(t=0;s>t;t++)r[t]&&r[t].finish&&r[t].finish.call(this);delete n.finish})}});function qn(e,t){var n,r={height:e},i=0;for(t=t?1:0;4>i;i+=2-t)n=jt[i],r["margin"+n]=r["padding"+n]=e;return t&&(r.opacity=r.width=e),r}x.each({slideDown:qn("show"),slideUp:qn("hide"),slideToggle:qn("toggle"),fadeIn:{opacity:"show"},fadeOut:{opacity:"hide"},fadeToggle:{opacity:"toggle"}},function(e,t){x.fn[e]=function(e,n,r){return this.animate(t,e,n,r)}}),x.speed=function(e,t,n){var r=e&&"object"==typeof e?x.extend({},e):{complete:n||!n&&t||x.isFunction(e)&&e,duration:e,easing:n&&t||t&&!x.isFunction(t)&&t};return r.duration=x.fx.off?0:"number"==typeof r.duration?r.duration:r.duration in x.fx.speeds?x.fx.speeds[r.duration]:x.fx.speeds._default,(null==r.queue||r.queue===!0)&&(r.queue="fx"),r.old=r.complete,r.complete=function(){x.isFunction(r.old)&&r.old.call(this),r.queue&&x.dequeue(this,r.queue)},r},x.easing={linear:function(e){return e},swing:function(e){return.5-Math.cos(e*Math.PI)/2}},x.timers=[],x.fx=Ln.prototype.init,x.fx.tick=function(){var e,t=x.timers,n=0;for(xn=x.now();t.length>n;n++)e=t[n],e()||t[n]!==e||t.splice(n--,1);t.length||x.fx.stop(),xn=undefined},x.fx.timer=function(e){e()&&x.timers.push(e)&&x.fx.start()},x.fx.interval=13,x.fx.start=function(){bn||(bn=setInterval(x.fx.tick,x.fx.interval))},x.fx.stop=function(){clearInterval(bn),bn=null},x.fx.speeds={slow:600,fast:200,_default:400},x.fx.step={},x.expr&&x.expr.filters&&(x.expr.filters.animated=function(e){return x.grep(x.timers,function(t){return e===t.elem}).length}),x.fn.offset=function(e){if(arguments.length)return e===undefined?this:this.each(function(t){x.offset.setOffset(this,e,t)});var t,n,i=this[0],o={top:0,left:0},s=i&&i.ownerDocument;if(s)return t=s.documentElement,x.contains(t,i)?(typeof i.getBoundingClientRect!==r&&(o=i.getBoundingClientRect()),n=Hn(s),{top:o.top+n.pageYOffset-t.clientTop,left:o.left+n.pageXOffset-t.clientLeft}):o},x.offset={setOffset:function(e,t,n){var r,i,o,s,a,u,l,c=x.css(e,"position"),p=x(e),f={};"static"===c&&(e.style.position="relative"),a=p.offset(),o=x.css(e,"top"),u=x.css(e,"left"),l=("absolute"===c||"fixed"===c)&&(o+u).indexOf("auto")>-1,l?(r=p.position(),s=r.top,i=r.left):(s=parseFloat(o)||0,i=parseFloat(u)||0),x.isFunction(t)&&(t=t.call(e,n,a)),null!=t.top&&(f.top=t.top-a.top+s),null!=t.left&&(f.left=t.left-a.left+i),"using"in t?t.using.call(e,f):p.css(f)}},x.fn.extend({position:function(){if(this[0]){var e,t,n=this[0],r={top:0,left:0};return"fixed"===x.css(n,"position")?t=n.getBoundingClientRect():(e=this.offsetParent(),t=this.offset(),x.nodeName(e[0],"html")||(r=e.offset()),r.top+=x.css(e[0],"borderTopWidth",!0),r.left+=x.css(e[0],"borderLeftWidth",!0)),{top:t.top-r.top-x.css(n,"marginTop",!0),left:t.left-r.left-x.css(n,"marginLeft",!0)}}},offsetParent:function(){return this.map(function(){var e=this.offsetParent||s;while(e&&!x.nodeName(e,"html")&&"static"===x.css(e,"position"))e=e.offsetParent;return e||s})}}),x.each({scrollLeft:"pageXOffset",scrollTop:"pageYOffset"},function(t,n){var r="pageYOffset"===n;x.fn[t]=function(i){return x.access(this,function(t,i,o){var s=Hn(t);return o===undefined?s?s[n]:t[i]:(s?s.scrollTo(r?e.pageXOffset:o,r?o:e.pageYOffset):t[i]=o,undefined)},t,i,arguments.length,null)}});function Hn(e){return x.isWindow(e)?e:9===e.nodeType&&e.defaultView}x.each({Height:"height",Width:"width"},function(e,t){x.each({padding:"inner"+e,content:t,"":"outer"+e},function(n,r){x.fn[r]=function(r,i){var o=arguments.length&&(n||"boolean"!=typeof r),s=n||(r===!0||i===!0?"margin":"border");return x.access(this,function(t,n,r){var i;return x.isWindow(t)?t.document.documentElement["client"+e]:9===t.nodeType?(i=t.documentElement,Math.max(t.body["scroll"+e],i["scroll"+e],t.body["offset"+e],i["offset"+e],i["client"+e])):r===undefined?x.css(t,n,s):x.style(t,n,r,s)},t,o?r:undefined,o,null)}})}),x.fn.size=function(){return this.length},x.fn.andSelf=x.fn.addBack,"object"==typeof module&&module&&"object"==typeof module.exports?module.exports=x:"function"==typeof define&&define.amd&&define("jquery",[],function(){return x}),"object"==typeof e&&"object"==typeof e.document&&(e.jQuery=e.$=x)})(window);
 
 (function() {
-  define('managers/ajax',['require','jquery'],function(require) {
+  define('helpers/general',['require','jquery'],function(require) {
     var $;
     $ = require('jquery');
     return {
-      token: null,
-      get: function(args) {
-        return this.fire('get', args);
-      },
-      post: function(args) {
-        return this.fire('post', args);
-      },
-      put: function(args) {
-        return this.fire('put', args);
-      },
-      fire: function(type, args) {
-        var ajaxArgs,
-          _this = this;
-        ajaxArgs = {
-          type: type,
-          dataType: 'json',
-          contentType: 'application/json; charset=utf-8',
-          processData: false,
-          crossDomain: true
-        };
-        if (this.token != null) {
-          ajaxArgs.beforeSend = function(xhr) {
-            return xhr.setRequestHeader('Authorization', "SimpleAuth " + _this.token);
-          };
+      /*
+      	Generates an ID that starts with a letter
+      	
+      	Example: "aBc12D34"
+      
+      	param Number length of the id
+      	return String
+      */
+
+      generateID: function(length) {
+        var chars, text;
+        length = (length != null) && length > 0 ? length - 1 : 7;
+        chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+        text = chars.charAt(Math.floor(Math.random() * 52));
+        while (length--) {
+          text += chars.charAt(Math.floor(Math.random() * chars.length));
         }
-        return $.ajax($.extend(ajaxArgs, args));
-      }
+        return text;
+      },
+      /*
+      	Deepcopies arrays and object literals
+      	
+      	return Array or object
+      */
+
+      deepCopy: function(object) {
+        var newEmpty;
+        newEmpty = Array.isArray(object) ? [] : {};
+        return $.extend(true, newEmpty, object);
+      },
+      /*
+      	Starts a timer which resets when it is called again.
+      	
+      	Example: with a scroll event, when a user stops scrolling, the timer ends.
+      		Without the reset, the timer would fire dozens of times.
+      	
+      	return Function
+      */
+
+      timeoutWithReset: (function() {
+        var timer;
+        timer = 0;
+        return function(ms, cb) {
+          clearTimeout(timer);
+          return timer = setTimeout(cb, ms);
+        };
+      })()
     };
   });
 
@@ -3348,78 +3356,22 @@ define("../lib/almond/almond", function(){});
   var __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
-  define('models/main',['require','config','managers/ajax','models/base'],function(require) {
-    var FacetedSearch, Models, ajax, config, _ref;
-    config = require('config');
-    ajax = require('managers/ajax');
+  define('models/facet',['require','models/base'],function(require) {
+    var Facet, Models, _ref;
     Models = {
       Base: require('models/base')
     };
-    return FacetedSearch = (function(_super) {
-      __extends(FacetedSearch, _super);
+    return Facet = (function(_super) {
+      __extends(Facet, _super);
 
-      function FacetedSearch() {
-        _ref = FacetedSearch.__super__.constructor.apply(this, arguments);
+      function Facet() {
+        _ref = Facet.__super__.constructor.apply(this, arguments);
         return _ref;
       }
 
-      FacetedSearch.prototype.serverResponse = {};
+      Facet.prototype.idAttribute = 'name';
 
-      FacetedSearch.prototype.defaults = function() {
-        return {
-          term: '*',
-          facetValues: []
-        };
-      };
-
-      FacetedSearch.prototype.sync = function(method, model, options) {
-        var jqXHR,
-          _this = this;
-        if (method === 'read') {
-          ajax.token = config.token;
-          jqXHR = ajax.post({
-            url: config.baseUrl + config.searchUrl,
-            data: JSON.stringify(this.attributes),
-            dataType: 'text'
-          });
-          jqXHR.done(function(data, textStatus, jqXHR) {
-            var xhr;
-            if (jqXHR.status === 201) {
-              xhr = ajax.get({
-                url: jqXHR.getResponseHeader('Location')
-              });
-              return xhr.done(options.success);
-            }
-          });
-          return jqXHR.fail(function(jqXHR, textStatus, errorThrown) {
-            if (jqXHR.status === 401) {
-              return _this.publish('unauthorized');
-            }
-          });
-        }
-      };
-
-      FacetedSearch.prototype.parse = function(attrs) {
-        this.serverResponse = attrs;
-        return {};
-      };
-
-      FacetedSearch.prototype.set = function(attrs, options) {
-        var facetValues;
-        if (attrs.facetValue != null) {
-          facetValues = _.reject(this.get('facetValues'), function(data) {
-            return data.name === attrs.facetValue.name;
-          });
-          if (attrs.facetValue.values.length) {
-            facetValues.push(attrs.facetValue);
-          }
-          attrs.facetValues = facetValues;
-          delete attrs.facetValue;
-        }
-        return FacetedSearch.__super__.set.call(this, attrs, options);
-      };
-
-      return FacetedSearch;
+      return Facet;
 
     })(Models.Base);
   });
@@ -3427,11 +3379,130 @@ define("../lib/almond/almond", function(){});
 }).call(this);
 
 (function() {
+  var __hasProp = {}.hasOwnProperty,
+    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
+  define('models/list',['require','models/facet'],function(require) {
+    var List, Models, _ref;
+    Models = {
+      Facet: require('models/facet')
+    };
+    return List = (function(_super) {
+      __extends(List, _super);
+
+      function List() {
+        _ref = List.__super__.constructor.apply(this, arguments);
+        return _ref;
+      }
+
+      return List;
+
+    })(Models.Facet);
+  });
 
 }).call(this);
 
-define("models/restclient", function(){});
+(function() {
+  var __hasProp = {}.hasOwnProperty,
+    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
+
+  define('models/list.option',['require','models/base'],function(require) {
+    var ListItem, Models, _ref;
+    Models = {
+      Base: require('models/base')
+    };
+    return ListItem = (function(_super) {
+      __extends(ListItem, _super);
+
+      function ListItem() {
+        _ref = ListItem.__super__.constructor.apply(this, arguments);
+        return _ref;
+      }
+
+      ListItem.prototype.idAttribute = 'name';
+
+      ListItem.prototype.defaults = function() {
+        return {
+          name: '',
+          count: 0,
+          total: 0,
+          checked: false
+        };
+      };
+
+      ListItem.prototype.parse = function(attrs) {
+        attrs.total = attrs.count;
+        return attrs;
+      };
+
+      return ListItem;
+
+    })(Models.Base);
+  });
+
+}).call(this);
+
+(function() {
+  define('collections/base',['require','backbone'],function(require) {
+    var Backbone;
+    Backbone = require('backbone');
+    return Backbone.Collection;
+  });
+
+}).call(this);
+
+(function() {
+  var __hasProp = {}.hasOwnProperty,
+    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
+
+  define('collections/list.options',['require','models/list.option','collections/base'],function(require) {
+    var Collections, ListItems, Models, _ref;
+    Models = {
+      Option: require('models/list.option')
+    };
+    Collections = {
+      Base: require('collections/base')
+    };
+    return ListItems = (function(_super) {
+      __extends(ListItems, _super);
+
+      function ListItems() {
+        _ref = ListItems.__super__.constructor.apply(this, arguments);
+        return _ref;
+      }
+
+      ListItems.prototype.model = Models.Option;
+
+      ListItems.prototype.parse = function(attrs) {
+        return attrs;
+      };
+
+      ListItems.prototype.comparator = function(model) {
+        return -1 * parseInt(model.get('count'), 10);
+      };
+
+      ListItems.prototype.updateOptions = function(newOptions) {
+        var _this = this;
+        if (newOptions == null) {
+          newOptions = [];
+        }
+        this.each(function(option) {
+          return option.set('count', 0);
+        });
+        _.each(newOptions, function(newOption) {
+          var opt;
+          opt = _this.get(newOption.name);
+          return opt.set('count', newOption.count);
+        });
+        return this.sort();
+      };
+
+      return ListItems;
+
+    })(Collections.Base);
+  });
+
+}).call(this);
 
 (function() {
   var __hasProp = {}.hasOwnProperty,
@@ -3461,7 +3532,7 @@ define("models/restclient", function(){});
 }).call(this);
 
 /**
- * @license RequireJS text 2.0.7 Copyright (c) 2010-2012, The Dojo Foundation All Rights Reserved.
+ * @license RequireJS text 2.0.9 Copyright (c) 2010-2012, The Dojo Foundation All Rights Reserved.
  * Available via the MIT or new BSD license.
  * see: http://github.com/requirejs/text for details
  */
@@ -3473,7 +3544,7 @@ define("models/restclient", function(){});
 define('text',['module'], function (module) {
     
 
-    var text, fs, Cc, Ci,
+    var text, fs, Cc, Ci, xpcIsWindows,
         progIds = ['Msxml2.XMLHTTP', 'Microsoft.XMLHTTP', 'Msxml2.XMLHTTP.4.0'],
         xmlRegExp = /^\s*<\?xml(\s)+version=[\'\"](\d)*.(\d)*[\'\"](\s)*\?>/im,
         bodyRegExp = /<body[^>]*>\s*([\s\S]+)\s*<\/body>/im,
@@ -3485,7 +3556,7 @@ define('text',['module'], function (module) {
         masterConfig = (module.config && module.config()) || {};
 
     text = {
-        version: '2.0.7',
+        version: '2.0.9',
 
         strip: function (content) {
             //Strips <?xml ...?> declarations so that external SVG and XML
@@ -3699,7 +3770,8 @@ define('text',['module'], function (module) {
     if (masterConfig.env === 'node' || (!masterConfig.env &&
             typeof process !== "undefined" &&
             process.versions &&
-            !!process.versions.node)) {
+            !!process.versions.node &&
+            !process.versions['node-webkit'])) {
         //Using special require.nodeRequire, something added by r.js.
         fs = require.nodeRequire('fs');
 
@@ -3805,11 +3877,17 @@ define('text',['module'], function (module) {
         Cc = Components.classes,
         Ci = Components.interfaces;
         Components.utils['import']('resource://gre/modules/FileUtils.jsm');
+        xpcIsWindows = ('@mozilla.org/windows-registry-key;1' in Cc);
 
         text.get = function (url, callback) {
-            var inStream, convertStream,
-                readData = {},
-                fileObj = new FileUtils.File(url);
+            var inStream, convertStream, fileObj,
+                readData = {};
+
+            if (xpcIsWindows) {
+                url = url.replace(/\//g, '\\');
+            }
+
+            fileObj = new FileUtils.File(url);
 
             //XPCOM, you so crazy
             try {
@@ -3874,283 +3952,9 @@ define('text!html/facet.html',[],function () { return '<div class="placeholder p
 
 }).call(this);
 
-define('text!html/search.html',[],function () { return '\n<header>\n  <h3>Text search</h3><small>more</small>\n  <div class="options">\n    <div class="row span1 align middle">\n      <div class="cell span1">\n        <input id="matchcase" type="checkbox" name="matchcase"/>\n        <label for="matchcase">Match case</label>\n      </div>\n    </div>\n  </div>\n</header>\n<div class="body">\n  <div class="row span4 align middle">\n    <div class="cell span3">\n      <div class="padr4">\n        <input id="search" type="text" name="search"/>\n      </div>\n    </div>\n    <div class="cell span1">\n      <button class="search">Search</button>\n    </div>\n  </div>\n</div>';});
+define('text!html/facet/list.html',[],function () { return '\n<header>\n  <h3 data-name="<%= name %>"><%= title %></h3><small>&#8711;</small>\n  <div class="options">\n    <div class="row span4 align middle">\n      <div class="cell span2">\n        <input type="text" name="listsearch" class="listsearch"/>\n      </div>\n      <div class="cell span1"><small class="optioncount"></small></div>\n      <div class="cell span1 right">\n        <nav>\n          <ul>\n            <li class="all">All </li>\n            <li class="none">None</li>\n          </ul>\n        </nav>\n      </div>\n    </div>\n  </div>\n</header>\n<div class="body">\n  <div class="options">\n    <ul></ul>\n  </div>\n</div>';});
 
-(function() {
-  var __hasProp = {}.hasOwnProperty,
-    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
-
-  define('views/search',['require','views/facet','text!html/search.html'],function(require) {
-    var Search, Templates, Views, _ref;
-    Views = {
-      Facet: require('views/facet')
-    };
-    Templates = {
-      Search: require('text!html/search.html')
-    };
-    return Search = (function(_super) {
-      __extends(Search, _super);
-
-      function Search() {
-        _ref = Search.__super__.constructor.apply(this, arguments);
-        return _ref;
-      }
-
-      Search.prototype.className = 'facet search';
-
-      Search.prototype.events = {
-        'click button.search': 'search',
-        'click header small': 'toggleOptions'
-      };
-
-      Search.prototype.toggleOptions = function(ev) {
-        return this.$('.options').slideToggle();
-      };
-
-      Search.prototype.search = function(ev) {
-        var _this = this;
-        ev.preventDefault();
-        this.$('#search').addClass('loading');
-        this.trigger('change', {
-          term: this.$('#search').val()
-        });
-        return this.subscribe('faceted-search:results', function() {
-          return _this.$('#search').removeClass('loading');
-        });
-      };
-
-      Search.prototype.initialize = function() {
-        Search.__super__.initialize.apply(this, arguments);
-        return this.render();
-      };
-
-      Search.prototype.render = function() {
-        var rtpl;
-        Search.__super__.render.apply(this, arguments);
-        rtpl = _.template(Templates.Search);
-        this.$('.placeholder').html(rtpl);
-        return this;
-      };
-
-      return Search;
-
-    })(Views.Facet);
-  });
-
-}).call(this);
-
-(function() {
-  define('helpers/general',['require','jquery'],function(require) {
-    var $;
-    $ = require('jquery');
-    return {
-      /*
-      	Generates an ID that starts with a letter
-      	
-      	Example: "aBc12D34"
-      
-      	param Number length of the id
-      	return String
-      */
-
-      generateID: function(length) {
-        var chars, text;
-        length = (length != null) && length > 0 ? length - 1 : 7;
-        chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-        text = chars.charAt(Math.floor(Math.random() * 52));
-        while (length--) {
-          text += chars.charAt(Math.floor(Math.random() * chars.length));
-        }
-        return text;
-      },
-      /*
-      	Deepcopies arrays and object literals
-      	
-      	return Array or object
-      */
-
-      deepCopy: function(object) {
-        var newEmpty;
-        newEmpty = Array.isArray(object) ? [] : {};
-        return $.extend(true, newEmpty, object);
-      },
-      /*
-      	Starts a timer which resets when it is called again.
-      	
-      	Example: with a scroll event, when a user stops scrolling, the timer ends.
-      		Without the reset, the timer would fire dozens of times.
-      	
-      	return Function
-      */
-
-      timeoutWithReset: (function() {
-        var timer;
-        timer = 0;
-        return function(ms, cb) {
-          clearTimeout(timer);
-          return timer = setTimeout(cb, ms);
-        };
-      })()
-    };
-  });
-
-}).call(this);
-
-(function() {
-  var __hasProp = {}.hasOwnProperty,
-    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
-
-  define('models/facet',['require','models/base'],function(require) {
-    var Facet, Models, _ref;
-    Models = {
-      Base: require('models/base')
-    };
-    return Facet = (function(_super) {
-      __extends(Facet, _super);
-
-      function Facet() {
-        _ref = Facet.__super__.constructor.apply(this, arguments);
-        return _ref;
-      }
-
-      Facet.prototype.idAttribute = 'name';
-
-      return Facet;
-
-    })(Models.Base);
-  });
-
-}).call(this);
-
-(function() {
-  var __hasProp = {}.hasOwnProperty,
-    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
-
-  define('models/list',['require','models/facet'],function(require) {
-    var List, Models, _ref;
-    Models = {
-      Facet: require('models/facet')
-    };
-    return List = (function(_super) {
-      __extends(List, _super);
-
-      function List() {
-        _ref = List.__super__.constructor.apply(this, arguments);
-        return _ref;
-      }
-
-      return List;
-
-    })(Models.Facet);
-  });
-
-}).call(this);
-
-(function() {
-  var __hasProp = {}.hasOwnProperty,
-    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
-
-  define('models/list.option',['require','models/base'],function(require) {
-    var ListItem, Models, _ref;
-    Models = {
-      Base: require('models/base')
-    };
-    return ListItem = (function(_super) {
-      __extends(ListItem, _super);
-
-      function ListItem() {
-        _ref = ListItem.__super__.constructor.apply(this, arguments);
-        return _ref;
-      }
-
-      ListItem.prototype.idAttribute = 'name';
-
-      ListItem.prototype.defaults = function() {
-        return {
-          name: '',
-          count: 0,
-          total: 0,
-          checked: false
-        };
-      };
-
-      ListItem.prototype.parse = function(attrs) {
-        attrs.total = attrs.count;
-        return attrs;
-      };
-
-      return ListItem;
-
-    })(Models.Base);
-  });
-
-}).call(this);
-
-(function() {
-  define('collections/base',['require','backbone'],function(require) {
-    var Backbone;
-    Backbone = require('backbone');
-    return Backbone.Collection;
-  });
-
-}).call(this);
-
-(function() {
-  var __hasProp = {}.hasOwnProperty,
-    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
-
-  define('collections/list.options',['require','models/list.option','collections/base'],function(require) {
-    var Collections, ListItems, Models, _ref;
-    Models = {
-      Option: require('models/list.option')
-    };
-    Collections = {
-      Base: require('collections/base')
-    };
-    return ListItems = (function(_super) {
-      __extends(ListItems, _super);
-
-      function ListItems() {
-        _ref = ListItems.__super__.constructor.apply(this, arguments);
-        return _ref;
-      }
-
-      ListItems.prototype.model = Models.Option;
-
-      ListItems.prototype.parse = function(attrs) {
-        return attrs;
-      };
-
-      ListItems.prototype.comparator = function(model) {
-        return -1 * parseInt(model.get('count'), 10);
-      };
-
-      ListItems.prototype.updateOptions = function(newOptions) {
-        var _this = this;
-        if (newOptions == null) {
-          newOptions = [];
-        }
-        this.each(function(option) {
-          return option.set('count', 0);
-        });
-        _.each(newOptions, function(newOption) {
-          var opt;
-          opt = _this.get(newOption.name);
-          return opt.set('count', newOption.count);
-        });
-        return this.sort();
-      };
-
-      return ListItems;
-
-    })(Collections.Base);
-  });
-
-}).call(this);
-
-define('text!html/facet/list.html',[],function () { return '\n<header>\n  <h3 data-name="<%= name %>"><%= title %></h3><small>more</small>\n  <div class="options">\n    <div class="row span4 align middle">\n      <div class="cell span2">\n        <input type="text" name="listsearch" class="listsearch"/>\n      </div>\n      <div class="cell span1"><small class="optioncount"></small></div>\n      <div class="cell span1 right">\n        <nav>\n          <ul>\n            <li class="all">All </li>\n            <li class="none">None</li>\n          </ul>\n        </nav>\n      </div>\n    </div>\n  </div>\n</header>\n<div class="body">\n  <div class="options">\n    <ul></ul>\n  </div>\n</div>';});
-
-define('text!html/facet/list.options.html',[],function () { return '<ul><% _.each(options, function(option) { %>\n<% var randomId = generateID(); %>\n<% var checked = (option.get(\'checked\')) ? \'checked\' : \'\'; %>\n<% var count = (option.get(\'count\') === 0) ? option.get(\'total\') : option.get(\'count\'); %>\n<% var labelText = (option.id === \':empty\') ? \'<i>(empty)</i>\' : option.id %><li class="option"><div data-count="<%= option.get(\'count\') %>" class="row span6"><div class="cell span5"><input id="<%= randomId %>" name="<%= randomId %>" type="checkbox" data-value="<%= option.id %>" <%= checked %>><label for="<%= randomId %>"><%= labelText %></label></div><div class="cell span1 right"><div class="count"><%= count %></div></div></div></li><% }); %></ul>';});
+define('text!html/facet/list.options.html',[],function () { return '\n<ul>\n  <% _.each(options, function(option) { %>\n  <% var randomId = generateID(); %>\n  <% var checked = (option.get(\'checked\')) ? \'checked\' : \'\'; %>\n  <% var count = (option.get(\'count\') === 0) ? option.get(\'total\') : option.get(\'count\'); %>\n  <% var labelText = (option.id === \':empty\') ? \'<i>(empty)</i>\' : option.id %>\n  <li class="option">\n    <div data-count="<%= option.get(\'count\') %>" class="row span6">\n      <div class="cell span5"><input id="<%= randomId %>" name="<%= randomId %>" type="checkbox" data-value="<%= option.id %>" <%= checked %>>\n        <label for="<%= randomId %>"><%= labelText %></label>\n      </div>\n      <div class="cell span1 right">\n        <div class="count"><%= count %></div>\n      </div>\n    </div>\n  </li><% }); %>\n</ul>';});
 
 (function() {
   var __hasProp = {}.hasOwnProperty,
@@ -4284,6 +4088,7 @@ define('text!html/facet/list.options.html',[],function () { return '<ul><% _.eac
       };
 
       ListFacet.prototype.toggleOptions = function(ev) {
+        this.$('header small').toggleClass('active');
         this.$('header .options').slideToggle();
         return this.$('.options .listsearch').focus();
       };
@@ -4462,7 +4267,7 @@ define('text!html/facet/list.options.html',[],function () { return '<ul><% _.eac
 
 }).call(this);
 
-define('text!html/facet/boolean.html',[],function () { return '\n<header>\n  <h3 data-name="<%= name %>"><%= title %></h3>\n</header>\n<div class="body">\n  <div class="options">\n    <ul><% _.each(options, function(option) { %>\n      <li class="option">\n        <div class="row span6">\n          <div class="cell span5"><input id="<%= name %>_<%= option.name %>" name="<%= name %>_<%= option.name %>" type="checkbox" data-value="<%= option.name %>">\n            <label for="<%= name %>_<%= option.name %>"><%= ucfirst(option.name) %></label>\n          </div>\n          <div class="cell span1 right">\n            <div class="count"><%= option.count %></div>\n          </div>\n        </div>\n      </li><% }); %>\n    </ul>\n  </div>\n</div>';});
+define('text!html/facet/boolean.html',[],function () { return '<header><h3 data-name="<%= name %>"><%= title %></h3></header><div class="body"><div class="options"><ul><% _.each(options, function(option) { %><li class="option"><div class="row span6"><div class="cell span5"><input id="<%= name %>_<%= option.name %>" name="<%= name %>_<%= option.name %>" type="checkbox" data-value="<%= option.name %>"><label for="<%= name %>_<%= option.name %>"><%= ucfirst(option.name) %></label></div><div class="cell span1 right"><div class="count"><%= option.count %></div></div></div></li><% }); %></ul></div></div>';});
 
 (function() {
   var __hasProp = {}.hasOwnProperty,
@@ -4576,7 +4381,7 @@ define('text!html/facet/boolean.html',[],function () { return '\n<header>\n  <h3
 
 }).call(this);
 
-define('text!html/facet/date.html',[],function () { return '\n<header>\n  <h3 data-name="<%= name %>"><%= title %></h3>\n</header>\n<div class="body">\n  <label>From:</label>\n  <select><% _.each(options, function(option) { %>\n    <option><%= option %></option><% }); %>\n  </select>\n  <label>To:</label>\n  <select><% _.each(options.reverse(), function(option) { %>\n    <option><%= option %></option><% }); %>\n  </select>\n</div>';});
+define('text!html/facet/date.html',[],function () { return '<header><h3 data-name="<%= name %>"><%= title %></h3></header><div class="body"><label>From:</label><select><% _.each(options, function(option) { %><option><%= option %></option><% }); %></select><label>To:</label><select><% _.each(options.reverse(), function(option) { %><option><%= option %></option><% }); %></select></div>';});
 
 (function() {
   var __hasProp = {}.hasOwnProperty,
@@ -4643,7 +4448,275 @@ define('text!html/facet/date.html',[],function () { return '\n<header>\n  <h3 da
 
 }).call(this);
 
-define('text!html/faceted-search.html',[],function () { return '<div class="faceted-search"><form><div class="search-placeholder"></div><div class="facets"></div></form></div>';});
+(function() {
+  define('config',['require','views/facets/list','views/facets/boolean','views/facets/date'],function(require) {
+    var Views;
+    Views = {
+      Facets: {
+        List: require('views/facets/list'),
+        Boolean: require('views/facets/boolean'),
+        Date: require('views/facets/date')
+      }
+    };
+    return {
+      search: true,
+      baseUrl: '',
+      searchUrl: '',
+      token: null,
+      queryOptions: {},
+      facetViewMap: {
+        BOOLEAN: Views.Facets.Boolean,
+        LIST: Views.Facets.List,
+        DATE: Views.Facets.Date
+      }
+    };
+  });
+
+}).call(this);
+
+(function() {
+  define('managers/ajax',['require','jquery'],function(require) {
+    var $;
+    $ = require('jquery');
+    return {
+      token: null,
+      get: function(args) {
+        return this.fire('get', args);
+      },
+      post: function(args) {
+        return this.fire('post', args);
+      },
+      put: function(args) {
+        return this.fire('put', args);
+      },
+      fire: function(type, args) {
+        var ajaxArgs,
+          _this = this;
+        ajaxArgs = {
+          type: type,
+          dataType: 'json',
+          contentType: 'application/json; charset=utf-8',
+          processData: false,
+          crossDomain: true
+        };
+        if (this.token != null) {
+          ajaxArgs.beforeSend = function(xhr) {
+            return xhr.setRequestHeader('Authorization', "SimpleAuth " + _this.token);
+          };
+        }
+        return $.ajax($.extend(ajaxArgs, args));
+      }
+    };
+  });
+
+}).call(this);
+
+(function() {
+  var __hasProp = {}.hasOwnProperty,
+    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
+
+  define('models/main',['require','config','managers/ajax','models/base'],function(require) {
+    var FacetedSearch, Models, ajax, config, _ref;
+    config = require('config');
+    ajax = require('managers/ajax');
+    Models = {
+      Base: require('models/base')
+    };
+    return FacetedSearch = (function(_super) {
+      __extends(FacetedSearch, _super);
+
+      function FacetedSearch() {
+        _ref = FacetedSearch.__super__.constructor.apply(this, arguments);
+        return _ref;
+      }
+
+      FacetedSearch.prototype.serverResponse = {};
+
+      FacetedSearch.prototype.defaults = function() {
+        return {
+          facetValues: []
+        };
+      };
+
+      FacetedSearch.prototype.parse = function(attrs) {
+        this.serverResponse = attrs;
+        return {};
+      };
+
+      FacetedSearch.prototype.set = function(attrs, options) {
+        var facetValues;
+        if (attrs.facetValue != null) {
+          facetValues = _.reject(this.get('facetValues'), function(data) {
+            return data.name === attrs.facetValue.name;
+          });
+          if (attrs.facetValue.values.length) {
+            facetValues.push(attrs.facetValue);
+          }
+          attrs.facetValues = facetValues;
+          delete attrs.facetValue;
+        }
+        return FacetedSearch.__super__.set.call(this, attrs, options);
+      };
+
+      FacetedSearch.prototype.sync = function(method, model, options) {
+        var jqXHR,
+          _this = this;
+        if (method === 'read') {
+          ajax.token = config.token;
+          jqXHR = ajax.post({
+            url: config.baseUrl + config.searchUrl,
+            data: JSON.stringify(this.attributes),
+            dataType: 'text'
+          });
+          jqXHR.done(function(data, textStatus, jqXHR) {
+            var xhr;
+            if (jqXHR.status === 201) {
+              xhr = ajax.get({
+                url: jqXHR.getResponseHeader('Location')
+              });
+              return xhr.done(options.success);
+            }
+          });
+          return jqXHR.fail(function(jqXHR, textStatus, errorThrown) {
+            if (jqXHR.status === 401) {
+              return _this.publish('unauthorized');
+            }
+          });
+        }
+      };
+
+      return FacetedSearch;
+
+    })(Models.Base);
+  });
+
+}).call(this);
+
+(function() {
+
+
+}).call(this);
+
+define("models/restclient", function(){});
+
+(function() {
+  var __hasProp = {}.hasOwnProperty,
+    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
+
+  define('models/search',['require','models/base'],function(require) {
+    var Models, Search, _ref;
+    Models = {
+      Base: require('models/base')
+    };
+    return Search = (function(_super) {
+      __extends(Search, _super);
+
+      function Search() {
+        _ref = Search.__super__.constructor.apply(this, arguments);
+        return _ref;
+      }
+
+      Search.prototype.defaults = function() {
+        return {
+          term: '*',
+          caseSensitive: false
+        };
+      };
+
+      return Search;
+
+    })(Models.Base);
+  });
+
+}).call(this);
+
+define('text!html/search.html',[],function () { return '\n<header>\n  <h3>Text search</h3><small>&#8711;</small>\n  <div class="options">\n    <div class="row span1 align middle">\n      <div class="cell span1 casesensitive">\n        <input id="cb_casesensitive" type="checkbox" name="cb_casesensitive" data-prop="caseSensitive"/>\n        <label for="cb_casesensitive">Match case</label>\n      </div>\n    </div><% if (searchInAnnotations !== undefined || searchInTranscriptions !== undefined) { %>\n    <% cb_searchin_annotations_checked = (searchInAnnotations) ? \' checked \' : \'\' %>\n    <% cb_searchin_transcriptions_checked = (searchInTranscriptions) ? \' checked \' : \'\' %>\n    <div class="row span1">\n      <div class="cell span1">\n        <h4>Search in</h4>\n        <ul class="searchins"><% if (searchInAnnotations !== undefined) { %>\n          <li class="searchin"><input id="cb_searchin_annotations" type="checkbox" data-prop="searchInAnnotations"<%= cb_searchin_annotations_checked %>>\n            <label for="cb_searchin_annotations">Annotations</label>\n          </li><% } %>\n          <% if (searchInTranscriptions !== undefined) { %>\n          <li class="searchin"><input id="cb_searchin_transcriptions" type="checkbox" data-prop="searchInTranscriptions"<%= cb_searchin_transcriptions_checked %>>\n            <label for="cb_searchin_transcriptions">Transcriptions</label>\n          </li><% } %>\n        </ul>\n      </div>\n    </div><% } %>\n    <% if (textLayers) { %>\n    <div class="row span1">\n      <div class="cell span1">\n        <h4>Text layers</h4>\n        <ul class="textlayers"><% _.each(textLayers, function(tl) { %>\n          <li class="textlayer">\n            <input id="cb_textlayer_<%= tl %>" type="checkbox" data-proparr="textLayers"/>\n            <label for="cb_textlayer_<%= tl %>"><%= tl %></label>\n          </li><% }); %>\n        </ul>\n      </div>\n    </div><% } %>\n  </div>\n</header>\n<div class="body">\n  <div class="row span4 align middle">\n    <div class="cell span3">\n      <div class="padr4">\n        <input id="search" type="text" name="search"/>\n      </div>\n    </div>\n    <div class="cell span1">\n      <button class="search">Search</button>\n    </div>\n  </div>\n</div>';});
+
+(function() {
+  var __hasProp = {}.hasOwnProperty,
+    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
+
+  define('views/search',['require','config','models/search','views/facet','text!html/search.html'],function(require) {
+    var Models, Search, Templates, Views, config, _ref;
+    config = require('config');
+    Models = {
+      Search: require('models/search')
+    };
+    Views = {
+      Facet: require('views/facet')
+    };
+    Templates = {
+      Search: require('text!html/search.html')
+    };
+    return Search = (function(_super) {
+      __extends(Search, _super);
+
+      function Search() {
+        _ref = Search.__super__.constructor.apply(this, arguments);
+        return _ref;
+      }
+
+      Search.prototype.className = 'facet search';
+
+      Search.prototype.events = {
+        'click header small': 'toggleOptions',
+        'click button.search': 'search'
+      };
+
+      Search.prototype.toggleOptions = function(ev) {
+        return this.$('.options').slideToggle();
+      };
+
+      Search.prototype.search = function(ev) {
+        var _this = this;
+        ev.preventDefault();
+        this.$('#search').addClass('loading');
+        this.trigger('change', {
+          term: this.$('#search').val()
+        });
+        return this.subscribe('faceted-search:results', function() {
+          return _this.$('#search').removeClass('loading');
+        });
+      };
+
+      Search.prototype.initialize = function(options) {
+        Search.__super__.initialize.apply(this, arguments);
+        this.model = new Models.Search(config.textSearchOptions);
+        console.log(this.model.attributes);
+        return this.render();
+      };
+
+      Search.prototype.render = function() {
+        var checkboxes, rtpl,
+          _this = this;
+        Search.__super__.render.apply(this, arguments);
+        rtpl = _.template(Templates.Search, this.model.attributes);
+        this.$('.placeholder').html(rtpl);
+        checkboxes = this.$(':checkbox');
+        checkboxes.change(function(ev) {
+          _.each(checkboxes, function(cb) {
+            var checked, prop;
+            prop = cb.getAttribute('data-prop');
+            console.log(prop);
+            if (prop != null) {
+              checked = $(cb).attr('checked') === 'checked' ? true : false;
+              console.log(cb.checked);
+              return _this.model.set(prop, checked);
+            }
+          });
+          return console.log(_this.model.attributes);
+        });
+        return this;
+      };
+
+      return Search;
+
+    })(Views.Facet);
+  });
+
+}).call(this);
+
+define('text!html/faceted-search.html',[],function () { return '\n<div class="faceted-search">\n  <form>\n    <div class="search-placeholder"></div>\n    <div class="facets">\n      <div style="display: none; text-align: center; margin-top: 20px" class="loader">\n        <h4>Loading facets...</h4><br/><img src="../images/faceted-search/loader.gif"/>\n      </div>\n    </div>\n  </form>\n</div>';});
 
 (function() {
   var __hasProp = {}.hasOwnProperty,
@@ -4677,12 +4750,17 @@ define('text!html/faceted-search.html',[],function () { return '<div class="face
       }
 
       FacetedSearch.prototype.initialize = function(options) {
-        var _this = this;
+        var facetViewMap, queryOptions,
+          _this = this;
         FacetedSearch.__super__.initialize.apply(this, arguments);
+        facetViewMap = options.facetViewMap;
+        delete options.facetViewMap;
         _.extend(config, options);
+        _.extend(config.facetViewMap, facetViewMap);
         this.facetViews = {};
         this.firstRender = true;
-        this.model = new Models.FacetedSearch(config.queryOptions);
+        queryOptions = _.extend(config.queryOptions, config.textSearchOptions);
+        this.model = new Models.FacetedSearch(queryOptions);
         this.subscribe('unauthorized', function() {
           return _this.trigger('unauthorized');
         });
@@ -4693,6 +4771,7 @@ define('text!html/faceted-search.html',[],function () { return '<div class="face
         var rtpl, search;
         rtpl = _.template(Templates.FacetedSearch);
         this.$el.html(rtpl);
+        this.$('.loader').fadeIn('slow');
         if (config.search) {
           search = new Views.Search();
           this.$('.search-placeholder').html(search.$el);
@@ -4716,24 +4795,22 @@ define('text!html/faceted-search.html',[],function () { return '<div class="face
       };
 
       FacetedSearch.prototype.renderFacets = function(data) {
-        var facetData, index, map, _ref1, _ref2;
-        map = {
-          BOOLEAN: Views.Facets.Boolean,
-          LIST: Views.Facets.List,
-          DATE: Views.Facets.Date
-        };
+        var facetData, fragment, index, _ref1, _ref2;
+        this.$('.loader').hide();
         if (this.firstRender) {
           this.firstRender = false;
+          fragment = document.createDocumentFragment();
           _ref1 = this.model.serverResponse.facets;
           for (index in _ref1) {
             if (!__hasProp.call(_ref1, index)) continue;
             facetData = _ref1[index];
-            this.facetViews[facetData.name] = new map[facetData.type]({
+            this.facetViews[facetData.name] = new config.facetViewMap[facetData.type]({
               attrs: facetData
             });
             this.listenTo(this.facetViews[facetData.name], 'change', this.fetchResults);
-            this.$('.facets').append(this.facetViews[facetData.name].$el);
+            fragment.appendChild(this.facetViews[facetData.name].el);
           }
+          this.$('.facets').html(fragment);
         } else {
           _ref2 = this.model.serverResponse.facets;
           for (index in _ref2) {

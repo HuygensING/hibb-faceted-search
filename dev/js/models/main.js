@@ -21,9 +21,28 @@
 
       FacetedSearch.prototype.defaults = function() {
         return {
-          term: '*',
           facetValues: []
         };
+      };
+
+      FacetedSearch.prototype.parse = function(attrs) {
+        this.serverResponse = attrs;
+        return {};
+      };
+
+      FacetedSearch.prototype.set = function(attrs, options) {
+        var facetValues;
+        if (attrs.facetValue != null) {
+          facetValues = _.reject(this.get('facetValues'), function(data) {
+            return data.name === attrs.facetValue.name;
+          });
+          if (attrs.facetValue.values.length) {
+            facetValues.push(attrs.facetValue);
+          }
+          attrs.facetValues = facetValues;
+          delete attrs.facetValue;
+        }
+        return FacetedSearch.__super__.set.call(this, attrs, options);
       };
 
       FacetedSearch.prototype.sync = function(method, model, options) {
@@ -51,26 +70,6 @@
             }
           });
         }
-      };
-
-      FacetedSearch.prototype.parse = function(attrs) {
-        this.serverResponse = attrs;
-        return {};
-      };
-
-      FacetedSearch.prototype.set = function(attrs, options) {
-        var facetValues;
-        if (attrs.facetValue != null) {
-          facetValues = _.reject(this.get('facetValues'), function(data) {
-            return data.name === attrs.facetValue.name;
-          });
-          if (attrs.facetValue.values.length) {
-            facetValues.push(attrs.facetValue);
-          }
-          attrs.facetValues = facetValues;
-          delete attrs.facetValue;
-        }
-        return FacetedSearch.__super__.set.call(this, attrs, options);
       };
 
       return FacetedSearch;
