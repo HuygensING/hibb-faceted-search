@@ -12,7 +12,7 @@
       Facet: require('views/facet')
     };
     Templates = {
-      List: require('text!html/facet/boolean.html')
+      Body: require('text!html/facet/boolean.body.html')
     };
     return BooleanFacet = (function(_super) {
       __extends(BooleanFacet, _super);
@@ -25,14 +25,9 @@
       BooleanFacet.prototype.className = 'facet boolean';
 
       BooleanFacet.prototype.events = function() {
-        return {
-          'change input[type="checkbox"]': 'checkChanged',
-          'click h3': 'toggleBody'
-        };
-      };
-
-      BooleanFacet.prototype.toggleBody = function(ev) {
-        return $(ev.currentTarget).parents('.facet').find('.body').slideToggle();
+        return _.extend({}, BooleanFacet.__super__.events.apply(this, arguments), {
+          'change input[type="checkbox"]': 'checkChanged'
+        });
       };
 
       BooleanFacet.prototype.checkChanged = function(ev) {
@@ -58,10 +53,11 @@
       BooleanFacet.prototype.render = function() {
         var rtpl;
         BooleanFacet.__super__.render.apply(this, arguments);
-        rtpl = _.template(Templates.List, _.extend(this.model.attributes, {
+        rtpl = _.template(Templates.Body, _.extend(this.model.attributes, {
           ucfirst: StringFn.ucfirst
         }));
-        this.$('.placeholder').html(rtpl);
+        this.$('.body').html(rtpl);
+        this.$('header small').hide();
         return this;
       };
 

@@ -18,9 +18,30 @@
         return _ref;
       }
 
+      Facet.prototype.initialize = function() {
+        return Facet.__super__.initialize.apply(this, arguments);
+      };
+
+      Facet.prototype.events = function() {
+        return {
+          'click h3': 'toggleBody',
+          'click header small': 'toggleOptions'
+        };
+      };
+
+      Facet.prototype.toggleOptions = function(ev) {
+        this.$('header small').toggleClass('active');
+        this.$('header .options').slideToggle();
+        return this.$('.options .listsearch').focus();
+      };
+
+      Facet.prototype.toggleBody = function(ev) {
+        return $(ev.currentTarget).parents('.facet').find('.body').slideToggle();
+      };
+
       Facet.prototype.render = function() {
         var rtpl;
-        rtpl = _.template(Templates.Facet);
+        rtpl = _.template(Templates.Facet, this.model.attributes);
         this.$el.html(rtpl);
         return this;
       };

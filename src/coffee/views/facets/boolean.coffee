@@ -9,18 +9,15 @@ define (require) ->
 		Facet: require 'views/facet'
 
 	Templates =
-		List: require 'text!html/facet/boolean.html'
+		Body: require 'text!html/facet/boolean.body.html'
 
 	class BooleanFacet extends Views.Facet
 
 		className: 'facet boolean'
 
-		events: ->
+		events: -> _.extend {}, super,
 			'change input[type="checkbox"]': 'checkChanged'
-			'click h3': 'toggleBody'
-
-		toggleBody: (ev) ->
-			$(ev.currentTarget).parents('.facet').find('.body').slideToggle()
+			# 'click h3': 'toggleBody'
 
 		checkChanged: (ev) ->
 			@trigger 'change',
@@ -39,8 +36,10 @@ define (require) ->
 		render: ->
 			super
 
-			rtpl = _.template Templates.List, _.extend @model.attributes, ucfirst: StringFn.ucfirst
-			@$('.placeholder').html rtpl
+			rtpl = _.template Templates.Body, _.extend @model.attributes, ucfirst: StringFn.ucfirst
+			@$('.body').html rtpl
+
+			@$('header small').hide()
 
 			@
 

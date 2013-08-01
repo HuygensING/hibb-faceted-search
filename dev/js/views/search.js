@@ -12,7 +12,8 @@
       Facet: require('views/facet')
     };
     Templates = {
-      Search: require('text!html/search.html')
+      Menu: require('text!html/facet/search.menu.html'),
+      Body: require('text!html/facet/search.body.html')
     };
     return Search = (function(_super) {
       __extends(Search, _super);
@@ -24,13 +25,10 @@
 
       Search.prototype.className = 'facet search';
 
-      Search.prototype.events = {
-        'click header small': 'toggleOptions',
-        'click button.search': 'search'
-      };
-
-      Search.prototype.toggleOptions = function(ev) {
-        return this.$('.options').slideToggle();
+      Search.prototype.events = function() {
+        return _.extend({}, Search.__super__.events.apply(this, arguments), {
+          'click button.search': 'search'
+        });
       };
 
       Search.prototype.search = function(ev) {
@@ -47,19 +45,22 @@
 
       Search.prototype.initialize = function(options) {
         Search.__super__.initialize.apply(this, arguments);
-        this.model = new Models.Search(config.textSearchOptions);
-        console.log(this.model.attributes);
+        this.model = new Models.Search({
+          searchOptions: config.textSearchOptions,
+          title: 'Text search',
+          name: 'text_search'
+        });
         return this.render();
       };
 
       Search.prototype.render = function() {
-        var checkboxes, rtpl,
+        var body, checkboxes, menu,
           _this = this;
         Search.__super__.render.apply(this, arguments);
-        rtpl = _.template(Templates.Search, {
-          searchOptions: this.model.attributes
-        });
-        this.$('.placeholder').html(rtpl);
+        menu = _.template(Templates.Menu, this.model.attributes);
+        body = _.template(Templates.Body, this.model.attributes);
+        this.$('.options').html(menu);
+        this.$('.body').html(body);
         checkboxes = this.$(':checkbox');
         checkboxes.change(function(ev) {
           _.each(checkboxes, function(cb) {

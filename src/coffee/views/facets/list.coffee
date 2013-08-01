@@ -13,7 +13,8 @@ define (require) ->
 		Options: require 'views/facets/list.options'
 
 	Templates =
-		List: require 'text!html/facet/list.html'
+		Menu: require 'text!html/facet/list.menu.html'
+		Body: require 'text!html/facet/list.body.html'
 
 	class ListFacet extends Views.Facet
 
@@ -23,21 +24,21 @@ define (require) ->
 
 		className: 'facet list'
 
-		events: ->
+		events: -> _.extend {}, super,
 			'click li.all': 'selectAll'
 			'click li.none': 'deselectAll'
-			'click h3': 'toggleBody'
 			'keyup input.listsearch': (ev) -> @optionsView.filterOptions ev.currentTarget.value
-			'click header small': 'toggleOptions'
+			# 'click h3': 'toggleBody'
+			# 'click header small': 'toggleOptions'
 
 
-		toggleOptions: (ev) ->
-			@$('header small').toggleClass('active')
-			@$('header .options').slideToggle()
-			@$('.options .listsearch').focus()
+		# toggleOptions: (ev) ->
+		# 	@$('header small').toggleClass('active')
+		# 	@$('header .options').slideToggle()
+		# 	@$('.options .listsearch').focus()
 
-		toggleBody: (ev) ->
-			$(ev.currentTarget).parents('.facet').find('.body').slideToggle()
+		# toggleBody: (ev) ->
+		# 	$(ev.currentTarget).parents('.facet').find('.body').slideToggle()
 
 		selectAll: ->
 			checkboxes = @el.querySelectorAll('input[type="checkbox"]')
@@ -58,8 +59,10 @@ define (require) ->
 		render: ->
 			super
 
-			rtpl = _.template Templates.List, @model.attributes
-			@$('.placeholder').html rtpl
+			menu = _.template Templates.Menu, @model.attributes
+			body = _.template Templates.Body, @model.attributes
+			@$('.options').html menu
+			@$('.body').html body
 
 			@optionsView = new Views.Options
 				el: @$('.body .options')

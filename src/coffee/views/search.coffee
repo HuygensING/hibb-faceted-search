@@ -8,14 +8,15 @@ define (require) ->
 		Facet: require 'views/facet'
 
 	Templates =
-		Search: require 'text!html/search.html'
+		Menu: require 'text!html/facet/search.menu.html'
+		Body: require 'text!html/facet/search.body.html'
 
 	class Search extends Views.Facet
 
 		className: 'facet search'
 
-		events:
-			'click header small': 'toggleOptions'
+		events: -> _.extend {}, super, 
+			# 'click header small': 'toggleOptions'
 			'click button.search': 'search'
 			# # 'click li.searchin': 'optionClicked'
 			# # 'click li.textlayer': 'optionClicked'
@@ -24,8 +25,8 @@ define (require) ->
 
 			
 
-		toggleOptions: (ev) ->
-			@$('.options').slideToggle()
+		# toggleOptions: (ev) ->
+		# 	@$('.options').slideToggle()
 
 		search: (ev) ->
 			ev.preventDefault()
@@ -55,16 +56,21 @@ define (require) ->
 		initialize: (options) ->
 			super
 
-			@model = new Models.Search config.textSearchOptions
-			console.log @model.attributes
+			@model = new Models.Search 
+				searchOptions: config.textSearchOptions
+				title: 'Text search'
+				name: 'text_search'
 
 			@render()
 
 		render: ->
 			super
 
-			rtpl = _.template Templates.Search, searchOptions: @model.attributes
-			@$('.placeholder').html rtpl
+			menu = _.template Templates.Menu, @model.attributes
+			body = _.template Templates.Body, @model.attributes
+
+			@$('.options').html menu
+			@$('.body').html body
 
 			checkboxes = @$(':checkbox')
 			checkboxes.change (ev) =>

@@ -1,1 +1,14 @@
-<header><h3 data-name="<%= name %>"><%= title %></h3></header><div class="body"><label>From:</label><select><% _.each(options, function(option) { %><option><%= option %></option><% }); %></select><label>To:</label><select><% _.each(options.reverse(), function(option) { %><option><%= option %></option><% }); %></select></div>
+
+<header>
+  <h3 data-name="<%= name %>"><%= title %></h3>
+</header>
+<div class="body">
+  <label>From:</label>
+  <select><% _.each(options, function(option) { %>
+    <option><%= option %></option><% }); %>
+  </select>
+  <label>To:</label>
+  <select><% _.each(options.reverse(), function(option) { %>
+    <option><%= option %></option><% }); %>
+  </select>
+</div>

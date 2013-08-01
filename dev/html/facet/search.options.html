@@ -1,0 +1,36 @@
+
+<div class="row span1 align middle">
+  <div class="cell span1 casesensitive">
+    <input id="cb_casesensitive" type="checkbox" name="cb_casesensitive" data-prop="caseSensitive"/>
+    <label for="cb_casesensitive">Match case</label>
+  </div>
+</div><% console.log('searchInAnnotations' in searchOptions); %>
+<% if ('searchInAnnotations' in searchOptions || 'searchInTranscriptions' in searchOptions) { %>
+<% cb_searchin_annotations_checked = ('searchInAnnotations' in searchOptions && searchOptions.searchInAnnotations) ? ' checked ' : '' %>
+<% cb_searchin_transcriptions_checked = ('searchInTranscriptions' in searchOptions && searchOptions.searchInTranscriptions) ? ' checked ' : '' %>
+<div class="row span1">
+  <div class="cell span1">
+    <h4>Search in</h4>
+    <ul class="searchins"><% if ('searchInAnnotations' in searchOptions) { %>
+      <li class="searchin"><input id="cb_searchin_annotations" type="checkbox" data-prop="searchInAnnotations"<%= cb_searchin_annotations_checked %>>
+        <label for="cb_searchin_annotations">Annotations</label>
+      </li><% } %>
+      <% if ('searchInTranscriptions' in searchOptions) { %>
+      <li class="searchin"><input id="cb_searchin_transcriptions" type="checkbox" data-prop="searchInTranscriptions"<%= cb_searchin_transcriptions_checked %>>
+        <label for="cb_searchin_transcriptions">Transcriptions</label>
+      </li><% } %>
+    </ul>
+  </div>
+</div><% } %>
+<% if ('textLayers' in searchOptions) { %>
+<div class="row span1">
+  <div class="cell span1">
+    <h4>Text layers</h4>
+    <ul class="textlayers"><% _.each(textLayers, function(tl) { %>
+      <li class="textlayer">
+        <input id="cb_textlayer_<%= tl %>" type="checkbox" data-proparr="textLayers"/>
+        <label for="cb_textlayer_<%= tl %>"><%= tl %></label>
+      </li><% }); %>
+    </ul>
+  </div>
+</div><% } %>

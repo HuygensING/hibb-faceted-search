@@ -15,12 +15,6 @@ define (require) ->
 
 		className: 'facet date'
 
-		events: ->
-			'click h3': 'toggleBody'
-
-		toggleBody: (ev) ->
-			$(ev.currentTarget).parents('.facet').find('.body').slideToggle()
-
 		initialize: (options) ->
 			super
 

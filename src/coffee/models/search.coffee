@@ -5,8 +5,9 @@ define (require) ->
 	class Search extends Models.Base
 
 		defaults: ->
-			term: '*'
-			caseSensitive: false
+			searchOptions:
+				term: '*'
+				caseSensitive: false
 
 
 

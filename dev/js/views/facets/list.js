@@ -16,7 +16,8 @@
       Options: require('views/facets/list.options')
     };
     Templates = {
-      List: require('text!html/facet/list.html')
+      Menu: require('text!html/facet/list.menu.html'),
+      Body: require('text!html/facet/list.body.html')
     };
     return ListFacet = (function(_super) {
       __extends(ListFacet, _super);
@@ -33,25 +34,13 @@
       ListFacet.prototype.className = 'facet list';
 
       ListFacet.prototype.events = function() {
-        return {
+        return _.extend({}, ListFacet.__super__.events.apply(this, arguments), {
           'click li.all': 'selectAll',
           'click li.none': 'deselectAll',
-          'click h3': 'toggleBody',
           'keyup input.listsearch': function(ev) {
             return this.optionsView.filterOptions(ev.currentTarget.value);
-          },
-          'click header small': 'toggleOptions'
-        };
-      };
-
-      ListFacet.prototype.toggleOptions = function(ev) {
-        this.$('header small').toggleClass('active');
-        this.$('header .options').slideToggle();
-        return this.$('.options .listsearch').focus();
-      };
-
-      ListFacet.prototype.toggleBody = function(ev) {
-        return $(ev.currentTarget).parents('.facet').find('.body').slideToggle();
+          }
+        });
       };
 
       ListFacet.prototype.selectAll = function() {
@@ -86,11 +75,13 @@
       };
 
       ListFacet.prototype.render = function() {
-        var rtpl,
+        var body, menu,
           _this = this;
         ListFacet.__super__.render.apply(this, arguments);
-        rtpl = _.template(Templates.List, this.model.attributes);
-        this.$('.placeholder').html(rtpl);
+        menu = _.template(Templates.Menu, this.model.attributes);
+        body = _.template(Templates.Body, this.model.attributes);
+        this.$('.options').html(menu);
+        this.$('.body').html(body);
         this.optionsView = new Views.Options({
           el: this.$('.body .options'),
           collection: this.collection,

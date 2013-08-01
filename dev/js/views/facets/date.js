@@ -24,16 +24,6 @@
 
       DateFacet.prototype.className = 'facet date';
 
-      DateFacet.prototype.events = function() {
-        return {
-          'click h3': 'toggleBody'
-        };
-      };
-
-      DateFacet.prototype.toggleBody = function(ev) {
-        return $(ev.currentTarget).parents('.facet').find('.body').slideToggle();
-      };
-
       DateFacet.prototype.initialize = function(options) {
         DateFacet.__super__.initialize.apply(this, arguments);
         this.model = new Models.Date(options.attrs, {

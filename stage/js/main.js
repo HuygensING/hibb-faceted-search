@@ -3912,7 +3912,7 @@ define('text',['module'], function (module) {
     return text;
 });
 
-define('text!html/facet.html',[],function () { return '<div class="placeholder pad4"></div>';});
+define('text!html/facet.html',[],function () { return '\n<div class="placeholder pad4">\n  <header>\n    <h3 data-name="<%= name %>"><%= title %></h3><small>&#8711;</small>\n    <div class="options"></div>\n  </header>\n  <div class="body"></div>\n</div>';});
 
 (function() {
   var __hasProp = {}.hasOwnProperty,
@@ -3934,9 +3934,30 @@ define('text!html/facet.html',[],function () { return '<div class="placeholder p
         return _ref;
       }
 
+      Facet.prototype.initialize = function() {
+        return Facet.__super__.initialize.apply(this, arguments);
+      };
+
+      Facet.prototype.events = function() {
+        return {
+          'click h3': 'toggleBody',
+          'click header small': 'toggleOptions'
+        };
+      };
+
+      Facet.prototype.toggleOptions = function(ev) {
+        this.$('header small').toggleClass('active');
+        this.$('header .options').slideToggle();
+        return this.$('.options .listsearch').focus();
+      };
+
+      Facet.prototype.toggleBody = function(ev) {
+        return $(ev.currentTarget).parents('.facet').find('.body').slideToggle();
+      };
+
       Facet.prototype.render = function() {
         var rtpl;
-        rtpl = _.template(Templates.Facet);
+        rtpl = _.template(Templates.Facet, this.model.attributes);
         this.$el.html(rtpl);
         return this;
       };
@@ -3952,7 +3973,7 @@ define('text!html/facet.html',[],function () { return '<div class="placeholder p
 
 }).call(this);
 
-define('text!html/facet/list.html',[],function () { return '\n<header>\n  <h3 data-name="<%= name %>"><%= title %></h3><small>&#8711;</small>\n  <div class="options">\n    <div class="row span4 align middle">\n      <div class="cell span2">\n        <input type="text" name="listsearch" class="listsearch"/>\n      </div>\n      <div class="cell span1"><small class="optioncount"></small></div>\n      <div class="cell span1 right">\n        <nav>\n          <ul>\n            <li class="all">All </li>\n            <li class="none">None</li>\n          </ul>\n        </nav>\n      </div>\n    </div>\n  </div>\n</header>\n<div class="body">\n  <div class="options">\n    <ul></ul>\n  </div>\n</div>';});
+define('text!html/facet/list.html',[],function () { return '';});
 
 define('text!html/facet/list.options.html',[],function () { return '\n<ul>\n  <% _.each(options, function(option) { %>\n  <% var randomId = generateID(); %>\n  <% var checked = (option.get(\'checked\')) ? \'checked\' : \'\'; %>\n  <% var count = (option.get(\'count\') === 0) ? option.get(\'total\') : option.get(\'count\'); %>\n  <% var labelText = (option.id === \':empty\') ? \'<i>(empty)</i>\' : option.id %>\n  <li class="option">\n    <div data-count="<%= option.get(\'count\') %>" class="row span6">\n      <div class="cell span5"><input id="<%= randomId %>" name="<%= randomId %>" type="checkbox" data-value="<%= option.id %>" <%= checked %>>\n        <label for="<%= randomId %>"><%= labelText %></label>\n      </div>\n      <div class="cell span1 right">\n        <div class="count"><%= count %></div>\n      </div>\n    </div>\n  </li><% }); %>\n</ul>';});
 
@@ -4041,11 +4062,15 @@ define('text!html/facet/list.options.html',[],function () { return '\n<ul>\n  <%
 
 }).call(this);
 
+define('text!html/facet/list.menu.html',[],function () { return '\n<div class="row span4 align middle">\n  <div class="cell span2">\n    <input type="text" name="listsearch" class="listsearch"/>\n  </div>\n  <div class="cell span1"><small class="optioncount"></small></div>\n  <div class="cell span1 right">\n    <nav>\n      <ul>\n        <li class="all">All </li>\n        <li class="none">None</li>\n      </ul>\n    </nav>\n  </div>\n</div>';});
+
+define('text!html/facet/list.body.html',[],function () { return '\n<div class="options">\n  <ul></ul>\n</div>';});
+
 (function() {
   var __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
-  define('views/facets/list',['require','helpers/general','models/list','collections/list.options','views/facet','views/facets/list.options','text!html/facet/list.html'],function(require) {
+  define('views/facets/list',['require','helpers/general','models/list','collections/list.options','views/facet','views/facets/list.options','text!html/facet/list.menu.html','text!html/facet/list.body.html'],function(require) {
     var Collections, Fn, ListFacet, Models, Templates, Views, _ref;
     Fn = require('helpers/general');
     Models = {
@@ -4059,7 +4084,8 @@ define('text!html/facet/list.options.html',[],function () { return '\n<ul>\n  <%
       Options: require('views/facets/list.options')
     };
     Templates = {
-      List: require('text!html/facet/list.html')
+      Menu: require('text!html/facet/list.menu.html'),
+      Body: require('text!html/facet/list.body.html')
     };
     return ListFacet = (function(_super) {
       __extends(ListFacet, _super);
@@ -4076,25 +4102,13 @@ define('text!html/facet/list.options.html',[],function () { return '\n<ul>\n  <%
       ListFacet.prototype.className = 'facet list';
 
       ListFacet.prototype.events = function() {
-        return {
+        return _.extend({}, ListFacet.__super__.events.apply(this, arguments), {
           'click li.all': 'selectAll',
           'click li.none': 'deselectAll',
-          'click h3': 'toggleBody',
           'keyup input.listsearch': function(ev) {
             return this.optionsView.filterOptions(ev.currentTarget.value);
-          },
-          'click header small': 'toggleOptions'
-        };
-      };
-
-      ListFacet.prototype.toggleOptions = function(ev) {
-        this.$('header small').toggleClass('active');
-        this.$('header .options').slideToggle();
-        return this.$('.options .listsearch').focus();
-      };
-
-      ListFacet.prototype.toggleBody = function(ev) {
-        return $(ev.currentTarget).parents('.facet').find('.body').slideToggle();
+          }
+        });
       };
 
       ListFacet.prototype.selectAll = function() {
@@ -4129,11 +4143,13 @@ define('text!html/facet/list.options.html',[],function () { return '\n<ul>\n  <%
       };
 
       ListFacet.prototype.render = function() {
-        var rtpl,
+        var body, menu,
           _this = this;
         ListFacet.__super__.render.apply(this, arguments);
-        rtpl = _.template(Templates.List, this.model.attributes);
-        this.$('.placeholder').html(rtpl);
+        menu = _.template(Templates.Menu, this.model.attributes);
+        body = _.template(Templates.Body, this.model.attributes);
+        this.$('.options').html(menu);
+        this.$('.body').html(body);
         this.optionsView = new Views.Options({
           el: this.$('.body .options'),
           collection: this.collection,
@@ -4267,13 +4283,13 @@ define('text!html/facet/list.options.html',[],function () { return '\n<ul>\n  <%
 
 }).call(this);
 
-define('text!html/facet/boolean.html',[],function () { return '<header><h3 data-name="<%= name %>"><%= title %></h3></header><div class="body"><div class="options"><ul><% _.each(options, function(option) { %><li class="option"><div class="row span6"><div class="cell span5"><input id="<%= name %>_<%= option.name %>" name="<%= name %>_<%= option.name %>" type="checkbox" data-value="<%= option.name %>"><label for="<%= name %>_<%= option.name %>"><%= ucfirst(option.name) %></label></div><div class="cell span1 right"><div class="count"><%= option.count %></div></div></div></li><% }); %></ul></div></div>';});
+define('text!html/facet/boolean.body.html',[],function () { return '\n<div class="options">\n  <ul><% _.each(options, function(option) { %>\n    <li class="option">\n      <div class="row span6">\n        <div class="cell span5"><input id="<%= name %>_<%= option.name %>" name="<%= name %>_<%= option.name %>" type="checkbox" data-value="<%= option.name %>">\n          <label for="<%= name %>_<%= option.name %>"><%= ucfirst(option.name) %></label>\n        </div>\n        <div class="cell span1 right">\n          <div class="count"><%= option.count %></div>\n        </div>\n      </div>\n    </li><% }); %>\n  </ul>\n</div>';});
 
 (function() {
   var __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
-  define('views/facets/boolean',['require','helpers/string','models/boolean','views/facet','text!html/facet/boolean.html'],function(require) {
+  define('views/facets/boolean',['require','helpers/string','models/boolean','views/facet','text!html/facet/boolean.body.html'],function(require) {
     var BooleanFacet, Models, StringFn, Templates, Views, _ref;
     StringFn = require('helpers/string');
     Models = {
@@ -4283,7 +4299,7 @@ define('text!html/facet/boolean.html',[],function () { return '<header><h3 data-
       Facet: require('views/facet')
     };
     Templates = {
-      List: require('text!html/facet/boolean.html')
+      Body: require('text!html/facet/boolean.body.html')
     };
     return BooleanFacet = (function(_super) {
       __extends(BooleanFacet, _super);
@@ -4296,14 +4312,9 @@ define('text!html/facet/boolean.html',[],function () { return '<header><h3 data-
       BooleanFacet.prototype.className = 'facet boolean';
 
       BooleanFacet.prototype.events = function() {
-        return {
-          'change input[type="checkbox"]': 'checkChanged',
-          'click h3': 'toggleBody'
-        };
-      };
-
-      BooleanFacet.prototype.toggleBody = function(ev) {
-        return $(ev.currentTarget).parents('.facet').find('.body').slideToggle();
+        return _.extend({}, BooleanFacet.__super__.events.apply(this, arguments), {
+          'change input[type="checkbox"]': 'checkChanged'
+        });
       };
 
       BooleanFacet.prototype.checkChanged = function(ev) {
@@ -4329,10 +4340,11 @@ define('text!html/facet/boolean.html',[],function () { return '<header><h3 data-
       BooleanFacet.prototype.render = function() {
         var rtpl;
         BooleanFacet.__super__.render.apply(this, arguments);
-        rtpl = _.template(Templates.List, _.extend(this.model.attributes, {
+        rtpl = _.template(Templates.Body, _.extend(this.model.attributes, {
           ucfirst: StringFn.ucfirst
         }));
-        this.$('.placeholder').html(rtpl);
+        this.$('.body').html(rtpl);
+        this.$('header small').hide();
         return this;
       };
 
@@ -4381,7 +4393,7 @@ define('text!html/facet/boolean.html',[],function () { return '<header><h3 data-
 
 }).call(this);
 
-define('text!html/facet/date.html',[],function () { return '<header><h3 data-name="<%= name %>"><%= title %></h3></header><div class="body"><label>From:</label><select><% _.each(options, function(option) { %><option><%= option %></option><% }); %></select><label>To:</label><select><% _.each(options.reverse(), function(option) { %><option><%= option %></option><% }); %></select></div>';});
+define('text!html/facet/date.html',[],function () { return '\n<header>\n  <h3 data-name="<%= name %>"><%= title %></h3>\n</header>\n<div class="body">\n  <label>From:</label>\n  <select><% _.each(options, function(option) { %>\n    <option><%= option %></option><% }); %>\n  </select>\n  <label>To:</label>\n  <select><% _.each(options.reverse(), function(option) { %>\n    <option><%= option %></option><% }); %>\n  </select>\n</div>';});
 
 (function() {
   var __hasProp = {}.hasOwnProperty,
@@ -4408,16 +4420,6 @@ define('text!html/facet/date.html',[],function () { return '<header><h3 data-nam
       }
 
       DateFacet.prototype.className = 'facet date';
-
-      DateFacet.prototype.events = function() {
-        return {
-          'click h3': 'toggleBody'
-        };
-      };
-
-      DateFacet.prototype.toggleBody = function(ev) {
-        return $(ev.currentTarget).parents('.facet').find('.body').slideToggle();
-      };
 
       DateFacet.prototype.initialize = function(options) {
         DateFacet.__super__.initialize.apply(this, arguments);
@@ -4632,8 +4634,10 @@ define("models/restclient", function(){});
 
       Search.prototype.defaults = function() {
         return {
-          term: '*',
-          caseSensitive: false
+          searchOptions: {
+            term: '*',
+            caseSensitive: false
+          }
         };
       };
 
@@ -4644,13 +4648,15 @@ define("models/restclient", function(){});
 
 }).call(this);
 
-define('text!html/search.html',[],function () { return '\n<header>\n  <h3>Text search</h3><small>&#8711;</small>\n  <div class="options">\n    <div class="row span1 align middle">\n      <div class="cell span1 casesensitive">\n        <input id="cb_casesensitive" type="checkbox" name="cb_casesensitive" data-prop="caseSensitive"/>\n        <label for="cb_casesensitive">Match case</label>\n      </div>\n    </div><% console.log(\'searchInAnnotations\' in searchOptions); %>\n    <% if (\'searchInAnnotations\' in searchOptions || \'searchInTranscriptions\' in searchOptions) { %>\n    <% cb_searchin_annotations_checked = (\'searchInAnnotations\' in searchOptions && searchOptions.searchInAnnotations) ? \' checked \' : \'\' %>\n    <% cb_searchin_transcriptions_checked = (\'searchInTranscriptions\' in searchOptions && searchOptions.searchInTranscriptions) ? \' checked \' : \'\' %>\n    <div class="row span1">\n      <div class="cell span1">\n        <h4>Search in</h4>\n        <ul class="searchins"><% if (\'searchInAnnotations\' in searchOptions) { %>\n          <li class="searchin"><input id="cb_searchin_annotations" type="checkbox" data-prop="searchInAnnotations"<%= cb_searchin_annotations_checked %>>\n            <label for="cb_searchin_annotations">Annotations</label>\n          </li><% } %>\n          <% if (\'searchInTranscriptions\' in searchOptions) { %>\n          <li class="searchin"><input id="cb_searchin_transcriptions" type="checkbox" data-prop="searchInTranscriptions"<%= cb_searchin_transcriptions_checked %>>\n            <label for="cb_searchin_transcriptions">Transcriptions</label>\n          </li><% } %>\n        </ul>\n      </div>\n    </div><% } %>\n    <% if (\'textLayers\' in searchOptions) { %>\n    <div class="row span1">\n      <div class="cell span1">\n        <h4>Text layers</h4>\n        <ul class="textlayers"><% _.each(textLayers, function(tl) { %>\n          <li class="textlayer">\n            <input id="cb_textlayer_<%= tl %>" type="checkbox" data-proparr="textLayers"/>\n            <label for="cb_textlayer_<%= tl %>"><%= tl %></label>\n          </li><% }); %>\n        </ul>\n      </div>\n    </div><% } %>\n  </div>\n</header>\n<div class="body">\n  <div class="row span4 align middle">\n    <div class="cell span3">\n      <div class="padr4">\n        <input id="search" type="text" name="search"/>\n      </div>\n    </div>\n    <div class="cell span1">\n      <button class="search">Search</button>\n    </div>\n  </div>\n</div>';});
+define('text!html/facet/search.menu.html',[],function () { return '\n<div class="row span1 align middle">\n  <div class="cell span1 casesensitive">\n    <input id="cb_casesensitive" type="checkbox" name="cb_casesensitive" data-prop="caseSensitive"/>\n    <label for="cb_casesensitive">Match case</label>\n  </div>\n</div><% console.log(\'searchInAnnotations\' in searchOptions); %>\n<% if (\'searchInAnnotations\' in searchOptions || \'searchInTranscriptions\' in searchOptions) { %>\n<% cb_searchin_annotations_checked = (\'searchInAnnotations\' in searchOptions && searchOptions.searchInAnnotations) ? \' checked \' : \'\' %>\n<% cb_searchin_transcriptions_checked = (\'searchInTranscriptions\' in searchOptions && searchOptions.searchInTranscriptions) ? \' checked \' : \'\' %>\n<div class="row span1">\n  <div class="cell span1">\n    <h4>Search in</h4>\n    <ul class="searchins"><% if (\'searchInAnnotations\' in searchOptions) { %>\n      <li class="searchin"><input id="cb_searchin_annotations" type="checkbox" data-prop="searchInAnnotations"<%= cb_searchin_annotations_checked %>>\n        <label for="cb_searchin_annotations">Annotations</label>\n      </li><% } %>\n      <% if (\'searchInTranscriptions\' in searchOptions) { %>\n      <li class="searchin"><input id="cb_searchin_transcriptions" type="checkbox" data-prop="searchInTranscriptions"<%= cb_searchin_transcriptions_checked %>>\n        <label for="cb_searchin_transcriptions">Transcriptions</label>\n      </li><% } %>\n    </ul>\n  </div>\n</div><% } %>\n<% if (\'textLayers\' in searchOptions) { %>\n<div class="row span1">\n  <div class="cell span1">\n    <h4>Text layers</h4>\n    <ul class="textlayers"><% _.each(textLayers, function(tl) { %>\n      <li class="textlayer">\n        <input id="cb_textlayer_<%= tl %>" type="checkbox" data-proparr="textLayers"/>\n        <label for="cb_textlayer_<%= tl %>"><%= tl %></label>\n      </li><% }); %>\n    </ul>\n  </div>\n</div><% } %>';});
+
+define('text!html/facet/search.body.html',[],function () { return '\n<div class="row span4 align middle">\n  <div class="cell span3">\n    <div class="padr4">\n      <input id="search" type="text" name="search"/>\n    </div>\n  </div>\n  <div class="cell span1">\n    <button class="search">Search</button>\n  </div>\n</div>';});
 
 (function() {
   var __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
-  define('views/search',['require','config','models/search','views/facet','text!html/search.html'],function(require) {
+  define('views/search',['require','config','models/search','views/facet','text!html/facet/search.menu.html','text!html/facet/search.body.html'],function(require) {
     var Models, Search, Templates, Views, config, _ref;
     config = require('config');
     Models = {
@@ -4660,7 +4666,8 @@ define('text!html/search.html',[],function () { return '\n<header>\n  <h3>Text s
       Facet: require('views/facet')
     };
     Templates = {
-      Search: require('text!html/search.html')
+      Menu: require('text!html/facet/search.menu.html'),
+      Body: require('text!html/facet/search.body.html')
     };
     return Search = (function(_super) {
       __extends(Search, _super);
@@ -4672,13 +4679,10 @@ define('text!html/search.html',[],function () { return '\n<header>\n  <h3>Text s
 
       Search.prototype.className = 'facet search';
 
-      Search.prototype.events = {
-        'click header small': 'toggleOptions',
-        'click button.search': 'search'
-      };
-
-      Search.prototype.toggleOptions = function(ev) {
-        return this.$('.options').slideToggle();
+      Search.prototype.events = function() {
+        return _.extend({}, Search.__super__.events.apply(this, arguments), {
+          'click button.search': 'search'
+        });
       };
 
       Search.prototype.search = function(ev) {
@@ -4695,19 +4699,22 @@ define('text!html/search.html',[],function () { return '\n<header>\n  <h3>Text s
 
       Search.prototype.initialize = function(options) {
         Search.__super__.initialize.apply(this, arguments);
-        this.model = new Models.Search(config.textSearchOptions);
-        console.log(this.model.attributes);
+        this.model = new Models.Search({
+          searchOptions: config.textSearchOptions,
+          title: 'Text search',
+          name: 'text_search'
+        });
         return this.render();
       };
 
       Search.prototype.render = function() {
-        var checkboxes, rtpl,
+        var body, checkboxes, menu,
           _this = this;
         Search.__super__.render.apply(this, arguments);
-        rtpl = _.template(Templates.Search, {
-          searchOptions: this.model.attributes
-        });
-        this.$('.placeholder').html(rtpl);
+        menu = _.template(Templates.Menu, this.model.attributes);
+        body = _.template(Templates.Body, this.model.attributes);
+        this.$('.options').html(menu);
+        this.$('.body').html(body);
         checkboxes = this.$(':checkbox');
         checkboxes.change(function(ev) {
           _.each(checkboxes, function(cb) {

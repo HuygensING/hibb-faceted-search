@@ -17,8 +17,10 @@
 
       Search.prototype.defaults = function() {
         return {
-          term: '*',
-          caseSensitive: false
+          searchOptions: {
+            term: '*',
+            caseSensitive: false
+          }
         };
       };
 
