@@ -1,6 +1,7 @@
 define (require) ->
 
 	config = require 'config'
+	facetViewMap = require 'facetviewmap'
 
 	Models = 
 		FacetedSearch: require 'models/main'
@@ -22,19 +23,23 @@ define (require) ->
 		initialize: (options) ->
 			super # ANTIPATTERN
 
-			facetViewMap = options.facetViewMap
-			delete options.facetViewMap
-
-			_.extend config, options
-			_.extend config.facetViewMap, facetViewMap
-
 			@facetViews = {}
 			@firstRender = true
 
+			_.extend facetViewMap, options.facetViewMap
+			delete options.facetViewMap
+			
+			_.extend config.facetNameMap, options.facetNameMap
+			delete options.facetNameMap
+
+			_.extend config, options
+
 			queryOptions = _.extend config.queryOptions, config.textSearchOptions
 			@model = new Models.FacetedSearch queryOptions
-
+			
 			@subscribe 'unauthorized', => @trigger 'unauthorized'
+			@subscribe 'results:change', (response) =>
+				@trigger 'faceted-search:results', response # TODO: Change to 'results:change'
 
 			@render()
 
@@ -56,13 +61,6 @@ define (require) ->
 		fetchResults: (queryOptions={}) ->
 			@model.set queryOptions
 			@model.fetch success: => @renderFacets()
-
-		next: -> @model.setCursor '_next', @publishResult, @
-		prev: -> @model.setCursor '_prev', @publishResult, @
-
-		publishResult: (result) ->
-			@trigger 'faceted-search:results', result # Trigger for external use
-			@publish 'faceted-search:results', result # Publish for internal use
 					
 		renderFacets: (data) ->
 			@$('.loader').hide()
@@ -73,11 +71,12 @@ define (require) ->
 				fragment = document.createDocumentFragment()
 
 				for own index, facetData of @model.serverResponse.facets
-					if facetData.type of config.facetViewMap
-						@facetViews[facetData.name] = new config.facetViewMap[facetData.type] attrs: facetData
-						@listenTo @facetViews[facetData.name], 'change', @fetchResults
+					if facetData.type of facetViewMap
+						View = facetViewMap[facetData.type]
+						@facetViews[facetData.name] = new View attrs: facetData
+						@listenTo @facetViews[facetData.name], 'change', @fetchResults # fetchResults and renderFacets when user changes a facets state
+						
 						fragment.appendChild @facetViews[facetData.name].el
-						# @$('.facets').append @facetViews[facetData.name].$el
 					else 
 						console.error 'Unknown facetView', facetData.type
 
@@ -86,6 +85,15 @@ define (require) ->
 				for own index, data of @model.serverResponse.facets
 					@facetViews[data.name].update(data.options)
 
-			@publishResult @model.serverResponse
-			# @trigger 'faceted-search:results', @model.serverResponse # Trigger for external use
-			# @publish 'faceted-search:results', @model.serverResponse # Publish for internal use
+
+		######################
+		### PUBLIC METHODS ###
+		######################
+
+		next: -> @model.setCursor '_next'
+		prev: -> @model.setCursor '_prev'
+
+		hasNext: -> _.has @model.serverResponse, '_next'
+		hasPrev: -> _.has @model.serverResponse, '_prev'
+
+		sortResultsBy: (facet) -> @model.set sort: facet

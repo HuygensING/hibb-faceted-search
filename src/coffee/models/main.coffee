@@ -11,21 +11,42 @@ define (require) ->
 		serverResponse: {} # Make into collection? With caching?
 
 		defaults: ->
-			facetValues: []
+			facetValues: [] # an array of objects containing a facet name and values: {name: 'facet_s_writers', values: ['pietje', 'pukje']}
 
-		parse: (attrs) ->
-			@serverResponse = attrs
-			
-			{}
+		initialize: ->
+			super
+
+			@on 'change:sort', => @fetch()
+
+			if @has 'resultRows'
+				@resultRows = @get 'resultRows'
+				@unset 'resultRows'
+
+		# The attributes of the main model are queryOptions (not server results!)
+		# To avoid setting the search results to the attributes, an empty object is returned (and passed to @set)
+		parse: -> {}
 
 		set: (attrs, options) ->
 			if attrs.facetValue?
+				# Remove old facetValue from facetValues
 				facetValues = _.reject @get('facetValues'), (data) -> data.name is attrs.facetValue.name
+				
+				# Move facetValue to facetValues
 				facetValues.push attrs.facetValue if attrs.facetValue.values.length # Only push if there are values (values is empty when last checkbox is unchecked)
-				attrs.facetValues = facetValues # Add facetValues to options
-				delete attrs.facetValue # The single facetValue is not send to the server
+				attrs.facetValues = facetValues
+				delete attrs.facetValue
 
 			super attrs, options
+
+		handleResponse: (response) ->
+			@serverResponse = response
+			@publish 'results:change', response
+
+		setCursor: (direction) ->
+			if @serverResponse[direction]
+				jqXHR = ajax.get url: @serverResponse[direction]
+				jqXHR.done (data) => @handleResponse data
+				jqXHR.fail => console.error 'setCursor failed'
 
 		sync: (method, model, options) ->
 			if method is 'read'
@@ -38,19 +59,17 @@ define (require) ->
 
 				jqXHR.done (data, textStatus, jqXHR) =>
 					if jqXHR.status is 201
-						xhr = ajax.get url: jqXHR.getResponseHeader('Location')
-						xhr.done options.success
+						url = jqXHR.getResponseHeader('Location')
+						url += '?rows=' + @resultRows if @resultRows?
+
+						xhr = ajax.get url: url
+						xhr.done (data, textStatus, jqXHR) =>
+							@handleResponse data
+							options.success data
 
 				jqXHR.fail (jqXHR, textStatus, errorThrown) =>
 					if jqXHR.status is 401
 						@publish 'unauthorized'
-
-		setCursor: (direction, cb, context) ->
-			if @serverResponse[direction]
-				jqXHR = ajax.get url: @serverResponse[direction]
-				jqXHR.done (response) =>
-					@serverResponse = response
-					cb.call context, response
 
 # EXAMPLE QUERY:
 # {

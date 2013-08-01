@@ -25,8 +25,19 @@
         };
       };
 
-      FacetedSearch.prototype.parse = function(attrs) {
-        this.serverResponse = attrs;
+      FacetedSearch.prototype.initialize = function() {
+        var _this = this;
+        FacetedSearch.__super__.initialize.apply(this, arguments);
+        this.on('change:sort', function() {
+          return _this.fetch();
+        });
+        if (this.has('resultRows')) {
+          this.resultRows = this.get('resultRows');
+          return this.unset('resultRows');
+        }
+      };
+
+      FacetedSearch.prototype.parse = function() {
         return {};
       };
 
@@ -45,6 +56,27 @@
         return FacetedSearch.__super__.set.call(this, attrs, options);
       };
 
+      FacetedSearch.prototype.handleResponse = function(response) {
+        this.serverResponse = response;
+        return this.publish('results:change', response);
+      };
+
+      FacetedSearch.prototype.setCursor = function(direction) {
+        var jqXHR,
+          _this = this;
+        if (this.serverResponse[direction]) {
+          jqXHR = ajax.get({
+            url: this.serverResponse[direction]
+          });
+          jqXHR.done(function(data) {
+            return _this.handleResponse(data);
+          });
+          return jqXHR.fail(function() {
+            return console.error('setCursor failed');
+          });
+        }
+      };
+
       FacetedSearch.prototype.sync = function(method, model, options) {
         var jqXHR,
           _this = this;
@@ -56,32 +88,25 @@
             dataType: 'text'
           });
           jqXHR.done(function(data, textStatus, jqXHR) {
-            var xhr;
+            var url, xhr;
             if (jqXHR.status === 201) {
+              url = jqXHR.getResponseHeader('Location');
+              if (_this.resultRows != null) {
+                url += '?rows=' + _this.resultRows;
+              }
               xhr = ajax.get({
-                url: jqXHR.getResponseHeader('Location')
+                url: url
               });
-              return xhr.done(options.success);
+              return xhr.done(function(data, textStatus, jqXHR) {
+                _this.handleResponse(data);
+                return options.success(data);
+              });
             }
           });
           return jqXHR.fail(function(jqXHR, textStatus, errorThrown) {
             if (jqXHR.status === 401) {
               return _this.publish('unauthorized');
             }
-          });
-        }
-      };
-
-      FacetedSearch.prototype.setCursor = function(direction, cb, context) {
-        var jqXHR,
-          _this = this;
-        if (this.serverResponse[direction]) {
-          jqXHR = ajax.get({
-            url: this.serverResponse[direction]
-          });
-          return jqXHR.done(function(response) {
-            _this.serverResponse = response;
-            return cb.call(context, response);
           });
         }
       };

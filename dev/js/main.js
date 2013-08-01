@@ -3,8 +3,9 @@
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
   define(function(require) {
-    var FacetedSearch, Models, Templates, Views, config, _ref;
+    var FacetedSearch, Models, Templates, Views, config, facetViewMap, _ref;
     config = require('config');
+    facetViewMap = require('facetviewmap');
     Models = {
       FacetedSearch: require('models/main'),
       RestClient: require('models/restclient')
@@ -30,19 +31,24 @@
       }
 
       FacetedSearch.prototype.initialize = function(options) {
-        var facetViewMap, queryOptions,
+        var facetNameMap, queryOptions,
           _this = this;
         FacetedSearch.__super__.initialize.apply(this, arguments);
-        facetViewMap = options.facetViewMap;
-        delete options.facetViewMap;
-        _.extend(config, options);
-        _.extend(config.facetViewMap, facetViewMap);
         this.facetViews = {};
         this.firstRender = true;
+        _.extend(facetViewMap, options.facetViewMap);
+        delete options.facetViewMap;
+        _.extend(config, options);
+        facetNameMap = options.facetNameMap;
+        delete options.facetNameMap;
+        _.extend(config.facetNameMap, facetNameMap);
         queryOptions = _.extend(config.queryOptions, config.textSearchOptions);
         this.model = new Models.FacetedSearch(queryOptions);
         this.subscribe('unauthorized', function() {
           return _this.trigger('unauthorized');
+        });
+        this.subscribe('results:change', function(response) {
+          return _this.trigger('faceted-search:results', response);
         });
         return this.render();
       };
@@ -74,21 +80,8 @@
         });
       };
 
-      FacetedSearch.prototype.next = function() {
-        return this.model.setCursor('_next', this.publishResult, this);
-      };
-
-      FacetedSearch.prototype.prev = function() {
-        return this.model.setCursor('_prev', this.publishResult, this);
-      };
-
-      FacetedSearch.prototype.publishResult = function(result) {
-        this.trigger('faceted-search:results', result);
-        return this.publish('faceted-search:results', result);
-      };
-
       FacetedSearch.prototype.renderFacets = function(data) {
-        var facetData, fragment, index, _ref1, _ref2;
+        var View, facetData, fragment, index, _ref1, _ref2, _results;
         this.$('.loader').hide();
         if (this.firstRender) {
           this.firstRender = false;
@@ -97,8 +90,9 @@
           for (index in _ref1) {
             if (!__hasProp.call(_ref1, index)) continue;
             facetData = _ref1[index];
-            if (facetData.type in config.facetViewMap) {
-              this.facetViews[facetData.name] = new config.facetViewMap[facetData.type]({
+            if (facetData.type in facetViewMap) {
+              View = facetViewMap[facetData.type];
+              this.facetViews[facetData.name] = new View({
                 attrs: facetData
               });
               this.listenTo(this.facetViews[facetData.name], 'change', this.fetchResults);
@@ -107,16 +101,42 @@
               console.error('Unknown facetView', facetData.type);
             }
           }
-          this.$('.facets').html(fragment);
+          return this.$('.facets').html(fragment);
         } else {
           _ref2 = this.model.serverResponse.facets;
+          _results = [];
           for (index in _ref2) {
             if (!__hasProp.call(_ref2, index)) continue;
             data = _ref2[index];
-            this.facetViews[data.name].update(data.options);
+            _results.push(this.facetViews[data.name].update(data.options));
           }
+          return _results;
         }
-        return this.publishResult(this.model.serverResponse);
+      };
+
+      /* PUBLIC METHODS*/
+
+
+      FacetedSearch.prototype.next = function() {
+        return this.model.setCursor('_next');
+      };
+
+      FacetedSearch.prototype.prev = function() {
+        return this.model.setCursor('_prev');
+      };
+
+      FacetedSearch.prototype.hasNext = function() {
+        return _.has(this.model.serverResponse, '_next');
+      };
+
+      FacetedSearch.prototype.hasPrev = function() {
+        return _.has(this.model.serverResponse, '_prev');
+      };
+
+      FacetedSearch.prototype.sortResultsBy = function(facet) {
+        return this.model.set({
+          sort: facet
+        });
       };
 
       return FacetedSearch;

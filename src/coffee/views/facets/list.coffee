@@ -51,7 +51,7 @@ define (require) ->
 		initialize: (options) ->
 			super
 
-			@model = new Models.List options.attrs
+			@model = new Models.List options.attrs, parse: true
 			@collection = new Collections.Options options.attrs.options, parse: true
 
 			@render()

@@ -67,7 +67,9 @@
 
       ListFacet.prototype.initialize = function(options) {
         ListFacet.__super__.initialize.apply(this, arguments);
-        this.model = new Models.List(options.attrs);
+        this.model = new Models.List(options.attrs, {
+          parse: true
+        });
         this.collection = new Collections.Options(options.attrs.options, {
           parse: true
         });

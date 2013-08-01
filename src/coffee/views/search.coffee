@@ -15,18 +15,8 @@ define (require) ->
 
 		className: 'facet search'
 
-		events: -> _.extend {}, super, 
-			# 'click header small': 'toggleOptions'
+		events: -> _.extend {}, super,
 			'click button.search': 'search'
-			# # 'click li.searchin': 'optionClicked'
-			# # 'click li.textlayer': 'optionClicked'
-			# 'click .casesensitive': 'optionClicked'
-			# 'click ul li': 'optionClicked'
-
-			
-
-		# toggleOptions: (ev) ->
-		# 	@$('.options').slideToggle()
 
 		search: (ev) ->
 			ev.preventDefault()
@@ -37,21 +27,7 @@ define (require) ->
 				term: @$('#search').val()
 				# textLayers: ['Diplomatic']
 
-			@subscribe 'faceted-search:results', => @$('#search').removeClass 'loading'
-
-		# optionClicked: (ev) ->
-		# 	ev.stopPropagation()
-		# 	console.log ev
-		# 	console.log $('li.textlayer')
-
-			# $textlayer_inputs = @$('.textlayer input')
-			# $searchins = @$('.searchin')
-
-			# if $textlayer_inputs.length
-			# 	console.log $textlayer_inputs
-			# 	# _.each textlayers, (tl) ->
-
-
+			@subscribe 'results:change', => @$('#search').removeClass 'loading'
 
 		initialize: (options) ->
 			super
@@ -83,8 +59,5 @@ define (require) ->
 						@model.set prop, checked
 
 				console.log @model.attributes
-				# _.each @$('[data-prop]')
-				# @model.set 'caseSensitive', @$('[data-prop="caseSensitive"]').attr 'checked'
-				# @model.set 'caseSensitive', @$('[data-prop="caseSensitive"]').attr 'checked'
 
 			@

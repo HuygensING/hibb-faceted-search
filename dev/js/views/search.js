@@ -38,7 +38,7 @@
         this.trigger('change', {
           term: this.$('#search').val()
         });
-        return this.subscribe('faceted-search:results', function() {
+        return this.subscribe('results:change', function() {
           return _this.$('#search').removeClass('loading');
         });
       };
