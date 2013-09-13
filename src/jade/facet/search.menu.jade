@@ -2,7 +2,7 @@
 	.cell.span1.casesensitive
 		input#cb_casesensitive(type="checkbox", name="cb_casesensitive", data-prop="caseSensitive")
 		label(for="cb_casesensitive") Match case
-<% console.log('searchInAnnotations' in searchOptions); %>
+<% console.log(searchOptions); %>
 <% if ('searchInAnnotations' in searchOptions || 'searchInTranscriptions' in searchOptions) { %>
 <% cb_searchin_annotations_checked = ('searchInAnnotations' in searchOptions && searchOptions.searchInAnnotations) ? ' checked ' : '' %>
 <% cb_searchin_transcriptions_checked = ('searchInTranscriptions' in searchOptions && searchOptions.searchInTranscriptions) ? ' checked ' : '' %>
@@ -26,7 +26,7 @@
 	.cell.span1
 		h4 Text layers
 		ul.textlayers
-			| <% _.each(textLayers, function(tl) { %>
+			| <% _.each(searchOptions.textLayers, function(tl) { %>
 			li.textlayer
 				input(id!="cb_textlayer_<%= tl %>", type="checkbox", data-proparr="textLayers")
 				label(for!="cb_textlayer_<%= tl %>")<%= tl %>

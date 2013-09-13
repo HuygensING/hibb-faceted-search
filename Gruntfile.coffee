@@ -1,3 +1,41 @@
+fs = require 'fs'
+path = require 'path'
+
+connect_middleware = (connect, options) ->
+	[
+		(req, res, next) ->
+			contentTypeMap =
+				'.html': 'text/html'
+				'.css': 'text/css'
+				'.js': 'application/javascript'
+				'.map': 'application/javascript' # js source maps
+				'.gif': 'image/gif'
+				'.jpg': 'image/jpeg'
+				'.jpeg': 'image/jpeg'
+				'.png': 'image/png'
+				'.ico': 'image/x-icon'
+			
+			sendFile = (reqUrl) ->
+				filePath = path.join options.base, reqUrl
+				
+				res.writeHead 200,
+					'Content-Type': contentTypeMap[extName] || 'text/html'
+					'Content-Length': fs.statSync(filePath).size
+
+				readStream = fs.createReadStream filePath
+				readStream.pipe res
+			
+			extName = path.extname req.url
+
+			# If request is a file and it doesnt exist, pass req to connect
+			if contentTypeMap[extName]? and not fs.existsSync(options.base + req.url)
+				next()
+			else if contentTypeMap[extName]?
+				sendFile req.url
+			else
+				sendFile 'index.html'
+	]
+
 module.exports = (grunt) ->
 
 	##############
@@ -42,6 +80,19 @@ module.exports = (grunt) ->
 				options:
 					stdout: true
 					stderr: true
+
+		connect:
+			keepalive:
+				options:
+					port: 3000
+					base: '/home/gijs/Projects/module-env/dev'
+					middleware: connect_middleware
+					keepalive: true
+			dev:
+				options:
+					port: 3000
+					base: '/home/gijs/Projects/module-env/dev'
+					middleware: connect_middleware
 
 		coffee:
 			init:
@@ -105,9 +156,7 @@ module.exports = (grunt) ->
 		cssmin:
 			stage:
 				files:
-					'stage/css/main.css': [
-						'dev/css/main.css'
-					]
+					'stage/css/main.css': 'dev/css/main.css'
 
 		# replace:
 		# 	html:
@@ -124,11 +173,10 @@ module.exports = (grunt) ->
 					baseUrl: "dev/js"
 					name: '../lib/almond/almond'
 					include: 'main'
-					# insertRequire: ['main']
-					# exclude: ['backbone', 'jquery', 'underscore', 'helpers/fns'] # Managers and helpers should be excluded, but how?
+					exclude: ['backbone', 'jquery', 'underscore', 'text']
 					preserveLicenseComments: false
 					out: "stage/js/main.js"
-					optimize: 'none'
+					# optimize: 'none'
 					paths:
 						'jquery': '../lib/jquery/jquery.min'
 						'underscore': '../lib/underscore-amd/underscore'
@@ -137,7 +185,6 @@ module.exports = (grunt) ->
 						'managers': '../lib/managers/dev'
 						'helpers': '../lib/helpers/dev'
 						'html': '../html'
-					# wrap: true
 					wrap:
 						startFile: 'wrap.start.js'
 						endFile: 'wrap.end.js'
@@ -150,7 +197,7 @@ module.exports = (grunt) ->
 				files: 'test/**/*.coffee'
 				tasks: ['coffee:test', 'shell:mocha-phantomjs']
 			coffee:
-				files: 'src/coffee/**/*.coffee'
+				files: ['src/coffee/**/*.coffee', '/home/gijs/Projects/module-env/src/coffee/**/*.coffee']
 				tasks: ['coffee:compile', 'build']
 			jade:
 				files: ['src/index.jade', 'src/jade/**/*.jade']
@@ -174,10 +221,13 @@ module.exports = (grunt) ->
 	grunt.loadNpmTasks 'grunt-contrib-uglify'
 	grunt.loadNpmTasks 'grunt-contrib-cssmin'
 	grunt.loadNpmTasks 'grunt-contrib-concat'
+	grunt.loadNpmTasks 'grunt-contrib-connect'
 	grunt.loadNpmTasks 'grunt-shell'
 	grunt.loadNpmTasks 'grunt-text-replace'
 
 	grunt.registerTask('default', ['shell:mocha-phantomjs']);
+
+	grunt.registerTask 'w', 'watch'
 
 	# Compile src/ to dev/ (empty dir, install deps, compile coffee, jade, stylus)
 	grunt.registerTask 'compile', [
@@ -197,6 +247,15 @@ module.exports = (grunt) ->
 		'requirejs:compile' # Run r.js
 	]
 
+	grunt.registerTask 'server', [
+		'connect:keepalive'
+	]
+
+	grunt.registerTask 'sw', [
+		'connect:dev'
+		'watch'
+	]
+
 
 
 	##############
@@ -204,7 +263,8 @@ module.exports = (grunt) ->
 	##############
 
 	grunt.event.on 'watch', (action, srcPath) ->
-		if srcPath.substr(0, 3) is 'src' # Make sure file comes from src/		
+
+		if srcPath.substr(0, 3) is 'src'
 			type = 'coffee' if srcPath.substr(-7) is '.coffee'
 			type = 'jade' if srcPath.substr(-5) is '.jade'
 

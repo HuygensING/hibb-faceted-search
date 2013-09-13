@@ -30,7 +30,6 @@
           parse: true
         });
         this.listenTo(this.model, 'change:options', this.render);
-        console.log(this.model);
         return this.render();
       };
 

@@ -9,8 +9,6 @@ define (require) ->
 				term: '*'
 				caseSensitive: false
 
-
-
 # EXAMPLE QUERY:
 # {
 #   "term": "bla bloe z*",

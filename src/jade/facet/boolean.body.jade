@@ -6,6 +6,6 @@
 				.cell.span5
 					| <input id="<%= name %>_<%= option.name %>" name="<%= name %>_<%= option.name %>" type="checkbox" data-value="<%= option.name %>">
 					label(for!="<%= name %>_<%= option.name %>") <%= ucfirst(option.name) %>
-				.cell.span1.right
+				.cell.span1.alignright
 					.count <%= option.count %>
 		| <% }); %>

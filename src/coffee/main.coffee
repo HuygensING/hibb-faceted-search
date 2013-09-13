@@ -5,7 +5,6 @@ define (require) ->
 
 	Models = 
 		FacetedSearch: require 'models/main'
-		RestClient: require 'models/restclient'
 
 	Views =
 		Base: require 'views/base'
@@ -38,8 +37,7 @@ define (require) ->
 			@model = new Models.FacetedSearch queryOptions
 			
 			@subscribe 'unauthorized', => @trigger 'unauthorized'
-			@subscribe 'results:change', (response) =>
-				@trigger 'faceted-search:results', response # TODO: Change to 'results:change'
+			@subscribe 'results:change', (response) => @trigger 'results:change', response
 
 			@render()
 

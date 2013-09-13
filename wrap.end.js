@@ -1,10 +1,12 @@
 
-    // define('jquery', function () { return $; });
+    define('jquery', function () { return $; });
 
-    // define('text', function () { return text; });
 
-    // define('backbone', function () { return Backbone; });
+    define('underscore', function () { return _; });
 
+    define('backbone', function () { return Backbone; });
+
+    define('text', function () { return text; });
     // define('helpers/fns', function () { return Fn; });
 
     // define('managers/ajax', function () { return ajax; });

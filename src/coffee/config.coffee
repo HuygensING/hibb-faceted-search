@@ -1,7 +1,7 @@
 define (require) ->
-	search: true
 	baseUrl: ''
-	searchUrl: ''
+	searchPath: ''
+	search: true
 	token: null
 	queryOptions: {}
 	facetNameMap: {}

@@ -83,7 +83,7 @@
         if (method === 'read') {
           ajax.token = config.token;
           jqXHR = ajax.post({
-            url: config.baseUrl + config.searchUrl,
+            url: config.baseUrl + config.searchPath,
             data: JSON.stringify(this.attributes),
             dataType: 'text'
           });

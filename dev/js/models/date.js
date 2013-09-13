@@ -16,7 +16,6 @@
       }
 
       DateFacet.prototype.parse = function(attrs) {
-        console.log(attrs);
         attrs.options = _.map(_.pluck(attrs.options, 'name'), function(option) {
           return option.substr(0, 4);
         });

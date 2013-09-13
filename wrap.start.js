@@ -1,12 +1,12 @@
 (function (root, factory) {
     if (typeof define === 'function' && define.amd) {
 
-        define(factory);
-        // define(['jquery', 'backbone', 'text', 'helpers/fns', 'managers/ajax'], factory);
+        // define(factory);
+        define(['jquery', 'underscore', 'backbone', 'text'], factory);
 
     } else {
 
-        root['faceted-search'] = factory();
+        root['facetedsearch'] = factory();
     }
-}(this, function () {
-// }(this, function ($, Backbone, text, Fn, ajax) {
+// }(this, function () {
+}(this, function ($, _, Backbone, text) {

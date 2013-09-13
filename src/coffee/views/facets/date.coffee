@@ -20,7 +20,6 @@ define (require) ->
 
 			@model = new Models.Date options.attrs, parse: true
 			@listenTo @model, 'change:options', @render
-			console.log @model
 			@render()
 
 		render: ->

@@ -1,9 +1,9 @@
 (function() {
   define(function(require) {
     return {
-      search: true,
       baseUrl: '',
-      searchUrl: '',
+      searchPath: '',
+      search: true,
       token: null,
       queryOptions: {},
       facetNameMap: {}

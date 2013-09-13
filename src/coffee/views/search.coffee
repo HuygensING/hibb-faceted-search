@@ -27,7 +27,7 @@ define (require) ->
 				term: @$('#search').val()
 				# textLayers: ['Diplomatic']
 
-			@subscribe 'results:change', => @$('#search').removeClass 'loading'
+			@subscribe 'results:change', => @$('#search').removeClass 'loading' # TODO change to @update()
 
 		initialize: (options) ->
 			super
@@ -52,12 +52,12 @@ define (require) ->
 			checkboxes.change (ev) =>
 				_.each checkboxes, (cb) =>
 					prop = cb.getAttribute 'data-prop'
-					console.log prop
+					# console.log prop
 					if prop?
 						checked = if $(cb).attr('checked') is 'checked' then true else false
-						console.log cb.checked
+						# console.log cb.checked
 						@model.set prop, checked
 
-				console.log @model.attributes
+				# console.log @model.attributes
 
 			@

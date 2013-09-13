@@ -8,7 +8,7 @@ define (require) ->
 
 	class FacetedSearch extends Models.Base
 
-		serverResponse: {} # Make into collection? With caching?
+		serverResponse: {} # Make into collection? With caching?		
 
 		defaults: ->
 			facetValues: [] # an array of objects containing a facet name and values: {name: 'facet_s_writers', values: ['pietje', 'pukje']}
@@ -38,7 +38,7 @@ define (require) ->
 
 			super attrs, options
 
-		handleResponse: (response) ->
+		handleResponse: (response) -> 
 			@serverResponse = response
 			@publish 'results:change', response
 
@@ -53,7 +53,7 @@ define (require) ->
 				ajax.token = config.token
 
 				jqXHR = ajax.post
-					url: config.baseUrl + config.searchUrl
+					url: config.baseUrl + config.searchPath
 					data: JSON.stringify @attributes
 					dataType: 'text'
 

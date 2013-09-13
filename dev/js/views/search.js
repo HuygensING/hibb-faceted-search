@@ -63,17 +63,14 @@
         this.$('.body').html(body);
         checkboxes = this.$(':checkbox');
         checkboxes.change(function(ev) {
-          _.each(checkboxes, function(cb) {
+          return _.each(checkboxes, function(cb) {
             var checked, prop;
             prop = cb.getAttribute('data-prop');
-            console.log(prop);
             if (prop != null) {
               checked = $(cb).attr('checked') === 'checked' ? true : false;
-              console.log(cb.checked);
               return _this.model.set(prop, checked);
             }
           });
-          return console.log(_this.model.attributes);
         });
         return this;
       };
