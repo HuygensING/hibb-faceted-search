@@ -46,9 +46,7 @@
         return this;
       };
 
-      Facet.prototype.update = function(newOptions) {
-        return console.log(newOptions);
-      };
+      Facet.prototype.update = function(newOptions) {};
 
       return Facet;
 

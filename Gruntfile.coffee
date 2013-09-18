@@ -191,7 +191,7 @@ module.exports = (grunt) ->
 
 		watch:
 			options:
-				livereload: true
+				# livereload: true
 				nospawn: true
 			coffeetest:
 				files: 'test/**/*.coffee'

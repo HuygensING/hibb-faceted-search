@@ -30,4 +30,4 @@ define (require) ->
 			@
 
 		# Override in child
-		update: (newOptions) -> console.log newOptions
+		update: (newOptions) -> # console.log newOptions
