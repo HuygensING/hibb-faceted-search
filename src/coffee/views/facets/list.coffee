@@ -1,6 +1,6 @@
 define (require) ->
 
-	Fn = require 'helpers/general'
+	Fn = require 'hilib/functions/general'
 
 	Models =
 		List: require 'models/list'

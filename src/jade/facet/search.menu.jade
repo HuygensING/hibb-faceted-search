@@ -2,7 +2,6 @@
 	.cell.span1.casesensitive
 		input#cb_casesensitive(type="checkbox", name="cb_casesensitive", data-prop="caseSensitive")
 		label(for="cb_casesensitive") Match case
-<% console.log(searchOptions); %>
 <% if ('searchInAnnotations' in searchOptions || 'searchInTranscriptions' in searchOptions) { %>
 <% cb_searchin_annotations_checked = ('searchInAnnotations' in searchOptions && searchOptions.searchInAnnotations) ? ' checked ' : '' %>
 <% cb_searchin_transcriptions_checked = ('searchInTranscriptions' in searchOptions && searchOptions.searchInTranscriptions) ? ' checked ' : '' %>

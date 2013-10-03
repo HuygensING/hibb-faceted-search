@@ -173,7 +173,7 @@ module.exports = (grunt) ->
 					baseUrl: "dev/js"
 					name: '../lib/almond/almond'
 					include: 'main'
-					exclude: ['backbone', 'jquery', 'underscore', 'text']
+					exclude: ['backbone', 'jquery', 'underscore']
 					preserveLicenseComments: false
 					out: "stage/js/main.js"
 					# optimize: 'none'
@@ -182,8 +182,7 @@ module.exports = (grunt) ->
 						'underscore': '../lib/underscore-amd/underscore'
 						'backbone': '../lib/backbone-amd/backbone'
 						'text': '../lib/requirejs-text/text'
-						'managers': '../lib/managers/dev'
-						'helpers': '../lib/helpers/dev'
+						'hilib': '../lib/hilib/compiled'
 						'html': '../html'
 					wrap:
 						startFile: 'wrap.start.js'
@@ -230,6 +229,7 @@ module.exports = (grunt) ->
 	grunt.registerTask 'w', 'watch'
 
 	# Compile src/ to dev/ (empty dir, install deps, compile coffee, jade, stylus)
+	grunt.registerTask 'c', 'compile'
 	grunt.registerTask 'compile', [
 		'shell:emptydev' # rm -rf dev/
 		'shell:bowerinstall' # Get dependencies first, cuz css needs to be included (and maybe images?)
@@ -240,6 +240,7 @@ module.exports = (grunt) ->
 	]
 
 	# Build dev/ to stage/ (empty dir, run r.js)
+	grunt.registerTask 'b', 'build'
 	grunt.registerTask 'build', [
 		'shell:emptystage'
 		'cssmin:stage'

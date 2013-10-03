@@ -1,7 +1,7 @@
 define (require) ->
 	config = require 'config'
 
-	ajax = require 'managers/ajax'
+	ajax = require 'hilib/managers/ajax'
 
 	Models =
 		Base: require 'models/base'
@@ -38,9 +38,9 @@ define (require) ->
 
 			super attrs, options
 
-		handleResponse: (response) -> 
+		handleResponse: (response) ->
 			@serverResponse = response
-			@publish 'results:change', response
+			@publish 'results:change', response, @attributes
 
 		setCursor: (direction) ->
 			if @serverResponse[direction]

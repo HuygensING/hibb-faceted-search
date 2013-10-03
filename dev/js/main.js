@@ -45,8 +45,8 @@
         this.subscribe('unauthorized', function() {
           return _this.trigger('unauthorized');
         });
-        this.subscribe('results:change', function(response) {
-          return _this.trigger('results:change', response);
+        this.subscribe('results:change', function(response, queryOptions) {
+          return _this.trigger('results:change', response, queryOptions);
         });
         return this.render();
       };
@@ -63,19 +63,6 @@
         }
         this.fetchResults();
         return this;
-      };
-
-      FacetedSearch.prototype.fetchResults = function(queryOptions) {
-        var _this = this;
-        if (queryOptions == null) {
-          queryOptions = {};
-        }
-        this.model.set(queryOptions);
-        return this.model.fetch({
-          success: function() {
-            return _this.renderFacets();
-          }
-        });
       };
 
       FacetedSearch.prototype.renderFacets = function(data) {
@@ -112,8 +99,18 @@
         }
       };
 
-      /* PUBLIC METHODS*/
-
+      FacetedSearch.prototype.fetchResults = function(queryOptions) {
+        var _this = this;
+        if (queryOptions == null) {
+          queryOptions = {};
+        }
+        this.model.set(queryOptions);
+        return this.model.fetch({
+          success: function() {
+            return _this.renderFacets();
+          }
+        });
+      };
 
       FacetedSearch.prototype.next = function() {
         return this.model.setCursor('_next');

@@ -4,7 +4,7 @@
 
   define(function(require) {
     var BooleanFacet, Models, StringFn, Templates, Views, _ref;
-    StringFn = require('helpers/string');
+    StringFn = require('hilib/functions/string');
     Models = {
       Boolean: require('models/boolean')
     };

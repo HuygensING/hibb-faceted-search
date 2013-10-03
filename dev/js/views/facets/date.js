@@ -4,7 +4,7 @@
 
   define(function(require) {
     var DateFacet, Models, StringFn, Templates, Views, _ref;
-    StringFn = require('helpers/string');
+    StringFn = require('hilib/functions/string');
     Models = {
       Date: require('models/date')
     };

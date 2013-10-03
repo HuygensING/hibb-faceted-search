@@ -4,7 +4,7 @@
 
   define(function(require) {
     var Fn, ListOptions, Models, Templates, Views, _ref;
-    Fn = require('helpers/general');
+    Fn = require('hilib/functions/general');
     Views = {
       Base: require('views/base')
     };
@@ -12,7 +12,6 @@
       List: require('models/list')
     };
     Templates = {
-      List: require('text!html/facet/list.html'),
       Options: require('text!html/facet/list.options.html')
     };
     return ListOptions = (function(_super) {

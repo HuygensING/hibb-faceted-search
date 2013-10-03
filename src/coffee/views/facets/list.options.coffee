@@ -1,6 +1,6 @@
 define (require) ->
 
-	Fn = require 'helpers/general'
+	Fn = require 'hilib/functions/general'
 
 	Views = 
 		Base: require 'views/base'
@@ -9,7 +9,6 @@ define (require) ->
 		List: require 'models/list'
 
 	Templates =
-		List: require 'text!html/facet/list.html'
 		Options: require 'text!html/facet/list.options.html'
 
 	class ListOptions extends Views.Base

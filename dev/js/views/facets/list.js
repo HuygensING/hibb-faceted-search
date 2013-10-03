@@ -4,7 +4,7 @@
 
   define(function(require) {
     var Collections, Fn, ListFacet, Models, Templates, Views, _ref;
-    Fn = require('helpers/general');
+    Fn = require('hilib/functions/general');
     Models = {
       List: require('models/list')
     };

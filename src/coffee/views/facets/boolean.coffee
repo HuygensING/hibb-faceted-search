@@ -1,6 +1,6 @@
 define (require) ->
 
-	StringFn = require 'helpers/string'
+	StringFn = require 'hilib/functions/string'
 
 	Models =
 		Boolean: require 'models/boolean'

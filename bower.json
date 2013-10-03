@@ -9,8 +9,7 @@
     "jquery": "*",
     "underscore-amd": "*",
     "backbone-amd": "*",
-    "helpers": "https://github.com/Gijsjan/helpers.git",
-    "managers": "https://github.com/Gijsjan/managers.git"
+    "hilib": "https://github.com/Gijsjan/hilib.git"
   },
   "devDependencies": {
     "mocha": "*",

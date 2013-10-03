@@ -5,7 +5,7 @@
   define(function(require) {
     var FacetedSearch, Models, ajax, config, _ref;
     config = require('config');
-    ajax = require('managers/ajax');
+    ajax = require('hilib/managers/ajax');
     Models = {
       Base: require('models/base')
     };
@@ -58,7 +58,7 @@
 
       FacetedSearch.prototype.handleResponse = function(response) {
         this.serverResponse = response;
-        return this.publish('results:change', response);
+        return this.publish('results:change', response, this.attributes);
       };
 
       FacetedSearch.prototype.setCursor = function(direction) {

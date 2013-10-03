@@ -19,6 +19,7 @@ define (require) ->
 
 	class FacetedSearch extends Views.Base
 
+		# ### Initialize
 		initialize: (options) ->
 			super # ANTIPATTERN
 
@@ -37,10 +38,11 @@ define (require) ->
 			@model = new Models.FacetedSearch queryOptions
 			
 			@subscribe 'unauthorized', => @trigger 'unauthorized'
-			@subscribe 'results:change', (response) => @trigger 'results:change', response
+			@subscribe 'results:change', (response, queryOptions) => @trigger 'results:change', response, queryOptions
 
 			@render()
 
+		# ### Render
 		render: ->
 			rtpl = _.template Templates.FacetedSearch
 			@$el.html rtpl
@@ -55,15 +57,12 @@ define (require) ->
 			@fetchResults()
 
 			@
-
-		fetchResults: (queryOptions={}) ->
-			@model.set queryOptions
-			@model.fetch success: => @renderFacets()
 					
 		renderFacets: (data) ->
 			@$('.loader').hide()
 
-			if @firstRender # TODO: make a collection of serverResponses (or a hash?) and check length (if length is 1 then it's the first render)
+			# * TODO: make a collection of serverResponses (or a hash?) and check length (if length is 1 then it's the first render)
+			if @firstRender
 				@firstRender = false
 
 				fragment = document.createDocumentFragment()
@@ -72,7 +71,9 @@ define (require) ->
 					if facetData.type of facetViewMap
 						View = facetViewMap[facetData.type]
 						@facetViews[facetData.name] = new View attrs: facetData
-						@listenTo @facetViews[facetData.name], 'change', @fetchResults # fetchResults and renderFacets when user changes a facets state
+
+						# fetchResults and renderFacets when user changes a facets state
+						@listenTo @facetViews[facetData.name], 'change', @fetchResults
 						
 						fragment.appendChild @facetViews[facetData.name].el
 					else 
@@ -84,9 +85,11 @@ define (require) ->
 					@facetViews[data.name].update(data.options)
 
 
-		######################
-		### PUBLIC METHODS ###
-		######################
+		# ### Methods
+
+		fetchResults: (queryOptions={}) ->
+			@model.set queryOptions
+			@model.fetch success: => @renderFacets()
 
 		next: -> @model.setCursor '_next'
 		prev: -> @model.setCursor '_prev'
