@@ -8,10 +8,12 @@ define (require) ->
 
 	class FacetedSearch extends Models.Base
 
-		serverResponse: {} # Make into collection? With caching?		
+		# Make into collection? With caching?
+		serverResponse: {} 		
 
 		defaults: ->
-			facetValues: [] # an array of objects containing a facet name and values: {name: 'facet_s_writers', values: ['pietje', 'pukje']}
+			# an array of objects containing a facet name and values: {name: 'facet_s_writers', values: ['pietje', 'pukje']}
+			facetValues: []
 
 		initialize: ->
 			super
@@ -68,8 +70,7 @@ define (require) ->
 							options.success data
 
 				jqXHR.fail (jqXHR, textStatus, errorThrown) =>
-					if jqXHR.status is 401
-						@publish 'unauthorized'
+					@publish 'unauthorized' if jqXHR.status is 401
 
 # EXAMPLE QUERY:
 # {

@@ -43,6 +43,7 @@
         queryOptions = _.extend(config.queryOptions, config.textSearchOptions);
         this.model = new Models.FacetedSearch(queryOptions);
         this.subscribe('unauthorized', function() {
+          console.log('un');
           return _this.trigger('unauthorized');
         });
         this.subscribe('results:change', function(response, queryOptions) {
@@ -132,6 +133,10 @@
         return this.model.set({
           sort: facet
         });
+      };
+
+      FacetedSearch.prototype.reset = function() {
+        return this.model.clear();
       };
 
       return FacetedSearch;

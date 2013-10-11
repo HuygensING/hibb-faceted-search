@@ -37,7 +37,9 @@ define (require) ->
 			queryOptions = _.extend config.queryOptions, config.textSearchOptions
 			@model = new Models.FacetedSearch queryOptions
 			
-			@subscribe 'unauthorized', => @trigger 'unauthorized'
+			@subscribe 'unauthorized', => 
+				console.log 'un'
+				@trigger 'unauthorized'
 			@subscribe 'results:change', (response, queryOptions) => @trigger 'results:change', response, queryOptions
 
 			@render()
@@ -98,3 +100,5 @@ define (require) ->
 		hasPrev: -> _.has @model.serverResponse, '_prev'
 
 		sortResultsBy: (facet) -> @model.set sort: facet
+
+		reset: -> @model.clear()
