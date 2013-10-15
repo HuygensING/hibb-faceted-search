@@ -15,14 +15,20 @@ define (require) ->
 			# an array of objects containing a facet name and values: {name: 'facet_s_writers', values: ['pietje', 'pukje']}
 			facetValues: []
 
-		initialize: ->
+		initialize: (@attrs, options) ->
 			super
 
-			@on 'change:sort', => @fetch()
+			# @on 'change:sort', => @fetch()
+			@on 'change', => @fetch()
 
 			if @has 'resultRows'
 				@resultRows = @get 'resultRows'
 				@unset 'resultRows'
+
+		fetch: (options={}) ->
+			options.error = (model, response, options) => console.log 'fetching results failed', model, response, options
+
+			super
 
 		# The attributes of the main model are queryOptions (not server results!)
 		# To avoid setting the search results to the attributes, an empty object is returned (and passed to @set)
@@ -42,6 +48,7 @@ define (require) ->
 
 		handleResponse: (response) ->
 			@serverResponse = response
+			# * TODO: change publish to trigger?
 			@publish 'results:change', response, @attributes
 
 		setCursor: (direction) ->
@@ -71,6 +78,13 @@ define (require) ->
 
 				jqXHR.fail (jqXHR, textStatus, errorThrown) =>
 					@publish 'unauthorized' if jqXHR.status is 401
+
+		reset: ->
+			@clear silent: true
+			@set @defaults(), silent: true
+			@set @attrs, silent: true
+			@fetch()
+
 
 # EXAMPLE QUERY:
 # {

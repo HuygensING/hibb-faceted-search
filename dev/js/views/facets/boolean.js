@@ -65,6 +65,10 @@
         return this.model.set('options', newOptions);
       };
 
+      BooleanFacet.prototype.reset = function() {
+        return this.render();
+      };
+
       return BooleanFacet;
 
     })(Views.Facet);

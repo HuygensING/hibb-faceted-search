@@ -1,5 +1,5 @@
 define (require) ->
-
+	Fn = require 'hilib/functions/general'
 	config = require 'config'
 	facetViewMap = require 'facetviewmap'
 
@@ -36,10 +36,10 @@ define (require) ->
 
 			queryOptions = _.extend config.queryOptions, config.textSearchOptions
 			@model = new Models.FacetedSearch queryOptions
+
+			@listenTo @model, 'sync', @renderFacets
 			
-			@subscribe 'unauthorized', => 
-				console.log 'un'
-				@trigger 'unauthorized'
+			@subscribe 'unauthorized', => @trigger 'unauthorized'
 			@subscribe 'results:change', (response, queryOptions) => @trigger 'results:change', response, queryOptions
 
 			@render()
@@ -56,7 +56,8 @@ define (require) ->
 				@$('.search-placeholder').html search.$el
 				@listenTo search, 'change', @fetchResults
 
-			@fetchResults()
+			@model.fetch()
+			# @fetchResults()
 
 			@
 					
@@ -89,9 +90,14 @@ define (require) ->
 
 		# ### Methods
 
+		# This method is called to fetch new results. When the full text search or one 
+		# of the facets changes, this method is triggered. When the results are succesfully
+		# returned, the facets are rerendered.
 		fetchResults: (queryOptions={}) ->
+			# The set of @model adds the new queryOptions to the existing queryOptions
 			@model.set queryOptions
-			@model.fetch success: => @renderFacets()
+			# * TODO: fetch on @model change event?
+			# @model.fetch success: => @renderFacets()
 
 		next: -> @model.setCursor '_next'
 		prev: -> @model.setCursor '_prev'
@@ -99,6 +105,11 @@ define (require) ->
 		hasNext: -> _.has @model.serverResponse, '_next'
 		hasPrev: -> _.has @model.serverResponse, '_prev'
 
-		sortResultsBy: (facet) -> @model.set sort: facet
+		# sortResultsBy: (facet) -> @model.set sort: facet
 
-		reset: -> @model.clear()
+		reset: -> 
+			for own index, data of @model.serverResponse.facets
+				@facetViews[data.name].reset() if @facetViews[data.name].reset
+			@model.reset()
+			# @model.fetch()
+			# @fetchResults()

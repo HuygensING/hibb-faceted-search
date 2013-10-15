@@ -48,12 +48,11 @@ define (require) ->
 			checkboxes = @el.querySelectorAll('input[type="checkbox"]')
 			cb.checked = false for cb in checkboxes
 
-		initialize: (options) ->
+		initialize: (@options) ->
 			super
 
-			@model = new Models.List options.attrs, parse: true
-			@collection = new Collections.Options options.attrs.options, parse: true
-
+			@model = new Models.List @options.attrs, parse: true
+			
 			@render()
 
 		render: ->
@@ -64,17 +63,19 @@ define (require) ->
 			@$('.options').html menu
 			@$('.body').html body
 
+			options = new Collections.Options @options.attrs.options, parse: true
 			@optionsView = new Views.Options
 				el: @$('.body .options')
-				collection: @collection
+				collection: options
 				facetName: @model.get 'name'
 
 			@listenTo @optionsView, 'filter:finished', @renderFilteredOptionCount
-			@listenTo @optionsView, 'change', (data) => @trigger 'change', data # Trigger optionsView change event on this object
+			# Trigger optionsView change event on this object
+			@listenTo @optionsView, 'change', (data) => @trigger 'change', data
 
 			@
 
-		# Renders the count of the filtered options next to the facets title
+		# Renders the count of the filtered options (ie: "3 of 8") next to the filter <input>
 		renderFilteredOptionCount: ->
 			filteredLength = @optionsView.filtered_items.length
 			collectionLength = @optionsView.collection.length
@@ -88,10 +89,5 @@ define (require) ->
 
 			@
 
-		update: (newOptions) ->
-			# console.log @model.get('name')
-			# if @model.get('name') is 'facet_s_subject'
-			# 	console.log @collection
-			# 	console.log newOptions
-
-			@collection.updateOptions(newOptions)
+		update: (newOptions) -> @optionsView.collection.updateOptions(newOptions)
+		reset: -> @optionsView.collection.revert()

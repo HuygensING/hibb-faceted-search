@@ -31,6 +31,7 @@ define (require) ->
 			super
 
 			@listenTo @collection, 'sort', @render
+			@listenTo @collection, 'change', @render
 
 			@render()
 

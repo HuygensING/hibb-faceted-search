@@ -66,27 +66,28 @@
       };
 
       ListFacet.prototype.initialize = function(options) {
+        this.options = options;
         ListFacet.__super__.initialize.apply(this, arguments);
-        this.model = new Models.List(options.attrs, {
-          parse: true
-        });
-        this.collection = new Collections.Options(options.attrs.options, {
+        this.model = new Models.List(this.options.attrs, {
           parse: true
         });
         return this.render();
       };
 
       ListFacet.prototype.render = function() {
-        var body, menu,
+        var body, menu, options,
           _this = this;
         ListFacet.__super__.render.apply(this, arguments);
         menu = _.template(Templates.Menu, this.model.attributes);
         body = _.template(Templates.Body, this.model.attributes);
         this.$('.options').html(menu);
         this.$('.body').html(body);
+        options = new Collections.Options(this.options.attrs.options, {
+          parse: true
+        });
         this.optionsView = new Views.Options({
           el: this.$('.body .options'),
-          collection: this.collection,
+          collection: options,
           facetName: this.model.get('name')
         });
         this.listenTo(this.optionsView, 'filter:finished', this.renderFilteredOptionCount);
@@ -111,7 +112,11 @@
       };
 
       ListFacet.prototype.update = function(newOptions) {
-        return this.collection.updateOptions(newOptions);
+        return this.optionsView.collection.updateOptions(newOptions);
+      };
+
+      ListFacet.prototype.reset = function() {
+        return this.optionsView.collection.revert();
       };
 
       return ListFacet;

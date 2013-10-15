@@ -7,18 +7,21 @@
 		padding 0
 	
 	form
+		border-radius 8px // Put a border radius for the box-shadow
+		box-shadow 0 0 6px #AAA
 	
 		.facet
 			border-bottom 1px solid white
 			background #F1F1F1
 
-		& .facet:first-child
-			border-top-left-radius 8px
-			border-top-right-radius 8px
+		// & .facet:first-child
+		// 	border-top-left-radius 8px
+		// 	border-top-right-radius 8px
 
-		& .facet:last-child 
-			border-bottom-left-radius 8px
-			border-bottom-right-radius 8px
+		.facets
+			& .facet:last-child 
+				border-bottom-left-radius 8px
+				border-bottom-right-radius 8px
 
 		h3, h4
 			margin 0
@@ -54,6 +57,12 @@
 			&:active
 				vertical_gradient(#F1F1F1, #DDD)
 				box-shadow -1px -1px 1px #BDBDBD
+
+		.facets
+			.loader
+				display none
+				text-align center
+				padding 30px 0
 
 		.align.middle
 			line-height 24px

@@ -28,18 +28,32 @@
         return -1 * parseInt(model.get('count'), 10);
       };
 
+      ListItems.prototype.revert = function() {
+        var _this = this;
+        this.each(function(option) {
+          return option.set('checked', false, {
+            silent: true
+          });
+        });
+        return this.trigger('change');
+      };
+
       ListItems.prototype.updateOptions = function(newOptions) {
         var _this = this;
         if (newOptions == null) {
           newOptions = [];
         }
         this.each(function(option) {
-          return option.set('count', 0);
+          return option.set('count', 0, {
+            silent: true
+          });
         });
         _.each(newOptions, function(newOption) {
           var opt;
           opt = _this.get(newOption.name);
-          return opt.set('count', newOption.count);
+          return opt.set('count', newOption.count, {
+            silent: true
+          });
         });
         return this.sort();
       };

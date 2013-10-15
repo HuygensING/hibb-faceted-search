@@ -1,26 +1,26 @@
-.facet .facet header,.faceted-search .facet header{margin-bottom:10px;}
-.facet .facet header h3,.faceted-search .facet header h3{padding:0;margin:0;display:inline;cursor:pointer}
-.facet .facet header small,.faceted-search .facet header small{cursor:pointer;float:right;color:#888;margin-left:4%;-webkit-transform:rotate(90deg);-moz-transform:rotate(90deg);transform:rotate(90deg);-webkit-transition:-webkit-transform 500ms;-moz-transition:-moz-transform 500ms;transition:transform 500ms;}
-.facet .facet header small.active,.faceted-search .facet header small.active{-webkit-transform:rotate(0);-moz-transform:rotate(0);transform:rotate(0)}
-.facet .facet header .options,.faceted-search .facet header .options{display:none;background-color:#e5e5e5;padding:2%;margin-top:10px;box-shadow:1px 1px 4px #bdbdbd;border-radius:4px;}
-.facet .facet header .options h4,.faceted-search .facet header .options h4{margin-top:12px}
-.facet .facet header .options small.optioncount,.faceted-search .facet header .options small.optioncount{margin-left:8px}
-.facet .facet .options,.faceted-search .facet .options{max-height:200px;overflow:auto;}
-.facet .facet .options ul,.faceted-search .facet .options ul{list-style:none;}
-.facet .facet .options ul li.option,.faceted-search .facet .options ul li.option{white-space:nowrap;}
-.facet .facet .options ul li.option [data-count="0"] label,.faceted-search .facet .options ul li.option [data-count="0"] label{color:#aaa}
-.facet .facet .options ul li.option [data-count="0"] .count,.faceted-search .facet .options ul li.option [data-count="0"] .count{color:#ddd}
-.facet .facet .options ul li.option label,.faceted-search .facet .options ul li.option label,.facet .facet .options ul li.option .count,.faceted-search .facet .options ul li.option .count{color:#555}
-.facet .facet .options ul li.option input[type="checkbox"],.faceted-search .facet .options ul li.option input[type="checkbox"],.facet .facet .options ul li.option label,.faceted-search .facet .options ul li.option label{white-space:normal;margin:0;display:inline-block}
-.facet .facet .options ul li.option input[type="checkbox"],.faceted-search .facet .options ul li.option input[type="checkbox"]{margin-top:2px}
-.facet .facet .options ul li.option label,.faceted-search .facet .options ul li.option label{padding:0 4px}
-.facet .facet .options ul li.option :checked + label,.faceted-search .facet .options ul li.option :checked + label{color:#000}
+.faceted-search .facet header{margin-bottom:10px;}
+.faceted-search .facet header h3{padding:0;margin:0;display:inline;cursor:pointer}
+.faceted-search .facet header small{cursor:pointer;float:right;color:#888;margin-left:4%;-webkit-transform:rotate(90deg);-moz-transform:rotate(90deg);transform:rotate(90deg);-webkit-transition:-webkit-transform 500ms;-moz-transition:-moz-transform 500ms;transition:transform 500ms;}
+.faceted-search .facet header small.active{-webkit-transform:rotate(0);-moz-transform:rotate(0);transform:rotate(0)}
+.faceted-search .facet header .options{display:none;background-color:#e5e5e5;padding:2%;margin-top:10px;box-shadow:1px 1px 4px #bdbdbd;border-radius:4px;}
+.faceted-search .facet header .options h4{margin-top:12px}
+.faceted-search .facet header .options small.optioncount{margin-left:8px}
+.faceted-search .facet.list .options{max-height:200px;overflow:auto;}
+.faceted-search .facet.list .options ul{list-style:none;}
+.faceted-search .facet.list .options ul li.option{white-space:nowrap;}
+.faceted-search .facet.list .options ul li.option [data-count="0"] label{color:#aaa}
+.faceted-search .facet.list .options ul li.option [data-count="0"] .count{color:#ddd}
+.faceted-search .facet.list .options ul li.option label,.faceted-search .facet.list .options ul li.option .count{color:#555}
+.faceted-search .facet.list .options ul li.option input[type="checkbox"],.faceted-search .facet.list .options ul li.option label{white-space:normal;margin:0;display:inline-block}
+.faceted-search .facet.list .options ul li.option input[type="checkbox"]{margin-top:2px}
+.faceted-search .facet.list .options ul li.option label{padding:0 4px}
+.faceted-search .facet.list .options ul li.option :checked + label{color:#000}
 
 .facet.list .listsearch.nonefound{color:#d10000}
 .facet.list nav ul{padding:0;margin:0;list-style:none;}
 .facet.list nav ul li{font-size:.8em;cursor:pointer;display:inline-block;margin-left:2px}
 
-.faceted-search .facet.search h3{cursor:default}
+.faceted-search form .search-placeholder .facet.search h3{cursor:default}
 
 .row{font-size:0;width:100%;}
 .row *{vertical-align:top}
@@ -272,14 +272,15 @@
 
 .faceted-search{max-width:300px;}
 .faceted-search input[type="checkbox"]{margin:0;padding:0}
+.faceted-search form{border-radius:8px;box-shadow:0 0 6px #aaa;}
 .faceted-search form .facet{border-bottom:1px solid #fff;background:#f1f1f1}
-.faceted-search form .facet:first-child{border-top-left-radius:8px;border-top-right-radius:8px}
-.faceted-search form .facet:last-child{border-bottom-left-radius:8px;border-bottom-right-radius:8px}
+.faceted-search form .facets .facet:last-child{border-bottom-left-radius:8px;border-bottom-right-radius:8px}
 .faceted-search form h3,.faceted-search form h4{margin:0;color:#000}
 .faceted-search form input[type=text]{border:1px solid #ddd;border-radius:4px;padding-left:4%;margin:0;width:96%;}
 .faceted-search form input[type=text]#search{height:24px;}
 .faceted-search form input[type=text]#search.loading{background:#fff url("../images/loader.gif") no-repeat;background-position:right 2% center}
 .faceted-search form button{background:#ddd;background:-moz-linear-gradient(top,#ddd 0%,#f1f1f1 100%);background:-webkit-gradient(linear,left top,left bottom,color-stop(0%,#ddd),color-stop(100%,#f1f1f1));background:-webkit-linear-gradient(top,#ddd 0%,#f1f1f1 100%);background:-o-linear-gradient(top,#ddd 0%,#f1f1f1 100%);background:-ms-linear-gradient(top,#ddd 0%,#f1f1f1 100%);background:linear-gradient(to bottom,#ddd 0%,#f1f1f1 100%);filter:unquot('progid:DXImageTransform.Microsoft.gradient(startColorstr="topColor", endColorstr="bottomColor",GradientType=0 )');color:#666;border:0;box-shadow:1px 1px 1px #bdbdbd;border-radius:6px;margin-top:-1px;cursor:pointer;height:28px;width:100%;min-width:50px;}
 .faceted-search form button:active{background:#f1f1f1;background:-moz-linear-gradient(top,#f1f1f1 0%,#ddd 100%);background:-webkit-gradient(linear,left top,left bottom,color-stop(0%,#f1f1f1),color-stop(100%,#ddd));background:-webkit-linear-gradient(top,#f1f1f1 0%,#ddd 100%);background:-o-linear-gradient(top,#f1f1f1 0%,#ddd 100%);background:-ms-linear-gradient(top,#f1f1f1 0%,#ddd 100%);background:linear-gradient(to bottom,#f1f1f1 0%,#ddd 100%);filter:unquot('progid:DXImageTransform.Microsoft.gradient(startColorstr="topColor", endColorstr="bottomColor",GradientType=0 )');box-shadow:-1px -1px 1px #bdbdbd}
+.faceted-search form .facets .loader{display:none;text-align:center;padding:30px 0}
 .faceted-search form .align.middle{line-height:24px;}
 .faceted-search form .align.middle *{vertical-align:middle}

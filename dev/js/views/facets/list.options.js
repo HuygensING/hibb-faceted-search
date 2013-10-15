@@ -47,6 +47,7 @@
       ListOptions.prototype.initialize = function() {
         ListOptions.__super__.initialize.apply(this, arguments);
         this.listenTo(this.collection, 'sort', this.render);
+        this.listenTo(this.collection, 'change', this.render);
         return this.render();
       };
 

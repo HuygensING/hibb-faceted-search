@@ -25,16 +25,28 @@
         };
       };
 
-      FacetedSearch.prototype.initialize = function() {
+      FacetedSearch.prototype.initialize = function(attrs, options) {
         var _this = this;
+        this.attrs = attrs;
         FacetedSearch.__super__.initialize.apply(this, arguments);
-        this.on('change:sort', function() {
+        this.on('change', function() {
           return _this.fetch();
         });
         if (this.has('resultRows')) {
           this.resultRows = this.get('resultRows');
           return this.unset('resultRows');
         }
+      };
+
+      FacetedSearch.prototype.fetch = function(options) {
+        var _this = this;
+        if (options == null) {
+          options = {};
+        }
+        options.error = function(model, response, options) {
+          return console.log('fetching results failed', model, response, options);
+        };
+        return FacetedSearch.__super__.fetch.apply(this, arguments);
       };
 
       FacetedSearch.prototype.parse = function() {
@@ -109,6 +121,19 @@
             }
           });
         }
+      };
+
+      FacetedSearch.prototype.reset = function() {
+        this.clear({
+          silent: true
+        });
+        this.set(this.defaults(), {
+          silent: true
+        });
+        this.set(this.attrs, {
+          silent: true
+        });
+        return this.fetch();
       };
 
       return FacetedSearch;

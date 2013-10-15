@@ -31,3 +31,4 @@ define (require) ->
 			@
 
 		update: (newOptions) ->
+		reset: ->

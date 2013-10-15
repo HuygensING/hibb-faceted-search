@@ -45,6 +45,8 @@
 
       DateFacet.prototype.update = function(newOptions) {};
 
+      DateFacet.prototype.reset = function() {};
+
       return DateFacet;
 
     })(Views.Facet);

@@ -3,7 +3,8 @@
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
   define(function(require) {
-    var FacetedSearch, Models, Templates, Views, config, facetViewMap, _ref;
+    var FacetedSearch, Fn, Models, Templates, Views, config, facetViewMap, _ref;
+    Fn = require('hilib/functions/general');
     config = require('config');
     facetViewMap = require('facetviewmap');
     Models = {
@@ -42,8 +43,8 @@
         _.extend(config, options);
         queryOptions = _.extend(config.queryOptions, config.textSearchOptions);
         this.model = new Models.FacetedSearch(queryOptions);
+        this.listenTo(this.model, 'sync', this.renderFacets);
         this.subscribe('unauthorized', function() {
-          console.log('un');
           return _this.trigger('unauthorized');
         });
         this.subscribe('results:change', function(response, queryOptions) {
@@ -62,7 +63,7 @@
           this.$('.search-placeholder').html(search.$el);
           this.listenTo(search, 'change', this.fetchResults);
         }
-        this.fetchResults();
+        this.model.fetch();
         return this;
       };
 
@@ -101,16 +102,10 @@
       };
 
       FacetedSearch.prototype.fetchResults = function(queryOptions) {
-        var _this = this;
         if (queryOptions == null) {
           queryOptions = {};
         }
-        this.model.set(queryOptions);
-        return this.model.fetch({
-          success: function() {
-            return _this.renderFacets();
-          }
-        });
+        return this.model.set(queryOptions);
       };
 
       FacetedSearch.prototype.next = function() {
@@ -129,14 +124,17 @@
         return _.has(this.model.serverResponse, '_prev');
       };
 
-      FacetedSearch.prototype.sortResultsBy = function(facet) {
-        return this.model.set({
-          sort: facet
-        });
-      };
-
       FacetedSearch.prototype.reset = function() {
-        return this.model.clear();
+        var data, index, _ref1;
+        _ref1 = this.model.serverResponse.facets;
+        for (index in _ref1) {
+          if (!__hasProp.call(_ref1, index)) continue;
+          data = _ref1[index];
+          if (this.facetViews[data.name].reset) {
+            this.facetViews[data.name].reset();
+          }
+        }
+        return this.model.reset();
       };
 
       return FacetedSearch;

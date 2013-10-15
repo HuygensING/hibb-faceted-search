@@ -44,3 +44,4 @@ define (require) ->
 			@
 
 		update: (newOptions) -> @model.set 'options', newOptions
+		reset: -> @render()
