@@ -6,10 +6,13 @@ define (require) ->
 	Models =
 		Base: require 'models/base'
 
+	Collections =
+		ServerResponse: require 'collections/serverresponse'
+
 	class FacetedSearch extends Models.Base
 
 		# Make into collection? With caching?
-		serverResponse: {} 		
+		# serverResponse: {} 		
 
 		defaults: ->
 			# an array of objects containing a facet name and values: {name: 'facet_s_writers', values: ['pietje', 'pukje']}
@@ -18,12 +21,13 @@ define (require) ->
 		initialize: (@attrs, options) ->
 			super
 
-			# @on 'change:sort', => @fetch()
-			@on 'change', => @fetch()
+			@serverResponse = new Collections.ServerResponse()
 
-			if @has 'resultRows'
-				@resultRows = @get 'resultRows'
-				@unset 'resultRows'
+			# @on 'change:sort', => @fetch()
+			@on 'change', (model, options) => 
+				@fetch
+					success: (model, response, options) => 
+						@trigger 'results:change', response, @attributes
 
 		fetch: (options={}) ->
 			options.error = (model, response, options) => console.log 'fetching results failed', model, response, options
@@ -35,6 +39,13 @@ define (require) ->
 		parse: -> {}
 
 		set: (attrs, options) ->
+			if attrs.hasOwnProperty 'resultRows'
+				@resultRows = attrs.resultRows
+				delete attrs.resultRows
+			else if attrs is 'resultRows'
+				@resultRows = options
+				return false
+
 			if attrs.facetValue?
 				# Remove old facetValue from facetValues
 				facetValues = _.reject @get('facetValues'), (data) -> data.name is attrs.facetValue.name
@@ -46,38 +57,50 @@ define (require) ->
 
 			super attrs, options
 
-		handleResponse: (response) ->
-			@serverResponse = response
-			# * TODO: change publish to trigger?
-			@publish 'results:change', response, @attributes
+		# handleResponse: (response) ->
+		# 	response.id = JSON.stringify @attributes
+		# 	@serverResponse.add response
+		# 	console.log @serverResponse
+		# 	# * TODO: change publish to trigger?
+			
 
 		setCursor: (direction) ->
-			if @serverResponse[direction]
-				jqXHR = ajax.get url: @serverResponse[direction]
+			if url = @serverResponse.last().get 'direction'
+				jqXHR = ajax.get url: url
 				jqXHR.done (data) => @handleResponse data
 				jqXHR.fail => console.error 'setCursor failed'
 
 		sync: (method, model, options) ->
 			if method is 'read'
-				ajax.token = config.token
+				cachedID = JSON.stringify @attributes
+				cachedModel = @serverResponse.get cachedID
 
-				jqXHR = ajax.post
-					url: config.baseUrl + config.searchPath
-					data: JSON.stringify @attributes
-					dataType: 'text'
+				# Check if the query is cached on the client
+				if cachedModel?
+					options.success cachedModel.attributes
 
-				jqXHR.done (data, textStatus, jqXHR) =>
-					if jqXHR.status is 201
-						url = jqXHR.getResponseHeader('Location')
-						url += '?rows=' + @resultRows if @resultRows?
+				# Fetch query from the server
+				else
+					ajax.token = config.token
 
-						xhr = ajax.get url: url
-						xhr.done (data, textStatus, jqXHR) =>
-							@handleResponse data
-							options.success data
+					jqXHR = ajax.post
+						url: config.baseUrl + config.searchPath
+						data: JSON.stringify @attributes
+						dataType: 'text'
 
-				jqXHR.fail (jqXHR, textStatus, errorThrown) =>
-					@publish 'unauthorized' if jqXHR.status is 401
+					jqXHR.done (data, textStatus, jqXHR) =>
+						if jqXHR.status is 201
+							url = jqXHR.getResponseHeader('Location')
+							url += '?rows=' + @resultRows if @resultRows?
+
+							xhr = ajax.get url: url
+							xhr.done (data, textStatus, jqXHR) =>
+								data.id = JSON.stringify @attributes
+								@serverResponse.add data
+								options.success data
+
+					jqXHR.fail (jqXHR, textStatus, errorThrown) =>
+						@publish 'unauthorized' if jqXHR.status is 401
 
 		reset: ->
 			@clear silent: true

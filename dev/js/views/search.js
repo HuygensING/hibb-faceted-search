@@ -25,26 +25,9 @@
 
       Search.prototype.className = 'facet search';
 
-      Search.prototype.events = function() {
-        return _.extend({}, Search.__super__.events.apply(this, arguments), {
-          'click button.search': 'search'
-        });
-      };
-
-      Search.prototype.search = function(ev) {
-        var _this = this;
-        ev.preventDefault();
-        this.$('#search').addClass('loading');
-        this.trigger('change', {
-          term: this.$('#search').val()
-        });
-        return this.subscribe('results:change', function() {
-          return _this.$('#search').removeClass('loading');
-        });
-      };
-
       Search.prototype.initialize = function(options) {
         Search.__super__.initialize.apply(this, arguments);
+        this.currentSearchText = null;
         this.model = new Models.Search({
           searchOptions: config.textSearchOptions,
           title: 'Text search',
@@ -73,6 +56,40 @@
           });
         });
         return this;
+      };
+
+      Search.prototype.events = function() {
+        return _.extend({}, Search.__super__.events.apply(this, arguments), {
+          'click button': function(ev) {
+            return ev.preventDefault();
+          },
+          'click button.active': 'search',
+          'keyup input': 'onKeyup'
+        });
+      };
+
+      Search.prototype.onKeyup = function(ev) {
+        if (ev.currentTarget.value.length > 1 && this.currentSearchText !== ev.currentTarget.value) {
+          return this.$('button').addClass('active');
+        } else {
+          return this.$('button').removeClass('active');
+        }
+      };
+
+      Search.prototype.search = function(ev) {
+        var $search;
+        ev.preventDefault();
+        this.$('button').removeClass('active');
+        $search = this.$('#search');
+        $search.addClass('loading');
+        this.currentSearchText = $search.val();
+        return this.trigger('change', {
+          term: this.currentSearchText
+        });
+      };
+
+      Search.prototype.update = function() {
+        return this.$('#search').removeClass('loading');
       };
 
       return Search;

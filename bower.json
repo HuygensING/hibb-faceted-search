@@ -8,7 +8,7 @@
     "requirejs-domready": "*",
     "jquery": "*",
     "underscore-amd": "*",
-    "backbone-amd": "*",
+    "backbone-amd": "1.0.0",
     "hilib": "https://github.com/Gijsjan/hilib.git"
   },
   "devDependencies": {

@@ -15,22 +15,11 @@ define (require) ->
 
 		className: 'facet search'
 
-		events: -> _.extend {}, super,
-			'click button.search': 'search'
-
-		search: (ev) ->
-			ev.preventDefault()
-
-			@$('#search').addClass 'loading'
-
-			@trigger 'change', 
-				term: @$('#search').val()
-				# textLayers: ['Diplomatic']
-
-			@subscribe 'results:change', => @$('#search').removeClass 'loading' # TODO change to @update()
-
+		# ### Initialize
 		initialize: (options) ->
 			super
+
+			@currentSearchText = null
 
 			@model = new Models.Search 
 				searchOptions: config.textSearchOptions
@@ -39,6 +28,8 @@ define (require) ->
 
 			@render()
 
+		# * TODO: search input (<input id="">) should not have an ID, because there can be several Faceted Search instances.
+		# ### Render
 		render: ->
 			super
 
@@ -61,3 +52,33 @@ define (require) ->
 				# console.log @model.attributes
 
 			@
+
+		# ### Events
+		events: -> _.extend {}, super,
+			'click button': (ev) -> ev.preventDefault()
+			'click button.active': 'search'
+			'keyup input': 'onKeyup'
+
+		onKeyup: (ev) ->
+			if ev.currentTarget.value.length > 1 and @currentSearchText isnt ev.currentTarget.value
+				@$('button').addClass 'active'
+			else
+				@$('button').removeClass 'active'
+
+		search: (ev) ->
+			ev.preventDefault()
+
+			# Prevent user from searching the same query twice
+			@$('button').removeClass 'active'
+			$search = @$('#search')
+			$search.addClass 'loading'
+
+			# The currentSearchText can never be equal to the input value, because if it was,
+			# the search button would not be clickable.
+			@currentSearchText = $search.val()
+
+			@trigger 'change', term: @currentSearchText
+				# textLayers: ['Diplomatic']
+
+		# ### Methods
+		update: -> @$('#search').removeClass 'loading'
