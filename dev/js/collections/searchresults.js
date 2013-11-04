@@ -3,33 +3,33 @@
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
   define(function(require) {
-    var ServerResponse, ServerResponses, pubsub, _ref;
+    var SearchResult, SearchResults, pubsub, _ref;
     pubsub = require('hilib/mixins/pubsub');
-    ServerResponse = require('models/serverresponse');
-    return ServerResponses = (function(_super) {
-      __extends(ServerResponses, _super);
+    SearchResult = require('models/searchresult');
+    return SearchResults = (function(_super) {
+      __extends(SearchResults, _super);
 
-      function ServerResponses() {
-        _ref = ServerResponses.__super__.constructor.apply(this, arguments);
+      function SearchResults() {
+        _ref = SearchResults.__super__.constructor.apply(this, arguments);
         return _ref;
       }
 
-      ServerResponses.prototype.model = ServerResponse;
+      SearchResults.prototype.model = SearchResult;
 
-      ServerResponses.prototype.initialize = function() {
+      SearchResults.prototype.initialize = function() {
         _.extend(this, pubsub);
         this.currentQueryOptions = null;
         this.cachedModels = {};
         return this.on('add', this.setCurrent, this);
       };
 
-      ServerResponses.prototype.setCurrent = function(model) {
+      SearchResults.prototype.setCurrent = function(model) {
         this.current = model;
         return this.publish('change:results', model, this.currentQueryOptions);
       };
 
-      ServerResponses.prototype.runQuery = function(currentQueryOptions) {
-        var data, resultRows, serverResponse,
+      SearchResults.prototype.runQuery = function(currentQueryOptions) {
+        var data, resultRows, searchResult,
           _this = this;
         this.currentQueryOptions = currentQueryOptions;
         if (this.currentQueryOptions.hasOwnProperty('resultRows')) {
@@ -40,11 +40,11 @@
         if (this.cachedModels.hasOwnProperty(data)) {
           return this.setCurrent(this.cachedModels[data]);
         } else {
-          serverResponse = new ServerResponse();
+          searchResult = new SearchResult();
           if (resultRows != null) {
-            serverResponse.resultRows = resultRows;
+            searchResult.resultRows = resultRows;
           }
-          return serverResponse.fetch({
+          return searchResult.fetch({
             data: data,
             success: function(model, response, options) {
               _this.cachedModels[data] = model;
@@ -54,15 +54,15 @@
         }
       };
 
-      ServerResponses.prototype.moveCursor = function(direction) {
-        var serverResponse, url,
+      SearchResults.prototype.moveCursor = function(direction) {
+        var searchResult, url,
           _this = this;
         if (url = this.current.get(direction)) {
           if (this.cachedModels.hasOwnProperty(url)) {
             return this.setCurrent(this.cachedModels[url]);
           } else {
-            serverResponse = new ServerResponse();
-            return serverResponse.fetch({
+            searchResult = new SearchResult();
+            return searchResult.fetch({
               url: url,
               success: function(model, response, options) {
                 _this.cachedModels[url] = model;
@@ -73,7 +73,7 @@
         }
       };
 
-      return ServerResponses;
+      return SearchResults;
 
     })(Backbone.Collection);
   });

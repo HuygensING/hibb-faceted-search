@@ -176,7 +176,7 @@ module.exports = (grunt) ->
 					exclude: ['backbone', 'jquery', 'underscore']
 					preserveLicenseComments: false
 					out: "stage/js/main.js"
-					# optimize: 'none' # FS doesn't build when it isn't optimized!
+					optimize: 'none' # FS doesn't build when it isn't optimized!
 					paths:
 						'jquery': '../lib/jquery/jquery.min'
 						'underscore': '../lib/underscore-amd/underscore'

@@ -1,51 +1,28 @@
 define (require) ->
-	config = require 'config'
+	SearchResults = require 'collections/searchresults'
 
-	ajax = require 'hilib/managers/ajax'
-
-	Models =
-		Base: require 'models/base'
-
-	Collections =
-		ServerResponse: require 'collections/serverresponse'
-
-	class FacetedSearch extends Models.Base
-
-		# Make into collection? With caching?
-		# serverResponse: {} 		
+	class FacetedSearch extends Backbone.Model
 
 		defaults: ->
 			# an array of objects containing a facet name and values: {name: 'facet_s_writers', values: ['pietje', 'pukje']}
 			facetValues: []
 
-		initialize: (@attrs, options) ->
-			super
+		# ### Initialize
 
-			@serverResponse = new Collections.ServerResponse()
+		# This model's attributes are the queryOptions. On initialize we pass the initial queryOptions, coming from the
+		# FacetedSearch's config.
+		initialize: (@queryOptions, options) ->
+			@searchResults = new SearchResults()
 
-			# @on 'change:sort', => @fetch()
-			@on 'change', (model, options) => 
-				@fetch
-					success: (model, response, options) => 
-						@trigger 'results:change', response, @attributes
+			# Run a new query everytime something changes on the model (@attributes are the queryOptions).
+			@on 'change', (model, options) => @searchResults.runQuery @attributes
 
-		fetch: (options={}) ->
-			options.error = (model, response, options) => console.log 'fetching results failed', model, response, options
+			# Manually trigger the change event, because the initial @querySettings, don't trigger the change event
+			# and thus searchResult.runQuery isn't called.
+			@trigger 'change'
 
-			super
-
-		# The attributes of the main model are queryOptions (not server results!)
-		# To avoid setting the search results to the attributes, an empty object is returned (and passed to @set)
-		parse: -> {}
-
+		# ### Overrides
 		set: (attrs, options) ->
-			if attrs.hasOwnProperty 'resultRows'
-				@resultRows = attrs.resultRows
-				delete attrs.resultRows
-			else if attrs is 'resultRows'
-				@resultRows = options
-				return false
-
 			if attrs.facetValue?
 				# Remove old facetValue from facetValues
 				facetValues = _.reject @get('facetValues'), (data) -> data.name is attrs.facetValue.name
@@ -56,57 +33,15 @@ define (require) ->
 				delete attrs.facetValue
 
 			super attrs, options
-
-		# handleResponse: (response) ->
-		# 	response.id = JSON.stringify @attributes
-		# 	@serverResponse.add response
-		# 	console.log @serverResponse
-		# 	# * TODO: change publish to trigger?
 			
+		# ### Methods
 
-		setCursor: (direction) ->
-			if url = @serverResponse.last().get 'direction'
-				jqXHR = ajax.get url: url
-				jqXHR.done (data) => @handleResponse data
-				jqXHR.fail => console.error 'setCursor failed'
-
-		sync: (method, model, options) ->
-			if method is 'read'
-				cachedID = JSON.stringify @attributes
-				cachedModel = @serverResponse.get cachedID
-
-				# Check if the query is cached on the client
-				if cachedModel?
-					options.success cachedModel.attributes
-
-				# Fetch query from the server
-				else
-					ajax.token = config.token
-
-					jqXHR = ajax.post
-						url: config.baseUrl + config.searchPath
-						data: JSON.stringify @attributes
-						dataType: 'text'
-
-					jqXHR.done (data, textStatus, jqXHR) =>
-						if jqXHR.status is 201
-							url = jqXHR.getResponseHeader('Location')
-							url += '?rows=' + @resultRows if @resultRows?
-
-							xhr = ajax.get url: url
-							xhr.done (data, textStatus, jqXHR) =>
-								data.id = JSON.stringify @attributes
-								@serverResponse.add data
-								options.success data
-
-					jqXHR.fail (jqXHR, textStatus, errorThrown) =>
-						@publish 'unauthorized' if jqXHR.status is 401
-
+		# Silently change @attributes and trigger a change event manually afterwards.
 		reset: ->
 			@clear silent: true
 			@set @defaults(), silent: true
-			@set @attrs, silent: true
-			@fetch()
+			@set @queryOptions, silent: true
+			@trigger 'change'
 
 
 # EXAMPLE QUERY:

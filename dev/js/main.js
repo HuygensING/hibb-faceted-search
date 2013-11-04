@@ -3,8 +3,9 @@
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
   define(function(require) {
-    var FacetedSearch, Fn, Models, Templates, Views, config, facetViewMap, _ref;
+    var FacetedSearch, Fn, Models, Templates, Views, config, facetViewMap, pubsub, _ref;
     Fn = require('hilib/functions/general');
+    pubsub = require('hilib/mixins/pubsub');
     config = require('config');
     facetViewMap = require('facetviewmap');
     Models = {
@@ -33,24 +34,23 @@
       FacetedSearch.prototype.initialize = function(options) {
         var queryOptions,
           _this = this;
-        FacetedSearch.__super__.initialize.apply(this, arguments);
         this.facetViews = {};
+        _.extend(this, pubsub);
         _.extend(facetViewMap, options.facetViewMap);
         delete options.facetViewMap;
         _.extend(config.facetNameMap, options.facetNameMap);
         delete options.facetNameMap;
         _.extend(config, options);
         queryOptions = _.extend(config.queryOptions, config.textSearchOptions);
+        this.render();
         this.subscribe('unauthorized', function() {
           return _this.trigger('unauthorized');
         });
-        this.render();
-        this.model = new Models.FacetedSearch();
-        this.listenTo(this.model, 'results:change', function(response, queryOptions) {
+        this.subscribe('change:results', function(responseModel, queryOptions) {
           _this.renderFacets();
-          return _this.trigger('results:change', response, queryOptions);
+          return _this.trigger('results:change', responseModel, queryOptions);
         });
-        return this.model.set(queryOptions);
+        return this.model = new Models.FacetedSearch(queryOptions);
       };
 
       FacetedSearch.prototype.render = function() {
@@ -74,9 +74,9 @@
         var View, facetData, fragment, index, _ref1, _ref2, _results,
           _this = this;
         this.$('.loader').hide();
-        if (this.model.serverResponse.length === 1) {
+        if (this.model.searchResults.length === 1) {
           fragment = document.createDocumentFragment();
-          _ref1 = this.model.serverResponse.last().get('facets');
+          _ref1 = this.model.searchResults.last().get('facets');
           for (index in _ref1) {
             if (!__hasProp.call(_ref1, index)) continue;
             facetData = _ref1[index];
@@ -98,7 +98,7 @@
           if (this.facetViews.hasOwnProperty('textSearch')) {
             this.facetViews['textSearch'].update();
           }
-          _ref2 = this.model.serverResponse.facets;
+          _ref2 = this.model.searchResults.facets;
           _results = [];
           for (index in _ref2) {
             if (!__hasProp.call(_ref2, index)) continue;
@@ -110,24 +110,24 @@
       };
 
       FacetedSearch.prototype.next = function() {
-        return this.model.setCursor('_next');
+        return this.model.searchResults.moveCursor('_next');
       };
 
       FacetedSearch.prototype.prev = function() {
-        return this.model.setCursor('_prev');
+        return this.model.searchResults.moveCursor('_prev');
       };
 
       FacetedSearch.prototype.hasNext = function() {
-        return _.has(this.model.serverResponse.last(), '_next');
+        return this.model.searchResults.current.has('_next');
       };
 
       FacetedSearch.prototype.hasPrev = function() {
-        return _.has(this.model.serverResponse.last(), '_prev');
+        return this.model.searchResults.current.has('_prev');
       };
 
       FacetedSearch.prototype.reset = function() {
         var data, index, _ref1;
-        _ref1 = this.model.serverResponse.last().get('facets');
+        _ref1 = this.model.searchResults.last().get('facets');
         for (index in _ref1) {
           if (!__hasProp.call(_ref1, index)) continue;
           data = _ref1[index];
@@ -140,7 +140,7 @@
 
       return FacetedSearch;
 
-    })(Views.Base);
+    })(Backbone.View);
   });
 
 }).call(this);

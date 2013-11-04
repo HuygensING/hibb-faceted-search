@@ -8,7 +8,7 @@ define (require) ->
 	Models =
 		Base: require 'models/base'
 
-	class ServerResponse extends Models.Base
+	class SearchResult extends Models.Base
 
 		defaults: ->
 			_next: null

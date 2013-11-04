@@ -1,10 +1,10 @@
 define (require) ->
 	pubsub = require 'hilib/mixins/pubsub'
-	ServerResponse = require 'models/serverresponse'
+	SearchResult = require 'models/searchresult'
 
-	class ServerResponses extends Backbone.Collection
+	class SearchResults extends Backbone.Collection
 
-		model: ServerResponse
+		model: SearchResult
 
 		initialize: ->
 			_.extend @, pubsub
@@ -28,9 +28,9 @@ define (require) ->
 			if @cachedModels.hasOwnProperty data
 				@setCurrent @cachedModels[data]
 			else
-				serverResponse = new ServerResponse()
-				serverResponse.resultRows = resultRows if resultRows?
-				serverResponse.fetch
+				searchResult = new SearchResult()
+				searchResult.resultRows = resultRows if resultRows?
+				searchResult.fetch
 					data: data
 					success: (model, response, options) => 
 						@cachedModels[data] = model
@@ -41,8 +41,8 @@ define (require) ->
 				if @cachedModels.hasOwnProperty url
 					@setCurrent @cachedModels[url]
 				else
-					serverResponse = new ServerResponse()
-					serverResponse.fetch
+					searchResult = new SearchResult()
+					searchResult.fetch
 						url: url
 						success: (model, response, options) => 
 							@cachedModels[url] = model

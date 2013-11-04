@@ -1,5 +1,7 @@
 define (require) ->
 	Fn = require 'hilib/functions/general'
+	pubsub = require 'hilib/mixins/pubsub'
+
 	config = require 'config'
 	facetViewMap = require 'facetviewmap'
 
@@ -17,13 +19,15 @@ define (require) ->
 	Templates =
 			FacetedSearch: require 'text!html/faceted-search.html'
 
-	class FacetedSearch extends Views.Base
+	class FacetedSearch extends Backbone.View
 
 		# ### Initialize
 		initialize: (options) ->
-			super # ANTIPATTERN
+			# super # ANTIPATTERN
 
 			@facetViews = {}
+
+			_.extend @, pubsub
 
 			_.extend facetViewMap, options.facetViewMap
 			delete options.facetViewMap
@@ -34,22 +38,21 @@ define (require) ->
 			_.extend config, options
 			queryOptions = _.extend config.queryOptions, config.textSearchOptions
 			
-			@subscribe 'unauthorized', => @trigger 'unauthorized'
-
 			@render()
 
-			# Initialize the FacetedSearch model, without the queryOptions!
-			@model = new Models.FacetedSearch()
-
+			@subscribe 'unauthorized', => @trigger 'unauthorized'
 			# Listen to the results:change event and (re)render the facets everytime the result changes.
-			@listenTo @model, 'results:change', (response, queryOptions) => 
+			@subscribe 'change:results', (responseModel, queryOptions) => 
 				@renderFacets()
-				@trigger 'results:change', response, queryOptions
+				@trigger 'results:change', responseModel, queryOptions
 
+			# Initialize the FacetedSearch model, without the queryOptions!
+			@model = new Models.FacetedSearch queryOptions
+			
 			# Set the queryOptions to the model. The model fetches the results from the server when the queryOptions change,
 			# so the results:change event is fired and the facets are rendered. If we set the queryOptions directly when 
 			# instantiating the model, than results:change will not be fired.
-			@model.set queryOptions
+			# @model.initOptions queryOptions
 
 		# ### Render
 		render: ->
@@ -69,11 +72,11 @@ define (require) ->
 		renderFacets: (data) ->
 			@$('.loader').hide()
 
-			# If the size of the serverResponses is 1 then it's the first time we render the facets
-			if @model.serverResponse.length is 1
+			# If the size of the searchResults is 1 then it's the first time we render the facets
+			if @model.searchResults.length is 1
 				fragment = document.createDocumentFragment()
 
-				for own index, facetData of @model.serverResponse.last().get('facets')
+				for own index, facetData of @model.searchResults.last().get('facets')
 					if facetData.type of facetViewMap
 						View = facetViewMap[facetData.type]
 						@facetViews[facetData.name] = new View attrs: facetData
@@ -90,7 +93,7 @@ define (require) ->
 			# If the size is greater than 1, the facets are already rendered and we call their update methods.
 			else
 				@facetViews['textSearch'].update() if @facetViews.hasOwnProperty 'textSearch'
-				for own index, data of @model.serverResponse.facets
+				for own index, data of @model.searchResults.facets
 					@facetViews[data.name].update(data.options)
 
 
@@ -105,16 +108,16 @@ define (require) ->
 			# * TODO: fetch on @model change event?
 			# @model.fetch success: => @renderFacets()
 
-		next: -> @model.setCursor '_next'
-		prev: -> @model.setCursor '_prev'
+		next: -> @model.searchResults.moveCursor '_next'
+		prev: -> @model.searchResults.moveCursor '_prev'
 
-		hasNext: -> _.has @model.serverResponse.last(), '_next'
-		hasPrev: -> _.has @model.serverResponse.last(), '_prev'
+		hasNext: -> @model.searchResults.current.has '_next'
+		hasPrev: -> @model.searchResults.current.has '_prev'
 
 		# sortResultsBy: (facet) -> @model.set sort: facet
 
 		reset: -> 
-			for own index, data of @model.serverResponse.last().get('facets')
+			for own index, data of @model.searchResults.last().get('facets')
 				@facetViews[data.name].reset() if @facetViews[data.name].reset
 			@model.reset()
 			# @model.fetch()
