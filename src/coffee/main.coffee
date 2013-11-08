@@ -54,8 +54,12 @@ define (require) ->
 				@renderFacets()
 				@trigger 'results:change', responseModel, queryOptions
 
+			
 			# Initialize the FacetedSearch model, without the queryOptions!
 			@model = new Models.FacetedSearch queryOptions
+
+			@listenTo @model.searchResults, 'request', => console.log 'requested'
+			@listenTo @model.searchResults, 'sync', => console.log 'synced'
 			
 			# Set the queryOptions to the model. The model fetches the results from the server when the queryOptions change,
 			# so the results:change event is fired and the facets are rendered. If we set the queryOptions directly when 

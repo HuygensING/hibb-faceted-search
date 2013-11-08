@@ -56,7 +56,13 @@
           _this.renderFacets();
           return _this.trigger('results:change', responseModel, queryOptions);
         });
-        return this.model = new Models.FacetedSearch(queryOptions);
+        this.model = new Models.FacetedSearch(queryOptions);
+        this.listenTo(this.model.searchResults, 'request', function() {
+          return console.log('requested');
+        });
+        return this.listenTo(this.model.searchResults, 'sync', function() {
+          return console.log('synced');
+        });
       };
 
       FacetedSearch.prototype.render = function() {

@@ -28,6 +28,7 @@ define (require) ->
 			if @cachedModels.hasOwnProperty data
 				@setCurrent @cachedModels[data]
 			else
+				@trigger 'request'
 				searchResult = new SearchResult()
 				searchResult.resultRows = resultRows if resultRows?
 				searchResult.fetch
@@ -41,6 +42,7 @@ define (require) ->
 				if @cachedModels.hasOwnProperty url
 					@setCurrent @cachedModels[url]
 				else
+					@trigger 'request'
 					searchResult = new SearchResult()
 					searchResult.fetch
 						url: url

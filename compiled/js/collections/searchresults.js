@@ -40,6 +40,7 @@
         if (this.cachedModels.hasOwnProperty(data)) {
           return this.setCurrent(this.cachedModels[data]);
         } else {
+          this.trigger('request');
           searchResult = new SearchResult();
           if (resultRows != null) {
             searchResult.resultRows = resultRows;
@@ -61,6 +62,7 @@
           if (this.cachedModels.hasOwnProperty(url)) {
             return this.setCurrent(this.cachedModels[url]);
           } else {
+            this.trigger('request');
             searchResult = new SearchResult();
             return searchResult.fetch({
               url: url,
