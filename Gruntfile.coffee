@@ -18,9 +18,9 @@ module.exports = (grunt) ->
 				command:
 					'rm -rf stage/*'
 
-			emptydev:
+			emptycompiled:
 				command:
-					'rm -rf dev/*'
+					'rm -rf compiled/*'
 
 			# rsync:
 			# 	command:
@@ -28,9 +28,9 @@ module.exports = (grunt) ->
 			# 	options:
 			# 		stdout: true
 
-			symlink_dev_images:
+			symlink_compiled_images:
 				command: [
-					'cd dev'
+					'cd compiled'
 					'ln -s ../images images'
 				].join '&&'
 			symlink_stage_images:
@@ -49,13 +49,13 @@ module.exports = (grunt) ->
 			keepalive:
 				options:
 					port: 3000
-					base: '/home/gijs/Projects/module-env/dev'
+					base: '/home/gijs/Projects/module-env/compiled'
 					middleware: connect_middleware
 					keepalive: true
-			dev:
+			compiled:
 				options:
 					port: 3000
-					base: '/home/gijs/Projects/module-env/dev'
+					base: '/home/gijs/Projects/module-env/compiled'
 					middleware: connect_middleware
 
 		coffee:
@@ -64,7 +64,7 @@ module.exports = (grunt) ->
 					expand: true
 					cwd: 'src/coffee'
 					src: '**/*.coffee'
-					dest: 'dev/js'
+					dest: 'compiled/js'
 					rename: (dest, src) -> 
 						dest + '/' + src.replace(/.coffee/, '.js') # Use rename to preserve multiple dots in filenames (nav.user.coffee => nav.user.js)
 				,
@@ -86,11 +86,11 @@ module.exports = (grunt) ->
 					expand: true
 					cwd: 'src/jade'
 					src: '**/*.jade'
-					dest: 'dev/html'
+					dest: 'compiled/html'
 					rename: (dest, src) -> 
 						dest + '/' + src.replace(/.jade/, '.html') # Use rename to preserve multiple dots in filenames (nav.user.coffee => nav.user.js)
 				,
-					'dev/index.html': 'src/index.jade'
+					'compiled/index.html': 'src/index.jade'
 				]
 			compile:
 				options:
@@ -102,7 +102,7 @@ module.exports = (grunt) ->
 					paths: ['src/stylus/import']
 					import: ['variables', 'functions']
 				files:
-					'dev/css/main.css': [
+					'compiled/css/main.css': [
 						'src/stylus/**/*.styl'
 						'!src/stylus/import/*.styl'
 					]
@@ -110,21 +110,21 @@ module.exports = (grunt) ->
 		# concat:
 		# 	css:
 		# 		src: [
-		# 			'dev/lib/normalize-css/normalize.css'
-		# 			'dev/css/project.css'
-		# 			'dev/lib/faceted-search/dev/css/main.css'
+		# 			'compiled/lib/normalize-css/normalize.css'
+		# 			'compiled/css/project.css'
+		# 			'compiled/lib/faceted-search/compiled/css/main.css'
 		# 		]
 		# 		dest:
-		# 			'dev/css/main.css'
+		# 			'compiled/css/main.css'
 
 		cssmin:
 			stage:
 				files:
-					'stage/css/main.css': 'dev/css/main.css'
+					'stage/css/main.css': 'compiled/css/main.css'
 
 		# replace:
 		# 	html:
-		# 		src: 'dev/index.html'
+		# 		src: 'compiled/index.html'
 		# 		dest: 'stage/index.html'
 		# 		replacements: [
 		# 			from: '<script data-main="/js/main" src="/lib/requirejs/require.js"></script>'
@@ -134,7 +134,7 @@ module.exports = (grunt) ->
 		requirejs:
 			compile:
 				options:
-					baseUrl: "dev/js"
+					baseUrl: "compiled/js"
 					name: '../lib/almond/almond'
 					include: 'main'
 					exclude: ['backbone', 'jquery', 'underscore']
@@ -192,18 +192,18 @@ module.exports = (grunt) ->
 
 	grunt.registerTask 'w', 'watch'
 
-	# Compile src/ to dev/ (empty dir, install deps, compile coffee, jade, stylus)
+	# Compile src/ to compiled/ (empty dir, install deps, compile coffee, jade, stylus)
 	grunt.registerTask 'c', 'compile'
 	grunt.registerTask 'compile', [
-		'shell:emptydev' # rm -rf dev/
+		'shell:emptycompiled' # rm -rf compiled/
 		'shell:bowerinstall' # Get dependencies first, cuz css needs to be included (and maybe images?)
 		'coffee:init'
 		'jade:init'
 		'stylus:compile'
-		'shell:symlink_dev_images' # Symlink from images/ to dev/images
+		'shell:symlink_compiled_images' # Symlink from images/ to compiled/images
 	]
 
-	# Build dev/ to stage/ (empty dir, run r.js)
+	# Build compiled/ to stage/ (empty dir, run r.js)
 	grunt.registerTask 'b', 'build'
 	grunt.registerTask 'build', [
 		'shell:emptystage'
@@ -217,7 +217,7 @@ module.exports = (grunt) ->
 	]
 
 	grunt.registerTask 'sw', [
-		'connect:dev'
+		'connect:compiled'
 		'watch'
 	]
 
@@ -235,18 +235,18 @@ module.exports = (grunt) ->
 
 			if type is 'coffee'
 				testDestPath = srcPath.replace 'src/coffee', 'test'
-				destPath = 'dev'+srcPath.replace(new RegExp(type, 'g'), 'js').substr(3);
+				destPath = 'compiled'+srcPath.replace(new RegExp(type, 'g'), 'js').substr(3);
 
 			if type is 'jade'
 				# if srcPath.substr(0, 18) is 'src/coffee/modules' # If the .jade comes from a module
 				# 	a = srcPath.split('/')
-				# 	a[0] = 'dev'
+				# 	a[0] = 'compiled'
 				# 	a[1] = 'html'
 				# 	a.splice(4, 1)
 				# 	destPath = a.join('/')
 				# 	destPath = destPath.slice(0, -4) + 'html'
 				# else # If the .jade comes from the main app
-				destPath = 'dev'+srcPath.replace(new RegExp(type, 'g'), 'html').substr(3);
+				destPath = 'compiled'+srcPath.replace(new RegExp(type, 'g'), 'html').substr(3);
 
 			if type? and action is 'changed' or action is 'added'
 				data = {}
