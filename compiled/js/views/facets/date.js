@@ -3,7 +3,7 @@
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
   define(function(require) {
-    var DateFacet, Models, StringFn, Templates, Views, _ref;
+    var DateFacet, Models, StringFn, Views, tpls, _ref;
     StringFn = require('hilib/functions/string');
     Models = {
       Date: require('models/date')
@@ -11,9 +11,7 @@
     Views = {
       Facet: require('views/facet')
     };
-    Templates = {
-      Date: require('text!html/facet/date.html')
-    };
+    tpls = require('tpls');
     return DateFacet = (function(_super) {
       __extends(DateFacet, _super);
 
@@ -36,7 +34,7 @@
       DateFacet.prototype.render = function() {
         var rtpl;
         DateFacet.__super__.render.apply(this, arguments);
-        rtpl = _.template(Templates.Date, _.extend(this.model.attributes, {
+        rtpl = tpls['faceted-search/facets/date'](_.extend(this.model.attributes, {
           ucfirst: StringFn.ucfirst
         }));
         this.$('.placeholder').html(rtpl);

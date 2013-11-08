@@ -49,13 +49,13 @@ module.exports = (grunt) ->
 			keepalive:
 				options:
 					port: 3000
-					base: '/home/gijs/Projects/module-env/compiled'
+					base: '/home/gijs/Projects/module-env/dev'
 					middleware: connect_middleware
 					keepalive: true
 			compiled:
 				options:
 					port: 3000
-					base: '/home/gijs/Projects/module-env/compiled'
+					base: '/home/gijs/Projects/module-env/dev'
 					middleware: connect_middleware
 
 		coffee:
@@ -80,21 +80,36 @@ module.exports = (grunt) ->
 				options:
 					bare: false # UglyHack: set a property to its default value to be able to call coffee:compile
 
+		# jade:
+		# 	init:
+		# 		files: [
+		# 			expand: true
+		# 			cwd: 'src/jade'
+		# 			src: '**/*.jade'
+		# 			dest: 'compiled/html'
+		# 			rename: (dest, src) -> 
+		# 				dest + '/' + src.replace(/.jade/, '.html') # Use rename to preserve multiple dots in filenames (nav.user.coffee => nav.user.js)
+		# 		,
+		# 			'compiled/index.html': 'src/index.jade'
+		# 		]
+		# 	compile:
+		# 		options:
+		# 			pretty: true
+
+
 		jade:
-			init:
-				files: [
-					expand: true
-					cwd: 'src/jade'
-					src: '**/*.jade'
-					dest: 'compiled/html'
-					rename: (dest, src) -> 
-						dest + '/' + src.replace(/.jade/, '.html') # Use rename to preserve multiple dots in filenames (nav.user.coffee => nav.user.js)
-				,
-					'compiled/index.html': 'src/index.jade'
-				]
 			compile:
+				files: 'compiled/templates.js': 'src/jade/**/*.jade'
 				options:
-					pretty: true
+					compileDebug: false
+					client: true
+					amd: true
+					processName: (filename) ->
+						parts = filename.split('/')
+						parts.shift() # Remove first element of the array
+						parts[0] = 'faceted-search' # Second element is now in first (0) position
+						parts[parts.length-1] = parts[parts.length-1].replace('.jade', '')
+						parts.join('/')
 
 		stylus:
 			compile:
@@ -137,17 +152,19 @@ module.exports = (grunt) ->
 					baseUrl: "compiled/js"
 					name: '../lib/almond/almond'
 					include: 'main'
-					exclude: ['backbone', 'jquery', 'underscore']
+					exclude: ['backbone', 'jquery', 'underscore'] # Exclude hilib?
 					preserveLicenseComments: false
 					out: "stage/js/main.js"
-					optimize: 'none' # FS doesn't build when it isn't optimized!
+					# optimize: 'none'
 					paths:
 						'jquery': '../lib/jquery/jquery.min'
 						'underscore': '../lib/underscore-amd/underscore'
 						'backbone': '../lib/backbone-amd/backbone'
-						'text': '../lib/requirejs-text/text'
+						# 'text': '../lib/requirejs-text/text'
 						'hilib': '../lib/hilib/compiled'
-						'html': '../html'
+						'tpls': '../templates'
+						'jade': '../lib/jade/runtime'
+						# 'html': '../html'
 					wrap:
 						startFile: 'wrap.start.js'
 						endFile: 'wrap.end.js'
@@ -198,7 +215,7 @@ module.exports = (grunt) ->
 		'shell:emptycompiled' # rm -rf compiled/
 		'shell:bowerinstall' # Get dependencies first, cuz css needs to be included (and maybe images?)
 		'coffee:init'
-		'jade:init'
+		'jade:compile'
 		'stylus:compile'
 		'shell:symlink_compiled_images' # Symlink from images/ to compiled/images
 	]
@@ -231,22 +248,10 @@ module.exports = (grunt) ->
 
 		if srcPath.substr(0, 3) is 'src'
 			type = 'coffee' if srcPath.substr(-7) is '.coffee'
-			type = 'jade' if srcPath.substr(-5) is '.jade'
 
 			if type is 'coffee'
 				testDestPath = srcPath.replace 'src/coffee', 'test'
 				destPath = 'compiled'+srcPath.replace(new RegExp(type, 'g'), 'js').substr(3);
-
-			if type is 'jade'
-				# if srcPath.substr(0, 18) is 'src/coffee/modules' # If the .jade comes from a module
-				# 	a = srcPath.split('/')
-				# 	a[0] = 'compiled'
-				# 	a[1] = 'html'
-				# 	a.splice(4, 1)
-				# 	destPath = a.join('/')
-				# 	destPath = destPath.slice(0, -4) + 'html'
-				# else # If the .jade comes from the main app
-				destPath = 'compiled'+srcPath.replace(new RegExp(type, 'g'), 'html').substr(3);
 
 			if type? and action is 'changed' or action is 'added'
 				data = {}

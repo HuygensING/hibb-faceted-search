@@ -8,8 +8,10 @@ define (require) ->
 	Views = 
 		Facet: require 'views/facet'
 
-	Templates =
-		Date: require 'text!html/facet/date.html'
+	# Templates =
+	# 	Date: require 'text!html/facet/date.html'
+
+	tpls = require 'tpls'
 
 	class DateFacet extends Views.Facet
 
@@ -25,7 +27,7 @@ define (require) ->
 		render: ->
 			super
 
-			rtpl = _.template Templates.Date, _.extend @model.attributes, ucfirst: StringFn.ucfirst
+			rtpl = tpls['faceted-search/facets/date']  _.extend @model.attributes, ucfirst: StringFn.ucfirst
 			@$('.placeholder').html rtpl
 
 			@

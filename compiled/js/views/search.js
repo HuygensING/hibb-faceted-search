@@ -3,7 +3,7 @@
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
   define(function(require) {
-    var Models, Search, Templates, Views, config, _ref;
+    var Models, Search, Views, config, tpls, _ref;
     config = require('config');
     Models = {
       Search: require('models/search')
@@ -11,10 +11,7 @@
     Views = {
       Facet: require('views/facet')
     };
-    Templates = {
-      Menu: require('text!html/facet/search.menu.html'),
-      Body: require('text!html/facet/search.body.html')
-    };
+    tpls = require('tpls');
     return Search = (function(_super) {
       __extends(Search, _super);
 
@@ -40,8 +37,8 @@
         var body, checkboxes, menu,
           _this = this;
         Search.__super__.render.apply(this, arguments);
-        menu = _.template(Templates.Menu, this.model.attributes);
-        body = _.template(Templates.Body, this.model.attributes);
+        menu = tpls['faceted-search/facets/search.menu'](this.model.attributes);
+        body = tpls['faceted-search/facets/search.body'](this.model.attributes);
         this.$('.options').html(menu);
         this.$('.body').html(body);
         checkboxes = this.$(':checkbox');

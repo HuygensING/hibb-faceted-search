@@ -3,13 +3,11 @@
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
   define(function(require) {
-    var Facet, Templates, Views, _ref;
+    var Facet, Views, tpls, _ref;
     Views = {
       Base: require('views/base')
     };
-    Templates = {
-      Facet: require('text!html/facet.html')
-    };
+    tpls = require('tpls');
     return Facet = (function(_super) {
       __extends(Facet, _super);
 
@@ -41,7 +39,7 @@
 
       Facet.prototype.render = function() {
         var rtpl;
-        rtpl = _.template(Templates.Facet, this.model.attributes);
+        rtpl = tpls['faceted-search/facets/main'](this.model.attributes);
         this.$el.html(rtpl);
         return this;
       };

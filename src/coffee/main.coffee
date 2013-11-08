@@ -1,3 +1,9 @@
+require.config
+	baseUrl: 'compiled/js'
+	paths:
+		'tpls': '../templates'
+		'jade': '../lib/jade/runtime'
+
 define (require) ->
 	Fn = require 'hilib/functions/general'
 	pubsub = require 'hilib/mixins/pubsub'
@@ -16,8 +22,10 @@ define (require) ->
 			Boolean: require 'views/facets/boolean'
 			Date: require 'views/facets/date'
 
-	Templates =
-			FacetedSearch: require 'text!html/faceted-search.html'
+	# Templates =
+	# 		FacetedSearch: require 'text!html/faceted-search.html'
+
+	tpls = require 'tpls'
 
 	class FacetedSearch extends Backbone.View
 
@@ -56,7 +64,8 @@ define (require) ->
 
 		# ### Render
 		render: ->
-			rtpl = _.template Templates.FacetedSearch
+			# rtpl = _.template Templates.FacetedSearch
+			rtpl = tpls['faceted-search/main']()
 			@$el.html rtpl
  
 			@$('.loader').fadeIn('slow')

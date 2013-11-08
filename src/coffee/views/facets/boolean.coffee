@@ -8,8 +8,9 @@ define (require) ->
 	Views = 
 		Facet: require 'views/facet'
 
-	Templates =
-		Body: require 'text!html/facet/boolean.body.html'
+	# Templates =
+	# 	Body: require 'text!html/facet/boolean.body.html'
+	tpls = require 'tpls'
 
 	class BooleanFacet extends Views.Facet
 
@@ -36,7 +37,7 @@ define (require) ->
 		render: ->
 			super
 
-			rtpl = _.template Templates.Body, _.extend @model.attributes, ucfirst: StringFn.ucfirst
+			rtpl = tpls['faceted-search/facets/boolean.body']  _.extend @model.attributes, ucfirst: StringFn.ucfirst
 			@$('.body').html rtpl
 
 			@$('header small').hide()

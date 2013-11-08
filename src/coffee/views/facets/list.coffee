@@ -12,9 +12,10 @@ define (require) ->
 		Facet: require 'views/facet'
 		Options: require 'views/facets/list.options'
 
-	Templates =
-		Menu: require 'text!html/facet/list.menu.html'
-		Body: require 'text!html/facet/list.body.html'
+	# Templates =
+	# 	Menu: require 'text!html/facet/list.menu.html'
+	# 	Body: require 'text!html/facet/list.body.html'
+	tpls = require 'tpls'
 
 	class ListFacet extends Views.Facet
 
@@ -58,8 +59,8 @@ define (require) ->
 		render: ->
 			super
 
-			menu = _.template Templates.Menu, @model.attributes
-			body = _.template Templates.Body, @model.attributes
+			menu = tpls['faceted-search/facets/list.menu'] @model.attributes
+			body = tpls['faceted-search/facets/list.body'] @model.attributes
 			@$('.options').html menu
 			@$('.body').html body
 

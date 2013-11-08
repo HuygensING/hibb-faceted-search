@@ -1,0 +1,12 @@
+header
+	h3(data-name=name)= title
+
+.body
+	label From:
+	select
+		each option in options
+			option= option
+	label To:
+	select
+		each option in options.reverse()
+			option= option

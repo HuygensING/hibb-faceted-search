@@ -3,7 +3,7 @@
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
   define(function(require) {
-    var Fn, ListOptions, Models, Templates, Views, _ref;
+    var Fn, ListOptions, Models, Views, tpls, _ref;
     Fn = require('hilib/functions/general');
     Views = {
       Base: require('views/base')
@@ -11,9 +11,7 @@
     Models = {
       List: require('models/list')
     };
-    Templates = {
-      Options: require('text!html/facet/list.options.html')
-    };
+    tpls = require('tpls');
     return ListOptions = (function(_super) {
       __extends(ListOptions, _super);
 
@@ -54,7 +52,7 @@
       ListOptions.prototype.render = function() {
         var options, rtpl;
         options = this.filtered_items.length > 0 ? this.filtered_items : this.collection.models;
-        rtpl = _.template(Templates.Options, {
+        rtpl = tpls['faceted-search/facets/list.options']({
           options: options,
           generateID: Fn.generateID
         });

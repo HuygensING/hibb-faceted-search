@@ -1,1 +1,12 @@
-<div class="placeholder pad4"><header><h3 data-name="<%= name %>"><%= title %></h3><small>&#8711;</small><div class="options"></div></header><div class="body"></div></div>
+define(['jade'], function(jade) { if(jade && jade['runtime'] !== undefined) { jade = jade.runtime; }
+
+this["JST"] = this["JST"] || {};
+
+this["JST"]["src/jade/facet"] = function anonymous(locals) {
+var buf = [];
+buf.push("<div class=\"placeholder pad4\"><header><h3 data-name=\"<%= name %>\"><%= title %></h3><small>&#8711;</small><div class=\"options\"></div></header><div class=\"body\"></div></div>");;return buf.join("");
+};
+
+return this["JST"];
+
+});

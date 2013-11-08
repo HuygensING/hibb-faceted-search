@@ -3,7 +3,7 @@
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
   define(function(require) {
-    var Collections, Fn, ListFacet, Models, Templates, Views, _ref;
+    var Collections, Fn, ListFacet, Models, Views, tpls, _ref;
     Fn = require('hilib/functions/general');
     Models = {
       List: require('models/list')
@@ -15,10 +15,7 @@
       Facet: require('views/facet'),
       Options: require('views/facets/list.options')
     };
-    Templates = {
-      Menu: require('text!html/facet/list.menu.html'),
-      Body: require('text!html/facet/list.body.html')
-    };
+    tpls = require('tpls');
     return ListFacet = (function(_super) {
       __extends(ListFacet, _super);
 
@@ -78,8 +75,8 @@
         var body, menu, options,
           _this = this;
         ListFacet.__super__.render.apply(this, arguments);
-        menu = _.template(Templates.Menu, this.model.attributes);
-        body = _.template(Templates.Body, this.model.attributes);
+        menu = tpls['faceted-search/facets/list.menu'](this.model.attributes);
+        body = tpls['faceted-search/facets/list.body'](this.model.attributes);
         this.$('.options').html(menu);
         this.$('.body').html(body);
         options = new Collections.Options(this.options.attrs.options, {

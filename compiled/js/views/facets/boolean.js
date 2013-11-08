@@ -3,7 +3,7 @@
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
   define(function(require) {
-    var BooleanFacet, Models, StringFn, Templates, Views, _ref;
+    var BooleanFacet, Models, StringFn, Views, tpls, _ref;
     StringFn = require('hilib/functions/string');
     Models = {
       Boolean: require('models/boolean')
@@ -11,9 +11,7 @@
     Views = {
       Facet: require('views/facet')
     };
-    Templates = {
-      Body: require('text!html/facet/boolean.body.html')
-    };
+    tpls = require('tpls');
     return BooleanFacet = (function(_super) {
       __extends(BooleanFacet, _super);
 
@@ -53,7 +51,7 @@
       BooleanFacet.prototype.render = function() {
         var rtpl;
         BooleanFacet.__super__.render.apply(this, arguments);
-        rtpl = _.template(Templates.Body, _.extend(this.model.attributes, {
+        rtpl = tpls['faceted-search/facets/boolean.body'](_.extend(this.model.attributes, {
           ucfirst: StringFn.ucfirst
         }));
         this.$('.body').html(rtpl);

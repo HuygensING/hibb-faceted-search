@@ -1,0 +1,27 @@
+.row.span1.align.middle
+	.cell.span1.casesensitive
+		input#cb_casesensitive(type="checkbox", name="cb_casesensitive", data-prop="caseSensitive")
+		label(for="cb_casesensitive") Match case
+if searchOptions.hasOwnProperty('searchInAnnotations') || searchOptions.hasOwnProperty('searchInTranscriptions')
+	.row.span1
+		.cell.span1
+			h4 Search in
+			ul.searchins
+				if searchOptions.hasOwnProperty('searchInAnnotations')
+					li.searchin
+						input(id="cb_searchin_annotations", type="checkbox", data-prop="searchInAnnotations", checked=searchOptions.searchInAnnotations?true:false)
+						label(for!="cb_searchin_annotations") Annotations
+				if searchOptions.hasOwnProperty('searchInTranscriptions')
+					li.searchin
+						input(id="cb_searchin_transcriptions", type="checkbox", data-prop="searchInTranscriptions", checked=searchOptions.searchInTranscriptions?true:false)
+						label(for!="cb_searchin_transcriptions") Transcriptions
+
+if searchOptions.hasOwnProperty('textLayers')
+	.row.span1
+		.cell.span1
+			h4 Text layers
+			ul.textlayers
+				each textLayer in searchOptions.textLayers
+					li.textlayer
+						input(id='cb_textlayer'+textLayer, type="checkbox", data-proparr="textLayers")
+						label(for='cb_textlayer'+textLayer)= textLayer

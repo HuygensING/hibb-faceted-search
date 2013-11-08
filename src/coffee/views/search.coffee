@@ -7,9 +7,11 @@ define (require) ->
 	Views = 
 		Facet: require 'views/facet'
 
-	Templates =
-		Menu: require 'text!html/facet/search.menu.html'
-		Body: require 'text!html/facet/search.body.html'
+	# Templates =
+	# 	Menu: require 'text!html/facet/search.menu.html'
+	# 	Body: require 'text!html/facet/search.body.html'
+
+	tpls = require 'tpls'
 
 	class Search extends Views.Facet
 
@@ -33,8 +35,10 @@ define (require) ->
 		render: ->
 			super
 
-			menu = _.template Templates.Menu, @model.attributes
-			body = _.template Templates.Body, @model.attributes
+			# menu = _.template Templates.Menu, @model.attributes
+			menu = tpls['faceted-search/facets/search.menu'] @model.attributes
+			body = tpls['faceted-search/facets/search.body'] @model.attributes
+
 
 			@$('.options').html menu
 			@$('.body').html body

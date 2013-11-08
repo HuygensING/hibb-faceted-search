@@ -3,8 +3,10 @@ define (require) ->
 	Views = 
 		Base: require 'views/base'
 
-	Templates =
-		Facet: require 'text!html/facet.html'
+	# Templates =
+	# 	Facet: require 'text!html/facet.html'
+	tpls = require 'tpls'
+	
 
 	class Facet extends Views.Base
 
@@ -24,7 +26,7 @@ define (require) ->
 			$(ev.currentTarget).parents('.facet').find('.body').slideToggle()
 
 		render: ->
-			rtpl = _.template Templates.Facet, @model.attributes
+			rtpl = tpls['faceted-search/facets/main']  @model.attributes
 			@$el.html rtpl
 
 			@

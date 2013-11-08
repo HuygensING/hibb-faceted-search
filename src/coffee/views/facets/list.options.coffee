@@ -8,8 +8,10 @@ define (require) ->
 	Models =
 		List: require 'models/list'
 
-	Templates =
-		Options: require 'text!html/facet/list.options.html'
+	# Templates =
+	# 	Options: require 'text!html/facet/list.options.html'
+	tpls = require 'tpls'
+	
 
 	class ListOptions extends Views.Base
 
@@ -38,7 +40,7 @@ define (require) ->
 		render: ->
 			options = if @filtered_items.length > 0 then @filtered_items else @collection.models
 
-			rtpl = _.template Templates.Options, 
+			rtpl = tpls['faceted-search/facets/list.options'] 
 				options: options
 				generateID: Fn.generateID
 

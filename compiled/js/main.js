@@ -2,8 +2,16 @@
   var __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
+  require.config({
+    baseUrl: 'compiled/js',
+    paths: {
+      'tpls': '../templates',
+      'jade': '../lib/jade/runtime'
+    }
+  });
+
   define(function(require) {
-    var FacetedSearch, Fn, Models, Templates, Views, config, facetViewMap, pubsub, _ref;
+    var FacetedSearch, Fn, Models, Views, config, facetViewMap, pubsub, tpls, _ref;
     Fn = require('hilib/functions/general');
     pubsub = require('hilib/mixins/pubsub');
     config = require('config');
@@ -20,9 +28,7 @@
         Date: require('views/facets/date')
       }
     };
-    Templates = {
-      FacetedSearch: require('text!html/faceted-search.html')
-    };
+    tpls = require('tpls');
     return FacetedSearch = (function(_super) {
       __extends(FacetedSearch, _super);
 
@@ -56,7 +62,7 @@
       FacetedSearch.prototype.render = function() {
         var rtpl, textSearch,
           _this = this;
-        rtpl = _.template(Templates.FacetedSearch);
+        rtpl = tpls['faceted-search/main']();
         this.$el.html(rtpl);
         this.$('.loader').fadeIn('slow');
         if (config.search) {
