@@ -21,8 +21,6 @@ define (require) ->
 		initialize: (options) ->
 			super
 
-			@currentSearchText = ''
-
 			@model = new Models.Search config.textSearchOptions
 			@listenTo @model, 'change', => @trigger 'change', @model.queryData()
 
@@ -78,7 +76,7 @@ define (require) ->
 
 			inputValue = @el.querySelector('input[name="search"]').value
 
-			if inputValue.length > 1 and (@currentSearchText isnt inputValue or checkboxChanged)
+			if inputValue.length > 1 and (@model.get('term') isnt inputValue or checkboxChanged)
 				@$('button').addClass 'active'
 			else
 				@$('button').removeClass 'active'
@@ -102,6 +100,4 @@ define (require) ->
 			# @trigger 'change', @searchData inputValue
 
 		# ### Methods
-		update: -> 
-			console.log 'update'
-			@$('input[name="search"]').removeClass 'loading'
+		update: -> @$('input[name="search"]').removeClass 'loading'

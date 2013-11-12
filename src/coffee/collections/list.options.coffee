@@ -10,12 +10,12 @@ define (require) ->
 
 		model: Models.Option
 
-		parse: (attrs) -> 
-			# console.log 'parse', attrs
-			attrs
+		# parse: (attrs) -> 
+		# 	# console.log 'parse', attrs
+		# 	attrs
 
 		comparator: (model) ->
-			-1 * parseInt model.get('count'), 10
+			-1 * +model.get('count')
 
 		# Alias for reset, because a collection already has a reset method.
 		revert: -> 
@@ -26,11 +26,6 @@ define (require) ->
 			@each (option) => option.set 'count', 0, silent: true
 
 			_.each newOptions, (newOption) =>
-				# newOption.name = '<i>(empty)</i>' if newOption.name is '' # Bugprone what if somebody changes the default empty name?
-				# console.log @
-				# console.log newOption.name
-				# console.log @get newOption.name
-
 				opt = @get newOption.name
 				opt.set 'count', newOption.count, silent: true
 

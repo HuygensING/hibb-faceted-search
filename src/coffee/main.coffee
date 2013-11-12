@@ -58,8 +58,15 @@ define (require) ->
 			# Initialize the FacetedSearch model, without the queryOptions!
 			@model = new Models.FacetedSearch queryOptions
 
-			@listenTo @model.searchResults, 'request', => console.log 'requested'
-			@listenTo @model.searchResults, 'sync', => console.log 'synced'
+			@listenTo @model.searchResults, 'request', =>
+				el = @el.querySelector '.faceted-search'
+				div = @el.querySelector '.overlay'
+				div.style.width = el.clientWidth + 'px'
+				div.style.height = el.clientHeight + 'px'
+				div.style.display = 'block'
+			@listenTo @model.searchResults, 'sync', =>
+				el = @el.querySelector '.overlay'
+				el.style.display = 'none'
 			
 			# Set the queryOptions to the model. The model fetches the results from the server when the queryOptions change,
 			# so the results:change event is fired and the facets are rendered. If we set the queryOptions directly when 
@@ -89,7 +96,7 @@ define (require) ->
 			if @model.searchResults.length is 1
 				fragment = document.createDocumentFragment()
 
-				for own index, facetData of @model.searchResults.last().get('facets')
+				for own index, facetData of @model.searchResults.current.get('facets')
 					if facetData.type of facetViewMap
 						View = facetViewMap[facetData.type]
 						@facetViews[facetData.name] = new View attrs: facetData
@@ -106,7 +113,7 @@ define (require) ->
 			# If the size is greater than 1, the facets are already rendered and we call their update methods.
 			else
 				@facetViews['textSearch'].update() if @facetViews.hasOwnProperty 'textSearch'
-				for own index, data of @model.searchResults.facets
+				for own index, data of @model.searchResults.current.get('facets')
 					@facetViews[data.name].update(data.options)
 
 

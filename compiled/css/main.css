@@ -273,6 +273,7 @@
 .padt10{padding-top:10%}
 .padb10{padding-bottom:10%}
 
+.overlay{background:rgba(0,0,0,0.2);position:absolute;z-index:1;border-radius:8px}
 .faceted-search{max-width:300px;}
 .faceted-search input[type="checkbox"]{margin:0;padding:0}
 .faceted-search form{border-radius:8px;box-shadow:0 0 6px #aaa;}

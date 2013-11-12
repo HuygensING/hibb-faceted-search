@@ -25,7 +25,6 @@
       Search.prototype.initialize = function(options) {
         var _this = this;
         Search.__super__.initialize.apply(this, arguments);
-        this.currentSearchText = '';
         this.model = new Models.Search(config.textSearchOptions);
         this.listenTo(this.model, 'change', function() {
           return _this.trigger('change', _this.model.queryData());
@@ -85,7 +84,7 @@
           checkboxChanged = false;
         }
         inputValue = this.el.querySelector('input[name="search"]').value;
-        if (inputValue.length > 1 && (this.currentSearchText !== inputValue || checkboxChanged)) {
+        if (inputValue.length > 1 && (this.model.get('term') !== inputValue || checkboxChanged)) {
           return this.$('button').addClass('active');
         } else {
           return this.$('button').removeClass('active');
@@ -103,7 +102,6 @@
       };
 
       Search.prototype.update = function() {
-        console.log('update');
         return this.$('input[name="search"]').removeClass('loading');
       };
 

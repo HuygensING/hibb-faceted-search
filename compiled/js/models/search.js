@@ -29,7 +29,6 @@
         attrs = this.attributes;
         delete attrs.name;
         delete attrs.title;
-        console.log(attrs);
         return attrs;
       };
 

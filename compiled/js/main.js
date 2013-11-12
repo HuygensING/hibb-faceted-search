@@ -58,10 +58,17 @@
         });
         this.model = new Models.FacetedSearch(queryOptions);
         this.listenTo(this.model.searchResults, 'request', function() {
-          return console.log('requested');
+          var div, el;
+          el = _this.el.querySelector('.faceted-search');
+          div = _this.el.querySelector('.overlay');
+          div.style.width = el.clientWidth + 'px';
+          div.style.height = el.clientHeight + 'px';
+          return div.style.display = 'block';
         });
         return this.listenTo(this.model.searchResults, 'sync', function() {
-          return console.log('synced');
+          var el;
+          el = _this.el.querySelector('.overlay');
+          return el.style.display = 'none';
         });
       };
 
@@ -88,7 +95,7 @@
         this.$('.loader').hide();
         if (this.model.searchResults.length === 1) {
           fragment = document.createDocumentFragment();
-          _ref1 = this.model.searchResults.last().get('facets');
+          _ref1 = this.model.searchResults.current.get('facets');
           for (index in _ref1) {
             if (!__hasProp.call(_ref1, index)) continue;
             facetData = _ref1[index];
@@ -110,7 +117,7 @@
           if (this.facetViews.hasOwnProperty('textSearch')) {
             this.facetViews['textSearch'].update();
           }
-          _ref2 = this.model.searchResults.facets;
+          _ref2 = this.model.searchResults.current.get('facets');
           _results = [];
           for (index in _ref2) {
             if (!__hasProp.call(_ref2, index)) continue;
