@@ -9,7 +9,7 @@
       Search: require('models/search')
     };
     Views = {
-      Facet: require('views/facet')
+      Facet: require('views/facets/main')
     };
     tpls = require('tpls');
     return Search = (function(_super) {
@@ -23,35 +23,27 @@
       Search.prototype.className = 'facet search';
 
       Search.prototype.initialize = function(options) {
+        var _this = this;
         Search.__super__.initialize.apply(this, arguments);
-        this.currentSearchText = null;
-        this.model = new Models.Search({
-          searchOptions: config.textSearchOptions,
-          title: 'Text search',
-          name: 'text_search'
+        this.currentSearchText = '';
+        this.model = new Models.Search(config.textSearchOptions);
+        this.listenTo(this.model, 'change', function() {
+          return _this.trigger('change', _this.model.queryData());
         });
         return this.render();
       };
 
       Search.prototype.render = function() {
-        var body, checkboxes, menu,
-          _this = this;
+        var body, menu;
         Search.__super__.render.apply(this, arguments);
-        menu = tpls['faceted-search/facets/search.menu'](this.model.attributes);
-        body = tpls['faceted-search/facets/search.body'](this.model.attributes);
+        menu = tpls['faceted-search/facets/search.menu']({
+          model: this.model
+        });
+        body = tpls['faceted-search/facets/search.body']({
+          model: this.model
+        });
         this.$('.options').html(menu);
         this.$('.body').html(body);
-        checkboxes = this.$(':checkbox');
-        checkboxes.change(function(ev) {
-          return _.each(checkboxes, function(cb) {
-            var checked, prop;
-            prop = cb.getAttribute('data-prop');
-            if (prop != null) {
-              checked = $(cb).attr('checked') === 'checked' ? true : false;
-              return _this.model.set(prop, checked);
-            }
-          });
-        });
         return this;
       };
 
@@ -61,12 +53,39 @@
             return ev.preventDefault();
           },
           'click button.active': 'search',
-          'keyup input': 'onKeyup'
+          'keyup input': 'activateSearchButton',
+          'change input[type="checkbox"]': 'checkboxChanged'
         });
       };
 
-      Search.prototype.onKeyup = function(ev) {
-        if (ev.currentTarget.value.length > 1 && this.currentSearchText !== ev.currentTarget.value) {
+      Search.prototype.checkboxChanged = function(ev) {
+        var attr, cb, checkedArray, _i, _len, _ref1;
+        if (attr = ev.currentTarget.getAttribute('data-attr')) {
+          this.model.set(attr, ev.currentTarget.checked);
+        } else if (attr = ev.currentTarget.getAttribute('data-attr-array')) {
+          checkedArray = [];
+          _ref1 = this.el.querySelectorAll('[data-attr-array="' + attr + '"]');
+          for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
+            cb = _ref1[_i];
+            if (cb.checked) {
+              checkedArray.push(cb.getAttribute('data-value'));
+            }
+          }
+          this.model.set(attr, checkedArray);
+        }
+        return this.activateSearchButton(true);
+      };
+
+      Search.prototype.activateSearchButton = function(checkboxChanged) {
+        var inputValue;
+        if (checkboxChanged == null) {
+          checkboxChanged = false;
+        }
+        if (checkboxChanged.hasOwnProperty('target')) {
+          checkboxChanged = false;
+        }
+        inputValue = this.el.querySelector('input[name="search"]').value;
+        if (inputValue.length > 1 && (this.currentSearchText !== inputValue || checkboxChanged)) {
           return this.$('button').addClass('active');
         } else {
           return this.$('button').removeClass('active');
@@ -74,19 +93,18 @@
       };
 
       Search.prototype.search = function(ev) {
-        var $search;
+        var $search, inputValue;
         ev.preventDefault();
         this.$('button').removeClass('active');
-        $search = this.$('#search');
+        $search = this.$('input[name="search"]');
         $search.addClass('loading');
-        this.currentSearchText = $search.val();
-        return this.trigger('change', {
-          term: this.currentSearchText
-        });
+        inputValue = this.el.querySelector('input[name="search"]').value;
+        return this.model.set('term', inputValue);
       };
 
       Search.prototype.update = function() {
-        return this.$('#search').removeClass('loading');
+        console.log('update');
+        return this.$('input[name="search"]').removeClass('loading');
       };
 
       return Search;

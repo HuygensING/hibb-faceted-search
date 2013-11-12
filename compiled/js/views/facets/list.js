@@ -12,7 +12,7 @@
       Options: require('collections/list.options')
     };
     Views = {
-      Facet: require('views/facet'),
+      Facet: require('views/facets/main'),
       Options: require('views/facets/list.options')
     };
     tpls = require('tpls');
@@ -34,7 +34,7 @@
         return _.extend({}, ListFacet.__super__.events.apply(this, arguments), {
           'click li.all': 'selectAll',
           'click li.none': 'deselectAll',
-          'keyup input.listsearch': function(ev) {
+          'keyup input[name="filter"]': function(ev) {
             return this.optionsView.filterOptions(ev.currentTarget.value);
           }
         });
@@ -77,13 +77,13 @@
         ListFacet.__super__.render.apply(this, arguments);
         menu = tpls['faceted-search/facets/list.menu'](this.model.attributes);
         body = tpls['faceted-search/facets/list.body'](this.model.attributes);
-        this.$('.options').html(menu);
-        this.$('.body').html(body);
+        this.el.querySelector('header .options').innerHTML = menu;
+        this.el.querySelector('.body').innerHTML = body;
         options = new Collections.Options(this.options.attrs.options, {
           parse: true
         });
         this.optionsView = new Views.Options({
-          el: this.$('.body .options'),
+          el: this.el.querySelector('.body ul'),
           collection: options,
           facetName: this.model.get('name')
         });
@@ -99,10 +99,10 @@
         filteredLength = this.optionsView.filtered_items.length;
         collectionLength = this.optionsView.collection.length;
         if (filteredLength === 0 || filteredLength === collectionLength) {
-          this.$('header .options .listsearch').addClass('nonefound');
+          this.$('header .options input[name="filter"]').addClass('nonefound');
           this.$('header small.optioncount').html('');
         } else {
-          this.$('header .options .listsearch').removeClass('nonefound');
+          this.$('header .options input[name="filter"]').removeClass('nonefound');
           this.$('header small.optioncount').html(filteredLength + ' of ' + collectionLength);
         }
         return this;

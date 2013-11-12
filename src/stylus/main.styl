@@ -9,19 +9,6 @@
 	form
 		border-radius 8px // Put a border radius for the box-shadow
 		box-shadow 0 0 6px #AAA
-	
-		.facet
-			border-bottom 1px solid white
-			background #F1F1F1
-
-		// & .facet:first-child
-		// 	border-top-left-radius 8px
-		// 	border-top-right-radius 8px
-
-		.facets
-			& .facet:last-child 
-				border-bottom-left-radius 8px
-				border-bottom-right-radius 8px
 
 		h3, h4
 			margin 0
@@ -41,7 +28,16 @@
 					background white url('../images/loader.gif') no-repeat
 					background-position right 2% center
 
+		// Not all facets (.facet) are children of .facets (ie: full text search)
+		.facet
+			border-bottom 1px solid white
+			background #F1F1F1
+		
 		.facets
+			& .facet:last-child 
+				border-bottom-left-radius 8px
+				border-bottom-right-radius 8px
+			
 			.loader
 				display none
 				text-align center

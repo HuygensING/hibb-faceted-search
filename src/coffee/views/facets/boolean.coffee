@@ -6,7 +6,7 @@ define (require) ->
 		Boolean: require 'models/boolean'
 
 	Views = 
-		Facet: require 'views/facet'
+		Facet: require 'views/facets/main'
 
 	# Templates =
 	# 	Body: require 'text!html/facet/boolean.body.html'

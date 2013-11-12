@@ -9,7 +9,7 @@ define (require) ->
 		Options: require 'collections/list.options'
 
 	Views = 
-		Facet: require 'views/facet'
+		Facet: require 'views/facets/main'
 		Options: require 'views/facets/list.options'
 
 	# Templates =
@@ -28,7 +28,7 @@ define (require) ->
 		events: -> _.extend {}, super,
 			'click li.all': 'selectAll'
 			'click li.none': 'deselectAll'
-			'keyup input.listsearch': (ev) -> @optionsView.filterOptions ev.currentTarget.value
+			'keyup input[name="filter"]': (ev) -> @optionsView.filterOptions ev.currentTarget.value
 			# 'click h3': 'toggleBody'
 			# 'click header small': 'toggleOptions'
 
@@ -61,12 +61,12 @@ define (require) ->
 
 			menu = tpls['faceted-search/facets/list.menu'] @model.attributes
 			body = tpls['faceted-search/facets/list.body'] @model.attributes
-			@$('.options').html menu
-			@$('.body').html body
+			@el.querySelector('header .options').innerHTML = menu
+			@el.querySelector('.body').innerHTML = body
 
 			options = new Collections.Options @options.attrs.options, parse: true
 			@optionsView = new Views.Options
-				el: @$('.body .options')
+				el: @el.querySelector('.body ul')
 				collection: options
 				facetName: @model.get 'name'
 
@@ -82,10 +82,10 @@ define (require) ->
 			collectionLength = @optionsView.collection.length
 
 			if filteredLength is 0 or filteredLength is collectionLength
-				@$('header .options .listsearch').addClass 'nonefound'
+				@$('header .options input[name="filter"]').addClass 'nonefound'
 				@$('header small.optioncount').html ''
 			else
-				@$('header .options .listsearch').removeClass 'nonefound'
+				@$('header .options input[name="filter"]').removeClass 'nonefound'
 				@$('header small.optioncount').html filteredLength + ' of ' + collectionLength
 
 			@

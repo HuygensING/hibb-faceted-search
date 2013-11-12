@@ -9,7 +9,7 @@
       Boolean: require('models/boolean')
     };
     Views = {
-      Facet: require('views/facet')
+      Facet: require('views/facets/main')
     };
     tpls = require('tpls');
     return BooleanFacet = (function(_super) {

@@ -57,6 +57,7 @@ module.exports = (grunt) ->
 					port: 3000
 					base: '/home/gijs/Projects/module-env/dev'
 					middleware: connect_middleware
+					open: true
 
 		coffee:
 			init:

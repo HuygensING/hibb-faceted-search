@@ -20,7 +20,7 @@ define (require) ->
 		toggleOptions: (ev) ->
 			@$('header small').toggleClass('active')
 			@$('header .options').slideToggle()
-			@$('.options .listsearch').focus()
+			@$('header .options input[name="filter"]').focus()
 
 		toggleBody: (ev) ->
 			$(ev.currentTarget).parents('.facet').find('.body').slideToggle()

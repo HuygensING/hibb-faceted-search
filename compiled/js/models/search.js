@@ -17,11 +17,20 @@
 
       Search.prototype.defaults = function() {
         return {
-          searchOptions: {
-            term: '*',
-            caseSensitive: false
-          }
+          term: '*',
+          caseSensitive: false,
+          title: 'Text search',
+          name: 'text_search'
         };
+      };
+
+      Search.prototype.queryData = function() {
+        var attrs;
+        attrs = this.attributes;
+        delete attrs.name;
+        delete attrs.title;
+        console.log(attrs);
+        return attrs;
       };
 
       return Search;

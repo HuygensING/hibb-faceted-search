@@ -9,7 +9,7 @@
       Date: require('models/date')
     };
     Views = {
-      Facet: require('views/facet')
+      Facet: require('views/facets/main')
     };
     tpls = require('tpls');
     return DateFacet = (function(_super) {

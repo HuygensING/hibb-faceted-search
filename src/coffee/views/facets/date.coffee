@@ -6,7 +6,7 @@ define (require) ->
 		Date: require 'models/date'
 
 	Views = 
-		Facet: require 'views/facet'
+		Facet: require 'views/facets/main'
 
 	# Templates =
 	# 	Date: require 'text!html/facet/date.html'

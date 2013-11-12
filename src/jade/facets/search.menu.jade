@@ -1,27 +1,27 @@
 .row.span1.align.middle
 	.cell.span1.casesensitive
-		input#cb_casesensitive(type="checkbox", name="cb_casesensitive", data-prop="caseSensitive")
+		input#cb_casesensitive(type="checkbox", name="cb_casesensitive", data-attr="caseSensitive")
 		label(for="cb_casesensitive") Match case
-if searchOptions.hasOwnProperty('searchInAnnotations') || searchOptions.hasOwnProperty('searchInTranscriptions')
+if model.has('searchInAnnotations') || model.has('searchInTranscriptions')
 	.row.span1
 		.cell.span1
-			h4 Search in
+			h4 Search
 			ul.searchins
-				if searchOptions.hasOwnProperty('searchInAnnotations')
+				if model.has('searchInAnnotations')
 					li.searchin
-						input(id="cb_searchin_annotations", type="checkbox", data-prop="searchInAnnotations", checked=searchOptions.searchInAnnotations?true:false)
+						input(id="cb_searchin_annotations", type="checkbox", data-attr="searchInAnnotations", checked=model.get('searchInAnnotations'))
 						label(for!="cb_searchin_annotations") Annotations
-				if searchOptions.hasOwnProperty('searchInTranscriptions')
+				if model.has('searchInTranscriptions')
 					li.searchin
-						input(id="cb_searchin_transcriptions", type="checkbox", data-prop="searchInTranscriptions", checked=searchOptions.searchInTranscriptions?true:false)
+						input(id="cb_searchin_transcriptions", type="checkbox", data-attr="searchInTranscriptions", checked=model.get('searchInTranscriptions'))
 						label(for!="cb_searchin_transcriptions") Transcriptions
 
-if searchOptions.hasOwnProperty('textLayers')
+if model.has('textLayers')
 	.row.span1
 		.cell.span1
 			h4 Text layers
 			ul.textlayers
-				each textLayer in searchOptions.textLayers
+				each textLayer in model.get('textLayers')
 					li.textlayer
-						input(id='cb_textlayer'+textLayer, type="checkbox", data-proparr="textLayers")
+						input(id='cb_textlayer'+textLayer, type="checkbox", data-attr-array="textLayers", data-value=textLayer)
 						label(for='cb_textlayer'+textLayer)= textLayer

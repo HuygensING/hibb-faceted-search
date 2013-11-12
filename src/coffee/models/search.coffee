@@ -5,9 +5,17 @@ define (require) ->
 	class Search extends Models.Base
 
 		defaults: ->
-			searchOptions:
-				term: '*'
-				caseSensitive: false
+			term: '*'
+			caseSensitive: false
+			title: 'Text search'
+			name: 'text_search'
+
+		queryData: ->
+			attrs = @attributes
+			delete attrs.name
+			delete attrs.title
+			console.log attrs
+			attrs
 
 # EXAMPLE QUERY:
 # {

@@ -30,7 +30,7 @@
       Facet.prototype.toggleOptions = function(ev) {
         this.$('header small').toggleClass('active');
         this.$('header .options').slideToggle();
-        return this.$('.options .listsearch').focus();
+        return this.$('header .options input[name="filter"]').focus();
       };
 
       Facet.prototype.toggleBody = function(ev) {
