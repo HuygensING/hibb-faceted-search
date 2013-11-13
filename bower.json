@@ -10,7 +10,7 @@
     "underscore-amd": "*",
     "backbone-amd": "1.0.0",
     "jade": "*",
-    "hilib": "https://github.com/Gijsjan/hilib.git"
+    // "hilib": "*"
   },
   "devDependencies": {
     "mocha": "*",

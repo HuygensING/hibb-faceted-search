@@ -6,13 +6,15 @@
     baseUrl: 'compiled/js',
     paths: {
       'tpls': '../templates',
-      'jade': '../lib/jade/runtime'
+      'jade': '../lib/jade/runtime',
+      'hilib': '../lib/hilib/compiled'
     }
   });
 
   define(function(require) {
-    var FacetedSearch, Fn, Models, Views, config, facetViewMap, pubsub, tpls, _ref;
+    var FacetedSearch, Fn, Models, Views, config, dom, facetViewMap, pubsub, tpls, _ref;
     Fn = require('hilib/functions/general');
+    dom = require('hilib/functions/dom');
     pubsub = require('hilib/mixins/pubsub');
     config = require('config');
     facetViewMap = require('facetviewmap');
@@ -58,12 +60,17 @@
         });
         this.model = new Models.FacetedSearch(queryOptions);
         this.listenTo(this.model.searchResults, 'request', function() {
-          var div, el;
+          var bb, div, el, loader, top;
           el = _this.el.querySelector('.faceted-search');
           div = _this.el.querySelector('.overlay');
           div.style.width = el.clientWidth + 'px';
           div.style.height = el.clientHeight + 'px';
-          return div.style.display = 'block';
+          div.style.display = 'block';
+          loader = _this.el.querySelector('.overlay img');
+          bb = dom(el).boundingBox();
+          loader.style.left = bb.left + bb.width / 2 + 'px';
+          top = bb.height > document.documentElement.clientHeight ? '50vh' : bb.height / 2 + 'px';
+          return loader.style.top = top;
         });
         return this.listenTo(this.model.searchResults, 'sync', function() {
           var el;

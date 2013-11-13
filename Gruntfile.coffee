@@ -1,3 +1,5 @@
+fs = require 'fs'
+
 connect_middleware = require './middleware.connect'
 
 module.exports = (grunt) ->
@@ -44,6 +46,19 @@ module.exports = (grunt) ->
 				options:
 					stdout: true
 					stderr: true
+
+		createSymlinks:
+			compiled: [
+				src: 'images'
+				dest: 'compiled/images'
+			,
+				src: '~/Projects/hilib'
+				dest: 'compiled/lib/hilib'
+			]
+			stage: [{
+				src: 'images'
+				dest: 'stage/images'
+			}]
 
 		connect:
 			keepalive:
@@ -156,7 +171,7 @@ module.exports = (grunt) ->
 					exclude: ['backbone', 'jquery', 'underscore'] # Exclude hilib?
 					preserveLicenseComments: false
 					out: "stage/js/main.js"
-					# optimize: 'none'
+					optimize: 'none'
 					paths:
 						'jquery': '../lib/jquery/jquery.min'
 						'underscore': '../lib/underscore-amd/underscore'
@@ -218,7 +233,8 @@ module.exports = (grunt) ->
 		'coffee:init'
 		'jade:compile'
 		'stylus:compile'
-		'shell:symlink_compiled_images' # Symlink from images/ to compiled/images
+		# 'shell:symlink_compiled_images' # Symlink from images/ to compiled/images
+		'createSymlinks': 'compiled'
 	]
 
 	# Build compiled/ to stage/ (empty dir, run r.js)
@@ -226,7 +242,8 @@ module.exports = (grunt) ->
 	grunt.registerTask 'build', [
 		'shell:emptystage'
 		'cssmin:stage'
-		'shell:symlink_stage_images'
+		# 'shell:symlink_stage_images'
+		'createSymlinks:stage'
 		'requirejs:compile' # Run r.js
 	]
 
@@ -239,6 +256,27 @@ module.exports = (grunt) ->
 		'watch'
 	]
 
+	grunt.registerMultiTask 'createSymlinks', 'Creates a symlink', ->
+		for own index, config of this.data
+
+			src = config.src
+			dest = config.dest
+
+			src = process.env.HOME + src.substr(1) if src[0] is '~'
+			dest = process.env.HOME + dest.substr(1) if dest[0] is '~'
+
+			src = process.cwd() + '/' + src if src[0] isnt '/'
+			dest = process.cwd() + '/' + dest if dest[0] isnt '/'
+
+			grunt.log.writeln 'ERROR: source dir does not exist!' if not fs.existsSync(src) # Without a source, all is lost.
+
+			# We have to put lstatSync in a try, because it gives an error when dest isn't found. We can use fs.lstat, but
+			# we would have to change the for loop to a function call.			
+			try 
+				stats = fs.lstatSync dest
+				fs.unlinkSync(dest) if stats.isSymbolicLink()
+
+			fs.symlinkSync src, dest
 
 
 	##############

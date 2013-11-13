@@ -3,9 +3,11 @@ require.config
 	paths:
 		'tpls': '../templates'
 		'jade': '../lib/jade/runtime'
+		'hilib': '../lib/hilib/compiled'
 
 define (require) ->
 	Fn = require 'hilib/functions/general'
+	dom = require 'hilib/functions/dom'
 	pubsub = require 'hilib/mixins/pubsub'
 
 	config = require 'config'
@@ -53,7 +55,6 @@ define (require) ->
 			@subscribe 'change:results', (responseModel, queryOptions) => 
 				@renderFacets()
 				@trigger 'results:change', responseModel, queryOptions
-
 			
 			# Initialize the FacetedSearch model, without the queryOptions!
 			@model = new Models.FacetedSearch queryOptions
@@ -64,6 +65,14 @@ define (require) ->
 				div.style.width = el.clientWidth + 'px'
 				div.style.height = el.clientHeight + 'px'
 				div.style.display = 'block'
+
+				loader = @el.querySelector '.overlay img'
+				bb = dom(el).boundingBox()
+				loader.style.left = bb.left + bb.width/2 + 'px'
+
+				top = if bb.height > document.documentElement.clientHeight then '50vh' else bb.height/2 + 'px'
+				loader.style.top = top
+				
 			@listenTo @model.searchResults, 'sync', =>
 				el = @el.querySelector '.overlay'
 				el.style.display = 'none'
