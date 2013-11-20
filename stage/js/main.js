@@ -12,7 +12,7 @@
 }(this, function ($, _, Backbone) {
 
 /**
- * almond 0.2.6 Copyright (c) 2011-2012, The Dojo Foundation All Rights Reserved.
+ * almond 0.2.7 Copyright (c) 2011-2012, The Dojo Foundation All Rights Reserved.
  * Available via the MIT or new BSD license.
  * see: http://github.com/jrburke/almond for details
  */
@@ -272,14 +272,14 @@ var requirejs, require, define;
     main = function (name, deps, callback, relName) {
         var cjsModule, depName, ret, map, i,
             args = [],
+            callbackType = typeof callback,
             usingExports;
 
         //Use name if no relName
         relName = relName || name;
 
         //Call the callback to define the module, if necessary.
-        if (typeof callback === 'function') {
-
+        if (callbackType === 'undefined' || callbackType === 'function') {
             //Pull out the defined dependencies and pass the ordered
             //values to the callback.
             //Default to [require, exports, module] if no deps
@@ -310,7 +310,7 @@ var requirejs, require, define;
                 }
             }
 
-            ret = callback.apply(defined[name], args);
+            ret = callback ? callback.apply(defined[name], args) : undefined;
 
             if (name) {
                 //If setting exports via "module" is in play,
@@ -2705,7 +2705,7 @@ return this["JST"];
       };
 
       FacetedSearch.prototype.renderFacets = function(data) {
-        var View, facetData, fragment, index, start, _ref1, _ref2, _results,
+        var View, facetData, fragment, index, _ref1, _ref2, _results,
           _this = this;
         this.$('.loader').hide();
         if (this.model.searchResults.length === 1) {
@@ -2727,9 +2727,7 @@ return this["JST"];
               console.error('Unknown facetView', facetData.type);
             }
           }
-          start = new Date();
-          this.el.querySelector('.facets').appendChild(fragment);
-          return console.log((new Date() - start) / 1000 + 's');
+          return this.el.querySelector('.facets').appendChild(fragment);
         } else {
           if (this.facetViews.hasOwnProperty('textSearch')) {
             this.facetViews['textSearch'].update();

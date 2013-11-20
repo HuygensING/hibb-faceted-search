@@ -97,7 +97,7 @@
       };
 
       FacetedSearch.prototype.renderFacets = function(data) {
-        var View, facetData, fragment, index, start, _ref1, _ref2, _results,
+        var View, facetData, fragment, index, _ref1, _ref2, _results,
           _this = this;
         this.$('.loader').hide();
         if (this.model.searchResults.length === 1) {
@@ -119,9 +119,7 @@
               console.error('Unknown facetView', facetData.type);
             }
           }
-          start = new Date();
-          this.el.querySelector('.facets').appendChild(fragment);
-          return console.log((new Date() - start) / 1000 + 's');
+          return this.el.querySelector('.facets').appendChild(fragment);
         } else {
           if (this.facetViews.hasOwnProperty('textSearch')) {
             this.facetViews['textSearch'].update();

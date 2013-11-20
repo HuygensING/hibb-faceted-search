@@ -9,8 +9,7 @@
     "jquery": "*",
     "underscore-amd": "*",
     "backbone-amd": "1.0.0",
-    "jade": "*",
-    // "hilib": "*"
+    "jade": "*"
   },
   "devDependencies": {
     "mocha": "*",
