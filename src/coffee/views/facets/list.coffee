@@ -61,17 +61,18 @@ define (require) ->
 
 			menu = tpls['faceted-search/facets/list.menu'] @model.attributes
 			body = tpls['faceted-search/facets/list.body'] @model.attributes
+
 			@el.querySelector('header .options').innerHTML = menu
 			@el.querySelector('.body').innerHTML = body
 
 			options = new Collections.Options @options.attrs.options, parse: true
 			@optionsView = new Views.Options
-				el: @el.querySelector('.body ul')
+				el: @el.querySelector('.body')
 				collection: options
 				facetName: @model.get 'name'
 
 			@listenTo @optionsView, 'filter:finished', @renderFilteredOptionCount
-			# Trigger optionsView change event on this object
+			# Pass through the change event
 			@listenTo @optionsView, 'change', (data) => @trigger 'change', data
 
 			@

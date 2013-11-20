@@ -25,6 +25,7 @@ define (require) ->
 		sync: (method, model, options) ->
 			if method is 'read'
 
+				# IF an url is passed as an option, use it. This is the case when moving the cursor (next/prev search result).
 				if options.url?
 					@getResults options.url, options.success
 				else

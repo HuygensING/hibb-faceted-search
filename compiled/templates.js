@@ -93,7 +93,8 @@ buf.push("<div class=\"row span4 align middle\"><div class=\"cell span2\"><input
 
 this["JST"]["faceted-search/facets/list.options"] = function anonymous(locals) {
 var buf = [];
-var locals_ = (locals || {}),options = locals_.options,generateID = locals_.generateID;// iterate options
+var locals_ = (locals || {}),options = locals_.options,generateID = locals_.generateID;buf.push("<ul>");
+// iterate options
 ;(function(){
   var $$obj = options;
   if ('number' == typeof $$obj.length) {
@@ -116,7 +117,8 @@ buf.push("<li><div" + (jade.attrs({ 'data-count':(option.get('count')), "class":
 
   }
 }).call(this);
-;return buf.join("");
+
+buf.push("</ul>");;return buf.join("");
 };
 
 this["JST"]["faceted-search/facets/main"] = function anonymous(locals) {

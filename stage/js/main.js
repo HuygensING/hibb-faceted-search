@@ -431,6 +431,17 @@ define("../lib/almond/almond", function(){});
     var $;
     $ = require('jquery');
     return {
+      closest: function(el, selector) {
+        var matchesSelector;
+        matchesSelector = el.matches || el.webkitMatchesSelector || el.mozMatchesSelector || el.msMatchesSelector;
+        while (el) {
+          if (matchesSelector.bind(el)(selector)) {
+            return el;
+          } else {
+            el = el.parentNode;
+          }
+        }
+      },
       /*
       	Generates an ID that starts with a letter
       	
@@ -816,6 +827,56 @@ define("../lib/almond/almond", function(){});
           box.right = box.left + box.width;
           box.bottom = box.top + box.height;
           return box;
+        },
+        insertAfter: function(newElement, referenceElement) {
+          return referenceElement.parentNode.insertBefore(newElement, referenceElement.nextSibling);
+        },
+        highlightUntil: function(endNode, highlightClass) {
+          if (highlightClass == null) {
+            highlightClass = 'highlight';
+          }
+          return {
+            on: function() {
+              var currentNode, filter, range, treewalker,
+                _this = this;
+              range = document.createRange();
+              range.setStartAfter(el);
+              range.setEndBefore(endNode);
+              filter = function(node) {
+                var end, r, start;
+                r = document.createRange();
+                r.selectNode(node);
+                start = r.compareBoundaryPoints(Range.START_TO_START, range);
+                end = r.compareBoundaryPoints(Range.END_TO_START, range);
+                if (start === -1 || end === 1) {
+                  return NodeFilter.FILTER_SKIP;
+                } else {
+                  return NodeFilter.FILTER_ACCEPT;
+                }
+              };
+              filter.acceptNode = filter;
+              treewalker = document.createTreeWalker(range.commonAncestorContainer, NodeFilter.SHOW_ELEMENT, filter, false);
+              while (treewalker.nextNode()) {
+                currentNode = treewalker.currentNode;
+                if ((' ' + currentNode.className + ' ').indexOf(' text ') > -1) {
+                  currentNode.className = currentNode.className + ' ' + highlightClass;
+                }
+              }
+              return this;
+            },
+            off: function() {
+              var classNames, _i, _len, _ref, _results;
+              _ref = document.querySelectorAll('.' + highlightClass);
+              _results = [];
+              for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+                el = _ref[_i];
+                classNames = ' ' + el.className + ' ';
+                classNames = classNames.replace(' ' + highlightClass + ' ', '');
+                _results.push(el.className = classNames.replace(/^\s+|\s+$/g, ''));
+              }
+              return _results;
+            }
+          };
         }
       };
     };
@@ -1376,7 +1437,8 @@ buf.push("<div class=\"row span4 align middle\"><div class=\"cell span2\"><input
 
 this["JST"]["faceted-search/facets/list.options"] = function anonymous(locals) {
 var buf = [];
-var locals_ = (locals || {}),options = locals_.options,generateID = locals_.generateID;// iterate options
+var locals_ = (locals || {}),options = locals_.options,generateID = locals_.generateID;buf.push("<ul>");
+// iterate options
 ;(function(){
   var $$obj = options;
   if ('number' == typeof $$obj.length) {
@@ -1399,7 +1461,8 @@ buf.push("<li><div" + (jade.attrs({ 'data-count':(option.get('count')), "class":
 
   }
 }).call(this);
-;return buf.join("");
+
+buf.push("</ul>");;return buf.join("");
 };
 
 this["JST"]["faceted-search/facets/main"] = function anonymous(locals) {
@@ -1987,7 +2050,7 @@ return this["JST"];
           parse: true
         });
         this.optionsView = new Views.Options({
-          el: this.el.querySelector('.body ul'),
+          el: this.el.querySelector('.body'),
           collection: options,
           facetName: this.model.get('name')
         });
@@ -2642,7 +2705,7 @@ return this["JST"];
       };
 
       FacetedSearch.prototype.renderFacets = function(data) {
-        var View, facetData, fragment, index, _ref1, _ref2, _results,
+        var View, facetData, fragment, index, start, _ref1, _ref2, _results,
           _this = this;
         this.$('.loader').hide();
         if (this.model.searchResults.length === 1) {
@@ -2664,7 +2727,9 @@ return this["JST"];
               console.error('Unknown facetView', facetData.type);
             }
           }
-          return this.$('.facets').html(fragment);
+          start = new Date();
+          this.el.querySelector('.facets').appendChild(fragment);
+          return console.log((new Date() - start) / 1000 + 's');
         } else {
           if (this.facetViews.hasOwnProperty('textSearch')) {
             this.facetViews['textSearch'].update();

@@ -116,8 +116,10 @@ define (require) ->
 						fragment.appendChild @facetViews[facetData.name].el
 					else 
 						console.error 'Unknown facetView', facetData.type
-
-				@$('.facets').html fragment
+				start = new Date()
+				# @$('.facets').html fragment
+				@el.querySelector('.facets').appendChild fragment
+				console.log (new Date() - start)/1000 + 's'
 
 			# If the size is greater than 1, the facets are already rendered and we call their update methods.
 			else

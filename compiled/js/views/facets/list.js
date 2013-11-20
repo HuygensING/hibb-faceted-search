@@ -83,7 +83,7 @@
           parse: true
         });
         this.optionsView = new Views.Options({
-          el: this.el.querySelector('.body ul'),
+          el: this.el.querySelector('.body'),
           collection: options,
           facetName: this.model.get('name')
         });
