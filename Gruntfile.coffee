@@ -46,13 +46,13 @@ module.exports = (grunt) ->
 			keepalive:
 				options:
 					port: 3000
-					base: '/home/gijs/Projects/module-env/dev'
+					base: '/home/gijs/Projects/module-env/compiled'
 					middleware: connect_middleware
 					keepalive: true
 			compiled:
 				options:
 					port: 3000
-					base: '/home/gijs/Projects/module-env/dev'
+					base: '/home/gijs/Projects/module-env/compiled'
 					middleware: connect_middleware
 					# open: true
 
