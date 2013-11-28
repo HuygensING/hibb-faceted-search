@@ -11,7 +11,8 @@ define (require) ->
 			name: 'text_search'
 
 		queryData: ->
-			attrs = @attributes
+			attrs = _.extend {}, @attributes
+			
 			delete attrs.name
 			delete attrs.title
 

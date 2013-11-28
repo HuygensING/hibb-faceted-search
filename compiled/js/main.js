@@ -51,9 +51,6 @@
         _.extend(config, options);
         queryOptions = _.extend(config.queryOptions, config.textSearchOptions);
         this.render();
-        this.subscribe('unauthorized', function() {
-          return _this.trigger('unauthorized');
-        });
         this.subscribe('change:results', function(responseModel, queryOptions) {
           _this.renderFacets();
           return _this.trigger('results:change', responseModel, queryOptions);
@@ -97,7 +94,7 @@
       };
 
       FacetedSearch.prototype.renderFacets = function(data) {
-        var View, facetData, fragment, index, _ref1, _ref2, _results,
+        var View, facetData, fragment, index, _ref1,
           _this = this;
         this.$('.loader').hide();
         if (this.model.searchResults.length === 1) {
@@ -121,17 +118,7 @@
           }
           return this.el.querySelector('.facets').appendChild(fragment);
         } else {
-          if (this.facetViews.hasOwnProperty('textSearch')) {
-            this.facetViews['textSearch'].update();
-          }
-          _ref2 = this.model.searchResults.current.get('facets');
-          _results = [];
-          for (index in _ref2) {
-            if (!__hasProp.call(_ref2, index)) continue;
-            data = _ref2[index];
-            _results.push(this.facetViews[data.name].update(data.options));
-          }
-          return _results;
+          return this.update();
         }
       };
 
@@ -151,12 +138,36 @@
         return this.model.searchResults.current.has('_prev');
       };
 
+      FacetedSearch.prototype.update = function() {
+        var data, index, _ref1, _results;
+        if (this.facetViews.hasOwnProperty('textSearch')) {
+          this.facetViews.textSearch.update();
+        }
+        _ref1 = this.model.searchResults.current.get('facets');
+        _results = [];
+        for (index in _ref1) {
+          if (!__hasProp.call(_ref1, index)) continue;
+          data = _ref1[index];
+          if (data.name === 'textSearch') {
+            console.log('ALSO HERE 1');
+          }
+          _results.push(this.facetViews[data.name].update(data.options));
+        }
+        return _results;
+      };
+
       FacetedSearch.prototype.reset = function() {
         var data, index, _ref1;
+        if (this.facetViews.hasOwnProperty('textSearch')) {
+          this.facetViews.textSearch.reset();
+        }
         _ref1 = this.model.searchResults.last().get('facets');
         for (index in _ref1) {
           if (!__hasProp.call(_ref1, index)) continue;
           data = _ref1[index];
+          if (data.name === 'textSearch') {
+            console.log('ALSO HERE 2');
+          }
           if (this.facetViews[data.name].reset) {
             this.facetViews[data.name].reset();
           }

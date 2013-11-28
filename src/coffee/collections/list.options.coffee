@@ -10,10 +10,6 @@ define (require) ->
 
 		model: Models.Option
 
-		# parse: (attrs) -> 
-		# 	# console.log 'parse', attrs
-		# 	attrs
-
 		comparator: (model) ->
 			-1 * +model.get('count')
 
@@ -23,11 +19,20 @@ define (require) ->
 			@trigger 'change'
 
 		updateOptions: (newOptions=[]) ->
+			# Reset all the options count to 0
 			@each (option) => option.set 'count', 0, silent: true
 
+			# Loop the options returned by the server to update the count on each one.
 			_.each newOptions, (newOption) =>
 				opt = @get newOption.name
-				opt.set 'count', newOption.count, silent: true
+				
+				# If option already exists in the collection, update the count.
+				if opt?
+					opt.set 'count', newOption.count, silent: true
+				# Else create the new option and add it to the collection.
+				else
+					opt = new Models.Option newOption
+					@add opt
 
 			@sort()
 			

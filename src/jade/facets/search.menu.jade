@@ -23,5 +23,5 @@ if model.has('textLayers')
 			ul.textlayers
 				each textLayer in model.get('textLayers')
 					li.textlayer
-						input(id='cb_textlayer'+textLayer, type="checkbox", data-attr-array="textLayers", data-value=textLayer)
+						input(id='cb_textlayer'+textLayer, type="checkbox", data-attr-array="textLayers", data-value=textLayer, checked=true)
 						label(for='cb_textlayer'+textLayer)= textLayer

@@ -158,7 +158,7 @@ buf.push("<div class=\"row span1\"><div class=\"cell span1\"><h4>Text layers</h4
     for (var $index = 0, $$l = $$obj.length; $index < $$l; $index++) {
       var textLayer = $$obj[$index];
 
-buf.push("<li class=\"textlayer\"><input" + (jade.attrs({ 'id':('cb_textlayer'+textLayer), 'type':("checkbox"), 'data-attr-array':("textLayers"), 'data-value':(textLayer) }, {"id":true,"type":true,"data-attr-array":true,"data-value":true})) + "/><label" + (jade.attrs({ 'for':('cb_textlayer'+textLayer) }, {"for":true})) + ">" + (jade.escape(null == (jade.interp = textLayer) ? "" : jade.interp)) + "</label></li>");
+buf.push("<li class=\"textlayer\"><input" + (jade.attrs({ 'id':('cb_textlayer'+textLayer), 'type':("checkbox"), 'data-attr-array':("textLayers"), 'data-value':(textLayer), 'checked':(true) }, {"id":true,"type":true,"data-attr-array":true,"data-value":true,"checked":true})) + "/><label" + (jade.attrs({ 'for':('cb_textlayer'+textLayer) }, {"for":true})) + ">" + (jade.escape(null == (jade.interp = textLayer) ? "" : jade.interp)) + "</label></li>");
     }
 
   } else {
@@ -166,7 +166,7 @@ buf.push("<li class=\"textlayer\"><input" + (jade.attrs({ 'id':('cb_textlayer'+t
     for (var $index in $$obj) {
       $$l++;      var textLayer = $$obj[$index];
 
-buf.push("<li class=\"textlayer\"><input" + (jade.attrs({ 'id':('cb_textlayer'+textLayer), 'type':("checkbox"), 'data-attr-array':("textLayers"), 'data-value':(textLayer) }, {"id":true,"type":true,"data-attr-array":true,"data-value":true})) + "/><label" + (jade.attrs({ 'for':('cb_textlayer'+textLayer) }, {"for":true})) + ">" + (jade.escape(null == (jade.interp = textLayer) ? "" : jade.interp)) + "</label></li>");
+buf.push("<li class=\"textlayer\"><input" + (jade.attrs({ 'id':('cb_textlayer'+textLayer), 'type':("checkbox"), 'data-attr-array':("textLayers"), 'data-value':(textLayer), 'checked':(true) }, {"id":true,"type":true,"data-attr-array":true,"data-value":true,"checked":true})) + "/><label" + (jade.attrs({ 'for':('cb_textlayer'+textLayer) }, {"for":true})) + ">" + (jade.escape(null == (jade.interp = textLayer) ? "" : jade.interp)) + "</label></li>");
     }
 
   }

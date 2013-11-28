@@ -26,7 +26,7 @@
 
       Search.prototype.queryData = function() {
         var attrs;
-        attrs = this.attributes;
+        attrs = _.extend({}, this.attributes);
         delete attrs.name;
         delete attrs.title;
         return attrs;

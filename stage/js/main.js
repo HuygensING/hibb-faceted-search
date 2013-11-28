@@ -674,14 +674,16 @@ define("../lib/almond/almond", function(){});
         return Object.getPrototypeOf(obj) === ObjProto;
       },
       getScrollPercentage: function(el) {
-        var scrolledLeft, scrolledTop, totalLeft, totalTop;
+        var left, scrolledLeft, scrolledTop, top, totalLeft, totalTop;
         scrolledTop = el.scrollTop;
         totalTop = el.scrollHeight - el.clientHeight;
         scrolledLeft = el.scrollLeft;
         totalLeft = el.scrollWidth - el.clientWidth;
+        top = totalTop === 0 ? 0 : Math.floor((scrolledTop / totalTop) * 100);
+        left = totalLeft === 0 ? 0 : Math.floor((scrolledLeft / totalLeft) * 100);
         return {
-          top: Math.floor((scrolledTop / totalTop) * 100),
-          left: Math.floor((scrolledLeft / totalLeft) * 100)
+          top: top,
+          left: left
         };
       },
       setScrollPercentage: function(el, percentages) {
@@ -1502,7 +1504,7 @@ buf.push("<div class=\"row span1\"><div class=\"cell span1\"><h4>Text layers</h4
     for (var $index = 0, $$l = $$obj.length; $index < $$l; $index++) {
       var textLayer = $$obj[$index];
 
-buf.push("<li class=\"textlayer\"><input" + (jade.attrs({ 'id':('cb_textlayer'+textLayer), 'type':("checkbox"), 'data-attr-array':("textLayers"), 'data-value':(textLayer) }, {"id":true,"type":true,"data-attr-array":true,"data-value":true})) + "/><label" + (jade.attrs({ 'for':('cb_textlayer'+textLayer) }, {"for":true})) + ">" + (jade.escape(null == (jade.interp = textLayer) ? "" : jade.interp)) + "</label></li>");
+buf.push("<li class=\"textlayer\"><input" + (jade.attrs({ 'id':('cb_textlayer'+textLayer), 'type':("checkbox"), 'data-attr-array':("textLayers"), 'data-value':(textLayer), 'checked':(true) }, {"id":true,"type":true,"data-attr-array":true,"data-value":true,"checked":true})) + "/><label" + (jade.attrs({ 'for':('cb_textlayer'+textLayer) }, {"for":true})) + ">" + (jade.escape(null == (jade.interp = textLayer) ? "" : jade.interp)) + "</label></li>");
     }
 
   } else {
@@ -1510,7 +1512,7 @@ buf.push("<li class=\"textlayer\"><input" + (jade.attrs({ 'id':('cb_textlayer'+t
     for (var $index in $$obj) {
       $$l++;      var textLayer = $$obj[$index];
 
-buf.push("<li class=\"textlayer\"><input" + (jade.attrs({ 'id':('cb_textlayer'+textLayer), 'type':("checkbox"), 'data-attr-array':("textLayers"), 'data-value':(textLayer) }, {"id":true,"type":true,"data-attr-array":true,"data-value":true})) + "/><label" + (jade.attrs({ 'for':('cb_textlayer'+textLayer) }, {"for":true})) + ">" + (jade.escape(null == (jade.interp = textLayer) ? "" : jade.interp)) + "</label></li>");
+buf.push("<li class=\"textlayer\"><input" + (jade.attrs({ 'id':('cb_textlayer'+textLayer), 'type':("checkbox"), 'data-attr-array':("textLayers"), 'data-value':(textLayer), 'checked':(true) }, {"id":true,"type":true,"data-attr-array":true,"data-value":true,"checked":true})) + "/><label" + (jade.attrs({ 'for':('cb_textlayer'+textLayer) }, {"for":true})) + ">" + (jade.escape(null == (jade.interp = textLayer) ? "" : jade.interp)) + "</label></li>");
     }
 
   }
@@ -1868,9 +1870,14 @@ return this["JST"];
         _.each(newOptions, function(newOption) {
           var opt;
           opt = _this.get(newOption.name);
-          return opt.set('count', newOption.count, {
-            silent: true
-          });
+          if (opt != null) {
+            return opt.set('count', newOption.count, {
+              silent: true
+            });
+          } else {
+            opt = new Models.Option(newOption);
+            return _this.add(opt);
+          }
         });
         return this.sort();
       };
@@ -2479,7 +2486,7 @@ return this["JST"];
 
       Search.prototype.queryData = function() {
         var attrs;
-        attrs = this.attributes;
+        attrs = _.extend({}, this.attributes);
         delete attrs.name;
         delete attrs.title;
         return attrs;
@@ -2529,6 +2536,7 @@ return this["JST"];
       Search.prototype.render = function() {
         var body, menu;
         Search.__super__.render.apply(this, arguments);
+        console.log(this.model.attributes);
         menu = tpls['faceted-search/facets/search.menu']({
           model: this.model
         });
@@ -2599,6 +2607,10 @@ return this["JST"];
         return this.$('input[name="search"]').removeClass('loading');
       };
 
+      Search.prototype.reset = function() {
+        return this.render();
+      };
+
       return Search;
 
     })(Views.Facet);
@@ -2659,9 +2671,6 @@ return this["JST"];
         _.extend(config, options);
         queryOptions = _.extend(config.queryOptions, config.textSearchOptions);
         this.render();
-        this.subscribe('unauthorized', function() {
-          return _this.trigger('unauthorized');
-        });
         this.subscribe('change:results', function(responseModel, queryOptions) {
           _this.renderFacets();
           return _this.trigger('results:change', responseModel, queryOptions);
@@ -2705,7 +2714,7 @@ return this["JST"];
       };
 
       FacetedSearch.prototype.renderFacets = function(data) {
-        var View, facetData, fragment, index, _ref1, _ref2, _results,
+        var View, facetData, fragment, index, _ref1,
           _this = this;
         this.$('.loader').hide();
         if (this.model.searchResults.length === 1) {
@@ -2729,17 +2738,7 @@ return this["JST"];
           }
           return this.el.querySelector('.facets').appendChild(fragment);
         } else {
-          if (this.facetViews.hasOwnProperty('textSearch')) {
-            this.facetViews['textSearch'].update();
-          }
-          _ref2 = this.model.searchResults.current.get('facets');
-          _results = [];
-          for (index in _ref2) {
-            if (!__hasProp.call(_ref2, index)) continue;
-            data = _ref2[index];
-            _results.push(this.facetViews[data.name].update(data.options));
-          }
-          return _results;
+          return this.update();
         }
       };
 
@@ -2759,12 +2758,36 @@ return this["JST"];
         return this.model.searchResults.current.has('_prev');
       };
 
+      FacetedSearch.prototype.update = function() {
+        var data, index, _ref1, _results;
+        if (this.facetViews.hasOwnProperty('textSearch')) {
+          this.facetViews.textSearch.update();
+        }
+        _ref1 = this.model.searchResults.current.get('facets');
+        _results = [];
+        for (index in _ref1) {
+          if (!__hasProp.call(_ref1, index)) continue;
+          data = _ref1[index];
+          if (data.name === 'textSearch') {
+            console.log('ALSO HERE 1');
+          }
+          _results.push(this.facetViews[data.name].update(data.options));
+        }
+        return _results;
+      };
+
       FacetedSearch.prototype.reset = function() {
         var data, index, _ref1;
+        if (this.facetViews.hasOwnProperty('textSearch')) {
+          this.facetViews.textSearch.reset();
+        }
         _ref1 = this.model.searchResults.last().get('facets');
         for (index in _ref1) {
           if (!__hasProp.call(_ref1, index)) continue;
           data = _ref1[index];
+          if (data.name === 'textSearch') {
+            console.log('ALSO HERE 2');
+          }
           if (this.facetViews[data.name].reset) {
             this.facetViews[data.name].reset();
           }

@@ -30,7 +30,7 @@ define (require) ->
 		# ### Render
 		render: ->
 			super
-
+			console.log @model.attributes
 			# menu = _.template Templates.Menu, @model.attributes
 			menu = tpls['faceted-search/facets/search.menu'] model: @model
 			body = tpls['faceted-search/facets/search.body'] model: @model
@@ -101,3 +101,4 @@ define (require) ->
 
 		# ### Methods
 		update: -> @$('input[name="search"]').removeClass 'loading'
+		reset: -> @render()

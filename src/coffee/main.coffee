@@ -50,7 +50,6 @@ define (require) ->
 			
 			@render()
 
-			@subscribe 'unauthorized', => @trigger 'unauthorized'
 			# Listen to the results:change event and (re)render the facets everytime the result changes.
 			@subscribe 'change:results', (responseModel, queryOptions) => 
 				@renderFacets()
@@ -121,9 +120,7 @@ define (require) ->
 
 			# If the size is greater than 1, the facets are already rendered and we call their update methods.
 			else
-				@facetViews['textSearch'].update() if @facetViews.hasOwnProperty 'textSearch'
-				for own index, data of @model.searchResults.current.get('facets')
-					@facetViews[data.name].update(data.options)
+				@update()
 
 
 		# ### Methods
@@ -145,10 +142,17 @@ define (require) ->
 
 		# sortResultsBy: (facet) -> @model.set sort: facet
 
-		reset: -> 
+		update: ->
+			@facetViews.textSearch.update() if @facetViews.hasOwnProperty 'textSearch'
+			
+			for own index, data of @model.searchResults.current.get('facets')
+				console.log 'ALSO HERE 1' if data.name is 'textSearch'
+				@facetViews[data.name].update(data.options)
+
+		reset: ->
+			@facetViews.textSearch.reset() if @facetViews.hasOwnProperty 'textSearch'
+
 			for own index, data of @model.searchResults.last().get('facets')
+				console.log 'ALSO HERE 2' if data.name is 'textSearch'
 				@facetViews[data.name].reset() if @facetViews[data.name].reset
 			@model.reset()
-
-			# @model.fetch()
-			# @fetchResults()

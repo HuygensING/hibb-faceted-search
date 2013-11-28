@@ -26,6 +26,7 @@ define (require) ->
 			$(ev.currentTarget).parents('.facet').find('.body').slideToggle()
 
 		render: ->
+			# console.log @model.attributes
 			rtpl = tpls['faceted-search/facets/main']  @model.attributes
 			@$el.html rtpl
 

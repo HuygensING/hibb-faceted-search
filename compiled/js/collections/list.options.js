@@ -47,9 +47,14 @@
         _.each(newOptions, function(newOption) {
           var opt;
           opt = _this.get(newOption.name);
-          return opt.set('count', newOption.count, {
-            silent: true
-          });
+          if (opt != null) {
+            return opt.set('count', newOption.count, {
+              silent: true
+            });
+          } else {
+            opt = new Models.Option(newOption);
+            return _this.add(opt);
+          }
         });
         return this.sort();
       };
