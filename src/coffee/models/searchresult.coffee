@@ -48,5 +48,10 @@ define (require) ->
 		getResults: (url, done) ->
 			ajax.token = config.token
 			jqXHR = ajax.get url: url
-			jqXHR.done (data, textStatus, jqXHR) =>	done data
+			jqXHR.done (data, textStatus, jqXHR) =>
+				allIdsUrl = url.replace(/\?.*$/, '') + '/allids'
+				ajax.get(url: allIdsUrl).done (ids) =>
+					data.allIds = ids
+					done data
+
 			jqXHR.fail => console.error 'Failed getting FacetedSearch results from the server!'
