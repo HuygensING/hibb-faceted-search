@@ -2,6 +2,8 @@ define (require) ->
 	pubsub = require 'hilib/mixins/pubsub'
 	SearchResult = require 'models/searchresult'
 
+	config = require 'config'
+
 	class SearchResults extends Backbone.Collection
 
 		model: SearchResult
@@ -45,7 +47,7 @@ define (require) ->
 					@trigger 'request'
 					searchResult = new SearchResult()
 					searchResult.fetch
-						url: url
+						url: config.searchPath + '/..' + url
 						success: (model, response, options) => 
 							@cachedModels[url] = model
 							@add model
