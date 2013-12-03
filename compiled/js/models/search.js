@@ -19,6 +19,7 @@
         return {
           term: '*',
           caseSensitive: false,
+          fuzzy: false,
           title: 'Text search',
           name: 'text_search'
         };

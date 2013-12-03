@@ -35,7 +35,6 @@
       Search.prototype.render = function() {
         var body, menu;
         Search.__super__.render.apply(this, arguments);
-        console.log(this.model.attributes);
         menu = tpls['faceted-search/facets/search.menu']({
           model: this.model
         });

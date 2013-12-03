@@ -2,19 +2,22 @@
 	.cell.span1.casesensitive
 		input#cb_casesensitive(type="checkbox", name="cb_casesensitive", data-attr="caseSensitive")
 		label(for="cb_casesensitive") Match case
+	.cell.span1.fuzzy
+		input#cb_fuzzy(type="checkbox", name="cb_fuzzy", data-attr="fuzzy")
+		label(for="cb_fuzzy") Fuzzy
 if model.has('searchInAnnotations') || model.has('searchInTranscriptions')
 	.row.span1
 		.cell.span1
 			h4 Search
 			ul.searchins
-				if model.has('searchInAnnotations')
-					li.searchin
-						input(id="cb_searchin_annotations", type="checkbox", data-attr="searchInAnnotations", checked=model.get('searchInAnnotations'))
-						label(for!="cb_searchin_annotations") Annotations
 				if model.has('searchInTranscriptions')
 					li.searchin
 						input(id="cb_searchin_transcriptions", type="checkbox", data-attr="searchInTranscriptions", checked=model.get('searchInTranscriptions'))
 						label(for!="cb_searchin_transcriptions") Transcriptions
+				if model.has('searchInAnnotations')
+					li.searchin
+						input(id="cb_searchin_annotations", type="checkbox", data-attr="searchInAnnotations", checked=model.get('searchInAnnotations'))
+						label(for!="cb_searchin_annotations") Annotations
 
 if model.has('textLayers')
 	.row.span1

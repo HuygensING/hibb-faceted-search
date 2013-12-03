@@ -7,12 +7,13 @@ define (require) ->
 		defaults: ->
 			term: '*'
 			caseSensitive: false
+			fuzzy: false
 			title: 'Text search'
 			name: 'text_search'
 
 		queryData: ->
 			attrs = _.extend {}, @attributes
-			
+
 			delete attrs.name
 			delete attrs.title
 
