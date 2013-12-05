@@ -7,7 +7,7 @@ require.config
 
 define (require) ->
 	Fn = require 'hilib/functions/general'
-	dom = require 'hilib/functions/dom'
+	dom = require 'hilib/functions/DOM'
 	pubsub = require 'hilib/mixins/pubsub'
 
 	config = require 'config'
@@ -86,6 +86,9 @@ define (require) ->
 			# rtpl = _.template Templates.FacetedSearch
 			rtpl = tpls['faceted-search/main']()
 			@$el.html rtpl
+
+			fs = @el.querySelector '.faceted-search'
+			fs.style[attr] = value for own attr, value of config.css
  
 			@$('.loader').fadeIn('slow')
 
@@ -133,6 +136,9 @@ define (require) ->
 			# @model.set queryOptions
 			# * TODO: fetch on @model change event?
 			# @model.fetch success: => @renderFacets()
+
+		page: (pagenumber) -> @model.page(pagenumber)
+
 
 		next: -> @model.searchResults.moveCursor '_next'
 		prev: -> @model.searchResults.moveCursor '_prev'

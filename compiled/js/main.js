@@ -14,7 +14,7 @@
   define(function(require) {
     var FacetedSearch, Fn, Models, Views, config, dom, facetViewMap, pubsub, tpls, _ref;
     Fn = require('hilib/functions/general');
-    dom = require('hilib/functions/dom');
+    dom = require('hilib/functions/DOM');
     pubsub = require('hilib/mixins/pubsub');
     config = require('config');
     facetViewMap = require('facetviewmap');
@@ -77,10 +77,17 @@
       };
 
       FacetedSearch.prototype.render = function() {
-        var rtpl, textSearch,
+        var attr, fs, rtpl, textSearch, value, _ref1,
           _this = this;
         rtpl = tpls['faceted-search/main']();
         this.$el.html(rtpl);
+        fs = this.el.querySelector('.faceted-search');
+        _ref1 = config.css;
+        for (attr in _ref1) {
+          if (!__hasProp.call(_ref1, attr)) continue;
+          value = _ref1[attr];
+          fs.style[attr] = value;
+        }
         this.$('.loader').fadeIn('slow');
         if (config.search) {
           textSearch = new Views.TextSearch();
@@ -120,6 +127,10 @@
         } else {
           return this.update();
         }
+      };
+
+      FacetedSearch.prototype.page = function(pagenumber) {
+        return this.model.page(pagenumber);
       };
 
       FacetedSearch.prototype.next = function() {

@@ -57,6 +57,16 @@
         return this.trigger('change');
       };
 
+      FacetedSearch.prototype.page = function(pagenumber) {
+        var _this = this;
+        this.searchResults.current.options.pagenumber = pagenumber;
+        return this.searchResults.current.fetch({
+          success: function(model) {
+            return console.log(model);
+          }
+        });
+      };
+
       return FacetedSearch;
 
     })(Backbone.Model);

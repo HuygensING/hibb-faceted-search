@@ -117,7 +117,7 @@ module.exports = (grunt) ->
 					baseUrl: "compiled/js"
 					name: '../lib/almond/almond'
 					include: 'main'
-					exclude: ['backbone', 'jquery', 'underscore'] # Exclude hilib?
+					exclude: ['backbone', 'jquery', 'underscore']
 					preserveLicenseComments: false
 					out: "stage/js/main.js"
 					optimize: 'none'

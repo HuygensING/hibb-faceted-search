@@ -43,6 +43,12 @@ define (require) ->
 			@set @queryOptions, silent: true
 			@trigger 'change'
 
+		page: (pagenumber) -> 
+			@searchResults.current.options.pagenumber = pagenumber
+			@searchResults.current.fetch
+				success: (model) => console.log model
+
+
 
 # EXAMPLE QUERY:
 # {

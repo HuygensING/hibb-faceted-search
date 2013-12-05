@@ -6,7 +6,7 @@ define (require) ->
 	config = require 'config'
 
 	Models =
-		Base: require 'models/base'
+		Base: require 'hilib/models/base'
 
 	class SearchResult extends Models.Base
 
@@ -22,6 +22,11 @@ define (require) ->
 			start: null
 			term: ''
 
+		# ### INITIALIZE
+		# Make options available to the whole object
+		initialize: (attrs, @options) ->
+			super
+
 		sync: (method, model, options) ->
 			if method is 'read'
 
@@ -32,13 +37,14 @@ define (require) ->
 					ajax.token = config.token
 					jqXHR = ajax.post
 						url: config.baseUrl + config.searchPath
-						data: options.data
+						data: @options.queryOptions
 						dataType: 'text'
 
 					jqXHR.done (data, textStatus, jqXHR) =>
 						if jqXHR.status is 201
 							url = jqXHR.getResponseHeader('Location')
-							url += '?rows=' + @resultRows if @resultRows?
+							url += '?rows=' + @options.resultRows if @options.resultRows?
+							url += '&start=50' if @options.pagenumber? if @options.pagenumber?
 
 							@getResults url, options.success
 

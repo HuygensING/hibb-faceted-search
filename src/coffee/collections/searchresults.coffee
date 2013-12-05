@@ -1,3 +1,6 @@
+# queryOptions:
+# 	resultRows: Number => number of results to return by the server
+
 define (require) ->
 	pubsub = require 'hilib/mixins/pubsub'
 	SearchResult = require 'models/searchresult'
@@ -23,18 +26,21 @@ define (require) ->
 				resultRows = @currentQueryOptions.resultRows
 				delete @currentQueryOptions.resultRows
 
-			data = JSON.stringify @currentQueryOptions
+			options = {}
+			options.resultRows = resultRows if resultRows?
+			options.queryOptions = JSON.stringify @currentQueryOptions
 
-			if @cachedModels.hasOwnProperty data
-				@setCurrent @cachedModels[data]
+			# The search results are cached by the query options string,
+			# so we check if there is such a string to find the cached result.
+			if @cachedModels.hasOwnProperty options.queryOptions
+				@setCurrent @cachedModels[options.queryOptions]
 			else
 				@trigger 'request'
-				searchResult = new SearchResult()
-				searchResult.resultRows = resultRows if resultRows?
+
+				searchResult = new SearchResult null, options
 				searchResult.fetch
-					data: data
-					success: (model, response, options) => 
-						@cachedModels[data] = model
+					success: (model) => 
+						@cachedModels[options.queryOptions] = model
 						@add model
 
 		moveCursor: (direction) ->
@@ -43,6 +49,7 @@ define (require) ->
 					@setCurrent @cachedModels[url]
 				else
 					@trigger 'request'
+					
 					searchResult = new SearchResult()
 					searchResult.fetch
 						url: url

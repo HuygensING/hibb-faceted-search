@@ -29,26 +29,26 @@
       };
 
       SearchResults.prototype.runQuery = function(currentQueryOptions) {
-        var data, resultRows, searchResult,
+        var options, resultRows, searchResult,
           _this = this;
         this.currentQueryOptions = currentQueryOptions;
         if (this.currentQueryOptions.hasOwnProperty('resultRows')) {
           resultRows = this.currentQueryOptions.resultRows;
           delete this.currentQueryOptions.resultRows;
         }
-        data = JSON.stringify(this.currentQueryOptions);
-        if (this.cachedModels.hasOwnProperty(data)) {
-          return this.setCurrent(this.cachedModels[data]);
+        options = {};
+        if (resultRows != null) {
+          options.resultRows = resultRows;
+        }
+        options.queryOptions = JSON.stringify(this.currentQueryOptions);
+        if (this.cachedModels.hasOwnProperty(options.queryOptions)) {
+          return this.setCurrent(this.cachedModels[options.queryOptions]);
         } else {
           this.trigger('request');
-          searchResult = new SearchResult();
-          if (resultRows != null) {
-            searchResult.resultRows = resultRows;
-          }
+          searchResult = new SearchResult(null, options);
           return searchResult.fetch({
-            data: data,
-            success: function(model, response, options) {
-              _this.cachedModels[data] = model;
+            success: function(model) {
+              _this.cachedModels[options.queryOptions] = model;
               return _this.add(model);
             }
           });

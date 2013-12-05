@@ -8,7 +8,7 @@
     token = require('hilib/managers/token');
     config = require('config');
     Models = {
-      Base: require('models/base')
+      Base: require('hilib/models/base')
     };
     return SearchResult = (function(_super) {
       __extends(SearchResult, _super);
@@ -33,6 +33,11 @@
         };
       };
 
+      SearchResult.prototype.initialize = function(attrs, options) {
+        this.options = options;
+        return SearchResult.__super__.initialize.apply(this, arguments);
+      };
+
       SearchResult.prototype.sync = function(method, model, options) {
         var jqXHR,
           _this = this;
@@ -43,15 +48,18 @@
             ajax.token = config.token;
             jqXHR = ajax.post({
               url: config.baseUrl + config.searchPath,
-              data: options.data,
+              data: this.options.queryOptions,
               dataType: 'text'
             });
             jqXHR.done(function(data, textStatus, jqXHR) {
               var url;
               if (jqXHR.status === 201) {
                 url = jqXHR.getResponseHeader('Location');
-                if (_this.resultRows != null) {
-                  url += '?rows=' + _this.resultRows;
+                if (_this.options.resultRows != null) {
+                  url += '?rows=' + _this.options.resultRows;
+                }
+                if (_this.options.pagenumber != null ? _this.options.pagenumber != null : void 0) {
+                  url += '&start=50';
                 }
                 return _this.getResults(url, options.success);
               }

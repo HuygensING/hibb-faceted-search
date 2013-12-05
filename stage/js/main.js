@@ -760,9 +760,45 @@ define("../lib/almond/almond", function(){});
 }).call(this);
 
 (function() {
-  define('hilib/functions/dom',['require'],function(require) {
-    return function(el) {
+  define('hilib/functions/DOM',['require'],function(require) {
+    var DOM;
+    return DOM = function(el) {
+      if (_.isString(el)) {
+        el = document.querySelector(el);
+      }
       return {
+        el: el,
+        q: function(query) {
+          return DOM(el.querySelector(query));
+        },
+        find: function(query) {
+          return DOM(el.querySelector(query));
+        },
+        findAll: function(query) {
+          return DOM(el.querySelectorAll(query));
+        },
+        html: function(html) {
+          if (html == null) {
+            return el.innerHTML;
+          }
+          if (html.nodeType === 1 || html.nodeType === 11) {
+            el.innerHTML = '';
+            return el.appendChild(html);
+          } else {
+            return el.innerHTML = html;
+          }
+        },
+        hide: function() {
+          el.style.display = 'none';
+          return this;
+        },
+        show: function(displayType) {
+          if (displayType == null) {
+            displayType = 'block';
+          }
+          el.style.display = displayType;
+          return this;
+        },
         closest: function(selector) {
           var matchesSelector;
           matchesSelector = el.matches || el.webkitMatchesSelector || el.mozMatchesSelector || el.msMatchesSelector;
@@ -773,6 +809,9 @@ define("../lib/almond/almond", function(){});
               el = el.parentNode;
             }
           }
+        },
+        append: function(childEl) {
+          return el.appendChild(childEl);
         },
         prepend: function(childEl) {
           return el.insertBefore(childEl, el.firstChild);
@@ -879,6 +918,27 @@ define("../lib/almond/almond", function(){});
               return _results;
             }
           };
+        },
+        hasClass: function(name) {
+          return (' ' + el.className + ' ').indexOf(' ' + name + ' ') > -1;
+        },
+        addClass: function(name) {
+          if (!this.hasClass(name)) {
+            return el.className += ' ' + name;
+          }
+        },
+        removeClass: function(name) {
+          var names;
+          names = ' ' + el.className + ' ';
+          names = names.replace(' ' + name + ' ', '');
+          return el.className = names.replace(/^\s+|\s+$/g, '');
+        },
+        toggleClass: function(name) {
+          if (this.hasClass(name)) {
+            return this.addClass(name);
+          } else {
+            return this.removeClass(name);
+          }
         }
       };
     };
@@ -2223,13 +2283,40 @@ return this["JST"];
   var __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
-  define('models/searchresult',['require','hilib/managers/ajax','hilib/managers/token','config','models/base'],function(require) {
+  define('hilib/models/base',['require','backbone','hilib/managers/pubsub'],function(require) {
+    var Backbone, Base, Pubsub, _ref;
+    Backbone = require('backbone');
+    Pubsub = require('hilib/managers/pubsub');
+    return Base = (function(_super) {
+      __extends(Base, _super);
+
+      function Base() {
+        _ref = Base.__super__.constructor.apply(this, arguments);
+        return _ref;
+      }
+
+      Base.prototype.initialize = function() {
+        return _.extend(this, Pubsub);
+      };
+
+      return Base;
+
+    })(Backbone.Model);
+  });
+
+}).call(this);
+
+(function() {
+  var __hasProp = {}.hasOwnProperty,
+    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
+
+  define('models/searchresult',['require','hilib/managers/ajax','hilib/managers/token','config','hilib/models/base'],function(require) {
     var Models, SearchResult, ajax, config, token, _ref;
     ajax = require('hilib/managers/ajax');
     token = require('hilib/managers/token');
     config = require('config');
     Models = {
-      Base: require('models/base')
+      Base: require('hilib/models/base')
     };
     return SearchResult = (function(_super) {
       __extends(SearchResult, _super);
@@ -2254,6 +2341,11 @@ return this["JST"];
         };
       };
 
+      SearchResult.prototype.initialize = function(attrs, options) {
+        this.options = options;
+        return SearchResult.__super__.initialize.apply(this, arguments);
+      };
+
       SearchResult.prototype.sync = function(method, model, options) {
         var jqXHR,
           _this = this;
@@ -2264,15 +2356,18 @@ return this["JST"];
             ajax.token = config.token;
             jqXHR = ajax.post({
               url: config.baseUrl + config.searchPath,
-              data: options.data,
+              data: this.options.queryOptions,
               dataType: 'text'
             });
             jqXHR.done(function(data, textStatus, jqXHR) {
               var url;
               if (jqXHR.status === 201) {
                 url = jqXHR.getResponseHeader('Location');
-                if (_this.resultRows != null) {
-                  url += '?rows=' + _this.resultRows;
+                if (_this.options.resultRows != null) {
+                  url += '?rows=' + _this.options.resultRows;
+                }
+                if (_this.options.pagenumber != null ? _this.options.pagenumber != null : void 0) {
+                  url += '&start=50';
                 }
                 return _this.getResults(url, options.success);
               }
@@ -2339,26 +2434,26 @@ return this["JST"];
       };
 
       SearchResults.prototype.runQuery = function(currentQueryOptions) {
-        var data, resultRows, searchResult,
+        var options, resultRows, searchResult,
           _this = this;
         this.currentQueryOptions = currentQueryOptions;
         if (this.currentQueryOptions.hasOwnProperty('resultRows')) {
           resultRows = this.currentQueryOptions.resultRows;
           delete this.currentQueryOptions.resultRows;
         }
-        data = JSON.stringify(this.currentQueryOptions);
-        if (this.cachedModels.hasOwnProperty(data)) {
-          return this.setCurrent(this.cachedModels[data]);
+        options = {};
+        if (resultRows != null) {
+          options.resultRows = resultRows;
+        }
+        options.queryOptions = JSON.stringify(this.currentQueryOptions);
+        if (this.cachedModels.hasOwnProperty(options.queryOptions)) {
+          return this.setCurrent(this.cachedModels[options.queryOptions]);
         } else {
           this.trigger('request');
-          searchResult = new SearchResult();
-          if (resultRows != null) {
-            searchResult.resultRows = resultRows;
-          }
+          searchResult = new SearchResult(null, options);
           return searchResult.fetch({
-            data: data,
-            success: function(model, response, options) {
-              _this.cachedModels[data] = model;
+            success: function(model) {
+              _this.cachedModels[options.queryOptions] = model;
               return _this.add(model);
             }
           });
@@ -2449,6 +2544,16 @@ return this["JST"];
           silent: true
         });
         return this.trigger('change');
+      };
+
+      FacetedSearch.prototype.page = function(pagenumber) {
+        var _this = this;
+        this.searchResults.current.options.pagenumber = pagenumber;
+        return this.searchResults.current.fetch({
+          success: function(model) {
+            return console.log(model);
+          }
+        });
       };
 
       return FacetedSearch;
@@ -2631,10 +2736,10 @@ return this["JST"];
     }
   });
 
-  define('main',['require','hilib/functions/general','hilib/functions/dom','hilib/mixins/pubsub','config','facetviewmap','models/main','views/base','views/search','views/facets/list','views/facets/boolean','views/facets/date','tpls'],function(require) {
+  define('main',['require','hilib/functions/general','hilib/functions/DOM','hilib/mixins/pubsub','config','facetviewmap','models/main','views/base','views/search','views/facets/list','views/facets/boolean','views/facets/date','tpls'],function(require) {
     var FacetedSearch, Fn, Models, Views, config, dom, facetViewMap, pubsub, tpls, _ref;
     Fn = require('hilib/functions/general');
-    dom = require('hilib/functions/dom');
+    dom = require('hilib/functions/DOM');
     pubsub = require('hilib/mixins/pubsub');
     config = require('config');
     facetViewMap = require('facetviewmap');
@@ -2697,10 +2802,17 @@ return this["JST"];
       };
 
       FacetedSearch.prototype.render = function() {
-        var rtpl, textSearch,
+        var attr, fs, rtpl, textSearch, value, _ref1,
           _this = this;
         rtpl = tpls['faceted-search/main']();
         this.$el.html(rtpl);
+        fs = this.el.querySelector('.faceted-search');
+        _ref1 = config.css;
+        for (attr in _ref1) {
+          if (!__hasProp.call(_ref1, attr)) continue;
+          value = _ref1[attr];
+          fs.style[attr] = value;
+        }
         this.$('.loader').fadeIn('slow');
         if (config.search) {
           textSearch = new Views.TextSearch();
@@ -2740,6 +2852,10 @@ return this["JST"];
         } else {
           return this.update();
         }
+      };
+
+      FacetedSearch.prototype.page = function(pagenumber) {
+        return this.model.page(pagenumber);
       };
 
       FacetedSearch.prototype.next = function() {
