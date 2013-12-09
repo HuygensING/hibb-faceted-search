@@ -51,9 +51,15 @@ define (require) ->
 			@render()
 
 			# Listen to the results:change event and (re)render the facets everytime the result changes.
-			@subscribe 'change:results', (responseModel, queryOptions) => 
+			@subscribe 'change:results', (responseModel) => 
 				@renderFacets()
-				@trigger 'results:change', responseModel, queryOptions
+				@trigger 'results:change', responseModel
+
+			@subscribe 'change:cursor', (responseModel) => 
+				@trigger 'results:change', responseModel
+
+			@subscribe 'change:page', (responseModel) => 
+				@trigger 'results:change', responseModel
 			
 			# Initialize the FacetedSearch model, without the queryOptions!
 			@model = new Models.FacetedSearch queryOptions
@@ -133,6 +139,8 @@ define (require) ->
 			# @model.set queryOptions
 			# * TODO: fetch on @model change event?
 			# @model.fetch success: => @renderFacets()
+
+		page: (pagenumber, database) -> @model.searchResults.current.page pagenumber, database
 
 		next: -> @model.searchResults.moveCursor '_next'
 		prev: -> @model.searchResults.moveCursor '_prev'

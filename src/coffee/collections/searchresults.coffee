@@ -1,6 +1,14 @@
+# queryOptions:
+# 	resultRows: Number => number of results to return by the server
+
 define (require) ->
 	pubsub = require 'hilib/mixins/pubsub'
 	SearchResult = require 'models/searchresult'
+
+	ajax = require 'hilib/managers/ajax'
+	token = require 'hilib/managers/token'
+
+	config = require 'config'
 
 	class SearchResults extends Backbone.Collection
 
@@ -9,43 +17,68 @@ define (require) ->
 		initialize: ->
 			_.extend @, pubsub
 
-			@currentQueryOptions = null
 			@cachedModels = {}
 
 			@on 'add', @setCurrent, @
 
-		setCurrent: (model) ->
-			@current = model
-			@publish 'change:results', model, @currentQueryOptions
+		setCurrent: (@current) ->
+			message = if @current.options.url? then 'change:cursor' else 'change:results'
+			@publish message, @current
 
-		runQuery: (@currentQueryOptions) ->
-			if @currentQueryOptions.hasOwnProperty 'resultRows'
-				resultRows = @currentQueryOptions.resultRows
-				delete @currentQueryOptions.resultRows
+		runQuery: (queryOptions) ->
+			cacheString = JSON.stringify queryOptions
 
-			data = JSON.stringify @currentQueryOptions
-
-			if @cachedModels.hasOwnProperty data
-				@setCurrent @cachedModels[data]
+			# The search results are cached by the query options string,
+			# so we check if there is such a string to find the cached result.
+			if @cachedModels.hasOwnProperty cacheString
+				@setCurrent @cachedModels[cacheString]
 			else
 				@trigger 'request'
-				searchResult = new SearchResult()
-				searchResult.resultRows = resultRows if resultRows?
+
+				options = {}
+				options.cacheString = cacheString
+				options.queryOptions = queryOptions
+
+				if queryOptions.hasOwnProperty 'resultRows'
+					options.resultRows = queryOptions.resultRows
+					delete queryOptions.resultRows
+
+				searchResult = new SearchResult null, options
 				searchResult.fetch
-					data: data
-					success: (model, response, options) => 
-						@cachedModels[data] = model
+					success: (model) => 
+						@cachedModels[options.queryOptions] = model
 						@add model
 
 		moveCursor: (direction) ->
-			if url = @current.get direction
+			url = if direction is '_prev' or direction is '_next' then @current.get direction else direction
+
+			if url?
 				if @cachedModels.hasOwnProperty url
 					@setCurrent @cachedModels[url]
-				else
-					@trigger 'request'
-					searchResult = new SearchResult()
+				else				
+					searchResult = new SearchResult null, url: url
 					searchResult.fetch
-						url: url
 						success: (model, response, options) => 
 							@cachedModels[url] = model
 							@add model
+
+		# page: (pagenumber, database) -> @current.page pagenumber, database
+			# start = @current.options.resultRows * pagenumber
+
+			# ajax.token = config.token
+			# jqXHR = ajax.post
+			# 	url: "#{config.baseUrl}#{config.searchPath}"
+			# 	data: JSON.stringify @current.options.queryOptions
+			# 	dataType: 'text'
+
+			# jqXHR.done (data, textStatus, jqXHR) =>
+			# 	if jqXHR.status is 201
+			# 		url = jqXHR.getResponseHeader('Location')
+			# 		url += "?rows=#{@current.options.resultRows}&start=#{start}&database=#{database}"
+			# 		@moveCursor url
+
+		# 	start = @current.options.resultRows * pagenumber
+		# 	url = "#{config.baseUrl}#{config.searchPath}?rows=#{@current.options.resultRows}&start=#{start}"
+		# 	url += "&database=#{database}" if database?
+			
+		# 	@moveCursor url
