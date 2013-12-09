@@ -161,7 +161,7 @@ module.exports = (grunt) ->
 		'shell:emptycompiled' # rm -rf compiled/
 		'shell:bowerinstall' # Get dependencies first, cuz css needs to be included (and maybe images?)
 		'concurrent:compile'
-		'createSymlinks': 'compiled'
+		'createSymlinks:compiled'
 	]
 	grunt.registerTask 'c', 'compile'
 
