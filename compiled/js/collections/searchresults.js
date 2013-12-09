@@ -3,9 +3,12 @@
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
   define(function(require) {
-    var SearchResult, SearchResults, pubsub, _ref;
+    var SearchResult, SearchResults, ajax, config, pubsub, token, _ref;
     pubsub = require('hilib/mixins/pubsub');
     SearchResult = require('models/searchresult');
+    ajax = require('hilib/managers/ajax');
+    token = require('hilib/managers/token');
+    config = require('config');
     return SearchResults = (function(_super) {
       __extends(SearchResults, _super);
 
@@ -18,37 +21,36 @@
 
       SearchResults.prototype.initialize = function() {
         _.extend(this, pubsub);
-        this.currentQueryOptions = null;
         this.cachedModels = {};
         return this.on('add', this.setCurrent, this);
       };
 
-      SearchResults.prototype.setCurrent = function(model) {
-        this.current = model;
-        return this.publish('change:results', model, this.currentQueryOptions);
+      SearchResults.prototype.setCurrent = function(current) {
+        var message;
+        this.current = current;
+        message = this.current.options.url != null ? 'change:cursor' : 'change:results';
+        return this.publish(message, this.current);
       };
 
-      SearchResults.prototype.runQuery = function(currentQueryOptions) {
-        var data, resultRows, searchResult,
+      SearchResults.prototype.runQuery = function(queryOptions) {
+        var cacheString, options, searchResult,
           _this = this;
-        this.currentQueryOptions = currentQueryOptions;
-        if (this.currentQueryOptions.hasOwnProperty('resultRows')) {
-          resultRows = this.currentQueryOptions.resultRows;
-          delete this.currentQueryOptions.resultRows;
-        }
-        data = JSON.stringify(this.currentQueryOptions);
-        if (this.cachedModels.hasOwnProperty(data)) {
-          return this.setCurrent(this.cachedModels[data]);
+        cacheString = JSON.stringify(queryOptions);
+        if (this.cachedModels.hasOwnProperty(cacheString)) {
+          return this.setCurrent(this.cachedModels[cacheString]);
         } else {
           this.trigger('request');
-          searchResult = new SearchResult();
-          if (resultRows != null) {
-            searchResult.resultRows = resultRows;
+          options = {};
+          options.cacheString = cacheString;
+          options.queryOptions = queryOptions;
+          if (queryOptions.hasOwnProperty('resultRows')) {
+            options.resultRows = queryOptions.resultRows;
+            delete queryOptions.resultRows;
           }
+          searchResult = new SearchResult(null, options);
           return searchResult.fetch({
-            data: data,
-            success: function(model, response, options) {
-              _this.cachedModels[data] = model;
+            success: function(model) {
+              _this.cachedModels[options.queryOptions] = model;
               return _this.add(model);
             }
           });
@@ -58,14 +60,15 @@
       SearchResults.prototype.moveCursor = function(direction) {
         var searchResult, url,
           _this = this;
-        if (url = this.current.get(direction)) {
+        url = direction === '_prev' || direction === '_next' ? this.current.get(direction) : direction;
+        if (url != null) {
           if (this.cachedModels.hasOwnProperty(url)) {
             return this.setCurrent(this.cachedModels[url]);
           } else {
-            this.trigger('request');
-            searchResult = new SearchResult();
+            searchResult = new SearchResult(null, {
+              url: url
+            });
             return searchResult.fetch({
-              url: url,
               success: function(model, response, options) {
                 _this.cachedModels[url] = model;
                 return _this.add(model);

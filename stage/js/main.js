@@ -2223,13 +2223,40 @@ return this["JST"];
   var __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
-  define('models/searchresult',['require','hilib/managers/ajax','hilib/managers/token','config','models/base'],function(require) {
+  define('hilib/models/base',['require','backbone','hilib/managers/pubsub'],function(require) {
+    var Backbone, Base, Pubsub, _ref;
+    Backbone = require('backbone');
+    Pubsub = require('hilib/managers/pubsub');
+    return Base = (function(_super) {
+      __extends(Base, _super);
+
+      function Base() {
+        _ref = Base.__super__.constructor.apply(this, arguments);
+        return _ref;
+      }
+
+      Base.prototype.initialize = function() {
+        return _.extend(this, Pubsub);
+      };
+
+      return Base;
+
+    })(Backbone.Model);
+  });
+
+}).call(this);
+
+(function() {
+  var __hasProp = {}.hasOwnProperty,
+    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
+
+  define('models/searchresult',['require','hilib/managers/ajax','hilib/managers/token','config','hilib/models/base'],function(require) {
     var Models, SearchResult, ajax, config, token, _ref;
     ajax = require('hilib/managers/ajax');
     token = require('hilib/managers/token');
     config = require('config');
     Models = {
-      Base: require('models/base')
+      Base: require('hilib/models/base')
     };
     return SearchResult = (function(_super) {
       __extends(SearchResult, _super);
@@ -2254,26 +2281,30 @@ return this["JST"];
         };
       };
 
+      SearchResult.prototype.initialize = function(attrs, options) {
+        this.options = options;
+        SearchResult.__super__.initialize.apply(this, arguments);
+        return this.postURL = null;
+      };
+
       SearchResult.prototype.sync = function(method, model, options) {
         var jqXHR,
           _this = this;
         if (method === 'read') {
-          if (options.url != null) {
-            return this.getResults(options.url, options.success);
+          if (this.options.url != null) {
+            return this.getResults(this.options.url, options.success);
           } else {
             ajax.token = config.token;
             jqXHR = ajax.post({
               url: config.baseUrl + config.searchPath,
-              data: options.data,
+              data: JSON.stringify(this.options.queryOptions),
               dataType: 'text'
             });
             jqXHR.done(function(data, textStatus, jqXHR) {
               var url;
               if (jqXHR.status === 201) {
-                url = jqXHR.getResponseHeader('Location');
-                if (_this.resultRows != null) {
-                  url += '?rows=' + _this.resultRows;
-                }
+                _this.postURL = jqXHR.getResponseHeader('Location');
+                url = _this.options.resultRows != null ? _this.postURL + '?rows=' + _this.options.resultRows : _this.postURL;
                 return _this.getResults(url, options.success);
               }
             });
@@ -2297,7 +2328,21 @@ return this["JST"];
           return done(data);
         });
         return jqXHR.fail(function() {
-          return console.error('Failed getting FacetedSearch results from the server!');
+          return console.error('Failed getting FacetedSearch results from the server!', arguments);
+        });
+      };
+
+      SearchResult.prototype.page = function(pagenumber, database) {
+        var start, url,
+          _this = this;
+        start = this.options.resultRows * pagenumber;
+        url = this.postURL + ("?rows=" + this.options.resultRows + "&start=" + start);
+        if (database != null) {
+          url += "&database=" + database;
+        }
+        return this.getResults(url, function(data) {
+          _this.set(data);
+          return _this.publish('change:page', _this);
         });
       };
 
@@ -2312,10 +2357,13 @@ return this["JST"];
   var __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
-  define('collections/searchresults',['require','hilib/mixins/pubsub','models/searchresult'],function(require) {
-    var SearchResult, SearchResults, pubsub, _ref;
+  define('collections/searchresults',['require','hilib/mixins/pubsub','models/searchresult','hilib/managers/ajax','hilib/managers/token','config'],function(require) {
+    var SearchResult, SearchResults, ajax, config, pubsub, token, _ref;
     pubsub = require('hilib/mixins/pubsub');
     SearchResult = require('models/searchresult');
+    ajax = require('hilib/managers/ajax');
+    token = require('hilib/managers/token');
+    config = require('config');
     return SearchResults = (function(_super) {
       __extends(SearchResults, _super);
 
@@ -2328,37 +2376,36 @@ return this["JST"];
 
       SearchResults.prototype.initialize = function() {
         _.extend(this, pubsub);
-        this.currentQueryOptions = null;
         this.cachedModels = {};
         return this.on('add', this.setCurrent, this);
       };
 
-      SearchResults.prototype.setCurrent = function(model) {
-        this.current = model;
-        return this.publish('change:results', model, this.currentQueryOptions);
+      SearchResults.prototype.setCurrent = function(current) {
+        var message;
+        this.current = current;
+        message = this.current.options.url != null ? 'change:cursor' : 'change:results';
+        return this.publish(message, this.current);
       };
 
-      SearchResults.prototype.runQuery = function(currentQueryOptions) {
-        var data, resultRows, searchResult,
+      SearchResults.prototype.runQuery = function(queryOptions) {
+        var cacheString, options, searchResult,
           _this = this;
-        this.currentQueryOptions = currentQueryOptions;
-        if (this.currentQueryOptions.hasOwnProperty('resultRows')) {
-          resultRows = this.currentQueryOptions.resultRows;
-          delete this.currentQueryOptions.resultRows;
-        }
-        data = JSON.stringify(this.currentQueryOptions);
-        if (this.cachedModels.hasOwnProperty(data)) {
-          return this.setCurrent(this.cachedModels[data]);
+        cacheString = JSON.stringify(queryOptions);
+        if (this.cachedModels.hasOwnProperty(cacheString)) {
+          return this.setCurrent(this.cachedModels[cacheString]);
         } else {
           this.trigger('request');
-          searchResult = new SearchResult();
-          if (resultRows != null) {
-            searchResult.resultRows = resultRows;
+          options = {};
+          options.cacheString = cacheString;
+          options.queryOptions = queryOptions;
+          if (queryOptions.hasOwnProperty('resultRows')) {
+            options.resultRows = queryOptions.resultRows;
+            delete queryOptions.resultRows;
           }
+          searchResult = new SearchResult(null, options);
           return searchResult.fetch({
-            data: data,
-            success: function(model, response, options) {
-              _this.cachedModels[data] = model;
+            success: function(model) {
+              _this.cachedModels[options.queryOptions] = model;
               return _this.add(model);
             }
           });
@@ -2368,14 +2415,15 @@ return this["JST"];
       SearchResults.prototype.moveCursor = function(direction) {
         var searchResult, url,
           _this = this;
-        if (url = this.current.get(direction)) {
+        url = direction === '_prev' || direction === '_next' ? this.current.get(direction) : direction;
+        if (url != null) {
           if (this.cachedModels.hasOwnProperty(url)) {
             return this.setCurrent(this.cachedModels[url]);
           } else {
-            this.trigger('request');
-            searchResult = new SearchResult();
+            searchResult = new SearchResult(null, {
+              url: url
+            });
             return searchResult.fetch({
-              url: url,
               success: function(model, response, options) {
                 _this.cachedModels[url] = model;
                 return _this.add(model);
@@ -2671,9 +2719,15 @@ return this["JST"];
         _.extend(config, options);
         queryOptions = _.extend(config.queryOptions, config.textSearchOptions);
         this.render();
-        this.subscribe('change:results', function(responseModel, queryOptions) {
+        this.subscribe('change:results', function(responseModel) {
           _this.renderFacets();
-          return _this.trigger('results:change', responseModel, queryOptions);
+          return _this.trigger('results:change', responseModel);
+        });
+        this.subscribe('change:cursor', function(responseModel) {
+          return _this.trigger('results:change', responseModel);
+        });
+        this.subscribe('change:page', function(responseModel) {
+          return _this.trigger('results:change', responseModel);
         });
         this.model = new Models.FacetedSearch(queryOptions);
         this.listenTo(this.model.searchResults, 'request', function() {
@@ -2740,6 +2794,10 @@ return this["JST"];
         } else {
           return this.update();
         }
+      };
+
+      FacetedSearch.prototype.page = function(pagenumber, database) {
+        return this.model.searchResults.current.page(pagenumber, database);
       };
 
       FacetedSearch.prototype.next = function() {

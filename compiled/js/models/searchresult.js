@@ -8,7 +8,7 @@
     token = require('hilib/managers/token');
     config = require('config');
     Models = {
-      Base: require('models/base')
+      Base: require('hilib/models/base')
     };
     return SearchResult = (function(_super) {
       __extends(SearchResult, _super);
@@ -33,26 +33,30 @@
         };
       };
 
+      SearchResult.prototype.initialize = function(attrs, options) {
+        this.options = options;
+        SearchResult.__super__.initialize.apply(this, arguments);
+        return this.postURL = null;
+      };
+
       SearchResult.prototype.sync = function(method, model, options) {
         var jqXHR,
           _this = this;
         if (method === 'read') {
-          if (options.url != null) {
-            return this.getResults(options.url, options.success);
+          if (this.options.url != null) {
+            return this.getResults(this.options.url, options.success);
           } else {
             ajax.token = config.token;
             jqXHR = ajax.post({
               url: config.baseUrl + config.searchPath,
-              data: options.data,
+              data: JSON.stringify(this.options.queryOptions),
               dataType: 'text'
             });
             jqXHR.done(function(data, textStatus, jqXHR) {
               var url;
               if (jqXHR.status === 201) {
-                url = jqXHR.getResponseHeader('Location');
-                if (_this.resultRows != null) {
-                  url += '?rows=' + _this.resultRows;
-                }
+                _this.postURL = jqXHR.getResponseHeader('Location');
+                url = _this.options.resultRows != null ? _this.postURL + '?rows=' + _this.options.resultRows : _this.postURL;
                 return _this.getResults(url, options.success);
               }
             });
@@ -76,7 +80,21 @@
           return done(data);
         });
         return jqXHR.fail(function() {
-          return console.error('Failed getting FacetedSearch results from the server!');
+          return console.error('Failed getting FacetedSearch results from the server!', arguments);
+        });
+      };
+
+      SearchResult.prototype.page = function(pagenumber, database) {
+        var start, url,
+          _this = this;
+        start = this.options.resultRows * pagenumber;
+        url = this.postURL + ("?rows=" + this.options.resultRows + "&start=" + start);
+        if (database != null) {
+          url += "&database=" + database;
+        }
+        return this.getResults(url, function(data) {
+          _this.set(data);
+          return _this.publish('change:page', _this);
         });
       };
 

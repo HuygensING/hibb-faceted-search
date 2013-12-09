@@ -51,9 +51,15 @@
         _.extend(config, options);
         queryOptions = _.extend(config.queryOptions, config.textSearchOptions);
         this.render();
-        this.subscribe('change:results', function(responseModel, queryOptions) {
+        this.subscribe('change:results', function(responseModel) {
           _this.renderFacets();
-          return _this.trigger('results:change', responseModel, queryOptions);
+          return _this.trigger('results:change', responseModel);
+        });
+        this.subscribe('change:cursor', function(responseModel) {
+          return _this.trigger('results:change', responseModel);
+        });
+        this.subscribe('change:page', function(responseModel) {
+          return _this.trigger('results:change', responseModel);
         });
         this.model = new Models.FacetedSearch(queryOptions);
         this.listenTo(this.model.searchResults, 'request', function() {
@@ -120,6 +126,10 @@
         } else {
           return this.update();
         }
+      };
+
+      FacetedSearch.prototype.page = function(pagenumber, database) {
+        return this.model.searchResults.current.page(pagenumber, database);
       };
 
       FacetedSearch.prototype.next = function() {

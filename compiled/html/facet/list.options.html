@@ -1,5 +1,0 @@
-<ul><% _.each(options, function(option) { %>
-<% var randomId = generateID(); %>
-<% var checked = (option.get('checked')) ? 'checked' : ''; %>
-<% var count = (option.get('count') === 0) ? option.get('total') : option.get('count'); %>
-<% var labelText = (option.id === ':empty') ? '<i>(empty)</i>' : option.id %><li class="option"><div data-count="<%= option.get('count') %>" class="row span6"><div class="cell span5"><input id="<%= randomId %>" name="<%= randomId %>" type="checkbox" data-value="<%= option.id %>" <%= checked %>><label for="<%= randomId %>"><%= labelText %></label></div><div class="cell span1 alignright"><div class="count"><%= count %></div></div></div></li><% }); %></ul>
