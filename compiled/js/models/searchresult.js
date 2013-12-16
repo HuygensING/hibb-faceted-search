@@ -87,7 +87,7 @@
       SearchResult.prototype.page = function(pagenumber, database) {
         var start, url,
           _this = this;
-        start = this.options.resultRows * pagenumber;
+        start = this.options.resultRows * (pagenumber - 1);
         url = this.postURL + ("?rows=" + this.options.resultRows + "&start=" + start);
         if (database != null) {
           url += "&database=" + database;

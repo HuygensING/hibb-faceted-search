@@ -59,7 +59,7 @@ define (require) ->
 			jqXHR.fail => console.error 'Failed getting FacetedSearch results from the server!', arguments
 
 		page: (pagenumber, database) ->
-			start = @options.resultRows * pagenumber
+			start = @options.resultRows * (pagenumber - 1)
 			url = @postURL + "?rows=#{@options.resultRows}&start=#{start}"
 			url += "&database=#{database}" if database?
 
