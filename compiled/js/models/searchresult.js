@@ -46,7 +46,6 @@
           if (this.options.url != null) {
             return this.getResults(this.options.url, options.success);
           } else {
-            ajax.token = config.token;
             jqXHR = ajax.post({
               url: config.baseUrl + config.searchPath,
               data: JSON.stringify(this.options.queryOptions),

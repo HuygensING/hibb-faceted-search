@@ -27,6 +27,8 @@ define (require) ->
 		initialize: (attrs, @options) ->
 			super
 
+			# Property to keep track of the url which is used to POST for a new search.
+			# This URL is used for navigating within the result set.
 			@postURL = null
 
 		sync: (method, model, options) ->
@@ -36,7 +38,6 @@ define (require) ->
 				if @options.url?
 					@getResults @options.url, options.success
 				else
-					ajax.token = config.token
 					jqXHR = ajax.post
 						url: config.baseUrl + config.searchPath
 						data: JSON.stringify @options.queryOptions
