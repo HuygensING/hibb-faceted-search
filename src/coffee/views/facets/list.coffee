@@ -29,17 +29,6 @@ define (require) ->
 			'click li.all': 'selectAll'
 			'click li.none': 'deselectAll'
 			'keyup input[name="filter"]': (ev) -> @optionsView.filterOptions ev.currentTarget.value
-			# 'click h3': 'toggleBody'
-			# 'click header small': 'toggleOptions'
-
-
-		# toggleOptions: (ev) ->
-		# 	@$('header small').toggleClass('active')
-		# 	@$('header .options').slideToggle()
-		# 	@$('.options .listsearch').focus()
-
-		# toggleBody: (ev) ->
-		# 	$(ev.currentTarget).parents('.facet').find('.body').slideToggle()
 
 		selectAll: ->
 			checkboxes = @el.querySelectorAll('input[type="checkbox"]')

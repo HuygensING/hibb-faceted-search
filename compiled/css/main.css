@@ -1,7 +1,7 @@
 .faceted-search .facet header{margin-bottom:10px;}
 .faceted-search .facet header h3{padding:0;margin:0;display:inline;cursor:pointer}
-.faceted-search .facet header small{cursor:pointer;float:right;color:#888;margin-left:4%;-webkit-transform:rotate(90deg);-moz-transform:rotate(90deg);transform:rotate(90deg);-webkit-transition:-webkit-transform 500ms;-moz-transition:-moz-transform 500ms;transition:transform 500ms;}
-.faceted-search .facet header small.active{-webkit-transform:rotate(0);-moz-transform:rotate(0);transform:rotate(0)}
+.faceted-search .facet header svg{float:right;cursor:pointer;}
+.faceted-search .facet header svg.active rect.vertical{display:none}
 .faceted-search .facet header .options{display:none;background-color:#e5e5e5;padding:2%;margin-top:10px;box-shadow:1px 1px 4px #bdbdbd;border-radius:4px;}
 .faceted-search .facet header .options h4{margin-top:12px}
 .faceted-search .facet header .options small.optioncount{margin-left:8px}

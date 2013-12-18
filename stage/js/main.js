@@ -1469,7 +1469,7 @@ buf.push("</ul>");;return buf.join("");
 
 this["JST"]["faceted-search/facets/main"] = function anonymous(locals) {
 var buf = [];
-var locals_ = (locals || {}),name = locals_.name,title = locals_.title;buf.push("<div class=\"placeholder pad4\"><header><h3" + (jade.attrs({ 'data-name':(name) }, {"data-name":true})) + ">" + (jade.escape(null == (jade.interp = title) ? "" : jade.interp)) + "</h3><small>&#8711;</small><div class=\"options\"></div></header><div class=\"body\"></div></div>");;return buf.join("");
+var locals_ = (locals || {}),name = locals_.name,title = locals_.title;buf.push("<div class=\"placeholder pad4\"><header><h3" + (jade.attrs({ 'data-name':(name) }, {"data-name":true})) + ">" + (jade.escape(null == (jade.interp = title) ? "" : jade.interp)) + "</h3><svg version=\"1.1\" baseProfile=\"full\" width=\"12\" height=\"12\" viewBox=\"0 0 200 200\" xmlns=\"http://www.w3.org/2000/svg\"><circle cx=\"100\" cy=\"100\" r=\"90\" fill=\"#EEE\" stroke=\"#666\" stroke-width=\"10\"></circle><rect x=\"50\" y=\"90\" width=\"100\" height=\"20\" fill=\"#222\"></rect><rect x=\"90\" y=\"50\" width=\"20\" height=\"100\" fill=\"#222\" class=\"vertical\"></rect></svg><div class=\"options\"></div></header><div class=\"body\"></div></div>");;return buf.join("");
 };
 
 this["JST"]["faceted-search/facets/search.body"] = function anonymous(locals) {
@@ -1555,12 +1555,18 @@ return this["JST"];
       Facet.prototype.events = function() {
         return {
           'click h3': 'toggleBody',
-          'click header small': 'toggleOptions'
+          'click header svg': 'toggleOptions'
         };
       };
 
       Facet.prototype.toggleOptions = function(ev) {
-        this.$('header small').toggleClass('active');
+        var svg;
+        svg = this.el.querySelector('header svg');
+        if (svg.hasAttribute('class')) {
+          svg.removeAttribute('class');
+        } else {
+          svg.setAttribute('class', 'active');
+        }
         this.$('header .options').slideToggle();
         return this.$('header .options input[name="filter"]').focus();
       };
@@ -1642,7 +1648,7 @@ return this["JST"];
           ucfirst: StringFn.ucfirst
         }));
         this.$('.body').html(rtpl);
-        this.$('header small').hide();
+        this.$('header svg').hide();
         return this;
       };
 
@@ -2109,15 +2115,65 @@ return this["JST"];
 }).call(this);
 
 (function() {
-  define('hilib/managers/ajax',['require','jquery'],function(require) {
-    var $, defaultOptions;
+  define('hilib/managers/token',['require','backbone','underscore','hilib/managers/pubsub'],function(require) {
+    var Backbone, Pubsub, Token, _;
+    Backbone = require('backbone');
+    _ = require('underscore');
+    Pubsub = require('hilib/managers/pubsub');
+    Token = (function() {
+      Token.prototype.token = null;
+
+      function Token() {
+        _.extend(this, Backbone.Events);
+        _.extend(this, Pubsub);
+      }
+
+      Token.prototype.set = function(token, type) {
+        this.token = token;
+        if (type == null) {
+          type = 'SimpleAuth';
+        }
+        sessionStorage.setItem('huygens_token_type', type);
+        return sessionStorage.setItem('huygens_token', this.token);
+      };
+
+      Token.prototype.getType = function() {
+        return sessionStorage.getItem('huygens_token_type');
+      };
+
+      Token.prototype.get = function() {
+        if (this.token == null) {
+          this.token = sessionStorage.getItem('huygens_token');
+        }
+        if (this.token == null) {
+          return false;
+        }
+        return this.token;
+      };
+
+      Token.prototype.clear = function() {
+        sessionStorage.removeItem('huygens_token');
+        return sessionStorage.removeItem('huygens_token_type');
+      };
+
+      return Token;
+
+    })();
+    return new Token();
+  });
+
+}).call(this);
+
+(function() {
+  define('hilib/managers/ajax',['require','jquery','hilib/managers/token'],function(require) {
+    var $, defaultOptions, token;
     $ = require('jquery');
     $.support.cors = true;
+    token = require('hilib/managers/token');
     defaultOptions = {
       token: true
     };
     return {
-      token: null,
       get: function(args, options) {
         if (options == null) {
           options = {};
@@ -2166,55 +2222,14 @@ return this["JST"];
           processData: false,
           crossDomain: true
         };
-        if ((this.token != null) && options.token) {
+        if (options.token) {
           ajaxArgs.beforeSend = function(xhr) {
-            return xhr.setRequestHeader('Authorization', "SimpleAuth " + _this.token);
+            return xhr.setRequestHeader('Authorization', "" + (token.getType()) + " " + (token.get()));
           };
         }
         return $.ajax($.extend(ajaxArgs, args));
       }
     };
-  });
-
-}).call(this);
-
-(function() {
-  define('hilib/managers/token',['require','backbone','underscore','hilib/managers/pubsub'],function(require) {
-    var Backbone, Pubsub, Token, _;
-    Backbone = require('backbone');
-    _ = require('underscore');
-    Pubsub = require('hilib/managers/pubsub');
-    Token = (function() {
-      Token.prototype.token = null;
-
-      function Token() {
-        _.extend(this, Backbone.Events);
-        _.extend(this, Pubsub);
-      }
-
-      Token.prototype.set = function(token) {
-        this.token = token;
-        return sessionStorage.setItem('huygens_token', token);
-      };
-
-      Token.prototype.get = function() {
-        if (this.token == null) {
-          this.token = sessionStorage.getItem('huygens_token');
-        }
-        if (this.token == null) {
-          return false;
-        }
-        return this.token;
-      };
-
-      Token.prototype.clear = function() {
-        return sessionStorage.removeItem('huygens_token');
-      };
-
-      return Token;
-
-    })();
-    return new Token();
   });
 
 }).call(this);
@@ -2335,7 +2350,7 @@ return this["JST"];
       SearchResult.prototype.page = function(pagenumber, database) {
         var start, url,
           _this = this;
-        start = this.options.resultRows * pagenumber;
+        start = this.options.resultRows * (pagenumber - 1);
         url = this.postURL + ("?rows=" + this.options.resultRows + "&start=" + start);
         if (database != null) {
           url += "&database=" + database;

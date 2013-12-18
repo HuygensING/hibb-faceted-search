@@ -55,7 +55,7 @@
           ucfirst: StringFn.ucfirst
         }));
         this.$('.body').html(rtpl);
-        this.$('header small').hide();
+        this.$('header svg').hide();
         return this;
       };
 

@@ -15,10 +15,13 @@ define (require) ->
 
 		events: ->
 			'click h3': 'toggleBody'
-			'click header small': 'toggleOptions'
+			'click header svg': 'toggleOptions'
 
 		toggleOptions: (ev) ->
-			@$('header small').toggleClass('active')
+			# Use native, because jQuery toggleClass doesn't work on SVG
+			svg = @el.querySelector 'header svg'
+			if svg.hasAttribute('class') then svg.removeAttribute('class') else svg.setAttribute 'class', 'active'
+
 			@$('header .options').slideToggle()
 			@$('header .options input[name="filter"]').focus()
 

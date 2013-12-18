@@ -23,12 +23,18 @@
       Facet.prototype.events = function() {
         return {
           'click h3': 'toggleBody',
-          'click header small': 'toggleOptions'
+          'click header svg': 'toggleOptions'
         };
       };
 
       Facet.prototype.toggleOptions = function(ev) {
-        this.$('header small').toggleClass('active');
+        var svg;
+        svg = this.el.querySelector('header svg');
+        if (svg.hasAttribute('class')) {
+          svg.removeAttribute('class');
+        } else {
+          svg.setAttribute('class', 'active');
+        }
         this.$('header .options').slideToggle();
         return this.$('header .options input[name="filter"]').focus();
       };
