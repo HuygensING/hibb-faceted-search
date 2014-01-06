@@ -1,10 +1,8 @@
 .faceted-search .facet header{margin-bottom:10px;}
-.faceted-search .facet header h3{padding:0;margin:0;display:inline;cursor:pointer}
 .faceted-search .facet header svg{float:right;cursor:pointer;}
 .faceted-search .facet header svg.active rect.vertical{display:none}
-.faceted-search .facet header .options{display:none;background-color:#e5e5e5;padding:2%;margin-top:10px;box-shadow:1px 1px 4px #bdbdbd;border-radius:4px;}
-.faceted-search .facet header .options h4{margin-top:12px}
-.faceted-search .facet header .options small.optioncount{margin-left:8px}
+.faceted-search .facet header h3{padding:0;margin:0;display:inline;cursor:pointer}
+.faceted-search .facet header .options{display:none;background-color:#e5e5e5;padding:2%;box-shadow:1px 1px 4px #bdbdbd;border-radius:4px;margin-top:10px}
 .faceted-search .facet .body ul{max-height:200px;overflow:auto;list-style:none;}
 .faceted-search .facet .body ul li{white-space:nowrap;}
 .faceted-search .facet .body ul li [data-count="0"] label{color:#aaa}
@@ -15,9 +13,21 @@
 .faceted-search .facet .body ul li label{padding:0 4px}
 .faceted-search .facet .body ul li :checked + label{color:#000}
 
-.facet.list input[name="filter"].nonefound{color:#d10000}
-.facet.list nav ul{padding:0;margin:0;list-style:none;}
-.facet.list nav ul li{font-size:.8em;cursor:pointer;display:inline-block;margin-left:2px}
+.facet.list header .options{margin:10px -2%;}
+.facet.list header .options *{vertical-align:middle}
+.facet.list header .options input,.facet.list header .options small{display:inline-block}
+.facet.list header .options input[name="filter"]{width:120px;margin-left:4px;padding-left:4px;}
+.facet.list header .options input[name="filter"].nonefound{color:#d10000}
+.facet.list header .options small.optioncount{margin-left:8px}
+.facet.list header .options div.orderby{display:inline-block;float:right;cursor:pointer;}
+.facet.list header .options div.orderby span{display:inline-block;padding:2px;border:1px solid #bbb9b9;}
+.facet.list header .options div.orderby span.active{background:#fff}
+.facet.list header .options div.orderby span.name{border-top-left-radius:3px;border-bottom-left-radius:3px;border-right:0;}
+.facet.list header .options div.orderby span.name.active:after{content:'↑'}
+.facet.list header .options div.orderby span.name.active.opposite:after{content:'↓'}
+.facet.list header .options div.orderby span.count{border-top-right-radius:3px;border-bottom-right-radius:3px;}
+.facet.list header .options div.orderby span.count.active:after{content:'↓'}
+.facet.list header .options div.orderby span.count.active.opposite:after{content:'↑'}
 
 .faceted-search form .search-placeholder .facet.search h3{cursor:default}
 .faceted-search form .search-placeholder .facet.search button{background-color:#eee;color:#bbb;border:0;box-shadow:1px 1px 1px #ddd;border-radius:6px;margin-top:-1px;height:28px;width:100%;min-width:50px;}

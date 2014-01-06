@@ -1,16 +1,71 @@
 .facet.list
+	header
+		.options
+			margin 10px -2%
 
-	input[name="filter"].nonefound
-		color #D10000 // dark red
+			*
+				vertical-align middle
 
-	nav
-		ul
-			padding 0
-			margin 0
-			list-style none
-
-			li
-				font-size 0.8em
-				cursor pointer
+			input, small
 				display inline-block
-				margin-left 2px
+
+			input[name="filter"]
+				width 120px
+				margin-left 4px
+				padding-left 4px
+
+				&.nonefound
+					color #D10000
+
+			small.optioncount
+				margin-left 8px
+
+			div.orderby
+				display inline-block
+				float right
+				cursor pointer
+
+				span
+					display inline-block
+					padding 2px
+					border 1px solid rgb(187, 185, 185)
+					
+					&.active
+						background white
+					
+				span.name
+					border-top-left-radius 3px
+					border-bottom-left-radius 3px
+					border-right 0
+
+					&.active
+						&:after
+							content: '↑'
+
+						&.opposite:after
+							content: '↓'
+
+				span.count
+					border-top-right-radius 3px
+					border-bottom-right-radius 3px
+
+					&.active
+						&:after
+							content: '↓'
+
+						&.opposite:after
+							content: '↑'
+
+
+
+	// nav
+	// 	ul
+	// 		padding 0
+	// 		margin 0
+	// 		list-style none
+
+	// 		li
+	// 			font-size 0.8em
+	// 			cursor pointer
+	// 			display inline-block
+	// 			margin-left 2px

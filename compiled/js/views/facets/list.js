@@ -32,32 +32,37 @@
 
       ListFacet.prototype.events = function() {
         return _.extend({}, ListFacet.__super__.events.apply(this, arguments), {
-          'click li.all': 'selectAll',
-          'click li.none': 'deselectAll',
           'keyup input[name="filter"]': function(ev) {
             return this.optionsView.filterOptions(ev.currentTarget.value);
-          }
+          },
+          'change header .options input[type="checkbox"][name="all"]': 'selectAll',
+          'click .orderby span': 'changeOrder'
         });
       };
 
-      ListFacet.prototype.selectAll = function() {
-        var cb, checkboxes, _i, _len, _results;
-        checkboxes = this.el.querySelectorAll('input[type="checkbox"]');
-        _results = [];
-        for (_i = 0, _len = checkboxes.length; _i < _len; _i++) {
-          cb = checkboxes[_i];
-          _results.push(cb.checked = true);
+      ListFacet.prototype.changeOrder = function(ev) {
+        var $target, strategy;
+        $target = $(ev.currentTarget);
+        if ($target.hasClass('active')) {
+          $target.toggleClass('opposite');
+        } else {
+          this.$('.orderby span.active').removeClass('active opposite');
+          $target.addClass('active');
         }
-        return _results;
+        strategy = $target.hasClass('name') ? 'name' : 'count';
+        if ($target.hasClass('opposite')) {
+          strategy += '_opposite';
+        }
+        return this.collection.orderBy(strategy);
       };
 
-      ListFacet.prototype.deselectAll = function() {
+      ListFacet.prototype.selectAll = function(ev) {
         var cb, checkboxes, _i, _len, _results;
         checkboxes = this.el.querySelectorAll('input[type="checkbox"]');
         _results = [];
         for (_i = 0, _len = checkboxes.length; _i < _len; _i++) {
           cb = checkboxes[_i];
-          _results.push(cb.checked = false);
+          _results.push(cb.checked = ev.currentTarget.checked);
         }
         return _results;
       };
@@ -72,19 +77,19 @@
       };
 
       ListFacet.prototype.render = function() {
-        var body, menu, options,
+        var body, menu,
           _this = this;
         ListFacet.__super__.render.apply(this, arguments);
         menu = tpls['faceted-search/facets/list.menu'](this.model.attributes);
         body = tpls['faceted-search/facets/list.body'](this.model.attributes);
         this.el.querySelector('header .options').innerHTML = menu;
         this.el.querySelector('.body').innerHTML = body;
-        options = new Collections.Options(this.options.attrs.options, {
+        this.collection = new Collections.Options(this.options.attrs.options, {
           parse: true
         });
         this.optionsView = new Views.Options({
           el: this.el.querySelector('.body'),
-          collection: options,
+          collection: this.collection,
           facetName: this.model.get('name')
         });
         this.listenTo(this.optionsView, 'filter:finished', this.renderFilteredOptionCount);

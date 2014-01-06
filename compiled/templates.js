@@ -88,7 +88,7 @@ buf.push("<ul></ul>");;return buf.join("");
 
 this["JST"]["faceted-search/facets/list.menu"] = function anonymous(locals) {
 var buf = [];
-buf.push("<div class=\"row span4 align middle\"><div class=\"cell span2\"><input type=\"text\" name=\"filter\"/></div><div class=\"cell span1\"><small class=\"optioncount\"></small></div><div class=\"cell span1 alignright\"><nav><ul><li class=\"all\">All </li><li class=\"none\">None</li></ul></nav></div></div>");;return buf.join("");
+buf.push("<input type=\"checkbox\" name=\"all\"/><input type=\"text\" name=\"filter\"/><small class=\"optioncount\"></small><div class=\"orderby\"><span class=\"name\">A</span><span class=\"count active\">1</span></div>");;return buf.join("");
 };
 
 this["JST"]["faceted-search/facets/list.options"] = function anonymous(locals) {

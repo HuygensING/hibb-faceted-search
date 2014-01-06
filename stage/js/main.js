@@ -1434,7 +1434,7 @@ buf.push("<ul></ul>");;return buf.join("");
 
 this["JST"]["faceted-search/facets/list.menu"] = function anonymous(locals) {
 var buf = [];
-buf.push("<div class=\"row span4 align middle\"><div class=\"cell span2\"><input type=\"text\" name=\"filter\"/></div><div class=\"cell span1\"><small class=\"optioncount\"></small></div><div class=\"cell span1 alignright\"><nav><ul><li class=\"all\">All </li><li class=\"none\">None</li></ul></nav></div></div>");;return buf.join("");
+buf.push("<input type=\"checkbox\" name=\"all\"/><input type=\"text\" name=\"filter\"/><small class=\"optioncount\"></small><div class=\"orderby\"><span class=\"name\">A</span><span class=\"count active\">1</span></div>");;return buf.join("");
 };
 
 this["JST"]["faceted-search/facets/list.options"] = function anonymous(locals) {
@@ -1849,8 +1849,30 @@ return this["JST"];
 
       ListItems.prototype.model = Models.Option;
 
-      ListItems.prototype.comparator = function(model) {
-        return -1 * +model.get('count');
+      ListItems.prototype.strategies = {
+        name: function(model) {
+          return model.get('name');
+        },
+        name_opposite: function(model) {
+          return String.fromCharCode.apply(String, _.map(model.get('name').split(''), function(c) {
+            return 0xffff - c.charCodeAt();
+          }));
+        },
+        count: function(model) {
+          return -1 * +model.get('count');
+        },
+        count_opposite: function(model) {
+          return +model.get('count');
+        }
+      };
+
+      ListItems.prototype.orderBy = function(strategy) {
+        this.comparator = this.strategies[strategy];
+        return this.sort();
+      };
+
+      ListItems.prototype.initialize = function() {
+        return this.comparator = this.strategies.count;
       };
 
       ListItems.prototype.revert = function() {
@@ -2012,32 +2034,37 @@ return this["JST"];
 
       ListFacet.prototype.events = function() {
         return _.extend({}, ListFacet.__super__.events.apply(this, arguments), {
-          'click li.all': 'selectAll',
-          'click li.none': 'deselectAll',
           'keyup input[name="filter"]': function(ev) {
             return this.optionsView.filterOptions(ev.currentTarget.value);
-          }
+          },
+          'change header .options input[type="checkbox"][name="all"]': 'selectAll',
+          'click .orderby span': 'changeOrder'
         });
       };
 
-      ListFacet.prototype.selectAll = function() {
-        var cb, checkboxes, _i, _len, _results;
-        checkboxes = this.el.querySelectorAll('input[type="checkbox"]');
-        _results = [];
-        for (_i = 0, _len = checkboxes.length; _i < _len; _i++) {
-          cb = checkboxes[_i];
-          _results.push(cb.checked = true);
+      ListFacet.prototype.changeOrder = function(ev) {
+        var $target, strategy;
+        $target = $(ev.currentTarget);
+        if ($target.hasClass('active')) {
+          $target.toggleClass('opposite');
+        } else {
+          this.$('.orderby span.active').removeClass('active opposite');
+          $target.addClass('active');
         }
-        return _results;
+        strategy = $target.hasClass('name') ? 'name' : 'count';
+        if ($target.hasClass('opposite')) {
+          strategy += '_opposite';
+        }
+        return this.collection.orderBy(strategy);
       };
 
-      ListFacet.prototype.deselectAll = function() {
+      ListFacet.prototype.selectAll = function(ev) {
         var cb, checkboxes, _i, _len, _results;
         checkboxes = this.el.querySelectorAll('input[type="checkbox"]');
         _results = [];
         for (_i = 0, _len = checkboxes.length; _i < _len; _i++) {
           cb = checkboxes[_i];
-          _results.push(cb.checked = false);
+          _results.push(cb.checked = ev.currentTarget.checked);
         }
         return _results;
       };
@@ -2052,19 +2079,19 @@ return this["JST"];
       };
 
       ListFacet.prototype.render = function() {
-        var body, menu, options,
+        var body, menu,
           _this = this;
         ListFacet.__super__.render.apply(this, arguments);
         menu = tpls['faceted-search/facets/list.menu'](this.model.attributes);
         body = tpls['faceted-search/facets/list.body'](this.model.attributes);
         this.el.querySelector('header .options').innerHTML = menu;
         this.el.querySelector('.body').innerHTML = body;
-        options = new Collections.Options(this.options.attrs.options, {
+        this.collection = new Collections.Options(this.options.attrs.options, {
           parse: true
         });
         this.optionsView = new Views.Options({
           el: this.el.querySelector('.body'),
-          collection: options,
+          collection: this.collection,
           facetName: this.model.get('name')
         });
         this.listenTo(this.optionsView, 'filter:finished', this.renderFilteredOptionCount);

@@ -26,17 +26,29 @@ define (require) ->
 		className: 'facet list'
 
 		events: -> _.extend {}, super,
-			'click li.all': 'selectAll'
-			'click li.none': 'deselectAll'
 			'keyup input[name="filter"]': (ev) -> @optionsView.filterOptions ev.currentTarget.value
+			'change header .options input[type="checkbox"][name="all"]': 'selectAll'
+			'click .orderby span': 'changeOrder'
 
-		selectAll: ->
-			checkboxes = @el.querySelectorAll('input[type="checkbox"]')
-			cb.checked = true for cb in checkboxes
+		# We use the class opposite instead of ascending/descending, because the options are ascending and
+		# and the count is descending. With opposite we can use a generic name.
+		changeOrder: (ev) ->
+			$target = $(ev.currentTarget)
 
-		deselectAll: ->
+			if $target.hasClass 'active'
+				$target.toggleClass 'opposite'
+			else
+				@$('.orderby span.active').removeClass 'active opposite'
+				$target.addClass 'active'
+
+			strategy = if $target.hasClass 'name' then 'name' else 'count'
+			strategy += '_opposite'  if $target.hasClass 'opposite'
+
+			@collection.orderBy strategy
+
+		selectAll: (ev) ->
 			checkboxes = @el.querySelectorAll('input[type="checkbox"]')
-			cb.checked = false for cb in checkboxes
+			cb.checked = ev.currentTarget.checked for cb in checkboxes
 
 		initialize: (@options) ->
 			super
@@ -54,10 +66,10 @@ define (require) ->
 			@el.querySelector('header .options').innerHTML = menu
 			@el.querySelector('.body').innerHTML = body
 
-			options = new Collections.Options @options.attrs.options, parse: true
+			@collection = new Collections.Options @options.attrs.options, parse: true
 			@optionsView = new Views.Options
 				el: @el.querySelector('.body')
-				collection: options
+				collection: @collection
 				facetName: @model.get 'name'
 
 			@listenTo @optionsView, 'filter:finished', @renderFilteredOptionCount

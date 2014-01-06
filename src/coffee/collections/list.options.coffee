@@ -10,8 +10,23 @@ define (require) ->
 
 		model: Models.Option
 
-		comparator: (model) ->
-			-1 * +model.get('count')
+		strategies:
+			name: (model) -> model.get('name')
+			name_opposite: (model) -> 
+				# http://stackoverflow.com/questions/5636812/sorting-strings-in-reverse-order-with-backbone-js/5639070#5639070
+				String.fromCharCode.apply String, _.map model.get('name').split(''), (c) -> 0xffff - c.charCodeAt()
+			count: (model) -> -1 * +model.get('count')
+			count_opposite: (model) -> +model.get('count')
+		
+		orderBy: (strategy) ->
+			@comparator = @strategies[strategy]
+			@sort()
+
+		initialize: ->
+			# Set the default comparator
+			@comparator = @strategies.count
+
+		# comparator: do => @strategies.count_descending
 
 		# Alias for reset, because a collection already has a reset method.
 		revert: -> 
