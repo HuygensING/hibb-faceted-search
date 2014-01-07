@@ -22,7 +22,7 @@ define (require) ->
 			svg = @el.querySelector 'header svg'
 			if svg.hasAttribute('class') then svg.removeAttribute('class') else svg.setAttribute 'class', 'active'
 
-			@$('header .options').slideToggle()
+			@$('header .options').slideToggle(150)
 			@$('header .options input[name="filter"]').focus()
 
 		toggleBody: (ev) ->

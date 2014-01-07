@@ -24,10 +24,6 @@
         return _ref;
       }
 
-      ListFacet.prototype.checked = [];
-
-      ListFacet.prototype.filtered_items = [];
-
       ListFacet.prototype.className = 'facet list';
 
       ListFacet.prototype.events = function() {
@@ -88,10 +84,10 @@
           parse: true
         });
         this.optionsView = new Views.Options({
-          el: this.el.querySelector('.body'),
           collection: this.collection,
           facetName: this.model.get('name')
         });
+        this.$('.body').html(this.optionsView.el);
         this.listenTo(this.optionsView, 'filter:finished', this.renderFilteredOptionCount);
         this.listenTo(this.optionsView, 'change', function(data) {
           return _this.trigger('change', data);

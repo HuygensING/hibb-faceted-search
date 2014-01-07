@@ -3,7 +3,7 @@
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
   define(function(require) {
-    var Fn, ListOptions, Models, Views, tpls, _ref;
+    var Fn, ListFacetOptions, Models, Views, tpls, _ref;
     Fn = require('hilib/functions/general');
     Views = {
       Base: require('views/base')
@@ -12,23 +12,37 @@
       List: require('models/list')
     };
     tpls = require('tpls');
-    return ListOptions = (function(_super) {
-      __extends(ListOptions, _super);
+    return ListFacetOptions = (function(_super) {
+      __extends(ListFacetOptions, _super);
 
-      function ListOptions() {
-        _ref = ListOptions.__super__.constructor.apply(this, arguments);
+      function ListFacetOptions() {
+        _ref = ListFacetOptions.__super__.constructor.apply(this, arguments);
         return _ref;
       }
 
-      ListOptions.prototype.filtered_items = [];
+      ListFacetOptions.prototype.className = 'container';
 
-      ListOptions.prototype.events = function() {
+      ListFacetOptions.prototype.events = function() {
         return {
-          'change input[type="checkbox"]': 'checkChanged'
+          'change input[type="checkbox"]': 'checkChanged',
+          'scroll': 'onScroll'
         };
       };
 
-      ListOptions.prototype.checkChanged = function(ev) {
+      ListFacetOptions.prototype.onScroll = function(ev) {
+        var target, topPerc;
+        target = ev.currentTarget;
+        topPerc = target.scrollTop / target.scrollHeight;
+        if (topPerc > (this.showing / 2) / this.collection.length && this.showing < this.collection.length) {
+          this.showing += this.showingIncrement;
+          if (this.showing > this.collection.length) {
+            this.showing = this.collection.length;
+          }
+          return this.appendOptions();
+        }
+      };
+
+      ListFacetOptions.prototype.checkChanged = function(ev) {
         var id;
         id = ev.currentTarget.getAttribute('data-value');
         this.collection.get(id).set('checked', ev.currentTarget.checked);
@@ -42,21 +56,46 @@
         });
       };
 
-      ListOptions.prototype.initialize = function() {
-        ListOptions.__super__.initialize.apply(this, arguments);
-        this.listenTo(this.collection, 'sort', this.render);
-        this.listenTo(this.collection, 'change', this.render);
+      ListFacetOptions.prototype.initialize = function() {
+        var _this = this;
+        ListFacetOptions.__super__.initialize.apply(this, arguments);
+        this.showing = null;
+        this.showingIncrement = 50;
+        this.filtered_items = this.collection.models;
+        this.listenTo(this.collection, 'sort', function() {
+          _this.filtered_items = _this.collection.models;
+          return _this.render();
+        });
+        this.listenTo(this.collection, 'change', function() {
+          _this.filtered_items = _this.collection.models;
+          return _this.render();
+        });
         return this.render();
       };
 
-      ListOptions.prototype.render = function() {
-        var options, rtpl;
-        options = this.filtered_items.length > 0 ? this.filtered_items : this.collection.models;
-        rtpl = tpls['faceted-search/facets/list.options']({
-          options: options,
-          generateID: Fn.generateID
-        });
-        return this.$el.html(rtpl);
+      ListFacetOptions.prototype.render = function() {
+        var ul;
+        this.showing = 50;
+        ul = document.createElement('ul');
+        ul.style.height = (this.filtered_items.length * 15) + 'px';
+        this.el.innerHTML = '';
+        this.el.appendChild(ul);
+        this.appendOptions();
+        return this;
+      };
+
+      ListFacetOptions.prototype.appendOptions = function() {
+        var option, tpl, _i, _len, _ref1;
+        tpl = '';
+        _ref1 = this.filtered_items.slice(this.showing - this.showingIncrement, +this.showing + 1 || 9e9);
+        for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
+          option = _ref1[_i];
+          tpl += tpls['faceted-search/facets/list.option']({
+            option: option,
+            randomId: Fn.generateID()
+          });
+        }
+        return this.$('ul').append(tpl);
       };
 
       /*
@@ -64,17 +103,20 @@
       */
 
 
-      ListOptions.prototype.filterOptions = function(value) {
+      ListFacetOptions.prototype.filterOptions = function(value) {
         var re;
         re = new RegExp(value, 'i');
         this.filtered_items = this.collection.filter(function(item) {
           return re.test(item.id);
         });
+        if (this.filtered_items.length === 0) {
+          this.filtered_items = this.collection.models;
+        }
         this.trigger('filter:finished');
         return this.render();
       };
 
-      return ListOptions;
+      return ListFacetOptions;
 
     })(Views.Base);
   });

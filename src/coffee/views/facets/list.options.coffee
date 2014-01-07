@@ -13,12 +13,23 @@ define (require) ->
 	tpls = require 'tpls'
 	
 
-	class ListOptions extends Views.Base
+	class ListFacetOptions extends Views.Base
 
-		filtered_items: []
+		className: 'container'
 
 		events: ->
 			'change input[type="checkbox"]': 'checkChanged'
+			'scroll': 'onScroll'
+
+		onScroll: (ev) ->
+			target = ev.currentTarget
+			topPerc = target.scrollTop / target.scrollHeight
+
+			if topPerc > (@showing/2)/@collection.length && @showing < @collection.length
+				@showing += @showingIncrement
+				@showing = @collection.length if @showing > @collection.length
+				# console.log @showing
+				@appendOptions()
 
 		checkChanged: (ev) ->
 			id = ev.currentTarget.getAttribute 'data-value'
@@ -32,19 +43,42 @@ define (require) ->
 		initialize: ->
 			super
 
-			@listenTo @collection, 'sort', @render
-			@listenTo @collection, 'change', @render
+			@showing = null
+			@showingIncrement = 50
+			@filtered_items = @collection.models
+
+			@listenTo @collection, 'sort', =>
+				@filtered_items = @collection.models
+				@render()
+			@listenTo @collection, 'change', =>
+				@filtered_items = @collection.models
+				@render()
 
 			@render()
 
 		render: ->
-			options = if @filtered_items.length > 0 then @filtered_items else @collection.models
+			@showing = 50
 
-			rtpl = tpls['faceted-search/facets/list.options'] 
-				options: options
-				generateID: Fn.generateID
+			ul = document.createElement 'ul'
+			ul.style.height =  (@filtered_items.length * 15) + 'px'
 
-			@$el.html rtpl
+			@el.innerHTML = ''
+			@el.appendChild ul
+
+			@appendOptions()
+
+			@
+
+		appendOptions: ->
+			tpl = ''
+			for option in @filtered_items[@showing-@showingIncrement..@showing]
+				tpl += tpls['faceted-search/facets/list.option'] 
+					option: option
+					randomId: Fn.generateID()
+
+			@$('ul').append tpl
+
+
 		
 		###
 		Called by parent (ListFacet) when user types in the search input
@@ -52,6 +86,7 @@ define (require) ->
 		filterOptions: (value) ->
 			re = new RegExp value, 'i'
 			@filtered_items = @collection.filter (item) -> re.test item.id
+			@filtered_items = @collection.models if @filtered_items.length is 0
 
 			@trigger 'filter:finished'
 

@@ -91,6 +91,11 @@ var buf = [];
 buf.push("<input type=\"checkbox\" name=\"all\"/><input type=\"text\" name=\"filter\"/><small class=\"optioncount\"></small><div class=\"orderby\"><span class=\"name\">A</span><span class=\"count active\">1</span></div>");;return buf.join("");
 };
 
+this["JST"]["faceted-search/facets/list.option"] = function anonymous(locals) {
+var buf = [];
+var locals_ = (locals || {}),option = locals_.option,randomId = locals_.randomId;buf.push("<li" + (jade.attrs({ 'data-count':(option.get('count')) }, {"data-count":true})) + "><input" + (jade.attrs({ 'id':(randomId), 'name':(randomId), 'type':("checkbox"), 'data-value':(option.id), 'checked':(option.get('checked')?true:false) }, {"id":true,"name":true,"type":true,"data-value":true,"checked":true})) + "/><label" + (jade.attrs({ 'for':(randomId) }, {"for":true})) + ">" + (null == (jade.interp = option.id === ':empty' ? '<em>(empty)</em>' : option.id) ? "" : jade.interp) + "</label><div class=\"count\">" + (jade.escape(null == (jade.interp = option.get('count') === 0 ? option.get('total') : option.get('count')) ? "" : jade.interp)) + "</div></li>");;return buf.join("");
+};
+
 this["JST"]["faceted-search/facets/list.options"] = function anonymous(locals) {
 var buf = [];
 var locals_ = (locals || {}),options = locals_.options,generateID = locals_.generateID;buf.push("<ul>");
@@ -99,20 +104,26 @@ var locals_ = (locals || {}),options = locals_.options,generateID = locals_.gene
   var $$obj = options;
   if ('number' == typeof $$obj.length) {
 
-    for (var $index = 0, $$l = $$obj.length; $index < $$l; $index++) {
-      var option = $$obj[$index];
+    for (var index = 0, $$l = $$obj.length; index < $$l; index++) {
+      var option = $$obj[index];
 
 randomId = generateID();
-buf.push("<li><div" + (jade.attrs({ 'data-count':(option.get('count')), "class": [('row'),('span6')] }, {"data-count":true})) + "><div class=\"cell span5\"><input" + (jade.attrs({ 'id':(randomId), 'name':(randomId), 'type':("checkbox"), 'data-value':(option.id), 'checked':(option.get('checked')?true:false) }, {"id":true,"name":true,"type":true,"data-value":true,"checked":true})) + "/><label" + (jade.attrs({ 'for':(randomId) }, {"for":true})) + ">" + (null == (jade.interp = option.id === ':empty' ? '<i>(empty)</i>' : option.id) ? "" : jade.interp) + "</label></div><div class=\"cell span1 alignright\"><div class=\"count\">" + (jade.escape(null == (jade.interp = option.get('count') === 0 ? option.get('total') : option.get('count')) ? "" : jade.interp)) + "</div></div></div></li>");
+if ( index < 50)
+{
+buf.push("<li><div" + (jade.attrs({ 'data-count':(option.get('count')), "class": [('row'),('span6')] }, {"data-count":true})) + "><div class=\"cell span5\"><input" + (jade.attrs({ 'id':(randomId), 'name':(randomId), 'type':("checkbox"), 'data-value':(option.id), 'checked':(option.get('checked')?true:false) }, {"id":true,"name":true,"type":true,"data-value":true,"checked":true})) + "/><label" + (jade.attrs({ 'for':(randomId) }, {"for":true})) + ">" + (null == (jade.interp = option.id === ':empty' ? '<em>(empty)</em>' : option.id) ? "" : jade.interp) + "</label></div><div class=\"cell span1 alignright\"><div class=\"count\">" + (jade.escape(null == (jade.interp = option.get('count') === 0 ? option.get('total') : option.get('count')) ? "" : jade.interp)) + "</div></div></div></li>");
+}
     }
 
   } else {
     var $$l = 0;
-    for (var $index in $$obj) {
-      $$l++;      var option = $$obj[$index];
+    for (var index in $$obj) {
+      $$l++;      var option = $$obj[index];
 
 randomId = generateID();
-buf.push("<li><div" + (jade.attrs({ 'data-count':(option.get('count')), "class": [('row'),('span6')] }, {"data-count":true})) + "><div class=\"cell span5\"><input" + (jade.attrs({ 'id':(randomId), 'name':(randomId), 'type':("checkbox"), 'data-value':(option.id), 'checked':(option.get('checked')?true:false) }, {"id":true,"name":true,"type":true,"data-value":true,"checked":true})) + "/><label" + (jade.attrs({ 'for':(randomId) }, {"for":true})) + ">" + (null == (jade.interp = option.id === ':empty' ? '<i>(empty)</i>' : option.id) ? "" : jade.interp) + "</label></div><div class=\"cell span1 alignright\"><div class=\"count\">" + (jade.escape(null == (jade.interp = option.get('count') === 0 ? option.get('total') : option.get('count')) ? "" : jade.interp)) + "</div></div></div></li>");
+if ( index < 50)
+{
+buf.push("<li><div" + (jade.attrs({ 'data-count':(option.get('count')), "class": [('row'),('span6')] }, {"data-count":true})) + "><div class=\"cell span5\"><input" + (jade.attrs({ 'id':(randomId), 'name':(randomId), 'type':("checkbox"), 'data-value':(option.id), 'checked':(option.get('checked')?true:false) }, {"id":true,"name":true,"type":true,"data-value":true,"checked":true})) + "/><label" + (jade.attrs({ 'for':(randomId) }, {"for":true})) + ">" + (null == (jade.interp = option.id === ':empty' ? '<em>(empty)</em>' : option.id) ? "" : jade.interp) + "</label></div><div class=\"cell span1 alignright\"><div class=\"count\">" + (jade.escape(null == (jade.interp = option.get('count') === 0 ? option.get('total') : option.get('count')) ? "" : jade.interp)) + "</div></div></div></li>");
+}
     }
 
   }

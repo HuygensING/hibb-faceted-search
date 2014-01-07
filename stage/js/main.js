@@ -1437,6 +1437,11 @@ var buf = [];
 buf.push("<input type=\"checkbox\" name=\"all\"/><input type=\"text\" name=\"filter\"/><small class=\"optioncount\"></small><div class=\"orderby\"><span class=\"name\">A</span><span class=\"count active\">1</span></div>");;return buf.join("");
 };
 
+this["JST"]["faceted-search/facets/list.option"] = function anonymous(locals) {
+var buf = [];
+var locals_ = (locals || {}),option = locals_.option,randomId = locals_.randomId;buf.push("<li" + (jade.attrs({ 'data-count':(option.get('count')) }, {"data-count":true})) + "><input" + (jade.attrs({ 'id':(randomId), 'name':(randomId), 'type':("checkbox"), 'data-value':(option.id), 'checked':(option.get('checked')?true:false) }, {"id":true,"name":true,"type":true,"data-value":true,"checked":true})) + "/><label" + (jade.attrs({ 'for':(randomId) }, {"for":true})) + ">" + (null == (jade.interp = option.id === ':empty' ? '<em>(empty)</em>' : option.id) ? "" : jade.interp) + "</label><div class=\"count\">" + (jade.escape(null == (jade.interp = option.get('count') === 0 ? option.get('total') : option.get('count')) ? "" : jade.interp)) + "</div></li>");;return buf.join("");
+};
+
 this["JST"]["faceted-search/facets/list.options"] = function anonymous(locals) {
 var buf = [];
 var locals_ = (locals || {}),options = locals_.options,generateID = locals_.generateID;buf.push("<ul>");
@@ -1445,20 +1450,26 @@ var locals_ = (locals || {}),options = locals_.options,generateID = locals_.gene
   var $$obj = options;
   if ('number' == typeof $$obj.length) {
 
-    for (var $index = 0, $$l = $$obj.length; $index < $$l; $index++) {
-      var option = $$obj[$index];
+    for (var index = 0, $$l = $$obj.length; index < $$l; index++) {
+      var option = $$obj[index];
 
 randomId = generateID();
-buf.push("<li><div" + (jade.attrs({ 'data-count':(option.get('count')), "class": [('row'),('span6')] }, {"data-count":true})) + "><div class=\"cell span5\"><input" + (jade.attrs({ 'id':(randomId), 'name':(randomId), 'type':("checkbox"), 'data-value':(option.id), 'checked':(option.get('checked')?true:false) }, {"id":true,"name":true,"type":true,"data-value":true,"checked":true})) + "/><label" + (jade.attrs({ 'for':(randomId) }, {"for":true})) + ">" + (null == (jade.interp = option.id === ':empty' ? '<i>(empty)</i>' : option.id) ? "" : jade.interp) + "</label></div><div class=\"cell span1 alignright\"><div class=\"count\">" + (jade.escape(null == (jade.interp = option.get('count') === 0 ? option.get('total') : option.get('count')) ? "" : jade.interp)) + "</div></div></div></li>");
+if ( index < 50)
+{
+buf.push("<li><div" + (jade.attrs({ 'data-count':(option.get('count')), "class": [('row'),('span6')] }, {"data-count":true})) + "><div class=\"cell span5\"><input" + (jade.attrs({ 'id':(randomId), 'name':(randomId), 'type':("checkbox"), 'data-value':(option.id), 'checked':(option.get('checked')?true:false) }, {"id":true,"name":true,"type":true,"data-value":true,"checked":true})) + "/><label" + (jade.attrs({ 'for':(randomId) }, {"for":true})) + ">" + (null == (jade.interp = option.id === ':empty' ? '<em>(empty)</em>' : option.id) ? "" : jade.interp) + "</label></div><div class=\"cell span1 alignright\"><div class=\"count\">" + (jade.escape(null == (jade.interp = option.get('count') === 0 ? option.get('total') : option.get('count')) ? "" : jade.interp)) + "</div></div></div></li>");
+}
     }
 
   } else {
     var $$l = 0;
-    for (var $index in $$obj) {
-      $$l++;      var option = $$obj[$index];
+    for (var index in $$obj) {
+      $$l++;      var option = $$obj[index];
 
 randomId = generateID();
-buf.push("<li><div" + (jade.attrs({ 'data-count':(option.get('count')), "class": [('row'),('span6')] }, {"data-count":true})) + "><div class=\"cell span5\"><input" + (jade.attrs({ 'id':(randomId), 'name':(randomId), 'type':("checkbox"), 'data-value':(option.id), 'checked':(option.get('checked')?true:false) }, {"id":true,"name":true,"type":true,"data-value":true,"checked":true})) + "/><label" + (jade.attrs({ 'for':(randomId) }, {"for":true})) + ">" + (null == (jade.interp = option.id === ':empty' ? '<i>(empty)</i>' : option.id) ? "" : jade.interp) + "</label></div><div class=\"cell span1 alignright\"><div class=\"count\">" + (jade.escape(null == (jade.interp = option.get('count') === 0 ? option.get('total') : option.get('count')) ? "" : jade.interp)) + "</div></div></div></li>");
+if ( index < 50)
+{
+buf.push("<li><div" + (jade.attrs({ 'data-count':(option.get('count')), "class": [('row'),('span6')] }, {"data-count":true})) + "><div class=\"cell span5\"><input" + (jade.attrs({ 'id':(randomId), 'name':(randomId), 'type':("checkbox"), 'data-value':(option.id), 'checked':(option.get('checked')?true:false) }, {"id":true,"name":true,"type":true,"data-value":true,"checked":true})) + "/><label" + (jade.attrs({ 'for':(randomId) }, {"for":true})) + ">" + (null == (jade.interp = option.id === ':empty' ? '<em>(empty)</em>' : option.id) ? "" : jade.interp) + "</label></div><div class=\"cell span1 alignright\"><div class=\"count\">" + (jade.escape(null == (jade.interp = option.get('count') === 0 ? option.get('total') : option.get('count')) ? "" : jade.interp)) + "</div></div></div></li>");
+}
     }
 
   }
@@ -1567,7 +1578,7 @@ return this["JST"];
         } else {
           svg.setAttribute('class', 'active');
         }
-        this.$('header .options').slideToggle();
+        this.$('header .options').slideToggle(150);
         return this.$('header .options input[name="filter"]').focus();
       };
 
@@ -1922,7 +1933,7 @@ return this["JST"];
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
   define('views/facets/list.options',['require','hilib/functions/general','views/base','models/list','tpls'],function(require) {
-    var Fn, ListOptions, Models, Views, tpls, _ref;
+    var Fn, ListFacetOptions, Models, Views, tpls, _ref;
     Fn = require('hilib/functions/general');
     Views = {
       Base: require('views/base')
@@ -1931,23 +1942,37 @@ return this["JST"];
       List: require('models/list')
     };
     tpls = require('tpls');
-    return ListOptions = (function(_super) {
-      __extends(ListOptions, _super);
+    return ListFacetOptions = (function(_super) {
+      __extends(ListFacetOptions, _super);
 
-      function ListOptions() {
-        _ref = ListOptions.__super__.constructor.apply(this, arguments);
+      function ListFacetOptions() {
+        _ref = ListFacetOptions.__super__.constructor.apply(this, arguments);
         return _ref;
       }
 
-      ListOptions.prototype.filtered_items = [];
+      ListFacetOptions.prototype.className = 'container';
 
-      ListOptions.prototype.events = function() {
+      ListFacetOptions.prototype.events = function() {
         return {
-          'change input[type="checkbox"]': 'checkChanged'
+          'change input[type="checkbox"]': 'checkChanged',
+          'scroll': 'onScroll'
         };
       };
 
-      ListOptions.prototype.checkChanged = function(ev) {
+      ListFacetOptions.prototype.onScroll = function(ev) {
+        var target, topPerc;
+        target = ev.currentTarget;
+        topPerc = target.scrollTop / target.scrollHeight;
+        if (topPerc > (this.showing / 2) / this.collection.length && this.showing < this.collection.length) {
+          this.showing += this.showingIncrement;
+          if (this.showing > this.collection.length) {
+            this.showing = this.collection.length;
+          }
+          return this.appendOptions();
+        }
+      };
+
+      ListFacetOptions.prototype.checkChanged = function(ev) {
         var id;
         id = ev.currentTarget.getAttribute('data-value');
         this.collection.get(id).set('checked', ev.currentTarget.checked);
@@ -1961,21 +1986,46 @@ return this["JST"];
         });
       };
 
-      ListOptions.prototype.initialize = function() {
-        ListOptions.__super__.initialize.apply(this, arguments);
-        this.listenTo(this.collection, 'sort', this.render);
-        this.listenTo(this.collection, 'change', this.render);
+      ListFacetOptions.prototype.initialize = function() {
+        var _this = this;
+        ListFacetOptions.__super__.initialize.apply(this, arguments);
+        this.showing = null;
+        this.showingIncrement = 50;
+        this.filtered_items = this.collection.models;
+        this.listenTo(this.collection, 'sort', function() {
+          _this.filtered_items = _this.collection.models;
+          return _this.render();
+        });
+        this.listenTo(this.collection, 'change', function() {
+          _this.filtered_items = _this.collection.models;
+          return _this.render();
+        });
         return this.render();
       };
 
-      ListOptions.prototype.render = function() {
-        var options, rtpl;
-        options = this.filtered_items.length > 0 ? this.filtered_items : this.collection.models;
-        rtpl = tpls['faceted-search/facets/list.options']({
-          options: options,
-          generateID: Fn.generateID
-        });
-        return this.$el.html(rtpl);
+      ListFacetOptions.prototype.render = function() {
+        var ul;
+        this.showing = 50;
+        ul = document.createElement('ul');
+        ul.style.height = (this.filtered_items.length * 15) + 'px';
+        this.el.innerHTML = '';
+        this.el.appendChild(ul);
+        this.appendOptions();
+        return this;
+      };
+
+      ListFacetOptions.prototype.appendOptions = function() {
+        var option, tpl, _i, _len, _ref1;
+        tpl = '';
+        _ref1 = this.filtered_items.slice(this.showing - this.showingIncrement, +this.showing + 1 || 9e9);
+        for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
+          option = _ref1[_i];
+          tpl += tpls['faceted-search/facets/list.option']({
+            option: option,
+            randomId: Fn.generateID()
+          });
+        }
+        return this.$('ul').append(tpl);
       };
 
       /*
@@ -1983,17 +2033,20 @@ return this["JST"];
       */
 
 
-      ListOptions.prototype.filterOptions = function(value) {
+      ListFacetOptions.prototype.filterOptions = function(value) {
         var re;
         re = new RegExp(value, 'i');
         this.filtered_items = this.collection.filter(function(item) {
           return re.test(item.id);
         });
+        if (this.filtered_items.length === 0) {
+          this.filtered_items = this.collection.models;
+        }
         this.trigger('filter:finished');
         return this.render();
       };
 
-      return ListOptions;
+      return ListFacetOptions;
 
     })(Views.Base);
   });
@@ -2025,10 +2078,6 @@ return this["JST"];
         _ref = ListFacet.__super__.constructor.apply(this, arguments);
         return _ref;
       }
-
-      ListFacet.prototype.checked = [];
-
-      ListFacet.prototype.filtered_items = [];
 
       ListFacet.prototype.className = 'facet list';
 
@@ -2090,10 +2139,10 @@ return this["JST"];
           parse: true
         });
         this.optionsView = new Views.Options({
-          el: this.el.querySelector('.body'),
           collection: this.collection,
           facetName: this.model.get('name')
         });
+        this.$('.body').html(this.optionsView.el);
         this.listenTo(this.optionsView, 'filter:finished', this.renderFilteredOptionCount);
         this.listenTo(this.optionsView, 'change', function(data) {
           return _this.trigger('change', data);

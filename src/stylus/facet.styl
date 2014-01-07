@@ -27,15 +27,20 @@
 				margin-top 10px
 
 		.body
+			max-height 200px
+						
 			ul
-				max-height 200px
-				overflow auto
 				list-style none
 
 				li
 					white-space nowrap
+					position relative
+					min-height 15px
 
-					[data-count="0"]
+					*
+						vertical-align top
+
+					&[data-count="0"]
 						label
 							color lighten(#555, 50%)
 						.count
@@ -44,16 +49,25 @@
 					label, .count
 						color #555
 
+					label
+						margin-left 4px
+						margin-right 48px
+					
+					.count
+						width 30px
+						// margin-right 2px
+						text-align right
+						position absolute
+						right 2px
+						top 0
+
 					input[type="checkbox"], label
 						white-space normal
-						margin 0
+						// margin 0
 						display inline-block
 
 					input[type="checkbox"]
 						margin-top 2px
-
-					label
-						padding 0 4px
 
 					:checked + label
 						color #000

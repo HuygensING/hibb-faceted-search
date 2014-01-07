@@ -3,14 +3,17 @@
 .faceted-search .facet header svg.active rect.vertical{display:none}
 .faceted-search .facet header h3{padding:0;margin:0;display:inline;cursor:pointer}
 .faceted-search .facet header .options{display:none;background-color:#e5e5e5;padding:2%;box-shadow:1px 1px 4px #bdbdbd;border-radius:4px;margin-top:10px}
-.faceted-search .facet .body ul{max-height:200px;overflow:auto;list-style:none;}
-.faceted-search .facet .body ul li{white-space:nowrap;}
-.faceted-search .facet .body ul li [data-count="0"] label{color:#aaa}
-.faceted-search .facet .body ul li [data-count="0"] .count{color:#ddd}
+.faceted-search .facet .body{max-height:200px;}
+.faceted-search .facet .body ul{list-style:none;}
+.faceted-search .facet .body ul li{white-space:nowrap;position:relative;min-height:15px;}
+.faceted-search .facet .body ul li *{vertical-align:top}
+.faceted-search .facet .body ul li[data-count="0"] label{color:#aaa}
+.faceted-search .facet .body ul li[data-count="0"] .count{color:#ddd}
 .faceted-search .facet .body ul li label,.faceted-search .facet .body ul li .count{color:#555}
-.faceted-search .facet .body ul li input[type="checkbox"],.faceted-search .facet .body ul li label{white-space:normal;margin:0;display:inline-block}
+.faceted-search .facet .body ul li label{margin-left:4px;margin-right:48px}
+.faceted-search .facet .body ul li .count{width:30px;text-align:right;position:absolute;right:2px;top:0}
+.faceted-search .facet .body ul li input[type="checkbox"],.faceted-search .facet .body ul li label{white-space:normal;display:inline-block}
 .faceted-search .facet .body ul li input[type="checkbox"]{margin-top:2px}
-.faceted-search .facet .body ul li label{padding:0 4px}
 .faceted-search .facet .body ul li :checked + label{color:#000}
 
 .facet.list header .options{margin:10px -2%;}
@@ -28,6 +31,7 @@
 .facet.list header .options div.orderby span.count{border-top-right-radius:3px;border-bottom-right-radius:3px;}
 .facet.list header .options div.orderby span.count.active:after{content:'↓'}
 .facet.list header .options div.orderby span.count.active.opposite:after{content:'↑'}
+.facet.list .body .container{max-height:inherit;overflow-y:auto;overflow-x:hidden}
 
 .faceted-search form .search-placeholder .facet.search h3{cursor:default}
 .faceted-search form .search-placeholder .facet.search button{background-color:#eee;color:#bbb;border:0;box-shadow:1px 1px 1px #ddd;border-radius:6px;margin-top:-1px;height:28px;width:100%;min-width:50px;}

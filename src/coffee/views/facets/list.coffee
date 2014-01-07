@@ -19,9 +19,9 @@ define (require) ->
 
 	class ListFacet extends Views.Facet
 
-		checked: []
+		# checked: []
 
-		filtered_items: []
+		# filtered_items: []
 
 		className: 'facet list'
 
@@ -68,9 +68,10 @@ define (require) ->
 
 			@collection = new Collections.Options @options.attrs.options, parse: true
 			@optionsView = new Views.Options
-				el: @el.querySelector('.body')
 				collection: @collection
 				facetName: @model.get 'name'
+
+			@$('.body').html @optionsView.el
 
 			@listenTo @optionsView, 'filter:finished', @renderFilteredOptionCount
 			# Pass through the change event

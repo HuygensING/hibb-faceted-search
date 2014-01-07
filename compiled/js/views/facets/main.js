@@ -35,7 +35,7 @@
         } else {
           svg.setAttribute('class', 'active');
         }
-        this.$('header .options').slideToggle();
+        this.$('header .options').slideToggle(150);
         return this.$('header .options input[name="filter"]').focus();
       };
 
