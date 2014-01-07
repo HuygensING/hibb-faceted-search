@@ -60,8 +60,10 @@ define (require) ->
 			'keyup input': 'activateSearchButton'
 			'change input[type="checkbox"]': 'checkboxChanged'
 
-		checkboxChanged: (ev) -> 
+		checkboxChanged: (ev) ->
 			if attr = ev.currentTarget.getAttribute('data-attr')
+				if attr is 'searchInTranscriptions'
+					@$('ul.textlayers').toggle ev.currentTarget.checked
 				@model.set attr, ev.currentTarget.checked
 			else if attr = ev.currentTarget.getAttribute('data-attr-array')
 				checkedArray = []

@@ -60,6 +60,9 @@
       Search.prototype.checkboxChanged = function(ev) {
         var attr, cb, checkedArray, _i, _len, _ref1;
         if (attr = ev.currentTarget.getAttribute('data-attr')) {
+          if (attr === 'searchInTranscriptions') {
+            this.$('ul.textlayers').toggle(ev.currentTarget.checked);
+          }
           this.model.set(attr, ev.currentTarget.checked);
         } else if (attr = ev.currentTarget.getAttribute('data-attr-array')) {
           checkedArray = [];

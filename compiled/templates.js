@@ -144,23 +144,16 @@ buf.push("<div class=\"row span4 align middle\"><div class=\"cell span3\"><div c
 
 this["JST"]["faceted-search/facets/search.menu"] = function anonymous(locals) {
 var buf = [];
-var locals_ = (locals || {}),model = locals_.model;buf.push("<div class=\"row span1 align middle\"><div class=\"cell span1 casesensitive\"><input id=\"cb_casesensitive\" type=\"checkbox\" name=\"cb_casesensitive\" data-attr=\"caseSensitive\"/><label for=\"cb_casesensitive\">Match case</label></div><div class=\"cell span1 fuzzy\"><input id=\"cb_fuzzy\" type=\"checkbox\" name=\"cb_fuzzy\" data-attr=\"fuzzy\"/><label for=\"cb_fuzzy\">Fuzzy</label></div></div>");
+var locals_ = (locals || {}),model = locals_.model;buf.push("<div class=\"row span2 align middle\"><div class=\"cell span1 casesensitive\"><input id=\"cb_casesensitive\" type=\"checkbox\" name=\"cb_casesensitive\" data-attr=\"caseSensitive\"/><label for=\"cb_casesensitive\">Match case</label></div><div class=\"cell span1 fuzzy\"><input id=\"cb_fuzzy\" type=\"checkbox\" name=\"cb_fuzzy\" data-attr=\"fuzzy\"/><label for=\"cb_fuzzy\">Fuzzy</label></div></div>");
 if ( model.has('searchInAnnotations') || model.has('searchInTranscriptions'))
 {
-buf.push("<div class=\"row span1\"><div class=\"cell span1\"><h4>Search</h4><ul class=\"searchins\">");
+buf.push("<h4>Search</h4><ul class=\"searchins\">");
 if ( model.has('searchInTranscriptions'))
 {
-buf.push("<li class=\"searchin\"><input" + (jade.attrs({ 'id':("cb_searchin_transcriptions"), 'type':("checkbox"), 'data-attr':("searchInTranscriptions"), 'checked':(model.get('searchInTranscriptions')) }, {"id":true,"type":true,"data-attr":true,"checked":true})) + "/><label for=\"cb_searchin_transcriptions\">Transcriptions</label></li>");
-}
-if ( model.has('searchInAnnotations'))
-{
-buf.push("<li class=\"searchin\"><input" + (jade.attrs({ 'id':("cb_searchin_annotations"), 'type':("checkbox"), 'data-attr':("searchInAnnotations"), 'checked':(model.get('searchInAnnotations')) }, {"id":true,"type":true,"data-attr":true,"checked":true})) + "/><label for=\"cb_searchin_annotations\">Annotations</label></li>");
-}
-buf.push("</ul></div></div>");
-}
+buf.push("<li class=\"searchin\"><input" + (jade.attrs({ 'id':("cb_searchin_transcriptions"), 'type':("checkbox"), 'data-attr':("searchInTranscriptions"), 'checked':(model.get('searchInTranscriptions')) }, {"id":true,"type":true,"data-attr":true,"checked":true})) + "/><label for=\"cb_searchin_transcriptions\">Transcriptions</label>");
 if ( model.has('textLayers'))
 {
-buf.push("<div class=\"row span1\"><div class=\"cell span1\"><h4>Text layers</h4><ul class=\"textlayers\">");
+buf.push("<ul class=\"textlayers\">");
 // iterate model.get('textLayers')
 ;(function(){
   var $$obj = model.get('textLayers');
@@ -183,7 +176,15 @@ buf.push("<li class=\"textlayer\"><input" + (jade.attrs({ 'id':('cb_textlayer'+t
   }
 }).call(this);
 
-buf.push("</ul></div></div>");
+buf.push("</ul>");
+}
+buf.push("</li>");
+}
+if ( model.has('searchInAnnotations'))
+{
+buf.push("<li class=\"searchin\"><input" + (jade.attrs({ 'id':("cb_searchin_annotations"), 'type':("checkbox"), 'data-attr':("searchInAnnotations"), 'checked':(model.get('searchInAnnotations')) }, {"id":true,"type":true,"data-attr":true,"checked":true})) + "/><label for=\"cb_searchin_annotations\">Annotations</label></li>");
+}
+buf.push("</ul>");
 };return buf.join("");
 };
 

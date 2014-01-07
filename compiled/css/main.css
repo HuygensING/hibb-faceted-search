@@ -36,6 +36,10 @@
 .facet.list header .options div.orderby span.count.active.opposite:after{content:'↑'}
 .facet.list .body .container{max-height:inherit;overflow-y:auto;overflow-x:hidden}
 
+.faceted-search form .search-placeholder .facet.search header .options h4{margin-top:4px}
+.faceted-search form .search-placeholder .facet.search header .options ul.textlayers{display:none}
+.faceted-search form .search-placeholder .facet.search header .options ul li ul{margin:2px 0 8px 14px;}
+.faceted-search form .search-placeholder .facet.search header .options ul li ul li{margin-bottom:0}
 .faceted-search form .search-placeholder .facet.search h3{cursor:default}
 .faceted-search form .search-placeholder .facet.search button{background-color:#eee;color:#bbb;border:0;box-shadow:1px 1px 1px #ddd;border-radius:6px;margin-top:-1px;height:28px;width:100%;min-width:50px;}
 .faceted-search form .search-placeholder .facet.search button.active{background:#ddd;background:-moz-linear-gradient(top,#ddd 0%,#f1f1f1 100%);background:-webkit-gradient(linear,left top,left bottom,color-stop(0%,#ddd),color-stop(100%,#f1f1f1));background:-webkit-linear-gradient(top,#ddd 0%,#f1f1f1 100%);background:-o-linear-gradient(top,#ddd 0%,#f1f1f1 100%);background:-ms-linear-gradient(top,#ddd 0%,#f1f1f1 100%);background:linear-gradient(to bottom,#ddd 0%,#f1f1f1 100%);filter:unquot('progid:DXImageTransform.Microsoft.gradient(startColorstr="topColor", endColorstr="bottomColor",GradientType=0 )');color:#666;cursor:pointer;box-shadow:1px 1px 1px #bdbdbd;}
