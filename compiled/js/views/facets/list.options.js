@@ -24,7 +24,8 @@
 
       ListFacetOptions.prototype.events = function() {
         return {
-          'change input[type="checkbox"]': 'checkChanged',
+          'click i': 'checkChanged',
+          'click label': 'checkChanged',
           'scroll': 'onScroll'
         };
       };
@@ -43,17 +44,30 @@
       };
 
       ListFacetOptions.prototype.checkChanged = function(ev) {
-        var id;
-        id = ev.currentTarget.getAttribute('data-value');
-        this.collection.get(id).set('checked', ev.currentTarget.checked);
-        return this.trigger('change', {
-          facetValue: {
-            name: this.options.facetName,
-            values: _.map(this.$('input:checked'), function(input) {
-              return input.getAttribute('data-value');
-            })
-          }
-        });
+        var $target, id, triggerChange,
+          _this = this;
+        $target = ev.currentTarget.tagName === 'LABEL' ? this.$('i[data-value="' + ev.currentTarget.getAttribute('data-value') + '"]') : $(ev.currentTarget);
+        $target.toggleClass('fa-square-o');
+        $target.toggleClass('fa-check-square-o');
+        id = $target.attr('data-value');
+        this.collection.get(id).set('checked', $target.hasClass('fa-check-square-o'));
+        triggerChange = function() {
+          return _this.trigger('change', {
+            facetValue: {
+              name: _this.options.facetName,
+              values: _.map(_this.$('i.fa-check-square-o'), function(cb) {
+                return cb.getAttribute('data-value');
+              })
+            }
+          });
+        };
+        if (this.$('i.fa-check-square-o').length === 0) {
+          return triggerChange();
+        } else {
+          return Fn.timeoutWithReset(1000, function() {
+            return triggerChange();
+          });
+        }
       };
 
       ListFacetOptions.prototype.initialize = function() {
@@ -63,10 +77,6 @@
         this.showingIncrement = 50;
         this.filtered_items = this.collection.models;
         this.listenTo(this.collection, 'sort', function() {
-          _this.filtered_items = _this.collection.models;
-          return _this.render();
-        });
-        this.listenTo(this.collection, 'change', function() {
           _this.filtered_items = _this.collection.models;
           return _this.render();
         });
@@ -91,8 +101,7 @@
         for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
           option = _ref1[_i];
           tpl += tpls['faceted-search/facets/list.option']({
-            option: option,
-            randomId: Fn.generateID()
+            option: option
           });
         }
         return this.$('ul').append(tpl);

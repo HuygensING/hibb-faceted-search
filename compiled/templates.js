@@ -4,7 +4,7 @@ this["JST"] = this["JST"] || {};
 
 this["JST"]["faceted-search/facets/boolean.body"] = function anonymous(locals) {
 var buf = [];
-var locals_ = (locals || {}),options = locals_.options,name = locals_.name,ucfirst = locals_.ucfirst;buf.push("<ul>");
+var locals_ = (locals || {}),options = locals_.options,ucfirst = locals_.ucfirst;buf.push("<ul>");
 // iterate options
 ;(function(){
   var $$obj = options;
@@ -13,7 +13,7 @@ var locals_ = (locals || {}),options = locals_.options,name = locals_.name,ucfir
     for (var $index = 0, $$l = $$obj.length; $index < $$l; $index++) {
       var option = $$obj[$index];
 
-buf.push("<li><div class=\"row span6\"><div class=\"cell span5\"><input" + (jade.attrs({ 'id':(name+'_'+option.name), 'name':(name+'_'+option.name), 'type':("checkbox"), 'data-value':(option.name) }, {"id":true,"name":true,"type":true,"data-value":true})) + "/><label" + (jade.attrs({ 'for':(name+'_'+option.name) }, {"for":true})) + ">" + (jade.escape(null == (jade.interp = ucfirst(option.name)) ? "" : jade.interp)) + "</label></div><div class=\"cell span1 alignright\"><div class=\"count\">" + (jade.escape(null == (jade.interp = option.count) ? "" : jade.interp)) + "</div></div></div></li>");
+buf.push("<li><div class=\"row span6\"><div class=\"cell span5\"><i" + (jade.attrs({ 'data-value':(option.name), "class": [(option.checked?'fa fa-check-square-o':'fa fa-square-o')] }, {"data-value":true,"class":true})) + "></i><label" + (jade.attrs({ 'data-value':(option.name) }, {"data-value":true})) + ">" + (jade.escape(null == (jade.interp = ucfirst(option.name)) ? "" : jade.interp)) + "</label></div><div class=\"cell span1 alignright\"><div class=\"count\">" + (jade.escape(null == (jade.interp = option.count) ? "" : jade.interp)) + "</div></div></div></li>");
     }
 
   } else {
@@ -21,7 +21,7 @@ buf.push("<li><div class=\"row span6\"><div class=\"cell span5\"><input" + (jade
     for (var $index in $$obj) {
       $$l++;      var option = $$obj[$index];
 
-buf.push("<li><div class=\"row span6\"><div class=\"cell span5\"><input" + (jade.attrs({ 'id':(name+'_'+option.name), 'name':(name+'_'+option.name), 'type':("checkbox"), 'data-value':(option.name) }, {"id":true,"name":true,"type":true,"data-value":true})) + "/><label" + (jade.attrs({ 'for':(name+'_'+option.name) }, {"for":true})) + ">" + (jade.escape(null == (jade.interp = ucfirst(option.name)) ? "" : jade.interp)) + "</label></div><div class=\"cell span1 alignright\"><div class=\"count\">" + (jade.escape(null == (jade.interp = option.count) ? "" : jade.interp)) + "</div></div></div></li>");
+buf.push("<li><div class=\"row span6\"><div class=\"cell span5\"><i" + (jade.attrs({ 'data-value':(option.name), "class": [(option.checked?'fa fa-check-square-o':'fa fa-square-o')] }, {"data-value":true,"class":true})) + "></i><label" + (jade.attrs({ 'data-value':(option.name) }, {"data-value":true})) + ">" + (jade.escape(null == (jade.interp = ucfirst(option.name)) ? "" : jade.interp)) + "</label></div><div class=\"cell span1 alignright\"><div class=\"count\">" + (jade.escape(null == (jade.interp = option.count) ? "" : jade.interp)) + "</div></div></div></li>");
     }
 
   }
@@ -93,7 +93,7 @@ buf.push("<input type=\"checkbox\" name=\"all\"/><input type=\"text\" name=\"fil
 
 this["JST"]["faceted-search/facets/list.option"] = function anonymous(locals) {
 var buf = [];
-var locals_ = (locals || {}),option = locals_.option,randomId = locals_.randomId;buf.push("<li" + (jade.attrs({ 'data-count':(option.get('count')) }, {"data-count":true})) + "><input" + (jade.attrs({ 'id':(randomId), 'name':(randomId), 'type':("checkbox"), 'data-value':(option.id), 'checked':(option.get('checked')?true:false) }, {"id":true,"name":true,"type":true,"data-value":true,"checked":true})) + "/><label" + (jade.attrs({ 'for':(randomId) }, {"for":true})) + ">" + (null == (jade.interp = option.id === ':empty' ? '<em>(empty)</em>' : option.id) ? "" : jade.interp) + "</label><div class=\"count\">" + (jade.escape(null == (jade.interp = option.get('count') === 0 ? option.get('total') : option.get('count')) ? "" : jade.interp)) + "</div></li>");;return buf.join("");
+var locals_ = (locals || {}),option = locals_.option;buf.push("<li" + (jade.attrs({ 'data-count':(option.get('count')) }, {"data-count":true})) + "><i" + (jade.attrs({ 'data-value':(option.id), "class": [(option.get('checked')?'fa fa-check-square-o':'fa fa-square-o')] }, {"data-value":true,"class":true})) + "></i><label" + (jade.attrs({ 'data-value':(option.id) }, {"data-value":true})) + ">" + (null == (jade.interp = option.id === ':empty' ? '<em>(empty)</em>' : option.id) ? "" : jade.interp) + "</label><div class=\"count\">" + (jade.escape(null == (jade.interp = option.get('count') === 0 ? option.get('total') : option.get('count')) ? "" : jade.interp)) + "</div></li>");;return buf.join("");
 };
 
 this["JST"]["faceted-search/facets/list.options"] = function anonymous(locals) {

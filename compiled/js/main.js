@@ -148,6 +148,12 @@
         return this.model.searchResults.current.has('_prev');
       };
 
+      FacetedSearch.prototype.sortResultsBy = function(field) {
+        return this.model.set({
+          sort: field
+        });
+      };
+
       FacetedSearch.prototype.update = function() {
         var data, index, _ref1, _results;
         if (this.facetViews.hasOwnProperty('textSearch')) {

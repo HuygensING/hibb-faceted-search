@@ -1093,6 +1093,8 @@ define("../lib/almond/almond", function(){});
       };
 
       BooleanFacet.prototype.parseOptions = function(options) {
+        var _ref1;
+        options = (_ref1 = this.get('options')) != null ? _ref1 : options;
         if (options.length === 1) {
           options.push({
             name: (!JSON.parse(options[0].name)).toString(),
@@ -1350,7 +1352,7 @@ this["JST"] = this["JST"] || {};
 
 this["JST"]["faceted-search/facets/boolean.body"] = function anonymous(locals) {
 var buf = [];
-var locals_ = (locals || {}),options = locals_.options,name = locals_.name,ucfirst = locals_.ucfirst;buf.push("<ul>");
+var locals_ = (locals || {}),options = locals_.options,ucfirst = locals_.ucfirst;buf.push("<ul>");
 // iterate options
 ;(function(){
   var $$obj = options;
@@ -1359,7 +1361,7 @@ var locals_ = (locals || {}),options = locals_.options,name = locals_.name,ucfir
     for (var $index = 0, $$l = $$obj.length; $index < $$l; $index++) {
       var option = $$obj[$index];
 
-buf.push("<li><div class=\"row span6\"><div class=\"cell span5\"><input" + (jade.attrs({ 'id':(name+'_'+option.name), 'name':(name+'_'+option.name), 'type':("checkbox"), 'data-value':(option.name) }, {"id":true,"name":true,"type":true,"data-value":true})) + "/><label" + (jade.attrs({ 'for':(name+'_'+option.name) }, {"for":true})) + ">" + (jade.escape(null == (jade.interp = ucfirst(option.name)) ? "" : jade.interp)) + "</label></div><div class=\"cell span1 alignright\"><div class=\"count\">" + (jade.escape(null == (jade.interp = option.count) ? "" : jade.interp)) + "</div></div></div></li>");
+buf.push("<li><div class=\"row span6\"><div class=\"cell span5\"><i" + (jade.attrs({ 'data-value':(option.name), "class": [(option.checked?'fa fa-check-square-o':'fa fa-square-o')] }, {"data-value":true,"class":true})) + "></i><label" + (jade.attrs({ 'data-value':(option.name) }, {"data-value":true})) + ">" + (jade.escape(null == (jade.interp = ucfirst(option.name)) ? "" : jade.interp)) + "</label></div><div class=\"cell span1 alignright\"><div class=\"count\">" + (jade.escape(null == (jade.interp = option.count) ? "" : jade.interp)) + "</div></div></div></li>");
     }
 
   } else {
@@ -1367,7 +1369,7 @@ buf.push("<li><div class=\"row span6\"><div class=\"cell span5\"><input" + (jade
     for (var $index in $$obj) {
       $$l++;      var option = $$obj[$index];
 
-buf.push("<li><div class=\"row span6\"><div class=\"cell span5\"><input" + (jade.attrs({ 'id':(name+'_'+option.name), 'name':(name+'_'+option.name), 'type':("checkbox"), 'data-value':(option.name) }, {"id":true,"name":true,"type":true,"data-value":true})) + "/><label" + (jade.attrs({ 'for':(name+'_'+option.name) }, {"for":true})) + ">" + (jade.escape(null == (jade.interp = ucfirst(option.name)) ? "" : jade.interp)) + "</label></div><div class=\"cell span1 alignright\"><div class=\"count\">" + (jade.escape(null == (jade.interp = option.count) ? "" : jade.interp)) + "</div></div></div></li>");
+buf.push("<li><div class=\"row span6\"><div class=\"cell span5\"><i" + (jade.attrs({ 'data-value':(option.name), "class": [(option.checked?'fa fa-check-square-o':'fa fa-square-o')] }, {"data-value":true,"class":true})) + "></i><label" + (jade.attrs({ 'data-value':(option.name) }, {"data-value":true})) + ">" + (jade.escape(null == (jade.interp = ucfirst(option.name)) ? "" : jade.interp)) + "</label></div><div class=\"cell span1 alignright\"><div class=\"count\">" + (jade.escape(null == (jade.interp = option.count) ? "" : jade.interp)) + "</div></div></div></li>");
     }
 
   }
@@ -1439,7 +1441,7 @@ buf.push("<input type=\"checkbox\" name=\"all\"/><input type=\"text\" name=\"fil
 
 this["JST"]["faceted-search/facets/list.option"] = function anonymous(locals) {
 var buf = [];
-var locals_ = (locals || {}),option = locals_.option,randomId = locals_.randomId;buf.push("<li" + (jade.attrs({ 'data-count':(option.get('count')) }, {"data-count":true})) + "><input" + (jade.attrs({ 'id':(randomId), 'name':(randomId), 'type':("checkbox"), 'data-value':(option.id), 'checked':(option.get('checked')?true:false) }, {"id":true,"name":true,"type":true,"data-value":true,"checked":true})) + "/><label" + (jade.attrs({ 'for':(randomId) }, {"for":true})) + ">" + (null == (jade.interp = option.id === ':empty' ? '<em>(empty)</em>' : option.id) ? "" : jade.interp) + "</label><div class=\"count\">" + (jade.escape(null == (jade.interp = option.get('count') === 0 ? option.get('total') : option.get('count')) ? "" : jade.interp)) + "</div></li>");;return buf.join("");
+var locals_ = (locals || {}),option = locals_.option;buf.push("<li" + (jade.attrs({ 'data-count':(option.get('count')) }, {"data-count":true})) + "><i" + (jade.attrs({ 'data-value':(option.id), "class": [(option.get('checked')?'fa fa-check-square-o':'fa fa-square-o')] }, {"data-value":true,"class":true})) + "></i><label" + (jade.attrs({ 'data-value':(option.id) }, {"data-value":true})) + ">" + (null == (jade.interp = option.id === ':empty' ? '<em>(empty)</em>' : option.id) ? "" : jade.interp) + "</label><div class=\"count\">" + (jade.escape(null == (jade.interp = option.get('count') === 0 ? option.get('total') : option.get('count')) ? "" : jade.interp)) + "</div></li>");;return buf.join("");
 };
 
 this["JST"]["faceted-search/facets/list.options"] = function anonymous(locals) {
@@ -1628,16 +1630,29 @@ return this["JST"];
 
       BooleanFacet.prototype.events = function() {
         return _.extend({}, BooleanFacet.__super__.events.apply(this, arguments), {
-          'change input[type="checkbox"]': 'checkChanged'
+          'click i': 'checkChanged',
+          'click label': 'checkChanged'
         });
       };
 
       BooleanFacet.prototype.checkChanged = function(ev) {
+        var $target, option, value, _i, _len, _ref1;
+        $target = ev.currentTarget.tagName === 'LABEL' ? this.$('i[data-value="' + ev.currentTarget.getAttribute('data-value') + '"]') : $(ev.currentTarget);
+        $target.toggleClass('fa-square-o');
+        $target.toggleClass('fa-check-square-o');
+        value = $target.attr('data-value');
+        _ref1 = this.model.get('options');
+        for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
+          option = _ref1[_i];
+          if (option.name === value) {
+            option.checked = $target.hasClass('fa-check-square-o');
+          }
+        }
         return this.trigger('change', {
           facetValue: {
             name: this.model.get('name'),
-            values: _.map(this.$('input:checked'), function(input) {
-              return input.getAttribute('data-value');
+            values: _.map(this.$('i.fa-check-square-o'), function(cb) {
+              return cb.getAttribute('data-value');
             })
           }
         });
@@ -1954,7 +1969,8 @@ return this["JST"];
 
       ListFacetOptions.prototype.events = function() {
         return {
-          'change input[type="checkbox"]': 'checkChanged',
+          'click i': 'checkChanged',
+          'click label': 'checkChanged',
           'scroll': 'onScroll'
         };
       };
@@ -1973,17 +1989,30 @@ return this["JST"];
       };
 
       ListFacetOptions.prototype.checkChanged = function(ev) {
-        var id;
-        id = ev.currentTarget.getAttribute('data-value');
-        this.collection.get(id).set('checked', ev.currentTarget.checked);
-        return this.trigger('change', {
-          facetValue: {
-            name: this.options.facetName,
-            values: _.map(this.$('input:checked'), function(input) {
-              return input.getAttribute('data-value');
-            })
-          }
-        });
+        var $target, id, triggerChange,
+          _this = this;
+        $target = ev.currentTarget.tagName === 'LABEL' ? this.$('i[data-value="' + ev.currentTarget.getAttribute('data-value') + '"]') : $(ev.currentTarget);
+        $target.toggleClass('fa-square-o');
+        $target.toggleClass('fa-check-square-o');
+        id = $target.attr('data-value');
+        this.collection.get(id).set('checked', $target.hasClass('fa-check-square-o'));
+        triggerChange = function() {
+          return _this.trigger('change', {
+            facetValue: {
+              name: _this.options.facetName,
+              values: _.map(_this.$('i.fa-check-square-o'), function(cb) {
+                return cb.getAttribute('data-value');
+              })
+            }
+          });
+        };
+        if (this.$('i.fa-check-square-o').length === 0) {
+          return triggerChange();
+        } else {
+          return Fn.timeoutWithReset(1000, function() {
+            return triggerChange();
+          });
+        }
       };
 
       ListFacetOptions.prototype.initialize = function() {
@@ -1993,10 +2022,6 @@ return this["JST"];
         this.showingIncrement = 50;
         this.filtered_items = this.collection.models;
         this.listenTo(this.collection, 'sort', function() {
-          _this.filtered_items = _this.collection.models;
-          return _this.render();
-        });
-        this.listenTo(this.collection, 'change', function() {
           _this.filtered_items = _this.collection.models;
           return _this.render();
         });
@@ -2021,8 +2046,7 @@ return this["JST"];
         for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
           option = _ref1[_i];
           tpl += tpls['faceted-search/facets/list.option']({
-            option: option,
-            randomId: Fn.generateID()
+            option: option
           });
         }
         return this.$('ul').append(tpl);
@@ -2547,7 +2571,8 @@ return this["JST"];
 
       FacetedSearch.prototype.defaults = function() {
         return {
-          facetValues: []
+          facetValues: [],
+          sort: null
         };
       };
 
@@ -2904,6 +2929,12 @@ return this["JST"];
 
       FacetedSearch.prototype.hasPrev = function() {
         return this.model.searchResults.current.has('_prev');
+      };
+
+      FacetedSearch.prototype.sortResultsBy = function(field) {
+        return this.model.set({
+          sort: field
+        });
       };
 
       FacetedSearch.prototype.update = function() {

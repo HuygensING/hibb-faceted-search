@@ -24,16 +24,29 @@
 
       BooleanFacet.prototype.events = function() {
         return _.extend({}, BooleanFacet.__super__.events.apply(this, arguments), {
-          'change input[type="checkbox"]': 'checkChanged'
+          'click i': 'checkChanged',
+          'click label': 'checkChanged'
         });
       };
 
       BooleanFacet.prototype.checkChanged = function(ev) {
+        var $target, option, value, _i, _len, _ref1;
+        $target = ev.currentTarget.tagName === 'LABEL' ? this.$('i[data-value="' + ev.currentTarget.getAttribute('data-value') + '"]') : $(ev.currentTarget);
+        $target.toggleClass('fa-square-o');
+        $target.toggleClass('fa-check-square-o');
+        value = $target.attr('data-value');
+        _ref1 = this.model.get('options');
+        for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
+          option = _ref1[_i];
+          if (option.name === value) {
+            option.checked = $target.hasClass('fa-check-square-o');
+          }
+        }
         return this.trigger('change', {
           facetValue: {
             name: this.model.get('name'),
-            values: _.map(this.$('input:checked'), function(input) {
-              return input.getAttribute('data-value');
+            values: _.map(this.$('i.fa-check-square-o'), function(cb) {
+              return cb.getAttribute('data-value');
             })
           }
         });

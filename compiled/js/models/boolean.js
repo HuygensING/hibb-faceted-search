@@ -25,6 +25,8 @@
       };
 
       BooleanFacet.prototype.parseOptions = function(options) {
+        var _ref1;
+        options = (_ref1 = this.get('options')) != null ? _ref1 : options;
         if (options.length === 1) {
           options.push({
             name: (!JSON.parse(options[0].name)).toString(),

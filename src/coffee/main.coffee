@@ -148,7 +148,8 @@ define (require) ->
 		hasNext: -> @model.searchResults.current.has '_next'
 		hasPrev: -> @model.searchResults.current.has '_prev'
 
-		# sortResultsBy: (facet) -> @model.set sort: facet
+		# TODO: Restore change:sort listener
+		sortResultsBy: (field) -> @model.set sort: field
 
 		update: ->
 			@facetViews.textSearch.update() if @facetViews.hasOwnProperty 'textSearch'

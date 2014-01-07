@@ -18,7 +18,8 @@ define (require) ->
 		className: 'container'
 
 		events: ->
-			'change input[type="checkbox"]': 'checkChanged'
+			'click i': 'checkChanged'
+			'click label': 'checkChanged'
 			'scroll': 'onScroll'
 
 		onScroll: (ev) ->
@@ -32,13 +33,22 @@ define (require) ->
 				@appendOptions()
 
 		checkChanged: (ev) ->
-			id = ev.currentTarget.getAttribute 'data-value'
-			@collection.get(id).set 'checked', ev.currentTarget.checked
+			$target = if ev.currentTarget.tagName is 'LABEL' then @$ 'i[data-value="'+ev.currentTarget.getAttribute('data-value')+'"]' else $ ev.currentTarget
 
-			@trigger 'change',
-				facetValue:
-					name: @options.facetName
-					values: _.map @$('input:checked'), (input) -> input.getAttribute 'data-value'
+			$target.toggleClass 'fa-square-o'
+			$target.toggleClass 'fa-check-square-o'
+
+			id = $target.attr 'data-value'
+			@collection.get(id).set 'checked', $target.hasClass 'fa-check-square-o'
+
+			triggerChange = =>
+				@trigger 'change',
+					facetValue:
+						name: @options.facetName
+						values: _.map @$('i.fa-check-square-o'), (cb) -> cb.getAttribute 'data-value'
+			
+			if @$('i.fa-check-square-o').length is 0 then triggerChange() else Fn.timeoutWithReset 1000, => triggerChange()
+
 
 		initialize: ->
 			super
@@ -50,9 +60,10 @@ define (require) ->
 			@listenTo @collection, 'sort', =>
 				@filtered_items = @collection.models
 				@render()
-			@listenTo @collection, 'change', =>
-				@filtered_items = @collection.models
-				@render()
+			# @listenTo @collection, 'change', =>
+				# console.log 'change'
+				# @filtered_items = @collection.models
+				# @render()
 
 			@render()
 
@@ -74,7 +85,7 @@ define (require) ->
 			for option in @filtered_items[@showing-@showingIncrement..@showing]
 				tpl += tpls['faceted-search/facets/list.option'] 
 					option: option
-					randomId: Fn.generateID()
+					# randomId: Fn.generateID()
 
 			@$('ul').append tpl
 
