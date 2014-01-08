@@ -1,6 +1,6 @@
 .faceted-search .facet header{margin-bottom:10px;}
-.faceted-search .facet header svg{float:right;cursor:pointer;}
-.faceted-search .facet header svg.active rect.vertical{display:none}
+.faceted-search .facet header i{float:right;cursor:pointer;font-size:1.2em;color:#aaa;}
+.faceted-search .facet header i:hover{color:#555}
 .faceted-search .facet header h3{padding:0;margin:0;display:inline;cursor:pointer}
 .faceted-search .facet header .options{display:none;background-color:#e5e5e5;padding:2%;box-shadow:1px 1px 4px #bdbdbd;border-radius:4px;margin-top:10px}
 .faceted-search .facet.list ul,.faceted-search .facet.boolean ul{list-style:none;}
@@ -11,8 +11,9 @@
 .faceted-search .facet.list ul li label,.faceted-search .facet.boolean ul li label,.faceted-search .facet.list ul li .count,.faceted-search .facet.boolean ul li .count{color:#555}
 .faceted-search .facet.list ul li label,.faceted-search .facet.boolean ul li label{margin-left:4px;margin-right:48px}
 .faceted-search .facet.list ul li .count,.faceted-search .facet.boolean ul li .count{width:30px;text-align:right;position:absolute;right:2px;top:0}
-.faceted-search .facet.list ul li i,.faceted-search .facet.boolean ul li i{font-size:1.2em;}
-.faceted-search .facet.list ul li i.fa-square-o,.faceted-search .facet.boolean ul li i.fa-square-o{color:#aaa}
+.faceted-search .facet.list ul li i,.faceted-search .facet.boolean ul li i{font-size:1.2em;cursor:pointer;}
+.faceted-search .facet.list ul li i.fa-square-o,.faceted-search .facet.boolean ul li i.fa-square-o{color:#aaa;}
+.faceted-search .facet.list ul li i.fa-square-o:hover,.faceted-search .facet.boolean ul li i.fa-square-o:hover{color:#555}
 .faceted-search .facet.list ul li i.fa-check-square-o,.faceted-search .facet.boolean ul li i.fa-check-square-o{color:#555}
 .faceted-search .facet.list ul li input[type="checkbox"],.faceted-search .facet.boolean ul li input[type="checkbox"],.faceted-search .facet.list ul li label,.faceted-search .facet.boolean ul li label{white-space:normal;display:inline-block}
 .faceted-search .facet.list ul li input[type="checkbox"],.faceted-search .facet.boolean ul li input[type="checkbox"]{margin-top:2px}

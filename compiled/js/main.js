@@ -135,10 +135,12 @@
       };
 
       FacetedSearch.prototype.toggleFacets = function(ev) {
-        var facetNames, index, slideFacet,
+        var $button, facetNames, index, open, slideFacet,
           _this = this;
-        $(ev.currentTarget).toggleClass('fa-compress');
-        $(ev.currentTarget).toggleClass('fa-expand');
+        $button = $(ev.currentTarget);
+        open = $button.hasClass('fa-expand');
+        $button.toggleClass('fa-compress');
+        $button.toggleClass('fa-expand');
         facetNames = _.keys(this.facetViews);
         index = 0;
         slideFacet = function() {
@@ -149,9 +151,15 @@
             if (facetName === 'textSearch') {
               return slideFacet();
             } else {
-              return facet.toggleBody(function() {
-                return slideFacet();
-              });
+              if (open) {
+                return facet.showBody(function() {
+                  return slideFacet();
+                });
+              } else {
+                return facet.hideBody(function() {
+                  return slideFacet();
+                });
+              }
             }
           }
         };

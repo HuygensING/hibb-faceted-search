@@ -908,7 +908,6 @@ define("../lib/almond/almond", function(){});
       baseUrl: '',
       searchPath: '',
       search: true,
-      facetMenu: true,
       token: null,
       queryOptions: {},
       facetNameMap: {}
@@ -1485,7 +1484,7 @@ buf.push("</ul>");;return buf.join("");
 
 this["JST"]["faceted-search/facets/main"] = function anonymous(locals) {
 var buf = [];
-var locals_ = (locals || {}),name = locals_.name,title = locals_.title;buf.push("<div class=\"placeholder pad4\"><header><h3" + (jade.attrs({ 'data-name':(name) }, {"data-name":true})) + ">" + (jade.escape(null == (jade.interp = title) ? "" : jade.interp)) + "</h3><svg version=\"1.1\" baseProfile=\"full\" width=\"12\" height=\"12\" viewBox=\"0 0 200 200\" xmlns=\"http://www.w3.org/2000/svg\"><circle cx=\"100\" cy=\"100\" r=\"90\" fill=\"#EEE\" stroke=\"#666\" stroke-width=\"10\"></circle><rect x=\"50\" y=\"90\" width=\"100\" height=\"20\" fill=\"#222\"></rect><rect x=\"90\" y=\"50\" width=\"20\" height=\"100\" fill=\"#222\" class=\"vertical\"></rect></svg><div class=\"options\"></div></header><div class=\"body\"></div></div>");;return buf.join("");
+var locals_ = (locals || {}),name = locals_.name,title = locals_.title;buf.push("<div class=\"placeholder pad4\"><header><h3" + (jade.attrs({ 'data-name':(name) }, {"data-name":true})) + ">" + (jade.escape(null == (jade.interp = title) ? "" : jade.interp)) + "</h3><i class=\"fa fa-plus-square-o\"></i><div class=\"options\"></div></header><div class=\"body\"></div></div>");;return buf.join("");
 };
 
 this["JST"]["faceted-search/facets/search.body"] = function anonymous(locals) {
@@ -1569,44 +1568,66 @@ return this["JST"];
         return Facet.__super__.initialize.apply(this, arguments);
       };
 
-      Facet.prototype.events = function() {
-        return {
-          'click h3': 'toggleBody',
-          'click header svg': 'toggleOptions'
-        };
-      };
-
-      Facet.prototype.toggleOptions = function(ev) {
-        var svg;
-        svg = this.el.querySelector('header svg');
-        if (svg.hasAttribute('class')) {
-          svg.removeAttribute('class');
-        } else {
-          svg.setAttribute('class', 'active');
-        }
-        this.$('header .options').slideToggle(150);
-        return this.$('header .options input[name="filter"]').focus();
-      };
-
-      Facet.prototype.toggleBody = function(ev) {
-        var done,
-          _this = this;
-        if (_.isFunction(ev)) {
-          done = ev;
-        }
-        return this.$('.body').slideToggle(100, function() {
-          if (done != null) {
-            done();
-          }
-          return _this.$('header svg').fadeToggle(100);
-        });
-      };
-
       Facet.prototype.render = function() {
         var rtpl;
         rtpl = tpls['faceted-search/facets/main'](this.model.attributes);
         this.$el.html(rtpl);
         return this;
+      };
+
+      Facet.prototype.events = function() {
+        return {
+          'click h3': 'toggleBody',
+          'click header i.fa': 'toggleMenu'
+        };
+      };
+
+      Facet.prototype.toggleMenu = function(ev) {
+        var $button;
+        $button = $(ev.currentTarget);
+        $button.toggleClass('fa-plus-square-o');
+        $button.toggleClass('fa-minus-square-o');
+        this.$('header .options').slideToggle(150);
+        return this.$('header .options input[name="filter"]').focus();
+      };
+
+      Facet.prototype.hideMenu = function() {
+        var $button;
+        $button = $('header i.fa');
+        $button.addClass('fa-plus-square-o');
+        $button.removeClass('fa-minus-square-o');
+        return this.$('header .options').slideUp(150);
+      };
+
+      Facet.prototype.toggleBody = function(ev) {
+        var func;
+        func = this.$('.body').is(':visible') ? this.hideBody : this.showBody;
+        if (_.isFunction(ev)) {
+          return func.call(this, ev);
+        } else {
+          return func.call(this);
+        }
+      };
+
+      Facet.prototype.hideBody = function(done) {
+        var _this = this;
+        this.hideMenu();
+        return this.$('.body').slideUp(100, function() {
+          if (done != null) {
+            done();
+          }
+          return _this.$('header i.fa').fadeOut(100);
+        });
+      };
+
+      Facet.prototype.showBody = function(done) {
+        var _this = this;
+        return this.$('.body').slideDown(100, function() {
+          if (done != null) {
+            done();
+          }
+          return _this.$('header i.fa').fadeIn(100);
+        });
       };
 
       Facet.prototype.update = function(newOptions) {};
@@ -1688,7 +1709,7 @@ return this["JST"];
           ucfirst: StringFn.ucfirst
         }));
         this.$('.body').html(rtpl);
-        this.$('header svg').remove();
+        this.$('header i.fa').remove();
         return this;
       };
 
@@ -2938,10 +2959,12 @@ return this["JST"];
       };
 
       FacetedSearch.prototype.toggleFacets = function(ev) {
-        var facetNames, index, slideFacet,
+        var $button, facetNames, index, open, slideFacet,
           _this = this;
-        $(ev.currentTarget).toggleClass('fa-compress');
-        $(ev.currentTarget).toggleClass('fa-expand');
+        $button = $(ev.currentTarget);
+        open = $button.hasClass('fa-expand');
+        $button.toggleClass('fa-compress');
+        $button.toggleClass('fa-expand');
         facetNames = _.keys(this.facetViews);
         index = 0;
         slideFacet = function() {
@@ -2952,9 +2975,15 @@ return this["JST"];
             if (facetName === 'textSearch') {
               return slideFacet();
             } else {
-              return facet.toggleBody(function() {
-                return slideFacet();
-              });
+              if (open) {
+                return facet.showBody(function() {
+                  return slideFacet();
+                });
+              } else {
+                return facet.hideBody(function() {
+                  return slideFacet();
+                });
+              }
             }
           }
         };

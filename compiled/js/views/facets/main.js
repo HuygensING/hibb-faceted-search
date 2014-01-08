@@ -20,44 +20,66 @@
         return Facet.__super__.initialize.apply(this, arguments);
       };
 
-      Facet.prototype.events = function() {
-        return {
-          'click h3': 'toggleBody',
-          'click header svg': 'toggleOptions'
-        };
-      };
-
-      Facet.prototype.toggleOptions = function(ev) {
-        var svg;
-        svg = this.el.querySelector('header svg');
-        if (svg.hasAttribute('class')) {
-          svg.removeAttribute('class');
-        } else {
-          svg.setAttribute('class', 'active');
-        }
-        this.$('header .options').slideToggle(150);
-        return this.$('header .options input[name="filter"]').focus();
-      };
-
-      Facet.prototype.toggleBody = function(ev) {
-        var done,
-          _this = this;
-        if (_.isFunction(ev)) {
-          done = ev;
-        }
-        return this.$('.body').slideToggle(100, function() {
-          if (done != null) {
-            done();
-          }
-          return _this.$('header svg').fadeToggle(100);
-        });
-      };
-
       Facet.prototype.render = function() {
         var rtpl;
         rtpl = tpls['faceted-search/facets/main'](this.model.attributes);
         this.$el.html(rtpl);
         return this;
+      };
+
+      Facet.prototype.events = function() {
+        return {
+          'click h3': 'toggleBody',
+          'click header i.fa': 'toggleMenu'
+        };
+      };
+
+      Facet.prototype.toggleMenu = function(ev) {
+        var $button;
+        $button = $(ev.currentTarget);
+        $button.toggleClass('fa-plus-square-o');
+        $button.toggleClass('fa-minus-square-o');
+        this.$('header .options').slideToggle(150);
+        return this.$('header .options input[name="filter"]').focus();
+      };
+
+      Facet.prototype.hideMenu = function() {
+        var $button;
+        $button = $('header i.fa');
+        $button.addClass('fa-plus-square-o');
+        $button.removeClass('fa-minus-square-o');
+        return this.$('header .options').slideUp(150);
+      };
+
+      Facet.prototype.toggleBody = function(ev) {
+        var func;
+        func = this.$('.body').is(':visible') ? this.hideBody : this.showBody;
+        if (_.isFunction(ev)) {
+          return func.call(this, ev);
+        } else {
+          return func.call(this);
+        }
+      };
+
+      Facet.prototype.hideBody = function(done) {
+        var _this = this;
+        this.hideMenu();
+        return this.$('.body').slideUp(100, function() {
+          if (done != null) {
+            done();
+          }
+          return _this.$('header i.fa').fadeOut(100);
+        });
+      };
+
+      Facet.prototype.showBody = function(done) {
+        var _this = this;
+        return this.$('.body').slideDown(100, function() {
+          if (done != null) {
+            done();
+          }
+          return _this.$('header i.fa').fadeIn(100);
+        });
       };
 
       Facet.prototype.update = function(newOptions) {};

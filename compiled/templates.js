@@ -134,7 +134,7 @@ buf.push("</ul>");;return buf.join("");
 
 this["JST"]["faceted-search/facets/main"] = function anonymous(locals) {
 var buf = [];
-var locals_ = (locals || {}),name = locals_.name,title = locals_.title;buf.push("<div class=\"placeholder pad4\"><header><h3" + (jade.attrs({ 'data-name':(name) }, {"data-name":true})) + ">" + (jade.escape(null == (jade.interp = title) ? "" : jade.interp)) + "</h3><svg version=\"1.1\" baseProfile=\"full\" width=\"12\" height=\"12\" viewBox=\"0 0 200 200\" xmlns=\"http://www.w3.org/2000/svg\"><circle cx=\"100\" cy=\"100\" r=\"90\" fill=\"#EEE\" stroke=\"#666\" stroke-width=\"10\"></circle><rect x=\"50\" y=\"90\" width=\"100\" height=\"20\" fill=\"#222\"></rect><rect x=\"90\" y=\"50\" width=\"20\" height=\"100\" fill=\"#222\" class=\"vertical\"></rect></svg><div class=\"options\"></div></header><div class=\"body\"></div></div>");;return buf.join("");
+var locals_ = (locals || {}),name = locals_.name,title = locals_.title;buf.push("<div class=\"placeholder pad4\"><header><h3" + (jade.attrs({ 'data-name':(name) }, {"data-name":true})) + ">" + (jade.escape(null == (jade.interp = title) ? "" : jade.interp)) + "</h3><i class=\"fa fa-plus-square-o\"></i><div class=\"options\"></div></header><div class=\"body\"></div></div>");;return buf.join("");
 };
 
 this["JST"]["faceted-search/facets/search.body"] = function anonymous(locals) {

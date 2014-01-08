@@ -151,8 +151,10 @@ define (require) ->
 		# The facets are slided one by one. When the slide of a facet is finished, the
 		# next facet starts sliding. That's why we use a recursive function.
 		toggleFacets: (ev) ->
-			$(ev.currentTarget).toggleClass 'fa-compress'
-			$(ev.currentTarget).toggleClass 'fa-expand'
+			$button = $ ev.currentTarget
+			open = $button.hasClass 'fa-expand'
+			$button.toggleClass 'fa-compress'
+			$button.toggleClass 'fa-expand'
 
 			facetNames = _.keys @facetViews
 			index = 0
@@ -166,7 +168,10 @@ define (require) ->
 					if facetName is 'textSearch'
 						slideFacet()
 					else
-						facet.toggleBody -> slideFacet()
+						if open
+							facet.showBody -> slideFacet()
+						else
+							facet.hideBody -> slideFacet()
 
 			slideFacet()
 

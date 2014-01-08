@@ -4,13 +4,18 @@
 		header
 			margin-bottom 10px
 
-			svg
+			i
 				float right
 				cursor pointer
+				font-size 1.2em
+				color #AAA
 
-				&.active
-					rect.vertical
-						display none
+				&:hover
+					color #555
+
+				// &.active
+				// 	rect.vertical
+				// 		display none
 
 			h3
 				padding 0
@@ -62,9 +67,13 @@
 
 					i
 						font-size 1.2em
+						cursor pointer
 
 						&.fa-square-o
 							color #AAA
+
+							&:hover
+								color #555
 						
 						&.fa-check-square-o
 							color #555

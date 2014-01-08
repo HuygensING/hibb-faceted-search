@@ -68,7 +68,7 @@
           ucfirst: StringFn.ucfirst
         }));
         this.$('.body').html(rtpl);
-        this.$('header svg').remove();
+        this.$('header i.fa').remove();
         return this;
       };
 
