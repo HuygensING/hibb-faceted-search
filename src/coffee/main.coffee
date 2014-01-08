@@ -39,9 +39,13 @@ define (require) ->
 
 			_.extend @, pubsub
 
+			# The facetViewMap is a mapping of all (internally) available facets (List, Boolean, Date, etc).
+			# The map can be extended by user defined facets, by passing a mapping in the options.
 			_.extend facetViewMap, options.facetViewMap
 			delete options.facetViewMap
-			
+
+			# The facetNameMap is used for giving user friendly names to facets. Sometimes the database has
+			# an unwanted name or no name, so the user is given the option to pass their own.
 			_.extend config.facetNameMap, options.facetNameMap
 			delete options.facetNameMap
 
@@ -61,7 +65,7 @@ define (require) ->
 			@subscribe 'change:page', (responseModel) => 
 				@trigger 'results:change', responseModel
 			
-			# Initialize the FacetedSearch model, without the queryOptions!
+			# Initialize the FacetedSearch model.
 			@model = new Models.FacetedSearch queryOptions
 
 			@listenTo @model.searchResults, 'request', =>
@@ -95,12 +99,6 @@ define (require) ->
  
 			@$('.loader').fadeIn('slow')
 
-			if config.search
-				textSearch = new Views.TextSearch()
-				@$('.search-placeholder').html textSearch.$el
-				@listenTo textSearch, 'change', (queryOptions) => @model.set queryOptions
-				@facetViews['textSearch'] = textSearch
-
 			@
 					
 		renderFacets: (data) ->
@@ -109,6 +107,12 @@ define (require) ->
 			# If the size of the searchResults is 1 then it's the first time we render the facets
 			if @model.searchResults.length is 1
 				fragment = document.createDocumentFragment()
+
+				if config.search
+					textSearch = new Views.TextSearch()
+					@$('.search-placeholder').html textSearch.$el
+					@listenTo textSearch, 'change', (queryOptions) => @model.set queryOptions
+					@facetViews['textSearch'] = textSearch
 
 				for own index, facetData of @model.searchResults.current.get('facets')
 					if facetData.type of facetViewMap

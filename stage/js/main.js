@@ -2503,9 +2503,14 @@ return this["JST"];
       };
 
       SearchResults.prototype.runQuery = function(queryOptions) {
-        var cacheString, options, searchResult,
+        var cacheString, options, resultRows, searchResult,
           _this = this;
+        if (queryOptions.hasOwnProperty('resultRows')) {
+          resultRows = queryOptions.resultRows;
+          delete queryOptions.resultRows;
+        }
         cacheString = JSON.stringify(queryOptions);
+        console.log(cacheString);
         if (this.cachedModels.hasOwnProperty(cacheString)) {
           return this.setCurrent(this.cachedModels[cacheString]);
         } else {
@@ -2513,14 +2518,13 @@ return this["JST"];
           options = {};
           options.cacheString = cacheString;
           options.queryOptions = queryOptions;
-          if (queryOptions.hasOwnProperty('resultRows')) {
-            options.resultRows = queryOptions.resultRows;
-            delete queryOptions.resultRows;
+          if (resultRows != null) {
+            options.resultRows = resultRows;
           }
           searchResult = new SearchResult(null, options);
           return searchResult.fetch({
             success: function(model) {
-              _this.cachedModels[options.queryOptions] = model;
+              _this.cachedModels[cacheString] = model;
               return _this.add(model);
             }
           });
@@ -2644,7 +2648,7 @@ return this["JST"];
           term: '*',
           caseSensitive: false,
           fuzzy: false,
-          title: 'Text search',
+          title: 'Search',
           name: 'text_search'
         };
       };
@@ -2870,28 +2874,27 @@ return this["JST"];
       };
 
       FacetedSearch.prototype.render = function() {
-        var rtpl, textSearch,
-          _this = this;
+        var rtpl;
         rtpl = tpls['faceted-search/main']();
         this.$el.html(rtpl);
         this.$('.loader').fadeIn('slow');
-        if (config.search) {
-          textSearch = new Views.TextSearch();
-          this.$('.search-placeholder').html(textSearch.$el);
-          this.listenTo(textSearch, 'change', function(queryOptions) {
-            return _this.model.set(queryOptions);
-          });
-          this.facetViews['textSearch'] = textSearch;
-        }
         return this;
       };
 
       FacetedSearch.prototype.renderFacets = function(data) {
-        var View, facetData, fragment, index, _ref1,
+        var View, facetData, fragment, index, textSearch, _ref1,
           _this = this;
         this.$('.loader').hide();
         if (this.model.searchResults.length === 1) {
           fragment = document.createDocumentFragment();
+          if (config.search) {
+            textSearch = new Views.TextSearch();
+            this.$('.search-placeholder').html(textSearch.$el);
+            this.listenTo(textSearch, 'change', function(queryOptions) {
+              return _this.model.set(queryOptions);
+            });
+            this.facetViews['textSearch'] = textSearch;
+          }
           _ref1 = this.model.searchResults.current.get('facets');
           for (index in _ref1) {
             if (!__hasProp.call(_ref1, index)) continue;

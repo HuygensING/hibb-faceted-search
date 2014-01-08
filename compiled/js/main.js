@@ -83,28 +83,27 @@
       };
 
       FacetedSearch.prototype.render = function() {
-        var rtpl, textSearch,
-          _this = this;
+        var rtpl;
         rtpl = tpls['faceted-search/main']();
         this.$el.html(rtpl);
         this.$('.loader').fadeIn('slow');
-        if (config.search) {
-          textSearch = new Views.TextSearch();
-          this.$('.search-placeholder').html(textSearch.$el);
-          this.listenTo(textSearch, 'change', function(queryOptions) {
-            return _this.model.set(queryOptions);
-          });
-          this.facetViews['textSearch'] = textSearch;
-        }
         return this;
       };
 
       FacetedSearch.prototype.renderFacets = function(data) {
-        var View, facetData, fragment, index, _ref1,
+        var View, facetData, fragment, index, textSearch, _ref1,
           _this = this;
         this.$('.loader').hide();
         if (this.model.searchResults.length === 1) {
           fragment = document.createDocumentFragment();
+          if (config.search) {
+            textSearch = new Views.TextSearch();
+            this.$('.search-placeholder').html(textSearch.$el);
+            this.listenTo(textSearch, 'change', function(queryOptions) {
+              return _this.model.set(queryOptions);
+            });
+            this.facetViews['textSearch'] = textSearch;
+          }
           _ref1 = this.model.searchResults.current.get('facets');
           for (index in _ref1) {
             if (!__hasProp.call(_ref1, index)) continue;

@@ -20,7 +20,7 @@
           term: '*',
           caseSensitive: false,
           fuzzy: false,
-          title: 'Text search',
+          title: 'Search',
           name: 'text_search'
         };
       };

@@ -33,9 +33,14 @@
       };
 
       SearchResults.prototype.runQuery = function(queryOptions) {
-        var cacheString, options, searchResult,
+        var cacheString, options, resultRows, searchResult,
           _this = this;
+        if (queryOptions.hasOwnProperty('resultRows')) {
+          resultRows = queryOptions.resultRows;
+          delete queryOptions.resultRows;
+        }
         cacheString = JSON.stringify(queryOptions);
+        console.log(cacheString);
         if (this.cachedModels.hasOwnProperty(cacheString)) {
           return this.setCurrent(this.cachedModels[cacheString]);
         } else {
@@ -43,14 +48,13 @@
           options = {};
           options.cacheString = cacheString;
           options.queryOptions = queryOptions;
-          if (queryOptions.hasOwnProperty('resultRows')) {
-            options.resultRows = queryOptions.resultRows;
-            delete queryOptions.resultRows;
+          if (resultRows != null) {
+            options.resultRows = resultRows;
           }
           searchResult = new SearchResult(null, options);
           return searchResult.fetch({
             success: function(model) {
-              _this.cachedModels[options.queryOptions] = model;
+              _this.cachedModels[cacheString] = model;
               return _this.add(model);
             }
           });

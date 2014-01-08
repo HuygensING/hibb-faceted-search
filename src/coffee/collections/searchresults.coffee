@@ -26,8 +26,14 @@ define (require) ->
 			@publish message, @current
 
 		runQuery: (queryOptions) ->
+			if queryOptions.hasOwnProperty 'resultRows'
+				resultRows = queryOptions.resultRows
+				delete queryOptions.resultRows
+
+
 			cacheString = JSON.stringify queryOptions
 
+			console.log cacheString
 			# The search results are cached by the query options string,
 			# so we check if there is such a string to find the cached result.
 			if @cachedModels.hasOwnProperty cacheString
@@ -38,15 +44,12 @@ define (require) ->
 				options = {}
 				options.cacheString = cacheString
 				options.queryOptions = queryOptions
-
-				if queryOptions.hasOwnProperty 'resultRows'
-					options.resultRows = queryOptions.resultRows
-					delete queryOptions.resultRows
+				options.resultRows = resultRows if resultRows?
 
 				searchResult = new SearchResult null, options
 				searchResult.fetch
 					success: (model) => 
-						@cachedModels[options.queryOptions] = model
+						@cachedModels[cacheString] = model
 						@add model
 
 		moveCursor: (direction) ->
