@@ -17,7 +17,7 @@ define (require) ->
 		FacetedSearch: require 'models/main'
 
 	Views =
-		Base: require 'views/base'
+		Base: require 'hilib/views/base'
 		TextSearch: require 'views/search'
 		Facets:
 			List: require 'views/facets/list'
@@ -29,7 +29,7 @@ define (require) ->
 
 	tpls = require 'tpls'
 
-	class FacetedSearch extends Backbone.View
+	class FacetedSearch extends Views.Base
 
 		# ### Initialize
 		initialize: (options) ->

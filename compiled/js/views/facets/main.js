@@ -5,7 +5,7 @@
   define(function(require) {
     var Facet, Views, tpls, _ref;
     Views = {
-      Base: require('views/base')
+      Base: require('hilib/views/base')
     };
     tpls = require('tpls');
     return Facet = (function(_super) {

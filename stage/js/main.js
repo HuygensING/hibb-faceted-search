@@ -1117,10 +1117,10 @@ define("../lib/almond/almond", function(){});
   var __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
-  define('views/base',['require','backbone','hilib/managers/pubsub'],function(require) {
+  define('hilib/views/base',['require','backbone','hilib/mixins/pubsub'],function(require) {
     var Backbone, BaseView, Pubsub, _ref;
     Backbone = require('backbone');
-    Pubsub = require('hilib/managers/pubsub');
+    Pubsub = require('hilib/mixins/pubsub');
     return BaseView = (function(_super) {
       __extends(BaseView, _super);
 
@@ -1131,6 +1131,10 @@ define("../lib/almond/almond", function(){});
 
       BaseView.prototype.initialize = function() {
         return _.extend(this, Pubsub);
+      };
+
+      BaseView.prototype.destroy = function() {
+        return this.remove();
       };
 
       return BaseView;
@@ -1550,10 +1554,10 @@ return this["JST"];
   var __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
-  define('views/facets/main',['require','views/base','tpls'],function(require) {
+  define('views/facets/main',['require','hilib/views/base','tpls'],function(require) {
     var Facet, Views, tpls, _ref;
     Views = {
-      Base: require('views/base')
+      Base: require('hilib/views/base')
     };
     tpls = require('tpls');
     return Facet = (function(_super) {
@@ -1982,11 +1986,11 @@ return this["JST"];
   var __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
-  define('views/facets/list.options',['require','hilib/functions/general','views/base','models/list','tpls'],function(require) {
+  define('views/facets/list.options',['require','hilib/functions/general','hilib/views/base','models/list','tpls'],function(require) {
     var Fn, ListFacetOptions, Models, Views, tpls, _ref;
     Fn = require('hilib/functions/general');
     Views = {
-      Base: require('views/base')
+      Base: require('hilib/views/base')
     };
     Models = {
       List: require('models/list')
@@ -2835,7 +2839,7 @@ return this["JST"];
     }
   });
 
-  define('main',['require','hilib/functions/general','hilib/functions/dom','hilib/mixins/pubsub','config','facetviewmap','models/main','views/base','views/search','views/facets/list','views/facets/boolean','views/facets/date','tpls'],function(require) {
+  define('main',['require','hilib/functions/general','hilib/functions/dom','hilib/mixins/pubsub','config','facetviewmap','models/main','hilib/views/base','views/search','views/facets/list','views/facets/boolean','views/facets/date','tpls'],function(require) {
     var FacetedSearch, Fn, Models, Views, config, dom, facetViewMap, pubsub, tpls, _ref;
     Fn = require('hilib/functions/general');
     dom = require('hilib/functions/dom');
@@ -2846,7 +2850,7 @@ return this["JST"];
       FacetedSearch: require('models/main')
     };
     Views = {
-      Base: require('views/base'),
+      Base: require('hilib/views/base'),
       TextSearch: require('views/search'),
       Facets: {
         List: require('views/facets/list'),
@@ -3055,7 +3059,7 @@ return this["JST"];
 
       return FacetedSearch;
 
-    })(Backbone.View);
+    })(Views.Base);
   });
 
 }).call(this);

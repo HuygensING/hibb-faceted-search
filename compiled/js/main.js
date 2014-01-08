@@ -22,7 +22,7 @@
       FacetedSearch: require('models/main')
     };
     Views = {
-      Base: require('views/base'),
+      Base: require('hilib/views/base'),
       TextSearch: require('views/search'),
       Facets: {
         List: require('views/facets/list'),
@@ -231,7 +231,7 @@
 
       return FacetedSearch;
 
-    })(Backbone.View);
+    })(Views.Base);
   });
 
 }).call(this);

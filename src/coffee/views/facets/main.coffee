@@ -1,7 +1,7 @@
 define (require) ->
 
 	Views = 
-		Base: require 'views/base'
+		Base: require 'hilib/views/base'
 
 	# Templates =
 	# 	Facet: require 'text!html/facet.html'
