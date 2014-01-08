@@ -8,7 +8,7 @@ define (require) ->
 			term: '*'
 			caseSensitive: false
 			fuzzy: false
-			title: 'Search'
+			title: 'Text Search'
 			name: 'text_search'
 
 		queryData: ->

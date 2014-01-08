@@ -110,7 +110,7 @@ define (require) ->
 
 				if config.search
 					textSearch = new Views.TextSearch()
-					@$('.search-placeholder').html textSearch.$el
+					@$('.search-placeholder').html textSearch.el
 					@listenTo textSearch, 'change', (queryOptions) => @model.set queryOptions
 					@facetViews['textSearch'] = textSearch
 
@@ -132,6 +132,10 @@ define (require) ->
 			else
 				@update()
 
+		# ### Events
+		events: ->
+			'click i.fa-compress': 'toggleFacets'
+			'click i.fa-expand': 'toggleFacets'
 
 		# ### Methods
 
@@ -143,6 +147,28 @@ define (require) ->
 			# @model.set queryOptions
 			# * TODO: fetch on @model change event?
 			# @model.fetch success: => @renderFacets()
+
+		# The facets are slided one by one. When the slide of a facet is finished, the
+		# next facet starts sliding. That's why we use a recursive function.
+		toggleFacets: (ev) ->
+			$(ev.currentTarget).toggleClass 'fa-compress'
+			$(ev.currentTarget).toggleClass 'fa-expand'
+
+			facetNames = _.keys @facetViews
+			index = 0
+			
+			slideFacet = =>
+				facetName = facetNames[index++]
+				facet = @facetViews[facetName]
+
+				if facet?
+					# Don't close textSearch facet, but close others.
+					if facetName is 'textSearch'
+						slideFacet()
+					else
+						facet.toggleBody -> slideFacet()
+
+			slideFacet()
 
 		page: (pagenumber, database) -> @model.searchResults.current.page pagenumber, database
 

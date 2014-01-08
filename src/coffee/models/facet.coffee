@@ -10,6 +10,12 @@ define (require) ->
 		idAttribute: 'name'
 
 		parse: (attrs) ->
-			attrs.title = config.facetNameMap[attrs.name] if not attrs.title? or attrs.title is '' and config.facetNameMap[attrs.name]?
+			# If name is present in map, than use it as title
+			if config.facetNameMap.hasOwnProperty attrs.name
+				attrs.title = config.facetNameMap[attrs.name]
+			# If the name is not present, set the title (from db) to the facetNameMap,
+			# because we use the map to set the correct titles when showing the selected facet values.
+			else
+				config.facetNameMap[attrs.name] = attrs.title
 
 			attrs

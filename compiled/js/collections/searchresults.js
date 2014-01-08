@@ -40,7 +40,6 @@
           delete queryOptions.resultRows;
         }
         cacheString = JSON.stringify(queryOptions);
-        console.log(cacheString);
         if (this.cachedModels.hasOwnProperty(cacheString)) {
           return this.setCurrent(this.cachedModels[cacheString]);
         } else {

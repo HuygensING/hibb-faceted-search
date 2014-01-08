@@ -908,6 +908,7 @@ define("../lib/almond/almond", function(){});
       baseUrl: '',
       searchPath: '',
       search: true,
+      facetMenu: true,
       token: null,
       queryOptions: {},
       facetNameMap: {}
@@ -1053,8 +1054,10 @@ define("../lib/almond/almond", function(){});
       Facet.prototype.idAttribute = 'name';
 
       Facet.prototype.parse = function(attrs) {
-        if ((attrs.title == null) || attrs.title === '' && (config.facetNameMap[attrs.name] != null)) {
+        if (config.facetNameMap.hasOwnProperty(attrs.name)) {
           attrs.title = config.facetNameMap[attrs.name];
+        } else {
+          config.facetNameMap[attrs.name] = attrs.title;
         }
         return attrs;
       };
@@ -1538,7 +1541,7 @@ buf.push("</ul>");
 
 this["JST"]["faceted-search/main"] = function anonymous(locals) {
 var buf = [];
-buf.push("<div class=\"overlay\"><img src=\"../images/faceted-search/loader.gif\"/></div><div class=\"faceted-search\"><form><div class=\"search-placeholder\"></div><div class=\"facets\"><div class=\"loader\"><h4>Loading facets...</h4><br/><img src=\"../images/faceted-search/loader.gif\"/></div></div></form></div>");;return buf.join("");
+buf.push("<div class=\"overlay\"><img src=\"../images/faceted-search/loader.gif\"/></div><div class=\"faceted-search\"><i class=\"fa fa-backward fa-compress\"></i><form><div class=\"search-placeholder\"></div><div class=\"facets\"><div class=\"loader\"><h4>Loading facets...</h4><br/><img src=\"../images/faceted-search/loader.gif\"/></div></div></form></div>");;return buf.join("");
 };
 
 return this["JST"];
@@ -1586,7 +1589,17 @@ return this["JST"];
       };
 
       Facet.prototype.toggleBody = function(ev) {
-        return $(ev.currentTarget).parents('.facet').find('.body').slideToggle();
+        var done,
+          _this = this;
+        if (_.isFunction(ev)) {
+          done = ev;
+        }
+        return this.$('.body').slideToggle(100, function() {
+          if (done != null) {
+            done();
+          }
+          return _this.$('header svg').fadeToggle(100);
+        });
       };
 
       Facet.prototype.render = function() {
@@ -1675,7 +1688,7 @@ return this["JST"];
           ucfirst: StringFn.ucfirst
         }));
         this.$('.body').html(rtpl);
-        this.$('header svg').hide();
+        this.$('header svg').remove();
         return this;
       };
 
@@ -2510,7 +2523,6 @@ return this["JST"];
           delete queryOptions.resultRows;
         }
         cacheString = JSON.stringify(queryOptions);
-        console.log(cacheString);
         if (this.cachedModels.hasOwnProperty(cacheString)) {
           return this.setCurrent(this.cachedModels[cacheString]);
         } else {
@@ -2648,7 +2660,7 @@ return this["JST"];
           term: '*',
           caseSensitive: false,
           fuzzy: false,
-          title: 'Search',
+          title: 'Text Search',
           name: 'text_search'
         };
       };
@@ -2889,7 +2901,7 @@ return this["JST"];
           fragment = document.createDocumentFragment();
           if (config.search) {
             textSearch = new Views.TextSearch();
-            this.$('.search-placeholder').html(textSearch.$el);
+            this.$('.search-placeholder').html(textSearch.el);
             this.listenTo(textSearch, 'change', function(queryOptions) {
               return _this.model.set(queryOptions);
             });
@@ -2916,6 +2928,37 @@ return this["JST"];
         } else {
           return this.update();
         }
+      };
+
+      FacetedSearch.prototype.events = function() {
+        return {
+          'click i.fa-compress': 'toggleFacets',
+          'click i.fa-expand': 'toggleFacets'
+        };
+      };
+
+      FacetedSearch.prototype.toggleFacets = function(ev) {
+        var facetNames, index, slideFacet,
+          _this = this;
+        $(ev.currentTarget).toggleClass('fa-compress');
+        $(ev.currentTarget).toggleClass('fa-expand');
+        facetNames = _.keys(this.facetViews);
+        index = 0;
+        slideFacet = function() {
+          var facet, facetName;
+          facetName = facetNames[index++];
+          facet = _this.facetViews[facetName];
+          if (facet != null) {
+            if (facetName === 'textSearch') {
+              return slideFacet();
+            } else {
+              return facet.toggleBody(function() {
+                return slideFacet();
+              });
+            }
+          }
+        };
+        return slideFacet();
       };
 
       FacetedSearch.prototype.page = function(pagenumber, database) {

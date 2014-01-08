@@ -51,7 +51,7 @@ define (require) ->
 			rtpl = tpls['faceted-search/facets/boolean.body'] _.extend @model.attributes, ucfirst: StringFn.ucfirst
 			@$('.body').html rtpl
 
-			@$('header svg').hide()
+			@$('header svg').remove()
 
 			@
 

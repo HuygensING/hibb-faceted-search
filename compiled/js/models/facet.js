@@ -19,8 +19,10 @@
       Facet.prototype.idAttribute = 'name';
 
       Facet.prototype.parse = function(attrs) {
-        if ((attrs.title == null) || attrs.title === '' && (config.facetNameMap[attrs.name] != null)) {
+        if (config.facetNameMap.hasOwnProperty(attrs.name)) {
           attrs.title = config.facetNameMap[attrs.name];
+        } else {
+          config.facetNameMap[attrs.name] = attrs.title;
         }
         return attrs;
       };

@@ -40,7 +40,17 @@
       };
 
       Facet.prototype.toggleBody = function(ev) {
-        return $(ev.currentTarget).parents('.facet').find('.body').slideToggle();
+        var done,
+          _this = this;
+        if (_.isFunction(ev)) {
+          done = ev;
+        }
+        return this.$('.body').slideToggle(100, function() {
+          if (done != null) {
+            done();
+          }
+          return _this.$('header svg').fadeToggle(100);
+        });
       };
 
       Facet.prototype.render = function() {

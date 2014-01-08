@@ -98,7 +98,7 @@
           fragment = document.createDocumentFragment();
           if (config.search) {
             textSearch = new Views.TextSearch();
-            this.$('.search-placeholder').html(textSearch.$el);
+            this.$('.search-placeholder').html(textSearch.el);
             this.listenTo(textSearch, 'change', function(queryOptions) {
               return _this.model.set(queryOptions);
             });
@@ -125,6 +125,37 @@
         } else {
           return this.update();
         }
+      };
+
+      FacetedSearch.prototype.events = function() {
+        return {
+          'click i.fa-compress': 'toggleFacets',
+          'click i.fa-expand': 'toggleFacets'
+        };
+      };
+
+      FacetedSearch.prototype.toggleFacets = function(ev) {
+        var facetNames, index, slideFacet,
+          _this = this;
+        $(ev.currentTarget).toggleClass('fa-compress');
+        $(ev.currentTarget).toggleClass('fa-expand');
+        facetNames = _.keys(this.facetViews);
+        index = 0;
+        slideFacet = function() {
+          var facet, facetName;
+          facetName = facetNames[index++];
+          facet = _this.facetViews[facetName];
+          if (facet != null) {
+            if (facetName === 'textSearch') {
+              return slideFacet();
+            } else {
+              return facet.toggleBody(function() {
+                return slideFacet();
+              });
+            }
+          }
+        };
+        return slideFacet();
       };
 
       FacetedSearch.prototype.page = function(pagenumber, database) {

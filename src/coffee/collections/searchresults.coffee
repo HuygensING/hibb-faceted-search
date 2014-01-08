@@ -33,7 +33,6 @@ define (require) ->
 
 			cacheString = JSON.stringify queryOptions
 
-			console.log cacheString
 			# The search results are cached by the query options string,
 			# so we check if there is such a string to find the cached result.
 			if @cachedModels.hasOwnProperty cacheString

@@ -4,6 +4,7 @@
       baseUrl: '',
       searchPath: '',
       search: true,
+      facetMenu: true,
       token: null,
       queryOptions: {},
       facetNameMap: {}

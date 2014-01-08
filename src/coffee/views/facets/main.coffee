@@ -26,7 +26,12 @@ define (require) ->
 			@$('header .options input[name="filter"]').focus()
 
 		toggleBody: (ev) ->
-			$(ev.currentTarget).parents('.facet').find('.body').slideToggle()
+			done = ev if _.isFunction ev
+			
+			@$('.body').slideToggle 100, => 
+				done() if done?
+				@$('header svg').fadeToggle 100
+
 
 		render: ->
 			# console.log @model.attributes
