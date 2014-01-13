@@ -71,6 +71,9 @@ define (require) ->
 			@showing = 50
 
 			ul = document.createElement 'ul'
+
+			# Set the height of the <ul> dynamically, to prevent glitches
+			# when the options are rendered on scrolling.
 			ul.style.height =  (@filtered_items.length * 15) + 'px'
 
 			@el.innerHTML = ''

@@ -302,6 +302,7 @@
 .faceted-search input[type="checkbox"]{margin:0;padding:0}
 .faceted-search form{border-radius:8px;box-shadow:0 0 6px #aaa;}
 .faceted-search form h3,.faceted-search form h4{margin:0;color:#000}
+.faceted-search form ul li{margin:0}
 .faceted-search form input[type=text]{border:1px solid #ddd;border-radius:4px;padding-left:4%;margin:0;width:96%;}
 .faceted-search form input[type=text]#search{height:24px;}
 .faceted-search form input[type=text]#search.loading{background:#fff url("../images/loader.gif") no-repeat;background-position:right 2% center}
