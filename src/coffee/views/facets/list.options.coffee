@@ -41,14 +41,14 @@ define (require) ->
 			id = $target.attr 'data-value'
 			@collection.get(id).set 'checked', $target.hasClass 'fa-check-square-o'
 
-			triggerChange = =>
-				@trigger 'change',
-					facetValue:
-						name: @options.facetName
-						values: _.map @$('i.fa-check-square-o'), (cb) -> cb.getAttribute 'data-value'
 			
-			if @$('i.fa-check-square-o').length is 0 then triggerChange() else Fn.timeoutWithReset 1000, => triggerChange()
+			if @$('i.fa-check-square-o').length is 0 then triggerChange() else Fn.timeoutWithReset 1000, => @triggerChange()
 
+		triggerChange: =>
+			@trigger 'change',
+				facetValue:
+					name: @options.facetName
+					values: _.map @$('i.fa-check-square-o'), (cb) -> cb.getAttribute 'data-value'
 
 		initialize: ->
 			super
@@ -83,12 +83,23 @@ define (require) ->
 
 			@
 
+		renderAll: ->
+			@render()
+			@appendAllOptions()
+
 		appendOptions: ->
 			tpl = ''
 			for option in @filtered_items[@showing-@showingIncrement..@showing]
 				tpl += tpls['faceted-search/facets/list.option'] 
 					option: option
-					# randomId: Fn.generateID()
+
+			@$('ul').append tpl
+
+		appendAllOptions: ->
+			tpl = ''
+			for option in @filtered_items[@showing..]
+				tpl += tpls['faceted-search/facets/list.option'] 
+					option: option
 
 			@$('ul').append tpl
 
@@ -105,3 +116,21 @@ define (require) ->
 			@trigger 'filter:finished'
 
 			@render()
+
+		setCheckboxes: (ev) ->
+			model.set 'checked', ev.currentTarget.checked for model in @collection.models
+			@renderAll()
+			@triggerChange()
+
+			# @selectAll = not @selectAll
+
+			# checkboxes = @el.querySelectorAll('.body i.fa')
+			# for cb in checkboxes
+			# 	$cb = $ cb
+
+			# 	if @selectAll
+			# 		$cb.removeClass 'fa-square-o'
+			# 		$cb.addClass 'fa-check-square-o' 
+			# 	else 
+			# 		$cb.removeClass 'fa-check-square-o'
+			# 		$cb.addClass 'fa-square-o'

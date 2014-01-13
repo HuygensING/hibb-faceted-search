@@ -26,47 +26,6 @@
 
       ListFacet.prototype.className = 'facet list';
 
-      ListFacet.prototype.events = function() {
-        return _.extend({}, ListFacet.__super__.events.apply(this, arguments), {
-          'keyup input[name="filter"]': function(ev) {
-            return this.optionsView.filterOptions(ev.currentTarget.value);
-          },
-          'change header .options input[type="checkbox"][name="all"]': 'selectAll',
-          'click .orderby i': 'changeOrder'
-        });
-      };
-
-      ListFacet.prototype.changeOrder = function(ev) {
-        var $target, order, type;
-        $target = $(ev.currentTarget);
-        if ($target.hasClass('active')) {
-          if ($target.hasClass('alpha')) {
-            $target.toggleClass('fa-sort-alpha-desc');
-            $target.toggleClass('fa-sort-alpha-asc');
-          } else if ($target.hasClass('amount')) {
-            $target.toggleClass('fa-sort-amount-desc');
-            $target.toggleClass('fa-sort-amount-asc');
-          }
-        } else {
-          this.$('.active').removeClass('active');
-          $target.addClass('active');
-        }
-        type = $target.hasClass('alpha') ? 'alpha' : 'amount';
-        order = $target.hasClass('fa-sort-' + type + '-desc') ? 'desc' : 'asc';
-        return this.collection.orderBy(type + '_' + order);
-      };
-
-      ListFacet.prototype.selectAll = function(ev) {
-        var cb, checkboxes, _i, _len, _results;
-        checkboxes = this.el.querySelectorAll('input[type="checkbox"]');
-        _results = [];
-        for (_i = 0, _len = checkboxes.length; _i < _len; _i++) {
-          cb = checkboxes[_i];
-          _results.push(cb.checked = ev.currentTarget.checked);
-        }
-        return _results;
-      };
-
       ListFacet.prototype.initialize = function(options) {
         this.options = options;
         ListFacet.__super__.initialize.apply(this, arguments);
@@ -111,6 +70,38 @@
           this.$('header small.optioncount').html(filteredLength + ' of ' + collectionLength);
         }
         return this;
+      };
+
+      ListFacet.prototype.events = function() {
+        return _.extend({}, ListFacet.__super__.events.apply(this, arguments), {
+          'keyup input[name="filter"]': function(ev) {
+            return this.optionsView.filterOptions(ev.currentTarget.value);
+          },
+          'change header .options input[type="checkbox"][name="all"]': function(ev) {
+            return this.optionsView.setCheckboxes(ev);
+          },
+          'click .orderby i': 'changeOrder'
+        });
+      };
+
+      ListFacet.prototype.changeOrder = function(ev) {
+        var $target, order, type;
+        $target = $(ev.currentTarget);
+        if ($target.hasClass('active')) {
+          if ($target.hasClass('alpha')) {
+            $target.toggleClass('fa-sort-alpha-desc');
+            $target.toggleClass('fa-sort-alpha-asc');
+          } else if ($target.hasClass('amount')) {
+            $target.toggleClass('fa-sort-amount-desc');
+            $target.toggleClass('fa-sort-amount-asc');
+          }
+        } else {
+          this.$('.active').removeClass('active');
+          $target.addClass('active');
+        }
+        type = $target.hasClass('alpha') ? 'alpha' : 'amount';
+        order = $target.hasClass('fa-sort-' + type + '-desc') ? 'desc' : 'asc';
+        return this.collection.orderBy(type + '_' + order);
       };
 
       ListFacet.prototype.update = function(newOptions) {

@@ -1990,7 +1990,8 @@ return this["JST"];
 }).call(this);
 
 (function() {
-  var __hasProp = {}.hasOwnProperty,
+  var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
+    __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
   define('views/facets/list.options',['require','hilib/functions/general','hilib/views/base','models/list','tpls'],function(require) {
@@ -2007,6 +2008,7 @@ return this["JST"];
       __extends(ListFacetOptions, _super);
 
       function ListFacetOptions() {
+        this.triggerChange = __bind(this.triggerChange, this);
         _ref = ListFacetOptions.__super__.constructor.apply(this, arguments);
         return _ref;
       }
@@ -2035,30 +2037,31 @@ return this["JST"];
       };
 
       ListFacetOptions.prototype.checkChanged = function(ev) {
-        var $target, id, triggerChange,
+        var $target, id,
           _this = this;
         $target = ev.currentTarget.tagName === 'LABEL' ? this.$('i[data-value="' + ev.currentTarget.getAttribute('data-value') + '"]') : $(ev.currentTarget);
         $target.toggleClass('fa-square-o');
         $target.toggleClass('fa-check-square-o');
         id = $target.attr('data-value');
         this.collection.get(id).set('checked', $target.hasClass('fa-check-square-o'));
-        triggerChange = function() {
-          return _this.trigger('change', {
-            facetValue: {
-              name: _this.options.facetName,
-              values: _.map(_this.$('i.fa-check-square-o'), function(cb) {
-                return cb.getAttribute('data-value');
-              })
-            }
-          });
-        };
         if (this.$('i.fa-check-square-o').length === 0) {
           return triggerChange();
         } else {
           return Fn.timeoutWithReset(1000, function() {
-            return triggerChange();
+            return _this.triggerChange();
           });
         }
+      };
+
+      ListFacetOptions.prototype.triggerChange = function() {
+        return this.trigger('change', {
+          facetValue: {
+            name: this.options.facetName,
+            values: _.map(this.$('i.fa-check-square-o'), function(cb) {
+              return cb.getAttribute('data-value');
+            })
+          }
+        });
       };
 
       ListFacetOptions.prototype.initialize = function() {
@@ -2085,10 +2088,28 @@ return this["JST"];
         return this;
       };
 
+      ListFacetOptions.prototype.renderAll = function() {
+        this.render();
+        return this.appendAllOptions();
+      };
+
       ListFacetOptions.prototype.appendOptions = function() {
         var option, tpl, _i, _len, _ref1;
         tpl = '';
         _ref1 = this.filtered_items.slice(this.showing - this.showingIncrement, +this.showing + 1 || 9e9);
+        for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
+          option = _ref1[_i];
+          tpl += tpls['faceted-search/facets/list.option']({
+            option: option
+          });
+        }
+        return this.$('ul').append(tpl);
+      };
+
+      ListFacetOptions.prototype.appendAllOptions = function() {
+        var option, tpl, _i, _len, _ref1;
+        tpl = '';
+        _ref1 = this.filtered_items.slice(this.showing);
         for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
           option = _ref1[_i];
           tpl += tpls['faceted-search/facets/list.option']({
@@ -2114,6 +2135,17 @@ return this["JST"];
         }
         this.trigger('filter:finished');
         return this.render();
+      };
+
+      ListFacetOptions.prototype.setCheckboxes = function(ev) {
+        var model, _i, _len, _ref1;
+        _ref1 = this.collection.models;
+        for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
+          model = _ref1[_i];
+          model.set('checked', ev.currentTarget.checked);
+        }
+        this.renderAll();
+        return this.triggerChange();
       };
 
       return ListFacetOptions;
@@ -2150,47 +2182,6 @@ return this["JST"];
       }
 
       ListFacet.prototype.className = 'facet list';
-
-      ListFacet.prototype.events = function() {
-        return _.extend({}, ListFacet.__super__.events.apply(this, arguments), {
-          'keyup input[name="filter"]': function(ev) {
-            return this.optionsView.filterOptions(ev.currentTarget.value);
-          },
-          'change header .options input[type="checkbox"][name="all"]': 'selectAll',
-          'click .orderby i': 'changeOrder'
-        });
-      };
-
-      ListFacet.prototype.changeOrder = function(ev) {
-        var $target, order, type;
-        $target = $(ev.currentTarget);
-        if ($target.hasClass('active')) {
-          if ($target.hasClass('alpha')) {
-            $target.toggleClass('fa-sort-alpha-desc');
-            $target.toggleClass('fa-sort-alpha-asc');
-          } else if ($target.hasClass('amount')) {
-            $target.toggleClass('fa-sort-amount-desc');
-            $target.toggleClass('fa-sort-amount-asc');
-          }
-        } else {
-          this.$('.active').removeClass('active');
-          $target.addClass('active');
-        }
-        type = $target.hasClass('alpha') ? 'alpha' : 'amount';
-        order = $target.hasClass('fa-sort-' + type + '-desc') ? 'desc' : 'asc';
-        return this.collection.orderBy(type + '_' + order);
-      };
-
-      ListFacet.prototype.selectAll = function(ev) {
-        var cb, checkboxes, _i, _len, _results;
-        checkboxes = this.el.querySelectorAll('input[type="checkbox"]');
-        _results = [];
-        for (_i = 0, _len = checkboxes.length; _i < _len; _i++) {
-          cb = checkboxes[_i];
-          _results.push(cb.checked = ev.currentTarget.checked);
-        }
-        return _results;
-      };
 
       ListFacet.prototype.initialize = function(options) {
         this.options = options;
@@ -2236,6 +2227,38 @@ return this["JST"];
           this.$('header small.optioncount').html(filteredLength + ' of ' + collectionLength);
         }
         return this;
+      };
+
+      ListFacet.prototype.events = function() {
+        return _.extend({}, ListFacet.__super__.events.apply(this, arguments), {
+          'keyup input[name="filter"]': function(ev) {
+            return this.optionsView.filterOptions(ev.currentTarget.value);
+          },
+          'change header .options input[type="checkbox"][name="all"]': function(ev) {
+            return this.optionsView.setCheckboxes(ev);
+          },
+          'click .orderby i': 'changeOrder'
+        });
+      };
+
+      ListFacet.prototype.changeOrder = function(ev) {
+        var $target, order, type;
+        $target = $(ev.currentTarget);
+        if ($target.hasClass('active')) {
+          if ($target.hasClass('alpha')) {
+            $target.toggleClass('fa-sort-alpha-desc');
+            $target.toggleClass('fa-sort-alpha-asc');
+          } else if ($target.hasClass('amount')) {
+            $target.toggleClass('fa-sort-amount-desc');
+            $target.toggleClass('fa-sort-amount-asc');
+          }
+        } else {
+          this.$('.active').removeClass('active');
+          $target.addClass('active');
+        }
+        type = $target.hasClass('alpha') ? 'alpha' : 'amount';
+        order = $target.hasClass('fa-sort-' + type + '-desc') ? 'desc' : 'asc';
+        return this.collection.orderBy(type + '_' + order);
       };
 
       ListFacet.prototype.update = function(newOptions) {
