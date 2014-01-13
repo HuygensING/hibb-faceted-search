@@ -153,7 +153,7 @@
           model = _ref1[_i];
           model.set('checked', ev.currentTarget.checked);
         }
-        this.renderAll();
+        this.render();
         return this.triggerChange();
       };
 

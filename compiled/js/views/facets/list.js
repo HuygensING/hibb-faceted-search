@@ -39,13 +39,16 @@
         var body, menu,
           _this = this;
         ListFacet.__super__.render.apply(this, arguments);
-        menu = tpls['faceted-search/facets/list.menu'](this.model.attributes);
-        body = tpls['faceted-search/facets/list.body'](this.model.attributes);
-        this.el.querySelector('header .options').innerHTML = menu;
-        this.el.querySelector('.body').innerHTML = body;
         this.collection = new Collections.Options(this.options.attrs.options, {
           parse: true
         });
+        menu = tpls['faceted-search/facets/list.menu']({
+          model: this.model.attributes,
+          selectAll: this.collection.length <= 20
+        });
+        body = tpls['faceted-search/facets/list.body'](this.model.attributes);
+        this.el.querySelector('header .options').innerHTML = menu;
+        this.el.querySelector('.body').innerHTML = body;
         this.optionsView = new Views.Options({
           collection: this.collection,
           facetName: this.model.get('name')

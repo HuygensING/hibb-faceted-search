@@ -88,7 +88,7 @@ buf.push("<ul></ul>");;return buf.join("");
 
 this["JST"]["faceted-search/facets/list.menu"] = function anonymous(locals) {
 var buf = [];
-buf.push("<input type=\"checkbox\" name=\"all\"/><input type=\"text\" name=\"filter\"/><small class=\"optioncount\"></small><div class=\"orderby\"><i class=\"alpha fa fa-sort-alpha-asc\"></i><i class=\"amount active fa fa-sort-amount-desc\"></i></div>");;return buf.join("");
+var locals_ = (locals || {}),selectAll = locals_.selectAll;buf.push("<input" + (jade.attrs({ 'type':("checkbox"), 'name':("all"), 'style':(selectAll?'visibility:visible':'visibility:hidden') }, {"type":true,"name":true,"style":true})) + "/><input type=\"text\" name=\"filter\"/><small class=\"optioncount\"></small><div class=\"orderby\"><i class=\"alpha fa fa-sort-alpha-asc\"></i><i class=\"amount active fa fa-sort-amount-desc\"></i></div>");;return buf.join("");
 };
 
 this["JST"]["faceted-search/facets/list.option"] = function anonymous(locals) {

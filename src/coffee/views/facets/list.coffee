@@ -35,13 +35,16 @@ define (require) ->
 		render: ->
 			super
 
-			menu = tpls['faceted-search/facets/list.menu'] @model.attributes
+			@collection = new Collections.Options @options.attrs.options, parse: true
+
+			menu = tpls['faceted-search/facets/list.menu'] 
+				model: @model.attributes
+				selectAll: @collection.length <= 20
 			body = tpls['faceted-search/facets/list.body'] @model.attributes
 
 			@el.querySelector('header .options').innerHTML = menu
 			@el.querySelector('.body').innerHTML = body
 
-			@collection = new Collections.Options @options.attrs.options, parse: true
 			@optionsView = new Views.Options
 				collection: @collection
 				facetName: @model.get 'name'

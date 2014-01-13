@@ -83,6 +83,7 @@ define (require) ->
 
 			@
 
+		# Unused, but could be handy in the future.
 		renderAll: ->
 			@render()
 			@appendAllOptions()
@@ -95,6 +96,7 @@ define (require) ->
 
 			@$('ul').append tpl
 
+		# Unused, but could be handy in the future.
 		appendAllOptions: ->
 			tpl = ''
 			for option in @filtered_items[@showing..]
@@ -119,7 +121,7 @@ define (require) ->
 
 		setCheckboxes: (ev) ->
 			model.set 'checked', ev.currentTarget.checked for model in @collection.models
-			@renderAll()
+			@render()
 			@triggerChange()
 
 			# @selectAll = not @selectAll

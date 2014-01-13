@@ -1449,7 +1449,7 @@ buf.push("<ul></ul>");;return buf.join("");
 
 this["JST"]["faceted-search/facets/list.menu"] = function anonymous(locals) {
 var buf = [];
-buf.push("<input type=\"checkbox\" name=\"all\"/><input type=\"text\" name=\"filter\"/><small class=\"optioncount\"></small><div class=\"orderby\"><i class=\"alpha fa fa-sort-alpha-asc\"></i><i class=\"amount active fa fa-sort-amount-desc\"></i></div>");;return buf.join("");
+var locals_ = (locals || {}),selectAll = locals_.selectAll;buf.push("<input" + (jade.attrs({ 'type':("checkbox"), 'name':("all"), 'style':(selectAll?'visibility:visible':'visibility:hidden') }, {"type":true,"name":true,"style":true})) + "/><input type=\"text\" name=\"filter\"/><small class=\"optioncount\"></small><div class=\"orderby\"><i class=\"alpha fa fa-sort-alpha-asc\"></i><i class=\"amount active fa fa-sort-amount-desc\"></i></div>");;return buf.join("");
 };
 
 this["JST"]["faceted-search/facets/list.option"] = function anonymous(locals) {
@@ -2144,7 +2144,7 @@ return this["JST"];
           model = _ref1[_i];
           model.set('checked', ev.currentTarget.checked);
         }
-        this.renderAll();
+        this.render();
         return this.triggerChange();
       };
 
@@ -2196,13 +2196,16 @@ return this["JST"];
         var body, menu,
           _this = this;
         ListFacet.__super__.render.apply(this, arguments);
-        menu = tpls['faceted-search/facets/list.menu'](this.model.attributes);
-        body = tpls['faceted-search/facets/list.body'](this.model.attributes);
-        this.el.querySelector('header .options').innerHTML = menu;
-        this.el.querySelector('.body').innerHTML = body;
         this.collection = new Collections.Options(this.options.attrs.options, {
           parse: true
         });
+        menu = tpls['faceted-search/facets/list.menu']({
+          model: this.model.attributes,
+          selectAll: this.collection.length <= 20
+        });
+        body = tpls['faceted-search/facets/list.body'](this.model.attributes);
+        this.el.querySelector('header .options').innerHTML = menu;
+        this.el.querySelector('.body').innerHTML = body;
         this.optionsView = new Views.Options({
           collection: this.collection,
           facetName: this.model.get('name')
