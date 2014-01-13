@@ -75,7 +75,7 @@ define (require) ->
 				div.style.height = el.clientHeight + 'px'
 				div.style.display = 'block'
 
-				loader = @el.querySelector '.overlay img'
+				loader = @el.querySelector '.overlay div'
 				bb = dom(el).boundingBox()
 				loader.style.left = bb.left + bb.width/2 + 'px'
 
@@ -103,6 +103,7 @@ define (require) ->
 					
 		renderFacets: (data) ->
 			@$('.loader').hide()
+			@$('.faceted-search > i.fa-compress').css 'visibility', 'visible'
 
 			# If the size of the searchResults is 1 then it's the first time we render the facets
 			if @model.searchResults.length is 1

@@ -290,8 +290,9 @@
 .padb10{padding-bottom:10%}
 
 .overlay{background:rgba(0,0,0,0.2);position:absolute;z-index:1;border-radius:8px;display:none;}
-.overlay img{position:fixed;padding:20px;background:#fff;border-radius:30px;box-shadow:1px 1px 10px #000;margin-left:-20px;margin-top:-20px}
+.overlay div{position:fixed;padding:20px;background:#fff;border-radius:30px;box-shadow:1px 1px 10px #000;margin-left:-20px;margin-top:-20px}
 .faceted-search{max-width:300px;}
+.faceted-search > i.fa{cursor:pointer;visibility:hidden}
 .faceted-search ul{margin:0;padding:0}
 .faceted-search input[type="checkbox"]{margin:0;padding:0}
 .faceted-search form{border-radius:8px;box-shadow:0 0 6px #aaa;}

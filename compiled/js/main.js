@@ -69,7 +69,7 @@
           div.style.width = el.clientWidth + 'px';
           div.style.height = el.clientHeight + 'px';
           div.style.display = 'block';
-          loader = _this.el.querySelector('.overlay img');
+          loader = _this.el.querySelector('.overlay div');
           bb = dom(el).boundingBox();
           loader.style.left = bb.left + bb.width / 2 + 'px';
           top = bb.height > document.documentElement.clientHeight ? '50vh' : bb.height / 2 + 'px';
@@ -94,6 +94,7 @@
         var View, facetData, fragment, index, textSearch, _ref1,
           _this = this;
         this.$('.loader').hide();
+        this.$('.faceted-search > i.fa-compress').css('visibility', 'visible');
         if (this.model.searchResults.length === 1) {
           fragment = document.createDocumentFragment();
           if (config.search) {

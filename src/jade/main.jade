@@ -1,11 +1,14 @@
 .overlay
-	img(src="../images/faceted-search/loader.gif")
+	//- img(src="../images/faceted-search/loader.gif")
+	div
+		i.fa.fa-spinner.fa-spin.fa-2x
 .faceted-search
-	i.fa.fa-backward.fa-compress
+	i.fa.fa-compress
 	form
 		.search-placeholder
 		.facets
 			div.loader
 				h4 Loading facets...
 				br
-				img(src="../images/faceted-search/loader.gif")
+				i.fa.fa-spinner.fa-spin.fa-2x
+				//- img(src="../images/faceted-search/loader.gif") <i class="fa fa-spinner fa-spin"></i>

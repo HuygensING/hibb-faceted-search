@@ -1551,7 +1551,7 @@ buf.push("</ul>");
 
 this["JST"]["faceted-search/main"] = function anonymous(locals) {
 var buf = [];
-buf.push("<div class=\"overlay\"><img src=\"../images/faceted-search/loader.gif\"/></div><div class=\"faceted-search\"><i class=\"fa fa-backward fa-compress\"></i><form><div class=\"search-placeholder\"></div><div class=\"facets\"><div class=\"loader\"><h4>Loading facets...</h4><br/><img src=\"../images/faceted-search/loader.gif\"/></div></div></form></div>");;return buf.join("");
+buf.push("<div class=\"overlay\"><div><i class=\"fa fa-spinner fa-spin fa-2x\"></i></div></div><div class=\"faceted-search\"><i class=\"fa fa-compress\"></i><form><div class=\"search-placeholder\"></div><div class=\"facets\"><div class=\"loader\"><h4>Loading facets...</h4><br/><i class=\"fa fa-spinner fa-spin fa-2x\"></i></div></div></form></div>");;return buf.join("");
 };
 
 return this["JST"];
@@ -2908,7 +2908,7 @@ return this["JST"];
           div.style.width = el.clientWidth + 'px';
           div.style.height = el.clientHeight + 'px';
           div.style.display = 'block';
-          loader = _this.el.querySelector('.overlay img');
+          loader = _this.el.querySelector('.overlay div');
           bb = dom(el).boundingBox();
           loader.style.left = bb.left + bb.width / 2 + 'px';
           top = bb.height > document.documentElement.clientHeight ? '50vh' : bb.height / 2 + 'px';
@@ -2933,6 +2933,7 @@ return this["JST"];
         var View, facetData, fragment, index, textSearch, _ref1,
           _this = this;
         this.$('.loader').hide();
+        this.$('.faceted-search > i.fa-compress').css('visibility', 'visible');
         if (this.model.searchResults.length === 1) {
           fragment = document.createDocumentFragment();
           if (config.search) {
