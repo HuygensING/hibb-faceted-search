@@ -30,7 +30,7 @@
       Facet.prototype.events = function() {
         return {
           'click h3': 'toggleBody',
-          'click header i.fa': 'toggleMenu'
+          'click header i.openclose': 'toggleMenu'
         };
       };
 

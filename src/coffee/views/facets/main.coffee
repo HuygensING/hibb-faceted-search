@@ -25,7 +25,7 @@ define (require) ->
 		# ### Events
 		events: ->
 			'click h3': 'toggleBody'
-			'click header i.fa': 'toggleMenu'
+			'click header i.openclose': 'toggleMenu'
 
 		# ### Show/hide menu/body
 		toggleMenu: (ev) ->

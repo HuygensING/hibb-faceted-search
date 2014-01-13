@@ -1449,7 +1449,7 @@ buf.push("<ul></ul>");;return buf.join("");
 
 this["JST"]["faceted-search/facets/list.menu"] = function anonymous(locals) {
 var buf = [];
-buf.push("<input type=\"checkbox\" name=\"all\"/><input type=\"text\" name=\"filter\"/><small class=\"optioncount\"></small><div class=\"orderby\"><span class=\"name\">A</span><span class=\"count active\">1</span></div>");;return buf.join("");
+buf.push("<input type=\"checkbox\" name=\"all\"/><input type=\"text\" name=\"filter\"/><small class=\"optioncount\"></small><div class=\"orderby\"><i class=\"alpha fa fa-sort-alpha-asc\"></i><i class=\"amount active fa fa-sort-amount-desc\"></i></div>");;return buf.join("");
 };
 
 this["JST"]["faceted-search/facets/list.option"] = function anonymous(locals) {
@@ -1495,7 +1495,7 @@ buf.push("</ul>");;return buf.join("");
 
 this["JST"]["faceted-search/facets/main"] = function anonymous(locals) {
 var buf = [];
-var locals_ = (locals || {}),name = locals_.name,title = locals_.title;buf.push("<div class=\"placeholder pad4\"><header><h3" + (jade.attrs({ 'data-name':(name) }, {"data-name":true})) + ">" + (jade.escape(null == (jade.interp = title) ? "" : jade.interp)) + "</h3><i class=\"fa fa-plus-square-o\"></i><div class=\"options\"></div></header><div class=\"body\"></div></div>");;return buf.join("");
+var locals_ = (locals || {}),name = locals_.name,title = locals_.title;buf.push("<div class=\"placeholder pad4\"><header><h3" + (jade.attrs({ 'data-name':(name) }, {"data-name":true})) + ">" + (jade.escape(null == (jade.interp = title) ? "" : jade.interp)) + "</h3><i class=\"openclose fa fa-plus-square-o\"></i><div class=\"options\"></div></header><div class=\"body\"></div></div>");;return buf.join("");
 };
 
 this["JST"]["faceted-search/facets/search.body"] = function anonymous(locals) {
@@ -1589,7 +1589,7 @@ return this["JST"];
       Facet.prototype.events = function() {
         return {
           'click h3': 'toggleBody',
-          'click header i.fa': 'toggleMenu'
+          'click header i.openclose': 'toggleMenu'
         };
       };
 
@@ -1922,19 +1922,19 @@ return this["JST"];
       ListItems.prototype.model = Models.Option;
 
       ListItems.prototype.strategies = {
-        name: function(model) {
+        alpha_asc: function(model) {
           return model.get('name');
         },
-        name_opposite: function(model) {
+        alpha_desc: function(model) {
           return String.fromCharCode.apply(String, _.map(model.get('name').split(''), function(c) {
             return 0xffff - c.charCodeAt();
           }));
         },
-        count: function(model) {
-          return -1 * +model.get('count');
-        },
-        count_opposite: function(model) {
+        amount_asc: function(model) {
           return +model.get('count');
+        },
+        amount_desc: function(model) {
+          return -1 * +model.get('count');
         }
       };
 
@@ -1944,7 +1944,7 @@ return this["JST"];
       };
 
       ListItems.prototype.initialize = function() {
-        return this.comparator = this.strategies.count;
+        return this.comparator = this.strategies.amount_desc;
       };
 
       ListItems.prototype.revert = function() {
@@ -2157,24 +2157,28 @@ return this["JST"];
             return this.optionsView.filterOptions(ev.currentTarget.value);
           },
           'change header .options input[type="checkbox"][name="all"]': 'selectAll',
-          'click .orderby span': 'changeOrder'
+          'click .orderby i': 'changeOrder'
         });
       };
 
       ListFacet.prototype.changeOrder = function(ev) {
-        var $target, strategy;
+        var $target, order, type;
         $target = $(ev.currentTarget);
         if ($target.hasClass('active')) {
-          $target.toggleClass('opposite');
+          if ($target.hasClass('alpha')) {
+            $target.toggleClass('fa-sort-alpha-desc');
+            $target.toggleClass('fa-sort-alpha-asc');
+          } else if ($target.hasClass('amount')) {
+            $target.toggleClass('fa-sort-amount-desc');
+            $target.toggleClass('fa-sort-amount-asc');
+          }
         } else {
-          this.$('.orderby span.active').removeClass('active opposite');
+          this.$('.active').removeClass('active');
           $target.addClass('active');
         }
-        strategy = $target.hasClass('name') ? 'name' : 'count';
-        if ($target.hasClass('opposite')) {
-          strategy += '_opposite';
-        }
-        return this.collection.orderBy(strategy);
+        type = $target.hasClass('alpha') ? 'alpha' : 'amount';
+        order = $target.hasClass('fa-sort-' + type + '-desc') ? 'desc' : 'asc';
+        return this.collection.orderBy(type + '_' + order);
       };
 
       ListFacet.prototype.selectAll = function(ev) {

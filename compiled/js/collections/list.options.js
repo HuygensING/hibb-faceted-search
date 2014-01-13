@@ -21,19 +21,19 @@
       ListItems.prototype.model = Models.Option;
 
       ListItems.prototype.strategies = {
-        name: function(model) {
+        alpha_asc: function(model) {
           return model.get('name');
         },
-        name_opposite: function(model) {
+        alpha_desc: function(model) {
           return String.fromCharCode.apply(String, _.map(model.get('name').split(''), function(c) {
             return 0xffff - c.charCodeAt();
           }));
         },
-        count: function(model) {
-          return -1 * +model.get('count');
-        },
-        count_opposite: function(model) {
+        amount_asc: function(model) {
           return +model.get('count');
+        },
+        amount_desc: function(model) {
+          return -1 * +model.get('count');
         }
       };
 
@@ -43,7 +43,7 @@
       };
 
       ListItems.prototype.initialize = function() {
-        return this.comparator = this.strategies.count;
+        return this.comparator = this.strategies.amount_desc;
       };
 
       ListItems.prototype.revert = function() {

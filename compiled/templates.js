@@ -88,7 +88,7 @@ buf.push("<ul></ul>");;return buf.join("");
 
 this["JST"]["faceted-search/facets/list.menu"] = function anonymous(locals) {
 var buf = [];
-buf.push("<input type=\"checkbox\" name=\"all\"/><input type=\"text\" name=\"filter\"/><small class=\"optioncount\"></small><div class=\"orderby\"><span class=\"name\">A</span><span class=\"count active\">1</span></div>");;return buf.join("");
+buf.push("<input type=\"checkbox\" name=\"all\"/><input type=\"text\" name=\"filter\"/><small class=\"optioncount\"></small><div class=\"orderby\"><i class=\"alpha fa fa-sort-alpha-asc\"></i><i class=\"amount active fa fa-sort-amount-desc\"></i></div>");;return buf.join("");
 };
 
 this["JST"]["faceted-search/facets/list.option"] = function anonymous(locals) {
@@ -134,7 +134,7 @@ buf.push("</ul>");;return buf.join("");
 
 this["JST"]["faceted-search/facets/main"] = function anonymous(locals) {
 var buf = [];
-var locals_ = (locals || {}),name = locals_.name,title = locals_.title;buf.push("<div class=\"placeholder pad4\"><header><h3" + (jade.attrs({ 'data-name':(name) }, {"data-name":true})) + ">" + (jade.escape(null == (jade.interp = title) ? "" : jade.interp)) + "</h3><i class=\"fa fa-plus-square-o\"></i><div class=\"options\"></div></header><div class=\"body\"></div></div>");;return buf.join("");
+var locals_ = (locals || {}),name = locals_.name,title = locals_.title;buf.push("<div class=\"placeholder pad4\"><header><h3" + (jade.attrs({ 'data-name':(name) }, {"data-name":true})) + ">" + (jade.escape(null == (jade.interp = title) ? "" : jade.interp)) + "</h3><i class=\"openclose fa fa-plus-square-o\"></i><div class=\"options\"></div></header><div class=\"body\"></div></div>");;return buf.join("");
 };
 
 this["JST"]["faceted-search/facets/search.body"] = function anonymous(locals) {

@@ -32,24 +32,28 @@
             return this.optionsView.filterOptions(ev.currentTarget.value);
           },
           'change header .options input[type="checkbox"][name="all"]': 'selectAll',
-          'click .orderby span': 'changeOrder'
+          'click .orderby i': 'changeOrder'
         });
       };
 
       ListFacet.prototype.changeOrder = function(ev) {
-        var $target, strategy;
+        var $target, order, type;
         $target = $(ev.currentTarget);
         if ($target.hasClass('active')) {
-          $target.toggleClass('opposite');
+          if ($target.hasClass('alpha')) {
+            $target.toggleClass('fa-sort-alpha-desc');
+            $target.toggleClass('fa-sort-alpha-asc');
+          } else if ($target.hasClass('amount')) {
+            $target.toggleClass('fa-sort-amount-desc');
+            $target.toggleClass('fa-sort-amount-asc');
+          }
         } else {
-          this.$('.orderby span.active').removeClass('active opposite');
+          this.$('.active').removeClass('active');
           $target.addClass('active');
         }
-        strategy = $target.hasClass('name') ? 'name' : 'count';
-        if ($target.hasClass('opposite')) {
-          strategy += '_opposite';
-        }
-        return this.collection.orderBy(strategy);
+        type = $target.hasClass('alpha') ? 'alpha' : 'amount';
+        order = $target.hasClass('fa-sort-' + type + '-desc') ? 'desc' : 'asc';
+        return this.collection.orderBy(type + '_' + order);
       };
 
       ListFacet.prototype.selectAll = function(ev) {

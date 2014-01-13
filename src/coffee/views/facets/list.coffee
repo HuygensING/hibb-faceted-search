@@ -28,7 +28,7 @@ define (require) ->
 		events: -> _.extend {}, super,
 			'keyup input[name="filter"]': (ev) -> @optionsView.filterOptions ev.currentTarget.value
 			'change header .options input[type="checkbox"][name="all"]': 'selectAll'
-			'click .orderby span': 'changeOrder'
+			'click .orderby i': 'changeOrder'
 
 		# We use the class opposite instead of ascending/descending, because the options are ascending and
 		# and the count is descending. With opposite we can use a generic name.
@@ -36,15 +36,20 @@ define (require) ->
 			$target = $(ev.currentTarget)
 
 			if $target.hasClass 'active'
-				$target.toggleClass 'opposite'
+				if $target.hasClass 'alpha'
+					$target.toggleClass 'fa-sort-alpha-desc'
+					$target.toggleClass 'fa-sort-alpha-asc'
+				else if $target.hasClass 'amount'
+					$target.toggleClass 'fa-sort-amount-desc'
+					$target.toggleClass 'fa-sort-amount-asc'
 			else
-				@$('.orderby span.active').removeClass 'active opposite'
+				@$('.active').removeClass 'active'
 				$target.addClass 'active'
 
-			strategy = if $target.hasClass 'name' then 'name' else 'count'
-			strategy += '_opposite'  if $target.hasClass 'opposite'
+			type = if $target.hasClass 'alpha' then 'alpha' else 'amount'
+			order = if $target.hasClass 'fa-sort-'+type+'-desc' then 'desc' else 'asc'
 
-			@collection.orderBy strategy
+			@collection.orderBy type+'_'+order
 
 		selectAll: (ev) ->
 			checkboxes = @el.querySelectorAll('input[type="checkbox"]')
