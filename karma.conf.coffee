@@ -6,8 +6,8 @@ module.exports = (config) ->
 		# base path, that will be used to resolve files and exclude
 		basePath: ""
 		
-		# frameworks to use
-		frameworks: ["jasmine", "requirejs"]
+		# frameworks to use; requirejs goes first, to prevent errors
+		frameworks: ["requirejs", "mocha", "chai"]
 		
 		# list of files / patterns to load in the browser
 		files: [
@@ -26,7 +26,7 @@ module.exports = (config) ->
 		
 		# test results reporter to use
 		# possible values: 'dots', 'progress', 'junit', 'growl', 'coverage'
-		reporters: ["mocha"]
+		reporters: ["progress"]
 		
 		# web server port
 		port: 9876

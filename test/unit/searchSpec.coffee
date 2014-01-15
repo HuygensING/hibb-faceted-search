@@ -1,21 +1,22 @@
-define ["coffee/models/search", "jquery", "underscore"], (Search, $, _) ->
+define ["coffee/models/search", "chai"], (Search, chai) ->
 	describe "Search", ->
 		describe 'defaults', ->
 			search = new Search
 			it "term is *", ->
-				expect(search.get 'term').toBe '*'
+				search.get('term').should.equal '*'
 			it 'caseSensitive is false', ->
-				expect(search.get 'caseSensitive').toBe false
+				search.get('caseSensitive').should.equal false
 			it 'fuzzy is false', ->
-				expect(search.get 'fuzzy').toBe false
+				search.get('fuzzy').should.equal false
 			it 'title is "Text Search"', ->
-				expect(search.get 'title').toBe 'Text Search'
+				search.get('title').should.equal 'Text Search'
 			it 'name is text_search', ->
-				expect(search.get 'name').toBe 'text_search'
+				search.get('name').should.equal 'text_search'
 
 		describe 'method queryData', ->
 			it "excludes name and title", ->
-				m = new Search
-				qd = m.queryData()
-				expect(qd.name).not.toBeDefined()
-				expect(qd.title).not.toBeDefined()
+				search = new Search
+				data = search.queryData()
+
+				should.not.exist data.name
+				should.not.exist data.title
