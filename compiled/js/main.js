@@ -58,8 +58,8 @@
         this.subscribe('change:cursor', function(responseModel) {
           return _this.trigger('results:change', responseModel);
         });
-        this.subscribe('change:page', function(responseModel) {
-          return _this.trigger('results:change', responseModel);
+        this.subscribe('change:page', function(responseModel, database) {
+          return _this.trigger('results:change', responseModel, database);
         });
         this.model = new Models.FacetedSearch(queryOptions);
         this.listenTo(this.model.searchResults, 'request', function() {
