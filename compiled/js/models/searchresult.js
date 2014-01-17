@@ -93,7 +93,7 @@
         }
         return this.getResults(url, function(data) {
           _this.set(data);
-          return _this.publish('change:page', _this);
+          return _this.publish('change:page', _this, database);
         });
       };
 
