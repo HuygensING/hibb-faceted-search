@@ -2657,7 +2657,7 @@ return this["JST"];
         this.queryOptions = queryOptions;
         this.searchResults = new SearchResults();
         this.on('change', function(model, options) {
-          return _this.searchResults.runQuery(_this.attributes);
+          return _this.searchResults.runQuery(_.clone(_this.attributes));
         });
         return this.trigger('change');
       };
@@ -3065,9 +3065,6 @@ return this["JST"];
         for (index in _ref1) {
           if (!__hasProp.call(_ref1, index)) continue;
           data = _ref1[index];
-          if (data.name === 'textSearch') {
-            console.log('ALSO HERE 1');
-          }
           _results.push(this.facetViews[data.name].update(data.options));
         }
         return _results;
@@ -3082,9 +3079,6 @@ return this["JST"];
         for (index in _ref1) {
           if (!__hasProp.call(_ref1, index)) continue;
           data = _ref1[index];
-          if (data.name === 'textSearch') {
-            console.log('ALSO HERE 2');
-          }
           if (this.facetViews[data.name].reset) {
             this.facetViews[data.name].reset();
           }

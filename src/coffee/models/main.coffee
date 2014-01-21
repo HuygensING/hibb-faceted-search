@@ -35,7 +35,9 @@ define (require) ->
 			@searchResults = new SearchResults()
 
 			# Run a new query everytime something changes on the model (@attributes are the queryOptions).
-			@on 'change', (model, options) => @searchResults.runQuery @attributes
+			# Clone the attributes/queryOptions to preserve the hash, because we remove the resultRows
+			# before sending the hash to the server.
+			@on 'change', (model, options) => @searchResults.runQuery _.clone(@attributes)
 
 			# Manually trigger the change event, because the initial @querySettings, don't trigger the change event
 			# and thus searchResult.runQuery isn't called.

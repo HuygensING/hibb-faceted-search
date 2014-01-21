@@ -25,7 +25,7 @@
         this.queryOptions = queryOptions;
         this.searchResults = new SearchResults();
         this.on('change', function(model, options) {
-          return _this.searchResults.runQuery(_this.attributes);
+          return _this.searchResults.runQuery(_.clone(_this.attributes));
         });
         return this.trigger('change');
       };

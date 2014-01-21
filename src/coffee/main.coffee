@@ -191,13 +191,13 @@ define (require) ->
 			@facetViews.textSearch.update() if @facetViews.hasOwnProperty 'textSearch'
 			
 			for own index, data of @model.searchResults.current.get('facets')
-				console.log 'ALSO HERE 1' if data.name is 'textSearch'
+				# console.log 'ALSO HERE 1' if data.name is 'textSearch'
 				@facetViews[data.name].update(data.options)
 
 		reset: ->
 			@facetViews.textSearch.reset() if @facetViews.hasOwnProperty 'textSearch'
 
 			for own index, data of @model.searchResults.last().get('facets')
-				console.log 'ALSO HERE 2' if data.name is 'textSearch'
+				# console.log 'ALSO HERE 2' if data.name is 'textSearch'
 				@facetViews[data.name].reset() if @facetViews[data.name].reset
 			@model.reset()
