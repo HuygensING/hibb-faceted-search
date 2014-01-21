@@ -36,6 +36,7 @@
     "grunt-newer": "*",
     "grunt-concurrent": "*",
     "load-grunt-tasks": "*",
-    "my-grunt-modules": "Gijsjan/my-grunt-modules"
+    "my-grunt-modules": "Gijsjan/my-grunt-modules",
+    "grunt-touch": "~0.1.0"
   }
 }

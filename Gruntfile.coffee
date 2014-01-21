@@ -108,6 +108,9 @@ module.exports = (grunt) ->
 
 		### OTHER ###
 
+		touch:
+			build: 'build'
+
 		concurrent:
 			compile: ['coffee:compile', 'jade', 'stylus']
 
@@ -170,6 +173,7 @@ module.exports = (grunt) ->
 		'cssmin:stage'
 		'createSymlinks:stage'
 		'requirejs:compile'
+		'touch:build'
 	]
 	grunt.registerTask 'b', 'build'
 
