@@ -62,8 +62,8 @@ define (require) ->
 			@subscribe 'change:cursor', (responseModel) => 
 				@trigger 'results:change', responseModel
 
-			@subscribe 'change:page', (responseModel) => 
-				@trigger 'results:change', responseModel
+			@subscribe 'change:page', (responseModel, database) => 
+				@trigger 'results:change', responseModel, database
 			
 			# Initialize the FacetedSearch model.
 			@model = new Models.FacetedSearch queryOptions

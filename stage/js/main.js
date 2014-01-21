@@ -2321,9 +2321,6 @@ return this["JST"];
         if (this.token == null) {
           this.token = sessionStorage.getItem('huygens_token');
         }
-        if (this.token == null) {
-          return false;
-        }
         return this.token;
       };
 
@@ -2398,7 +2395,7 @@ return this["JST"];
           processData: false,
           crossDomain: true
         };
-        if (options.token) {
+        if (options.token && (token.get() != null)) {
           ajaxArgs.beforeSend = function(xhr) {
             return xhr.setRequestHeader('Authorization', "" + (token.getType()) + " " + (token.get()));
           };
@@ -2532,7 +2529,7 @@ return this["JST"];
         }
         return this.getResults(url, function(data) {
           _this.set(data);
-          return _this.publish('change:page', _this);
+          return _this.publish('change:page', _this, database);
         });
       };
 
@@ -2923,8 +2920,8 @@ return this["JST"];
         this.subscribe('change:cursor', function(responseModel) {
           return _this.trigger('results:change', responseModel);
         });
-        this.subscribe('change:page', function(responseModel) {
-          return _this.trigger('results:change', responseModel);
+        this.subscribe('change:page', function(responseModel, database) {
+          return _this.trigger('results:change', responseModel, database);
         });
         this.model = new Models.FacetedSearch(queryOptions);
         this.listenTo(this.model.searchResults, 'request', function() {

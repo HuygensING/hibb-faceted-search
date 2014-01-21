@@ -66,4 +66,4 @@ define (require) ->
 
 			@getResults url, (data) =>
 				@set data
-				@publish 'change:page', @
+				@publish 'change:page', @, database
