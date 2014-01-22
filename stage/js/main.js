@@ -2045,7 +2045,7 @@ return this["JST"];
         id = $target.attr('data-value');
         this.collection.get(id).set('checked', $target.hasClass('fa-check-square-o'));
         if (this.$('i.fa-check-square-o').length === 0) {
-          return triggerChange();
+          return this.triggerChange();
         } else {
           return Fn.timeoutWithReset(1000, function() {
             return _this.triggerChange();

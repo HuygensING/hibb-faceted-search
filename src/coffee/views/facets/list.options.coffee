@@ -42,7 +42,7 @@ define (require) ->
 			@collection.get(id).set 'checked', $target.hasClass 'fa-check-square-o'
 
 			
-			if @$('i.fa-check-square-o').length is 0 then triggerChange() else Fn.timeoutWithReset 1000, => @triggerChange()
+			if @$('i.fa-check-square-o').length is 0 then @triggerChange() else Fn.timeoutWithReset 1000, => @triggerChange()
 
 		triggerChange: =>
 			@trigger 'change',
