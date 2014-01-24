@@ -39,6 +39,8 @@ define (require) ->
 						url: config.baseUrl + config.searchPath
 						data: JSON.stringify @options.queryOptions
 						dataType: 'text'
+						headers:
+							VRE_ID: 'DutchCaribbean'
 
 					jqXHR.done (data, textStatus, jqXHR) =>
 						if jqXHR.status is 201
