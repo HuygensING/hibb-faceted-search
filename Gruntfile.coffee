@@ -46,7 +46,7 @@ module.exports = (grunt) ->
 			keepalive:
 				options:
 					port: 3000
-					base: '/home/gijs/Projects/module-env/compiled'
+					base: 'compiled'
 					middleware: connect_middleware
 					keepalive: true
 			compiled:
@@ -143,7 +143,7 @@ module.exports = (grunt) ->
 				files: 'test/**/*.coffee'
 				tasks: ['coffee:test', 'shell:mocha']
 			coffee:
-				files: ['src/coffee/**/*.coffee', '/home/gijs/Projects/module-env/src/coffee/**/*.coffee']
+				files: ['src/coffee/**/*.coffee']
 				tasks: ['newer:coffee:compile', 'build']
 			jade:
 				files: ['src/index.jade', 'src/jade/**/*.jade']
