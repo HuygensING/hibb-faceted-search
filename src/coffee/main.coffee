@@ -3,7 +3,7 @@ require.config
 	paths:
 		'tpls': '../templates'
 		'jade': '../lib/jade/runtime'
-		'hilib': '../lib/hilib/compiled'
+		'hilib': '../../hilib/compiled'
 
 define (require) ->
 	Fn = require 'hilib/functions/general'
@@ -130,7 +130,7 @@ define (require) ->
 				@el.querySelector('.facets').appendChild fragment
 
 			# If the size is greater than 1, the facets are already rendered and we call their update methods.
-			else
+			else if @model.searchResults.length > 1
 				@update()
 
 		# ### Events
