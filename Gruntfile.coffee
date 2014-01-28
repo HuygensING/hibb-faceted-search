@@ -137,8 +137,8 @@ module.exports = (grunt) ->
 
 		watch:
 			options:
-				# livereload: true
-				nospawn: true
+				livereload: true
+				# nospawn: true
 			coffeetest:
 				files: 'test/**/*.coffee'
 				tasks: ['coffee:test', 'shell:mocha']
