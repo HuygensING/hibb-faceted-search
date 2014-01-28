@@ -12,15 +12,13 @@
   });
 
   define(function(require) {
-    var FacetedSearch, Fn, Models, Views, config, dom, facetViewMap, pubsub, tpls, _ref;
+    var FacetedSearch, Fn, MainModel, Views, config, dom, facetViewMap, pubsub, tpls, _ref;
     Fn = require('hilib/functions/general');
     dom = require('hilib/functions/dom');
     pubsub = require('hilib/mixins/pubsub');
     config = require('config');
     facetViewMap = require('facetviewmap');
-    Models = {
-      FacetedSearch: require('models/main')
-    };
+    MainModel = require('models/main');
     Views = {
       TextSearch: require('views/search'),
       Facets: {
@@ -50,7 +48,7 @@
         _.extend(config, options);
         queryOptions = _.extend(config.queryOptions, config.textSearchOptions);
         this.render();
-        this.model = new Models.FacetedSearch(queryOptions);
+        this.model = new MainModel(queryOptions);
         this.listenTo(this.model.searchResults, 'change:results', function(responseModel) {
           _this.renderFacets();
           return _this.trigger('results:change', responseModel);
@@ -224,6 +222,10 @@
           }
         }
         return this.model.reset();
+      };
+
+      FacetedSearch.prototype.refresh = function(newQueryOptions) {
+        return this.model.refresh(newQueryOptions);
       };
 
       return FacetedSearch;

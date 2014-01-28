@@ -32,15 +32,18 @@
         return this.trigger(message, this.current);
       };
 
-      SearchResults.prototype.runQuery = function(queryOptions) {
+      SearchResults.prototype.runQuery = function(queryOptions, cache) {
         var cacheString, options, resultRows, searchResult,
           _this = this;
+        if (cache == null) {
+          cache = true;
+        }
         if (queryOptions.hasOwnProperty('resultRows')) {
           resultRows = queryOptions.resultRows;
           delete queryOptions.resultRows;
         }
         cacheString = JSON.stringify(queryOptions);
-        if (this.cachedModels.hasOwnProperty(cacheString)) {
+        if (cache && this.cachedModels.hasOwnProperty(cacheString)) {
           return this.setCurrent(this.cachedModels[cacheString]);
         } else {
           this.trigger('request');

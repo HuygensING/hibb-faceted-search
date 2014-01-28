@@ -1,0 +1,69 @@
+// Sync handleSize with RangeFacet view!
+handleSize = 12px
+sliderHeight = 6px
+
+.facet.range
+	.body
+		height 32px
+		padding-top 6px
+
+		.slider
+			select_none()
+
+			height sliderHeight
+			background #EEE
+			border-radius sliderHeight
+			box-shadow inset 1px 1px (sliderHeight/2) #888
+			position relative
+			margin 0 (handleSize/2)
+
+			button
+				display none
+				position absolute
+				left 95px
+				width 80px
+				border-radius 4px
+				outline none
+				border none
+				background rgba(255, 189, 223, 0.3)
+				top 18px
+				color #444
+
+
+			.bar
+				height sliderHeight
+				background rgba(225, 9, 121, 0.3)
+				left 0
+				right 0
+				position absolute
+				z-index 1
+
+
+			.min-handle, .max-handle
+				position absolute
+				width handleSize
+				height handleSize
+				border-radius handleSize
+				background #CCC
+				box-shadow inset 1px 1px (handleSize/2) #444
+				cursor pointer
+				z-index 2
+
+			.min-handle
+				left -1 * (handleSize/2)
+				top ((handleSize - sliderHeight)/-2)
+
+			.max-handle
+				// left 391px
+				top ((handleSize - sliderHeight)/-2)
+
+			.min-value
+				position relative
+				top 20px
+				display inline-block
+
+			.max-value
+				position relative
+				top 20px
+				display inline-block
+				float right

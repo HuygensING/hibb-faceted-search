@@ -36,7 +36,11 @@
           facetValues = _.reject(this.get('facetValues'), function(data) {
             return data.name === attrs.facetValue.name;
           });
-          if (attrs.facetValue.values.length) {
+          if (attrs.facetValue.values != null) {
+            if (attrs.facetValue.values.length > 0) {
+              facetValues.push(attrs.facetValue);
+            }
+          } else {
             facetValues.push(attrs.facetValue);
           }
           attrs.facetValues = facetValues;
@@ -56,6 +60,19 @@
           silent: true
         });
         return this.trigger('change');
+      };
+
+      FacetedSearch.prototype.refresh = function(newQueryOptions) {
+        var key, value;
+        if (newQueryOptions == null) {
+          newQueryOptions = {};
+        }
+        for (key in newQueryOptions) {
+          if (!__hasProp.call(newQueryOptions, key)) continue;
+          value = newQueryOptions[key];
+          this.set(key, value);
+        }
+        return this.searchResults.runQuery(_.clone(this.attributes), false);
       };
 
       return FacetedSearch;
