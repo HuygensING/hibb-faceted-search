@@ -1,18 +1,13 @@
 define (require) ->
 
-	Views = 
-		Base: require 'hilib/views/base'
-
 	# Templates =
 	# 	Facet: require 'text!html/facet.html'
 	tpls = require 'tpls'
 	
 
-	class Facet extends Views.Base
+	class Facet extends Backbone.View
 
 		# ### Initialize
-		initialize: ->
-			super
 
 		# ### Render
 		render: ->

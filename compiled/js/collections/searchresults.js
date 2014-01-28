@@ -29,7 +29,7 @@
         var message;
         this.current = current;
         message = this.current.options.url != null ? 'change:cursor' : 'change:results';
-        return this.publish(message, this.current);
+        return this.trigger(message, this.current);
       };
 
       SearchResults.prototype.runQuery = function(queryOptions) {

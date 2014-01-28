@@ -3,10 +3,7 @@
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
   define(function(require) {
-    var Facet, Views, tpls, _ref;
-    Views = {
-      Base: require('hilib/views/base')
-    };
+    var Facet, tpls, _ref;
     tpls = require('tpls');
     return Facet = (function(_super) {
       __extends(Facet, _super);
@@ -15,10 +12,6 @@
         _ref = Facet.__super__.constructor.apply(this, arguments);
         return _ref;
       }
-
-      Facet.prototype.initialize = function() {
-        return Facet.__super__.initialize.apply(this, arguments);
-      };
 
       Facet.prototype.render = function() {
         var rtpl;
@@ -86,7 +79,7 @@
 
       return Facet;
 
-    })(Views.Base);
+    })(Backbone.View);
   });
 
 }).call(this);

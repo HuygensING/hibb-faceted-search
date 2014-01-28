@@ -1,22 +1,3 @@
-# EXAMPLE QUERY:
-# {
-#   "term": "bla bloe z*",
-#   "facetValues": [
-#     {
-#       "name": "metadata_folio_number",
-#       "values": [ "191", "192" ],
-#     }
-#   ],
-#   "sort": "score",
-#   "sortDir": "asc",
-#   "fuzzy": false,
-#   "caseSensitive": false,
-#   "textLayers": [
-#     "Diplomatic"
-#   ],
-#   "searchInAnnotations": false
-# }
-
 define (require) ->
 	SearchResults = require 'collections/searchresults'
 
@@ -64,3 +45,22 @@ define (require) ->
 			@set @defaults(), silent: true
 			@set @queryOptions, silent: true
 			@trigger 'change'
+
+# EXAMPLE QUERY:
+# {
+#   "term": "bla bloe z*",
+#   "facetValues": [
+#     {
+#       "name": "metadata_folio_number",
+#       "values": [ "191", "192" ],
+#     }
+#   ],
+#   "sort": "score",
+#   "sortDir": "asc",
+#   "fuzzy": false,
+#   "caseSensitive": false,
+#   "textLayers": [
+#     "Diplomatic"
+#   ],
+#   "searchInAnnotations": false
+# }

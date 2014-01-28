@@ -22,7 +22,6 @@
       FacetedSearch: require('models/main')
     };
     Views = {
-      Base: require('hilib/views/base'),
       TextSearch: require('views/search'),
       Facets: {
         List: require('views/facets/list'),
@@ -51,17 +50,17 @@
         _.extend(config, options);
         queryOptions = _.extend(config.queryOptions, config.textSearchOptions);
         this.render();
-        this.subscribe('change:results', function(responseModel) {
+        this.model = new Models.FacetedSearch(queryOptions);
+        this.listenTo(this.model.searchResults, 'change:results', function(responseModel) {
           _this.renderFacets();
           return _this.trigger('results:change', responseModel);
         });
-        this.subscribe('change:cursor', function(responseModel) {
+        this.listenTo(this.model.searchResults, 'change:cursor', function(responseModel) {
           return _this.trigger('results:change', responseModel);
         });
-        this.subscribe('change:page', function(responseModel, database) {
+        this.listenTo(this.model.searchResults, 'change:page', function(responseModel, database) {
           return _this.trigger('results:change', responseModel, database);
         });
-        this.model = new Models.FacetedSearch(queryOptions);
         this.listenTo(this.model.searchResults, 'request', function() {
           var bb, div, el, loader, top;
           el = _this.el.querySelector('.faceted-search');
@@ -75,10 +74,13 @@
           top = bb.height > document.documentElement.clientHeight ? '50vh' : bb.height / 2 + 'px';
           return loader.style.top = top;
         });
-        return this.listenTo(this.model.searchResults, 'sync', function() {
+        this.listenTo(this.model.searchResults, 'sync', function() {
           var el;
           el = _this.el.querySelector('.overlay');
           return el.style.display = 'none';
+        });
+        return this.listenTo(this.model.searchResults, 'unauthorised', function() {
+          return _this.trigger('unauthorised');
         });
       };
 
@@ -226,7 +228,7 @@
 
       return FacetedSearch;
 
-    })(Views.Base);
+    })(Backbone.View);
   });
 
 }).call(this);

@@ -23,7 +23,7 @@ define (require) ->
 
 		setCurrent: (@current) ->
 			message = if @current.options.url? then 'change:cursor' else 'change:results'
-			@publish message, @current
+			@trigger message, @current
 
 		runQuery: (queryOptions) ->
 			if queryOptions.hasOwnProperty 'resultRows'

@@ -1,8 +1,5 @@
 define (require) ->
-	Models =
-		Base: require 'models/base'
-
-	class ListItem extends Models.Base
+	class ListItem extends Backbone.Model
 
 		idAttribute: 'name'
 

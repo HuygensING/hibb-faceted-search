@@ -3,10 +3,7 @@
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
   define(function(require) {
-    var Models, Search, _ref;
-    Models = {
-      Base: require('models/base')
-    };
+    var Search, _ref;
     return Search = (function(_super) {
       __extends(Search, _super);
 
@@ -35,7 +32,7 @@
 
       return Search;
 
-    })(Models.Base);
+    })(Backbone.Model);
   });
 
 }).call(this);

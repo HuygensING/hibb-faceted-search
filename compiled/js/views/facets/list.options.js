@@ -4,11 +4,8 @@
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
   define(function(require) {
-    var Fn, ListFacetOptions, Models, Views, tpls, _ref;
+    var Fn, ListFacetOptions, Models, tpls, _ref;
     Fn = require('hilib/functions/general');
-    Views = {
-      Base: require('hilib/views/base')
-    };
     Models = {
       List: require('models/list')
     };
@@ -24,58 +21,8 @@
 
       ListFacetOptions.prototype.className = 'container';
 
-      ListFacetOptions.prototype.events = function() {
-        return {
-          'click i': 'checkChanged',
-          'click label': 'checkChanged',
-          'scroll': 'onScroll'
-        };
-      };
-
-      ListFacetOptions.prototype.onScroll = function(ev) {
-        var target, topPerc;
-        target = ev.currentTarget;
-        topPerc = target.scrollTop / target.scrollHeight;
-        if (topPerc > (this.showing / 2) / this.collection.length && this.showing < this.collection.length) {
-          this.showing += this.showingIncrement;
-          if (this.showing > this.collection.length) {
-            this.showing = this.collection.length;
-          }
-          return this.appendOptions();
-        }
-      };
-
-      ListFacetOptions.prototype.checkChanged = function(ev) {
-        var $target, id,
-          _this = this;
-        $target = ev.currentTarget.tagName === 'LABEL' ? this.$('i[data-value="' + ev.currentTarget.getAttribute('data-value') + '"]') : $(ev.currentTarget);
-        $target.toggleClass('fa-square-o');
-        $target.toggleClass('fa-check-square-o');
-        id = $target.attr('data-value');
-        this.collection.get(id).set('checked', $target.hasClass('fa-check-square-o'));
-        if (this.$('i.fa-check-square-o').length === 0) {
-          return this.triggerChange();
-        } else {
-          return Fn.timeoutWithReset(1000, function() {
-            return _this.triggerChange();
-          });
-        }
-      };
-
-      ListFacetOptions.prototype.triggerChange = function() {
-        return this.trigger('change', {
-          facetValue: {
-            name: this.options.facetName,
-            values: _.map(this.$('i.fa-check-square-o'), function(cb) {
-              return cb.getAttribute('data-value');
-            })
-          }
-        });
-      };
-
       ListFacetOptions.prototype.initialize = function() {
         var _this = this;
-        ListFacetOptions.__super__.initialize.apply(this, arguments);
         this.showing = null;
         this.showingIncrement = 50;
         this.filtered_items = this.collection.models;
@@ -128,6 +75,55 @@
         return this.$('ul').append(tpl);
       };
 
+      ListFacetOptions.prototype.events = function() {
+        return {
+          'click i': 'checkChanged',
+          'click label': 'checkChanged',
+          'scroll': 'onScroll'
+        };
+      };
+
+      ListFacetOptions.prototype.onScroll = function(ev) {
+        var target, topPerc;
+        target = ev.currentTarget;
+        topPerc = target.scrollTop / target.scrollHeight;
+        if (topPerc > (this.showing / 2) / this.collection.length && this.showing < this.collection.length) {
+          this.showing += this.showingIncrement;
+          if (this.showing > this.collection.length) {
+            this.showing = this.collection.length;
+          }
+          return this.appendOptions();
+        }
+      };
+
+      ListFacetOptions.prototype.checkChanged = function(ev) {
+        var $target, id,
+          _this = this;
+        $target = ev.currentTarget.tagName === 'LABEL' ? this.$('i[data-value="' + ev.currentTarget.getAttribute('data-value') + '"]') : $(ev.currentTarget);
+        $target.toggleClass('fa-square-o');
+        $target.toggleClass('fa-check-square-o');
+        id = $target.attr('data-value');
+        this.collection.get(id).set('checked', $target.hasClass('fa-check-square-o'));
+        if (this.$('i.fa-check-square-o').length === 0) {
+          return this.triggerChange();
+        } else {
+          return Fn.timeoutWithReset(1000, function() {
+            return _this.triggerChange();
+          });
+        }
+      };
+
+      ListFacetOptions.prototype.triggerChange = function() {
+        return this.trigger('change', {
+          facetValue: {
+            name: this.options.facetName,
+            values: _.map(this.$('i.fa-check-square-o'), function(cb) {
+              return cb.getAttribute('data-value');
+            })
+          }
+        });
+      };
+
       /*
       		Called by parent (ListFacet) when user types in the search input
       */
@@ -159,7 +155,7 @@
 
       return ListFacetOptions;
 
-    })(Views.Base);
+    })(Backbone.View);
   });
 
 }).call(this);

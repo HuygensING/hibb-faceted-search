@@ -3,13 +3,10 @@
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
   define(function(require) {
-    var Models, SearchResult, ajax, config, token, _ref;
+    var SearchResult, ajax, config, token, _ref;
     ajax = require('hilib/managers/ajax');
     token = require('hilib/managers/token');
     config = require('config');
-    Models = {
-      Base: require('hilib/models/base')
-    };
     return SearchResult = (function(_super) {
       __extends(SearchResult, _super);
 
@@ -61,8 +58,9 @@
             });
             return jqXHR.fail(function(jqXHR, textStatus, errorThrown) {
               if (jqXHR.status === 401) {
-                return _this.publish('unauthorized');
+                _this.collection.trigger('unauthorized');
               }
+              return console.error('Failed getting FacetedSearch results from the server!', arguments);
             });
           }
         }
@@ -78,7 +76,10 @@
         jqXHR.done(function(data, textStatus, jqXHR) {
           return done(data);
         });
-        return jqXHR.fail(function() {
+        return jqXHR.fail(function(jqXHR, textStatus, errorThrown) {
+          if (jqXHR.status === 401) {
+            _this.collection.trigger('unauthorized');
+          }
           return console.error('Failed getting FacetedSearch results from the server!', arguments);
         });
       };
@@ -92,14 +93,16 @@
           url += "&database=" + database;
         }
         return this.getResults(url, function(data) {
-          _this.set(data);
-          return _this.publish('change:page', _this, database);
+          _this.set(data, {
+            silent: true
+          });
+          return _this.collection.trigger('change:page', _this, database);
         });
       };
 
       return SearchResult;
 
-    })(Models.Base);
+    })(Backbone.Model);
   });
 
 }).call(this);

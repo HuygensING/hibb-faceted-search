@@ -3,12 +3,9 @@
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
   define(function(require) {
-    var Collections, ListItems, Models, _ref;
+    var ListItems, Models, _ref;
     Models = {
       Option: require('models/list.option')
-    };
-    Collections = {
-      Base: require('collections/base')
     };
     return ListItems = (function(_super) {
       __extends(ListItems, _super);
@@ -83,7 +80,7 @@
 
       return ListItems;
 
-    })(Collections.Base);
+    })(Backbone.Collection);
   });
 
 }).call(this);

@@ -3,10 +3,7 @@ define (require) ->
 	Models =
 		Option: require 'models/list.option'
 
-	Collections =
-		Base: require 'collections/base'
-
-	class ListItems extends Collections.Base
+	class ListItems extends Backbone.Collection
 
 		model: Models.Option
 

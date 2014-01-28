@@ -5,10 +5,7 @@ define (require) ->
 
 	config = require 'config'
 
-	Models =
-		Base: require 'hilib/models/base'
-
-	class SearchResult extends Models.Base
+	class SearchResult extends Backbone.Model
 
 		defaults: ->
 			_next: null
@@ -51,13 +48,16 @@ define (require) ->
 							@getResults url, options.success
 
 					jqXHR.fail (jqXHR, textStatus, errorThrown) =>
-						@publish 'unauthorized' if jqXHR.status is 401
+						@collection.trigger 'unauthorized' if jqXHR.status is 401
+						console.error 'Failed getting FacetedSearch results from the server!', arguments
 
 		getResults: (url, done) ->
 			ajax.token = config.token
 			jqXHR = ajax.get url: url
 			jqXHR.done (data, textStatus, jqXHR) =>	done data
-			jqXHR.fail => console.error 'Failed getting FacetedSearch results from the server!', arguments
+			jqXHR.fail (jqXHR, textStatus, errorThrown) =>
+				@collection.trigger 'unauthorized' if jqXHR.status is 401
+				console.error 'Failed getting FacetedSearch results from the server!', arguments
 
 		page: (pagenumber, database) ->
 			start = @options.resultRows * (pagenumber - 1)
@@ -65,5 +65,7 @@ define (require) ->
 			url += "&database=#{database}" if database?
 
 			@getResults url, (data) =>
-				@set data
-				@publish 'change:page', @, database
+				# Set the data returned by the server as the attributes of this searchresult model.
+				# Do it silent, because otherwise, the change:result event would be triggered.
+				@set data, silent: true
+				@collection.trigger 'change:page', @, database

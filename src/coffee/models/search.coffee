@@ -1,8 +1,5 @@
 define (require) ->
-	Models =
-		Base: require 'models/base'
-
-	class Search extends Models.Base
+	class Search extends Backbone.Model
 
 		defaults: ->
 			term: '*'

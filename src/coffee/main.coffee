@@ -17,23 +17,18 @@ define (require) ->
 		FacetedSearch: require 'models/main'
 
 	Views =
-		Base: require 'hilib/views/base'
 		TextSearch: require 'views/search'
 		Facets:
 			List: require 'views/facets/list'
 			Boolean: require 'views/facets/boolean'
 			Date: require 'views/facets/date'
 
-	# Templates =
-	# 		FacetedSearch: require 'text!html/faceted-search.html'
-
 	tpls = require 'tpls'
 
-	class FacetedSearch extends Views.Base
+	class FacetedSearch extends Backbone.View
 
 		# ### Initialize
 		initialize: (options) ->
-			# super # ANTIPATTERN
 
 			@facetViews = {}
 
@@ -54,20 +49,20 @@ define (require) ->
 			
 			@render()
 
-			# Listen to the results:change event and (re)render the facets everytime the result changes.
-			@subscribe 'change:results', (responseModel) => 
-				@renderFacets()
-				@trigger 'results:change', responseModel
-
-			@subscribe 'change:cursor', (responseModel) => 
-				@trigger 'results:change', responseModel
-
-			@subscribe 'change:page', (responseModel, database) => 
-				@trigger 'results:change', responseModel, database
-			
 			# Initialize the FacetedSearch model.
 			@model = new Models.FacetedSearch queryOptions
 
+			# Listen to the change:results event and (re)render the facets everytime the result changes.
+			@listenTo @model.searchResults, 'change:results', (responseModel) => 
+				@renderFacets()
+				@trigger 'results:change', responseModel
+
+			@listenTo @model.searchResults, 'change:cursor', (responseModel) => 
+				@trigger 'results:change', responseModel
+
+			@listenTo @model.searchResults, 'change:page', (responseModel, database) => 
+				@trigger 'results:change', responseModel, database
+			
 			@listenTo @model.searchResults, 'request', =>
 				el = @el.querySelector '.faceted-search'
 				div = @el.querySelector '.overlay'
@@ -85,6 +80,8 @@ define (require) ->
 			@listenTo @model.searchResults, 'sync', =>
 				el = @el.querySelector '.overlay'
 				el.style.display = 'none'
+
+			@listenTo @model.searchResults, 'unauthorised', => @trigger 'unauthorised'
 			
 			# Set the queryOptions to the model. The model fetches the results from the server when the queryOptions change,
 			# so the results:change event is fired and the facets are rendered. If we set the queryOptions directly when 

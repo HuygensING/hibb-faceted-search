@@ -12,7 +12,7 @@
 }(this, function ($, _, Backbone) {
 
 /**
- * almond 0.2.7 Copyright (c) 2011-2012, The Dojo Foundation All Rights Reserved.
+ * @license almond 0.2.9 Copyright (c) 2011-2014, The Dojo Foundation All Rights Reserved.
  * Available via the MIT or new BSD license.
  * see: http://github.com/jrburke/almond for details
  */
@@ -29,7 +29,8 @@ var requirejs, require, define;
         config = {},
         defining = {},
         hasOwn = Object.prototype.hasOwnProperty,
-        aps = [].slice;
+        aps = [].slice,
+        jsSuffixRegExp = /\.js$/;
 
     function hasProp(obj, prop) {
         return hasOwn.call(obj, prop);
@@ -44,7 +45,7 @@ var requirejs, require, define;
      * @returns {String} normalized name
      */
     function normalize(name, baseName) {
-        var nameParts, nameSegment, mapValue, foundMap,
+        var nameParts, nameSegment, mapValue, foundMap, lastIndex,
             foundI, foundStarMap, starI, i, j, part,
             baseParts = baseName && baseName.split("/"),
             map = config.map,
@@ -62,8 +63,15 @@ var requirejs, require, define;
                 //"one/two/three.js", but we want the directory, "one/two" for
                 //this normalization.
                 baseParts = baseParts.slice(0, baseParts.length - 1);
+                name = name.split('/');
+                lastIndex = name.length - 1;
 
-                name = baseParts.concat(name.split("/"));
+                // Node .js allowance:
+                if (config.nodeIdCompat && jsSuffixRegExp.test(name[lastIndex])) {
+                    name[lastIndex] = name[lastIndex].replace(jsSuffixRegExp, '');
+                }
+
+                name = baseParts.concat(name);
 
                 //start trimDots
                 for (i = 0; i < name.length; i += 1) {
@@ -345,6 +353,13 @@ var requirejs, require, define;
         } else if (!deps.splice) {
             //deps is a config object, not an array.
             config = deps;
+            if (config.deps) {
+                req(config.deps, config.callback);
+            }
+            if (!callback) {
+                return;
+            }
+
             if (callback.splice) {
                 //callback is an array, which means it is a dependency list.
                 //Adjust args if there are dependencies
@@ -389,11 +404,7 @@ var requirejs, require, define;
      * the config return value is used.
      */
     req.config = function (cfg) {
-        config = cfg;
-        if (config.deps) {
-            req(config.deps, config.callback);
-        }
-        return req;
+        return req(cfg);
     };
 
     /**
@@ -1113,78 +1124,8 @@ define("../lib/almond/almond", function(){});
 
 }).call(this);
 
-(function() {
-  var __hasProp = {}.hasOwnProperty,
-    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
+!function(e){if("object"==typeof exports)module.exports=e();else if("function"==typeof define&&define.amd)define('jade',e);else{var f;"undefined"!=typeof window?f=window:"undefined"!=typeof global?f=global:"undefined"!=typeof self&&(f=self),f.jade=e()}}(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);throw new Error("Cannot find module '"+o+"'")}var f=n[o]={exports:{}};t[o][0].call(f.exports,function(e){var n=t[o][1][e];return s(n?n:e)},f,f.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 
-  define('hilib/views/base',['require','backbone','hilib/mixins/pubsub'],function(require) {
-    var Backbone, BaseView, Pubsub, _ref;
-    Backbone = require('backbone');
-    Pubsub = require('hilib/mixins/pubsub');
-    return BaseView = (function(_super) {
-      __extends(BaseView, _super);
-
-      function BaseView() {
-        _ref = BaseView.__super__.constructor.apply(this, arguments);
-        return _ref;
-      }
-
-      BaseView.prototype.initialize = function() {
-        _.extend(this, Pubsub);
-        return this.subviews = {};
-      };
-
-      BaseView.prototype.destroy = function() {
-        var name, subview, _ref1;
-        _ref1 = this.subviews;
-        for (name in _ref1) {
-          subview = _ref1[name];
-          subview.destroy();
-        }
-        return this.remove();
-      };
-
-      return BaseView;
-
-    })(Backbone.View);
-  });
-
-}).call(this);
-
-(function(e){if("function"==typeof bootstrap)bootstrap("jade",e);else if("object"==typeof exports)module.exports=e();else if("function"==typeof define&&define.amd)define('jade',e);else if("undefined"!=typeof ses){if(!ses.ok())return;ses.makeJade=e}else"undefined"!=typeof window?window.jade=e():global.jade=e()})(function(){var define,ses,bootstrap,module,exports;
-return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);throw new Error("Cannot find module '"+o+"'")}var f=n[o]={exports:{}};t[o][0].call(f.exports,function(e){var n=t[o][1][e];return s(n?n:e)},f,f.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
-
-/*!
- * Jade - runtime
- * Copyright(c) 2010 TJ Holowaychuk <tj@vision-media.ca>
- * MIT Licensed
- */
-
-/**
- * Lame Array.isArray() polyfill for now.
- */
-
-if (!Array.isArray) {
-  Array.isArray = function(arr){
-    return '[object Array]' == Object.prototype.toString.call(arr);
-  };
-}
-
-/**
- * Lame Object.keys() polyfill for now.
- */
-
-if (!Object.keys) {
-  Object.keys = function(obj){
-    var arr = [];
-    for (var key in obj) {
-      if (obj.hasOwnProperty(key)) {
-        arr.push(key);
-      }
-    }
-    return arr;
-  }
-}
 
 /**
  * Merge two attribute objects giving precedence
@@ -1199,6 +1140,13 @@ if (!Object.keys) {
  */
 
 exports.merge = function merge(a, b) {
+  if (arguments.length === 1) {
+    var attrs = a[0];
+    for (var i = 1; i < a.length; i++) {
+      attrs = merge(attrs, a[i]);
+    }
+    return attrs;
+  }
   var ac = a['class'];
   var bc = b['class'];
 
@@ -1236,12 +1184,60 @@ function nulls(val) {
  *
  * @param {*} val
  * @return {String}
- * @api private
  */
-
+exports.joinClasses = joinClasses;
 function joinClasses(val) {
   return Array.isArray(val) ? val.map(joinClasses).filter(nulls).join(' ') : val;
 }
+
+/**
+ * Render the given classes.
+ *
+ * @param {Array} classes
+ * @param {Array.<Boolean>} escaped
+ * @return {String}
+ */
+exports.cls = function cls(classes, escaped) {
+  var buf = [];
+  for (var i = 0; i < classes.length; i++) {
+    if (escaped && escaped[i]) {
+      buf.push(exports.escape(joinClasses([classes[i]])));
+    } else {
+      buf.push(joinClasses(classes[i]));
+    }
+  }
+  var text = joinClasses(buf);
+  if (text.length) {
+    return ' class="' + text + '"';
+  } else {
+    return '';
+  }
+};
+
+/**
+ * Render the given attribute.
+ *
+ * @param {String} key
+ * @param {String} val
+ * @param {Boolean} escaped
+ * @param {Boolean} terse
+ * @return {String}
+ */
+exports.attr = function attr(key, val, escaped, terse) {
+  if ('boolean' == typeof val || null == val) {
+    if (val) {
+      return ' ' + (terse ? key : key + '="' + key + '"');
+    } else {
+      return '';
+    }
+  } else if (0 == key.indexOf('data') && 'string' != typeof val) {
+    return ' ' + key + "='" + JSON.stringify(val).replace(/'/g, '&apos;') + "'";
+  } else if (escaped) {
+    return ' ' + key + '="' + exports.escape(val) + '"';
+  } else {
+    return ' ' + key + '="' + val + '"';
+  }
+};
 
 /**
  * Render the given attributes object.
@@ -1249,50 +1245,28 @@ function joinClasses(val) {
  * @param {Object} obj
  * @param {Object} escaped
  * @return {String}
- * @api private
  */
+exports.attrs = function attrs(obj, terse){
+  var buf = [];
 
-exports.attrs = function attrs(obj, escaped){
-  var buf = []
-    , terse = obj.terse;
+  var keys = Object.keys(obj);
 
-  delete obj.terse;
-  var keys = Object.keys(obj)
-    , len = keys.length;
-
-  if (len) {
-    buf.push('');
-    for (var i = 0; i < len; ++i) {
+  if (keys.length) {
+    for (var i = 0; i < keys.length; ++i) {
       var key = keys[i]
         , val = obj[key];
 
-      if ('boolean' == typeof val || null == val) {
-        if (val) {
-          terse
-            ? buf.push(key)
-            : buf.push(key + '="' + key + '"');
+      if ('class' == key) {
+        if (val = joinClasses(val)) {
+          buf.push(' ' + key + '="' + val + '"');
         }
-      } else if (0 == key.indexOf('data') && 'string' != typeof val) {
-        buf.push(key + "='" + JSON.stringify(val) + "'");
-      } else if ('class' == key) {
-        if (escaped && escaped[key]){
-          if (val = exports.escape(joinClasses(val))) {
-            buf.push(key + '="' + val + '"');
-          }
-        } else {
-          if (val = joinClasses(val)) {
-            buf.push(key + '="' + val + '"');
-          }
-        }
-      } else if (escaped && escaped[key]) {
-        buf.push(key + '="' + exports.escape(val) + '"');
       } else {
-        buf.push(key + '="' + val + '"');
+        buf.push(exports.attr(key, val, false, terse));
       }
     }
   }
 
-  return buf.join(' ');
+  return buf.join('');
 };
 
 /**
@@ -1304,11 +1278,13 @@ exports.attrs = function attrs(obj, escaped){
  */
 
 exports.escape = function escape(html){
-  return String(html)
+  var result = String(html)
     .replace(/&/g, '&amp;')
     .replace(/</g, '&lt;')
     .replace(/>/g, '&gt;')
     .replace(/"/g, '&quot;');
+  if (result === '' + html) return html;
+  else return result;
 };
 
 /**
@@ -1354,11 +1330,10 @@ exports.rethrow = function rethrow(err, filename, lineno, str){
 };
 
 },{"fs":2}],2:[function(require,module,exports){
-// nothing to see here... no file methods for the browser
 
-},{}]},{},[1])(1)
+},{}]},{},[1])
+(1)
 });
-;
 define('tpls',['jade'], function(jade) { if(jade && jade['runtime'] !== undefined) { jade = jade.runtime; }
 
 this["JST"] = this["JST"] || {};
@@ -1561,11 +1536,8 @@ return this["JST"];
   var __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
-  define('views/facets/main',['require','hilib/views/base','tpls'],function(require) {
-    var Facet, Views, tpls, _ref;
-    Views = {
-      Base: require('hilib/views/base')
-    };
+  define('views/facets/main',['require','tpls'],function(require) {
+    var Facet, tpls, _ref;
     tpls = require('tpls');
     return Facet = (function(_super) {
       __extends(Facet, _super);
@@ -1574,10 +1546,6 @@ return this["JST"];
         _ref = Facet.__super__.constructor.apply(this, arguments);
         return _ref;
       }
-
-      Facet.prototype.initialize = function() {
-        return Facet.__super__.initialize.apply(this, arguments);
-      };
 
       Facet.prototype.render = function() {
         var rtpl;
@@ -1645,7 +1613,7 @@ return this["JST"];
 
       return Facet;
 
-    })(Views.Base);
+    })(Backbone.View);
   });
 
 }).call(this);
@@ -1854,11 +1822,8 @@ return this["JST"];
   var __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
-  define('models/list.option',['require','models/base'],function(require) {
-    var ListItem, Models, _ref;
-    Models = {
-      Base: require('models/base')
-    };
+  define('models/list.option',['require'],function(require) {
+    var ListItem, _ref;
     return ListItem = (function(_super) {
       __extends(ListItem, _super);
 
@@ -1885,16 +1850,7 @@ return this["JST"];
 
       return ListItem;
 
-    })(Models.Base);
-  });
-
-}).call(this);
-
-(function() {
-  define('collections/base',['require','backbone'],function(require) {
-    var Backbone;
-    Backbone = require('backbone');
-    return Backbone.Collection;
+    })(Backbone.Model);
   });
 
 }).call(this);
@@ -1903,13 +1859,10 @@ return this["JST"];
   var __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
-  define('collections/list.options',['require','models/list.option','collections/base'],function(require) {
-    var Collections, ListItems, Models, _ref;
+  define('collections/list.options',['require','models/list.option'],function(require) {
+    var ListItems, Models, _ref;
     Models = {
       Option: require('models/list.option')
-    };
-    Collections = {
-      Base: require('collections/base')
     };
     return ListItems = (function(_super) {
       __extends(ListItems, _super);
@@ -1984,7 +1937,7 @@ return this["JST"];
 
       return ListItems;
 
-    })(Collections.Base);
+    })(Backbone.Collection);
   });
 
 }).call(this);
@@ -1994,12 +1947,9 @@ return this["JST"];
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
-  define('views/facets/list.options',['require','hilib/functions/general','hilib/views/base','models/list','tpls'],function(require) {
-    var Fn, ListFacetOptions, Models, Views, tpls, _ref;
+  define('views/facets/list.options',['require','hilib/functions/general','models/list','tpls'],function(require) {
+    var Fn, ListFacetOptions, Models, tpls, _ref;
     Fn = require('hilib/functions/general');
-    Views = {
-      Base: require('hilib/views/base')
-    };
     Models = {
       List: require('models/list')
     };
@@ -2015,58 +1965,8 @@ return this["JST"];
 
       ListFacetOptions.prototype.className = 'container';
 
-      ListFacetOptions.prototype.events = function() {
-        return {
-          'click i': 'checkChanged',
-          'click label': 'checkChanged',
-          'scroll': 'onScroll'
-        };
-      };
-
-      ListFacetOptions.prototype.onScroll = function(ev) {
-        var target, topPerc;
-        target = ev.currentTarget;
-        topPerc = target.scrollTop / target.scrollHeight;
-        if (topPerc > (this.showing / 2) / this.collection.length && this.showing < this.collection.length) {
-          this.showing += this.showingIncrement;
-          if (this.showing > this.collection.length) {
-            this.showing = this.collection.length;
-          }
-          return this.appendOptions();
-        }
-      };
-
-      ListFacetOptions.prototype.checkChanged = function(ev) {
-        var $target, id,
-          _this = this;
-        $target = ev.currentTarget.tagName === 'LABEL' ? this.$('i[data-value="' + ev.currentTarget.getAttribute('data-value') + '"]') : $(ev.currentTarget);
-        $target.toggleClass('fa-square-o');
-        $target.toggleClass('fa-check-square-o');
-        id = $target.attr('data-value');
-        this.collection.get(id).set('checked', $target.hasClass('fa-check-square-o'));
-        if (this.$('i.fa-check-square-o').length === 0) {
-          return this.triggerChange();
-        } else {
-          return Fn.timeoutWithReset(1000, function() {
-            return _this.triggerChange();
-          });
-        }
-      };
-
-      ListFacetOptions.prototype.triggerChange = function() {
-        return this.trigger('change', {
-          facetValue: {
-            name: this.options.facetName,
-            values: _.map(this.$('i.fa-check-square-o'), function(cb) {
-              return cb.getAttribute('data-value');
-            })
-          }
-        });
-      };
-
       ListFacetOptions.prototype.initialize = function() {
         var _this = this;
-        ListFacetOptions.__super__.initialize.apply(this, arguments);
         this.showing = null;
         this.showingIncrement = 50;
         this.filtered_items = this.collection.models;
@@ -2119,6 +2019,55 @@ return this["JST"];
         return this.$('ul').append(tpl);
       };
 
+      ListFacetOptions.prototype.events = function() {
+        return {
+          'click i': 'checkChanged',
+          'click label': 'checkChanged',
+          'scroll': 'onScroll'
+        };
+      };
+
+      ListFacetOptions.prototype.onScroll = function(ev) {
+        var target, topPerc;
+        target = ev.currentTarget;
+        topPerc = target.scrollTop / target.scrollHeight;
+        if (topPerc > (this.showing / 2) / this.collection.length && this.showing < this.collection.length) {
+          this.showing += this.showingIncrement;
+          if (this.showing > this.collection.length) {
+            this.showing = this.collection.length;
+          }
+          return this.appendOptions();
+        }
+      };
+
+      ListFacetOptions.prototype.checkChanged = function(ev) {
+        var $target, id,
+          _this = this;
+        $target = ev.currentTarget.tagName === 'LABEL' ? this.$('i[data-value="' + ev.currentTarget.getAttribute('data-value') + '"]') : $(ev.currentTarget);
+        $target.toggleClass('fa-square-o');
+        $target.toggleClass('fa-check-square-o');
+        id = $target.attr('data-value');
+        this.collection.get(id).set('checked', $target.hasClass('fa-check-square-o'));
+        if (this.$('i.fa-check-square-o').length === 0) {
+          return this.triggerChange();
+        } else {
+          return Fn.timeoutWithReset(1000, function() {
+            return _this.triggerChange();
+          });
+        }
+      };
+
+      ListFacetOptions.prototype.triggerChange = function() {
+        return this.trigger('change', {
+          facetValue: {
+            name: this.options.facetName,
+            values: _.map(this.$('i.fa-check-square-o'), function(cb) {
+              return cb.getAttribute('data-value');
+            })
+          }
+        });
+      };
+
       /*
       		Called by parent (ListFacet) when user types in the search input
       */
@@ -2150,7 +2099,7 @@ return this["JST"];
 
       return ListFacetOptions;
 
-    })(Views.Base);
+    })(Backbone.View);
   });
 
 }).call(this);
@@ -2411,41 +2360,11 @@ return this["JST"];
   var __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
-  define('hilib/models/base',['require','backbone','hilib/managers/pubsub'],function(require) {
-    var Backbone, Base, Pubsub, _ref;
-    Backbone = require('backbone');
-    Pubsub = require('hilib/managers/pubsub');
-    return Base = (function(_super) {
-      __extends(Base, _super);
-
-      function Base() {
-        _ref = Base.__super__.constructor.apply(this, arguments);
-        return _ref;
-      }
-
-      Base.prototype.initialize = function() {
-        return _.extend(this, Pubsub);
-      };
-
-      return Base;
-
-    })(Backbone.Model);
-  });
-
-}).call(this);
-
-(function() {
-  var __hasProp = {}.hasOwnProperty,
-    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
-
-  define('models/searchresult',['require','hilib/managers/ajax','hilib/managers/token','config','hilib/models/base'],function(require) {
-    var Models, SearchResult, ajax, config, token, _ref;
+  define('models/searchresult',['require','hilib/managers/ajax','hilib/managers/token','config'],function(require) {
+    var SearchResult, ajax, config, token, _ref;
     ajax = require('hilib/managers/ajax');
     token = require('hilib/managers/token');
     config = require('config');
-    Models = {
-      Base: require('hilib/models/base')
-    };
     return SearchResult = (function(_super) {
       __extends(SearchResult, _super);
 
@@ -2497,8 +2416,9 @@ return this["JST"];
             });
             return jqXHR.fail(function(jqXHR, textStatus, errorThrown) {
               if (jqXHR.status === 401) {
-                return _this.publish('unauthorized');
+                _this.collection.trigger('unauthorized');
               }
+              return console.error('Failed getting FacetedSearch results from the server!', arguments);
             });
           }
         }
@@ -2514,7 +2434,10 @@ return this["JST"];
         jqXHR.done(function(data, textStatus, jqXHR) {
           return done(data);
         });
-        return jqXHR.fail(function() {
+        return jqXHR.fail(function(jqXHR, textStatus, errorThrown) {
+          if (jqXHR.status === 401) {
+            _this.collection.trigger('unauthorized');
+          }
           return console.error('Failed getting FacetedSearch results from the server!', arguments);
         });
       };
@@ -2528,14 +2451,16 @@ return this["JST"];
           url += "&database=" + database;
         }
         return this.getResults(url, function(data) {
-          _this.set(data);
-          return _this.publish('change:page', _this, database);
+          _this.set(data, {
+            silent: true
+          });
+          return _this.collection.trigger('change:page', _this, database);
         });
       };
 
       return SearchResult;
 
-    })(Models.Base);
+    })(Backbone.Model);
   });
 
 }).call(this);
@@ -2571,7 +2496,7 @@ return this["JST"];
         var message;
         this.current = current;
         message = this.current.options.url != null ? 'change:cursor' : 'change:results';
-        return this.publish(message, this.current);
+        return this.trigger(message, this.current);
       };
 
       SearchResults.prototype.runQuery = function(queryOptions) {
@@ -2701,11 +2626,8 @@ return this["JST"];
   var __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
-  define('models/search',['require','models/base'],function(require) {
-    var Models, Search, _ref;
-    Models = {
-      Base: require('models/base')
-    };
+  define('models/search',['require'],function(require) {
+    var Search, _ref;
     return Search = (function(_super) {
       __extends(Search, _super);
 
@@ -2734,7 +2656,7 @@ return this["JST"];
 
       return Search;
 
-    })(Models.Base);
+    })(Backbone.Model);
   });
 
 }).call(this);
@@ -2873,7 +2795,7 @@ return this["JST"];
     }
   });
 
-  define('main',['require','hilib/functions/general','hilib/functions/dom','hilib/mixins/pubsub','config','facetviewmap','models/main','hilib/views/base','views/search','views/facets/list','views/facets/boolean','views/facets/date','tpls'],function(require) {
+  define('main',['require','hilib/functions/general','hilib/functions/dom','hilib/mixins/pubsub','config','facetviewmap','models/main','views/search','views/facets/list','views/facets/boolean','views/facets/date','tpls'],function(require) {
     var FacetedSearch, Fn, Models, Views, config, dom, facetViewMap, pubsub, tpls, _ref;
     Fn = require('hilib/functions/general');
     dom = require('hilib/functions/dom');
@@ -2884,7 +2806,6 @@ return this["JST"];
       FacetedSearch: require('models/main')
     };
     Views = {
-      Base: require('hilib/views/base'),
       TextSearch: require('views/search'),
       Facets: {
         List: require('views/facets/list'),
@@ -2913,17 +2834,17 @@ return this["JST"];
         _.extend(config, options);
         queryOptions = _.extend(config.queryOptions, config.textSearchOptions);
         this.render();
-        this.subscribe('change:results', function(responseModel) {
+        this.model = new Models.FacetedSearch(queryOptions);
+        this.listenTo(this.model.searchResults, 'change:results', function(responseModel) {
           _this.renderFacets();
           return _this.trigger('results:change', responseModel);
         });
-        this.subscribe('change:cursor', function(responseModel) {
+        this.listenTo(this.model.searchResults, 'change:cursor', function(responseModel) {
           return _this.trigger('results:change', responseModel);
         });
-        this.subscribe('change:page', function(responseModel, database) {
+        this.listenTo(this.model.searchResults, 'change:page', function(responseModel, database) {
           return _this.trigger('results:change', responseModel, database);
         });
-        this.model = new Models.FacetedSearch(queryOptions);
         this.listenTo(this.model.searchResults, 'request', function() {
           var bb, div, el, loader, top;
           el = _this.el.querySelector('.faceted-search');
@@ -2937,10 +2858,13 @@ return this["JST"];
           top = bb.height > document.documentElement.clientHeight ? '50vh' : bb.height / 2 + 'px';
           return loader.style.top = top;
         });
-        return this.listenTo(this.model.searchResults, 'sync', function() {
+        this.listenTo(this.model.searchResults, 'sync', function() {
           var el;
           el = _this.el.querySelector('.overlay');
           return el.style.display = 'none';
+        });
+        return this.listenTo(this.model.searchResults, 'unauthorised', function() {
+          return _this.trigger('unauthorised');
         });
       };
 
@@ -3088,7 +3012,7 @@ return this["JST"];
 
       return FacetedSearch;
 
-    })(Views.Base);
+    })(Backbone.View);
   });
 
 }).call(this);
