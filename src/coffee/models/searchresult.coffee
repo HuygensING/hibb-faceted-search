@@ -35,12 +35,17 @@ define (require) ->
 				if @options.url?
 					@getResults @options.url, options.success
 				else
-					jqXHR = ajax.post
+					ajaxOptions =
 						url: config.baseUrl + config.searchPath
 						data: JSON.stringify @options.queryOptions
 						dataType: 'text'
-						headers:
-							VRE_ID: 'DutchCaribbean'
+
+					# This is used for extra options to the ajax call,
+					# such as setting custom headers (VRE_ID)
+					if config.hasOwnProperty 'searchRequestOptions'
+						_.extend ajaxOptions, config.searchRequestOptions 
+
+					jqXHR = ajax.post ajaxOptions
 
 					jqXHR.done (data, textStatus, jqXHR) =>
 						if jqXHR.status is 201

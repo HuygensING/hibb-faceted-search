@@ -1,0 +1,18 @@
+header
+	h3(data-name=name)= title
+	i.openclose.fa.fa-plus-square-o
+	.options
+		.row.span1.align.middle
+			.cell.span1
+				label
+					input(type="checkbox")
+					| Include undated records
+.body
+	label From:
+	select
+		- each option in options
+			option= option
+	label To:
+	select
+		- each option in options.reverse()
+			option= option
