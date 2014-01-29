@@ -2824,7 +2824,7 @@ return this["JST"];
       FacetedSearch.prototype.defaults = function() {
         return {
           facetValues: [],
-          sort: null
+          sortParameters: []
         };
       };
 

@@ -6,7 +6,8 @@ define (require) ->
 		defaults: ->
 			# an array of objects containing a facet name and values: {name: 'facet_s_writers', values: ['pietje', 'pukje']}
 			facetValues: []
-			sort: null
+			# an array of objects containing fieldname and direction: {fieldname: 'language', direction: 'desc'}
+			sortParameters: []
 
 		# ### Initialize
 

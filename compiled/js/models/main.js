@@ -16,7 +16,7 @@
       FacetedSearch.prototype.defaults = function() {
         return {
           facetValues: [],
-          sort: null
+          sortParameters: []
         };
       };
 
