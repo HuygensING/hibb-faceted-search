@@ -25,7 +25,7 @@ define (require) ->
 			message = if @current.options.url? then 'change:cursor' else 'change:results'
 			@trigger message, @current
 
-		runQuery: (queryOptions) ->
+		runQuery: (queryOptions, cache=true) ->
 			if queryOptions.hasOwnProperty 'resultRows'
 				resultRows = queryOptions.resultRows
 				delete queryOptions.resultRows
@@ -35,7 +35,7 @@ define (require) ->
 
 			# The search results are cached by the query options string,
 			# so we check if there is such a string to find the cached result.
-			if @cachedModels.hasOwnProperty cacheString
+			if cache and @cachedModels.hasOwnProperty cacheString
 				@setCurrent @cachedModels[cacheString]
 			else
 				@trigger 'request'

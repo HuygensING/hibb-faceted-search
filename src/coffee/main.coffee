@@ -13,8 +13,7 @@ define (require) ->
 	config = require 'config'
 	facetViewMap = require 'facetviewmap'
 
-	Models = 
-		FacetedSearch: require 'models/main'
+	MainModel = require 'models/main'
 
 	Views =
 		TextSearch: require 'views/search'
@@ -50,7 +49,7 @@ define (require) ->
 			@render()
 
 			# Initialize the FacetedSearch model.
-			@model = new Models.FacetedSearch queryOptions
+			@model = new MainModel queryOptions
 
 			# Listen to the change:results event and (re)render the facets everytime the result changes.
 			@listenTo @model.searchResults, 'change:results', (responseModel) => 
@@ -188,13 +187,13 @@ define (require) ->
 			@facetViews.textSearch.update() if @facetViews.hasOwnProperty 'textSearch'
 			
 			for own index, data of @model.searchResults.current.get('facets')
-				# console.log 'ALSO HERE 1' if data.name is 'textSearch'
 				@facetViews[data.name].update(data.options)
 
 		reset: ->
 			@facetViews.textSearch.reset() if @facetViews.hasOwnProperty 'textSearch'
 
 			for own index, data of @model.searchResults.last().get('facets')
-				# console.log 'ALSO HERE 2' if data.name is 'textSearch'
 				@facetViews[data.name].reset() if @facetViews[data.name].reset
 			@model.reset()
+
+		refresh: (newQueryOptions) -> @model.refresh newQueryOptions
