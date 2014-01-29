@@ -39,6 +39,8 @@ define (require) ->
 						url: config.baseUrl + config.searchPath
 						data: JSON.stringify @options.queryOptions
 						dataType: 'text'
+						headers:
+							VRE_ID: 'DutchCaribbean'
 
 					# This is used for extra options to the ajax call,
 					# such as setting custom headers (VRE_ID)
