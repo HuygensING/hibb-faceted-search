@@ -65,21 +65,25 @@ define (require) ->
 			
 			@listenTo @model.searchResults, 'request', =>
 				el = @el.querySelector '.faceted-search'
-				div = @el.querySelector '.overlay'
-				div.style.width = el.clientWidth + 'px'
-				div.style.height = el.clientHeight + 'px'
-				div.style.display = 'block'
+				# div = @el.querySelector '.overlay'
+				# div.style.width = el.clientWidth + 'px'
+				# div.style.height = el.clientHeight + 'px'
+				# div.style.display = 'block'
 
-				loader = @el.querySelector '.overlay div'
-				bb = dom(el).boundingBox()
-				loader.style.left = bb.left + bb.width/2 + 'px'
+				# loader = @el.querySelector '.overlay div'
+				# bb = dom(el).boundingBox()
+				# loader.style.left = bb.left + bb.width/2 + 'px'
 
-				top = if bb.height > document.documentElement.clientHeight then '50vh' else bb.height/2 + 'px'
-				loader.style.top = top
+				# top = if bb.height > document.documentElement.clientHeight then '50vh' else bb.height/2 + 'px'
+				# loader.style.top = top
+
+				el
 				
 			@listenTo @model.searchResults, 'sync', =>
 				el = @el.querySelector '.overlay'
-				el.style.display = 'none'
+				# el.style.display = 'none'
+
+				el
 
 			@listenTo @model.searchResults, 'unauthorised', => @trigger 'unauthorised'
 			
@@ -217,7 +221,7 @@ define (require) ->
 		reset: ->
 			@facetViews.textSearch.reset() if @facetViews.hasOwnProperty 'textSearch'
 
-			for own index, data of @model.searchResults.last().get('facets')
+			for own index, data of @facets()
 				# console.log 'ALSO HERE 2' if data.name is 'textSearch'
 				@facetViews[data.name].reset() if @facetViews[data.name].reset
 			@model.reset()

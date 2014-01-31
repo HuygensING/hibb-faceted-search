@@ -1,10 +1,7 @@
 define (require) ->
 
 	config = require 'config'
-
-	Models =
-		Base: require 'models/base'
-		
+	
 	class Facet extends Backbone.Model
 
 		idAttribute: 'name'
