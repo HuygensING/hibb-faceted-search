@@ -113,7 +113,7 @@ define (require) ->
 					@facetViews['textSearch'] = textSearch
 
 
-				facets = @model.searchResults.current.get 'facets'
+				facets = @facets()
 				
 				if config.facetOrder
 					replaceFacet = (name) -> # place matching facet on top of array
@@ -187,6 +187,15 @@ define (require) ->
 
 			slideFacet()
 
+		facets: ->
+			facets = @model.searchResults.current.get('facets')
+
+			if config.excludeFacets
+				excludeMap = _.groupBy config.excludeFacets, (n) -> n
+				facets = _.filter facets, (f) -> not _.has excludeMap, f.name
+
+			facets
+
 		page: (pagenumber, database) -> @model.searchResults.current.page pagenumber, database
 
 		next: -> @model.searchResults.moveCursor '_next'
@@ -201,7 +210,7 @@ define (require) ->
 		update: ->
 			@facetViews.textSearch.update() if @facetViews.hasOwnProperty 'textSearch'
 			
-			for own index, data of @model.searchResults.current.get('facets')
+			for own index, data of @facets()
 				# console.log 'ALSO HERE 1' if data.name is 'textSearch'
 				@facetViews[data.name].update(data.options)
 
