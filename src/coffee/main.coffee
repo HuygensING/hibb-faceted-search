@@ -112,7 +112,21 @@ define (require) ->
 					@listenTo textSearch, 'change', (queryOptions) => @model.set queryOptions
 					@facetViews['textSearch'] = textSearch
 
-				for own index, facetData of @model.searchResults.current.get('facets')
+
+				facets = @model.searchResults.current.get 'facets'
+				
+				if config.facetOrder
+					replaceFacet = (name) -> # place matching facet on top of array
+						for idx, facet of facets
+							if facet.name is name
+								facets.unshift (facets.splice idx, 1)[0]
+								break
+					
+					# copy and reverse so unshifting happens in proper order
+					for facetName in config.facetOrder[..].reverse()
+						replaceFacet facetName
+
+				for own index, facetData of facets
 					if facetData.type of facetViewMap
 						View = facetViewMap[facetData.type]
 						@facetViews[facetData.name] = new View attrs: facetData
