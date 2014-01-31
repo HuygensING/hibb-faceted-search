@@ -6,6 +6,8 @@ define (require) ->
 	class DateFacet extends Models.Facet
 
 		parse: (attrs) ->
+			super
+
 			attrs.options = _.map _.pluck(attrs.options, 'name'), (option) -> option.substr 0, 4
 			attrs.options = _.unique attrs.options
 			attrs.options.sort()

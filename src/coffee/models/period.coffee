@@ -25,6 +25,7 @@ define (require) ->
 			overlappingPeriods
 
 		parse: (attrs) ->
+			super
 			attrs.periods = attrs.options
 
 			allYears = _.unique _.flatten _.map(_.pluck(attrs.options, 'name'),
