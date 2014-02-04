@@ -1,6 +1,6 @@
 tests = []
 for file of window.__karma__.files
-	tests.push file  if /Spec\.js$/.test(file)
+	tests.push file  if /-spec\.js$/.test(file)
 
 requirejs.config
 	# Karma serves files from '/base'
@@ -12,6 +12,9 @@ requirejs.config
 		underscore: "../compiled/lib/underscore-amd/underscore-min"
 		models: '../src/coffee/models'
 		hilib: '../compiled/lib/hilib/compiled'
+
+		# TODO: Which files need manual adding?
+		config: '../src/coffee/config'
 	shim:
 		chai:
 			exports: "chai"
