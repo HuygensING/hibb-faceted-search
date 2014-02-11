@@ -1,15 +1,15 @@
 {
   "name": "faceted-search",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "author": {
-    "name": "",
-    "email": "",
+    "name": "Gijsjan Brouwer",
+    "email": "agijsbro@gmail.com",
     "url": "https://github.com/Gijsjan"
   },
   "main": "app/index.js",
   "repository": {
     "type": "git",
-    "url": "git://github.com/Gijsjan/generator-backbone-amd.git"
+    "url": "https://github.com/HuygensING/faceted-search"
   },
   "scripts": {
     "test": "node ./.test/bin/server.js"
