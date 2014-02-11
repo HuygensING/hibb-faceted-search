@@ -1,59 +1,59 @@
-define (require) ->
+StringFn = require 'hilib/compiled/functions/string'
 
-	StringFn = require 'hilib/functions/string'
+Models =
+	Boolean: require '../../models/boolean'
 
-	Models =
-		Boolean: require 'models/boolean'
+Views = 
+	Facet: require './main'
 
-	Views = 
-		Facet: require 'views/facets/main'
+# Templates =
+# 	Body: require 'text!html/facet/boolean.body.html'
+bodyTpl = '../../../jade/facets/boolean.body.jade'
 
-	# Templates =
-	# 	Body: require 'text!html/facet/boolean.body.html'
-	tpls = require 'tpls'
+class BooleanFacet extends Views.Facet
 
-	class BooleanFacet extends Views.Facet
+	className: 'facet boolean'
 
-		className: 'facet boolean'
+	events: -> _.extend {}, super,
+		'click i': 'checkChanged'
+		'click label': 'checkChanged'
+		# 'click h3': 'toggleBody'
 
-		events: -> _.extend {}, super,
-			'click i': 'checkChanged'
-			'click label': 'checkChanged'
-			# 'click h3': 'toggleBody'
+	checkChanged: (ev) ->
+		$target = if ev.currentTarget.tagName is 'LABEL' then @$ 'i[data-value="'+ev.currentTarget.getAttribute('data-value')+'"]' else $ ev.currentTarget
 
-		checkChanged: (ev) ->
-			$target = if ev.currentTarget.tagName is 'LABEL' then @$ 'i[data-value="'+ev.currentTarget.getAttribute('data-value')+'"]' else $ ev.currentTarget
+		$target.toggleClass 'fa-square-o'
+		$target.toggleClass 'fa-check-square-o'
 
-			$target.toggleClass 'fa-square-o'
-			$target.toggleClass 'fa-check-square-o'
+		value = $target.attr 'data-value'
+		for option in @model.get('options')
+			option.checked = $target.hasClass 'fa-check-square-o' if option.name is value
+		# @collection.get(id).set 'checked', $target.hasClass 'fa-check-square-o'
 
-			value = $target.attr 'data-value'
-			for option in @model.get('options')
-				option.checked = $target.hasClass 'fa-check-square-o' if option.name is value
-			# @collection.get(id).set 'checked', $target.hasClass 'fa-check-square-o'
+		@trigger 'change',
+			facetValue:
+				name: @model.get 'name'
+				values: _.map @$('i.fa-check-square-o'), (cb) -> cb.getAttribute 'data-value'
 
-			@trigger 'change',
-				facetValue:
-					name: @model.get 'name'
-					values: _.map @$('i.fa-check-square-o'), (cb) -> cb.getAttribute 'data-value'
+	initialize: (options) ->
+		super
 
-		initialize: (options) ->
-			super
+		@model = new Models.Boolean options.attrs, parse: true
+		@listenTo @model, 'change:options', @render
 
-			@model = new Models.Boolean options.attrs, parse: true
-			@listenTo @model, 'change:options', @render
+		@render()
 
-			@render()
+	render: ->
+		super
 
-		render: ->
-			super
+		rtpl = bodyTpl _.extend @model.attributes, ucfirst: StringFn.ucfirst
+		@$('.body').html rtpl
 
-			rtpl = tpls['faceted-search/facets/boolean.body'] _.extend @model.attributes, ucfirst: StringFn.ucfirst
-			@$('.body').html rtpl
+		@$('header i.fa').remove()
 
-			@$('header i.fa').remove()
+		@
 
-			@
+	update: (newOptions) -> @model.set 'options', newOptions
+	reset: -> @render()
 
-		update: (newOptions) -> @model.set 'options', newOptions
-		reset: -> @render()
+module.exports = BooleanFacet

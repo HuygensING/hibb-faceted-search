@@ -1,4 +1,4 @@
-define (require) ->
+module.exports =
 	baseUrl: ''
 	searchPath: ''
 	search: true

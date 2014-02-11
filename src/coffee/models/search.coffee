@@ -1,20 +1,23 @@
-define (require) ->
-	class Search extends Backbone.Model
+Backbone = require 'backbone'
 
-		defaults: ->
-			term: '*'
-			caseSensitive: false
-			fuzzy: false
-			title: 'Text Search'
-			name: 'text_search'
+class Search extends Backbone.Model
 
-		queryData: ->
-			attrs = _.extend {}, @attributes
+	defaults: ->
+		term: '*'
+		caseSensitive: false
+		fuzzy: false
+		title: 'Text Search'
+		name: 'text_search'
 
-			delete attrs.name
-			delete attrs.title
+	queryData: ->
+		attrs = _.extend {}, @attributes
 
-			attrs
+		delete attrs.name
+		delete attrs.title
+
+		attrs
+
+module.exports = Search
 
 # EXAMPLE QUERY:
 # {
