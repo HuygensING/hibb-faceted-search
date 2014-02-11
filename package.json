@@ -1,6 +1,7 @@
 {
   "name": "faceted-search",
   "version": "0.0.1",
+  "description": "Faceted search library from Huygens ING.",
   "author": {
     "name": "Gijsjan Brouwer",
     "email": "agijsbro@gmail.com",
