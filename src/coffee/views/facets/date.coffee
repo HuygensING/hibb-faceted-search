@@ -1,4 +1,4 @@
-StringFn = require 'hilib/compiled/functions/string'
+StringFn = require('hilib/lib/utils').string
 
 Models =
 	Date: require '../../models/date'

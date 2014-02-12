@@ -1,4 +1,4 @@
-Fn = require 'hilib/compiled/functions/general'
+Fn = require('hilib/lib/utils').general
 
 Models =
 	List: require '../../models/list'

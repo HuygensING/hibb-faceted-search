@@ -3,7 +3,7 @@
 
 Backbone = require 'backbone'
 
-pubsub = require 'hilib/compiled/mixins/pubsub'
+pubsub = require ('hilib/lib/mixins').pubsub
 SearchResult = require '../models/searchresult'
 
 # ajax = require 'hilib/compiled/managers/ajax'

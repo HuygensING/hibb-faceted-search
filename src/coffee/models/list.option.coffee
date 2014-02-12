@@ -1,6 +1,6 @@
 Backbone = require 'backbone'
 
-class ListItem extends Backbone.Model
+class ListOption extends Backbone.Model
 
 	idAttribute: 'name'
 
@@ -15,4 +15,4 @@ class ListItem extends Backbone.Model
 		
 		attrs
 
-module.exports = ListItem
+module.exports = ListOption

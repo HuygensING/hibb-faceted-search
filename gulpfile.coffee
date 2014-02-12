@@ -17,7 +17,8 @@ gulp.task 'coffee', ->
 		.pipe(browserify(
 			transform: ['coffeeify', 'jadeify']
 			extensions: ['.coffee', '.jade']
-			external: ['jquery', 'backbone', 'underscore']
+			ignore: ['jquery', 'backbone', 'underscore']
+			standalone: 'faceted-search'
 		))
 		.pipe(rename('faceted-search.js'))
 		.pipe(gulp.dest(__dirname))
@@ -45,7 +46,7 @@ gulp.task 'stylus', ->
 gulp.task 'b', ['coffee', 'stylus']
 
 gulp.task 'watch', ->
-	gulp.watch [paths.jade], ['jade']
+	gulp.watch [paths.jade], ['coffee']
 	gulp.watch [paths.coffee], ['coffee']
 	gulp.watch [paths.stylus], ['stylus']
 

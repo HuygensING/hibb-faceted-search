@@ -1,10 +1,19 @@
 Backbone = require 'backbone'
-Fn = require 'hilib/compiled/functions/general'
-dom = require 'hilib/compiled/functions/dom'
-pubsub = require 'hilib/compiled/mixins/pubsub'
+
+
+utils = require 'hilib/lib/utils'
+
+Fn = utils.general
+dom = utils.dom
+
+
+pubsub = require('hilib/lib/mixins').pubsub
+
+
 
 config = require './config'
 facetViewMap = require './facetviewmap'
+
 
 MainModel = require './models/main'
 

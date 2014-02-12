@@ -2,7 +2,7 @@ Backbone = require 'backbone'
 Models =
 	Option: require '../models/list.option'
 
-class ListItems extends Backbone.Collection
+class ListOptions extends Backbone.Collection
 
 	model: Models.Option
 
@@ -47,4 +47,4 @@ class ListItems extends Backbone.Collection
 
 		@sort()
 
-module.exports = ListItems
+module.exports = ListOptions
