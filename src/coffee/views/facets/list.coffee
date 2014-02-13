@@ -1,4 +1,6 @@
-Fn = require('hilib/lib/utils').general
+_ = require 'underscore'
+
+Fn = require 'hilib/src/utils/general'
 
 Models =
 	List: require '../../models/list'
@@ -13,8 +15,8 @@ Views =
 # Templates =
 # 	Menu: require 'text!html/facet/list.menu.html'
 # 	Body: require 'text!html/facet/list.body.html'
-menuTpl = '../../../jade/facets/list.menu.jade'
-bodyTpl = '../../../jade/facets/list.body.jade'
+menuTpl = require '../../../jade/facets/list.menu.jade'
+bodyTpl = require '../../../jade/facets/list.body.jade'
 
 class ListFacet extends Views.Facet
 

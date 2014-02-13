@@ -1,19 +1,16 @@
 Backbone = require 'backbone'
+$ = require 'jquery'
+Backbone.$ = $
 
+_ = require 'underscore'
 
-utils = require 'hilib/lib/utils'
+Fn = require 'hilib/src/utils/general'
+dom = require 'hilib/src/utils/dom'
 
-Fn = utils.general
-dom = utils.dom
-
-
-pubsub = require('hilib/lib/mixins').pubsub
-
-
+pubsub = require 'hilib/src/mixins/pubsub'
 
 config = require './config'
 facetViewMap = require './facetviewmap'
-
 
 MainModel = require './models/main'
 

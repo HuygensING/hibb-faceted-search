@@ -1,4 +1,4 @@
-StringFn = require('hilib/lib/utils').string
+StringFn = require 'hilib/src/utils/string'
 
 Models =
 	Boolean: require '../../models/boolean'
@@ -8,7 +8,7 @@ Views =
 
 # Templates =
 # 	Body: require 'text!html/facet/boolean.body.html'
-bodyTpl = '../../../jade/facets/boolean.body.jade'
+bodyTpl = require '../../../jade/facets/boolean.body.jade'
 
 class BooleanFacet extends Views.Facet
 

@@ -1,10 +1,12 @@
 Backbone = require 'backbone'
-Fn = require('hilib/lib/utils').general
+_ = require 'underscore'
+
+Fn = require 'hilib/src/utils/general'
 
 Models =
 	List: require '../../models/list'
 
-tpl = '../../../jade/facets/list.option.jade'
+optionTpl = require '../../../jade/facets/list.option.jade'
 				
 
 
@@ -49,7 +51,7 @@ class ListFacetOptions extends Backbone.View
 	appendOptions: ->
 		tpl = ''
 		for option in @filtered_items[@showing-@showingIncrement..@showing]
-			tpl += tpl option: option
+			tpl += optionTpl option: option
 
 		@$('ul').append tpl
 

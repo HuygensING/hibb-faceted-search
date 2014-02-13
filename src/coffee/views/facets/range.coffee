@@ -4,7 +4,7 @@ Models =
 Views = 
 	Facet: require './main'
 
-bodyTpl = '../../../jade/facets/range.body.jade'
+bodyTpl = require '../../../jade/facets/range.body.jade'
 
 # Define the width/height of the handles (.max-handle and .min-handle)
 # The size is also defined in the CSS by a variable, these two should

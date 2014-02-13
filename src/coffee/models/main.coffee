@@ -1,4 +1,5 @@
 Backbone = require 'backbone'
+_ = require 'underscore'
 SearchResults = require '../collections/searchresults'
 
 class MainModel extends Backbone.Model

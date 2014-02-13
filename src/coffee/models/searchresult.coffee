@@ -1,10 +1,7 @@
 Backbone = require 'backbone'
 
-# ajax = require 'hilib/compiled/managers/ajax'
-# token = require 'hilib/compiled/managers/token'
-managers = require 'hilib/lib/managers'
-ajax = managers.ajax
-token = managers.token
+ajax = require 'hilib/src/managers/ajax'
+token = require 'hilib/src/managers/token'
 
 config = require '../config'
 

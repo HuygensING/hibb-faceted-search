@@ -2,16 +2,13 @@
 # 	resultRows: Number => number of results to return by the server
 
 Backbone = require 'backbone'
+_ = require 'underscore'
 
-pubsub = require ('hilib/lib/mixins').pubsub
+pubsub = require 'hilib/src/mixins/pubsub'
 SearchResult = require '../models/searchresult'
 
-# ajax = require 'hilib/compiled/managers/ajax'
-# token = require 'hilib/compiled/managers/token'
-
-managers = require 'hilib/lib/managers'
-ajax = managers.ajax
-token = managers.token
+ajax = require 'hilib/src/managers/ajax'
+token = require 'hilib/src/managers/token'
 
 config = require '../config'
 

@@ -1,5 +1,6 @@
 Backbone = require 'backbone'
-tpl = '../../../jade/facets/main.jade'
+$ = require 'jquery'
+tpl = require '../../../jade/facets/main.jade'
 
 class Facet extends Backbone.View
 

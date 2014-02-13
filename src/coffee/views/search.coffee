@@ -1,3 +1,5 @@
+_ = require 'underscore'
+
 config = require '../config'
 
 Models =
@@ -10,8 +12,8 @@ Views =
 # 	Menu: require 'text!html/facet/search.menu.html'
 # 	Body: require 'text!html/facet/search.body.html'
 
-menuTpl = '../../jade/facets/search.menu.jade'
-bodyTpl = '../../jade/facets/search.body.jade'
+menuTpl = require '../../jade/facets/search.menu.jade'
+bodyTpl = require '../../jade/facets/search.body.jade'
 
 class SearchView extends Views.Facet
 

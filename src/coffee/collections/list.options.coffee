@@ -1,4 +1,6 @@
 Backbone = require 'backbone'
+_ = require 'underscore'
+
 Models =
 	Option: require '../models/list.option'
 

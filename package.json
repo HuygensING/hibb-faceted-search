@@ -32,5 +32,8 @@
     "jquery": "~2.1.0",
     "underscore": "~1.6.0",
     "coffee-script": "~1.7.1"
+  },
+  "browserify": {
+    "transform": ["jadeify", "coffeeify"]
   }
 }

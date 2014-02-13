@@ -1,4 +1,4 @@
-StringFn = require('hilib/lib/utils').string
+StringFn = require 'hilib/src/utils/string'
 
 Models =
 	Date: require '../../models/date'
@@ -9,7 +9,7 @@ Views =
 # Templates =
 # 	Date: require 'text!html/facet/date.html'
 
-tpl = '../../../jade/facets/date.jade'
+tpl = require '../../../jade/facets/date.jade'
 
 class DateFacet extends Views.Facet
 
