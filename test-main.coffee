@@ -12,6 +12,7 @@ requirejs.config
 		underscore: "../compiled/lib/underscore-amd/underscore-min"
 		models: '../src/coffee/models'
 		hilib: '../compiled/lib/hilib/compiled'
+		squire: '../node_modules/squirejs/src/Squire'
 
 		# TODO: Which files need manual adding?
 		config: '../src/coffee/config'

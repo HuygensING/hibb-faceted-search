@@ -52,6 +52,9 @@
     "karma-mocha-reporter": "~0.2.0",
     "karma-chai": "0.0.2",
     "karma-sinon": "~1.0.0",
-    "karma-sinon-chai": "~0.1.4"
+    "karma-sinon-chai": "~0.1.4",
+    "squirejs": "~0.1.0",
+    "karma-growl-reporter": "~0.1.1",
+    "karma-junit-reporter": "~0.2.1"
   }
 }

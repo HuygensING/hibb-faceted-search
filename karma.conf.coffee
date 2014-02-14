@@ -17,7 +17,10 @@ module.exports = (config) ->
 		  pattern: "src/**/*.coffee"
 		  included: false
 		,
-		  pattern: "test/unit/**/*-spec.coffee"
+			pattern: "node_modules/**/*.js"
+			included: false
+		,
+		  pattern: "test/unit/**/test-spec.coffee"
 		  included: false
 		, "test-main.coffee"]
 		
@@ -26,7 +29,7 @@ module.exports = (config) ->
 		
 		# test results reporter to use
 		# possible values: 'dots', 'progress', 'junit', 'growl', 'coverage'
-		reporters: ["mocha"]
+		reporters: ["dots"]
 		
 		# web server port
 		port: 9876
@@ -49,7 +52,7 @@ module.exports = (config) ->
 		# - Safari (only Mac)
 		# - PhantomJS
 		# - IE (only Windows)
-		browsers: ["Firefox"]
+		browsers: ["PhantomJS"]
 		
 		# If browser does not capture in given timeout [ms], kill it
 		captureTimeout: 60000
