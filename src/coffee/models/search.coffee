@@ -1,4 +1,5 @@
 Backbone = require 'backbone'
+_ = require 'underscore'
 
 class Search extends Backbone.Model
 
