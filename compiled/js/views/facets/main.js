@@ -3,14 +3,13 @@
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
   define(function(require) {
-    var Facet, tpls, _ref;
+    var Facet, tpls;
     tpls = require('tpls');
     return Facet = (function(_super) {
       __extends(Facet, _super);
 
       function Facet() {
-        _ref = Facet.__super__.constructor.apply(this, arguments);
-        return _ref;
+        return Facet.__super__.constructor.apply(this, arguments);
       }
 
       Facet.prototype.render = function() {
@@ -55,24 +54,26 @@
       };
 
       Facet.prototype.hideBody = function(done) {
-        var _this = this;
         this.hideMenu();
-        return this.$('.body').slideUp(100, function() {
-          if (done != null) {
-            done();
-          }
-          return _this.$('header i.fa').fadeOut(100);
-        });
+        return this.$('.body').slideUp(100, (function(_this) {
+          return function() {
+            if (done != null) {
+              done();
+            }
+            return _this.$('header i.fa').fadeOut(100);
+          };
+        })(this));
       };
 
       Facet.prototype.showBody = function(done) {
-        var _this = this;
-        return this.$('.body').slideDown(100, function() {
-          if (done != null) {
-            done();
-          }
-          return _this.$('header i.fa').fadeIn(100);
-        });
+        return this.$('.body').slideDown(100, (function(_this) {
+          return function() {
+            if (done != null) {
+              done();
+            }
+            return _this.$('header i.fa').fadeIn(100);
+          };
+        })(this));
       };
 
       Facet.prototype.update = function(newOptions) {};

@@ -4,7 +4,7 @@
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
   define(function(require) {
-    var Fn, ListFacetOptions, Models, tpls, _ref;
+    var Fn, ListFacetOptions, Models, tpls;
     Fn = require('hilib/functions/general');
     Models = {
       List: require('models/list')
@@ -15,21 +15,21 @@
 
       function ListFacetOptions() {
         this.triggerChange = __bind(this.triggerChange, this);
-        _ref = ListFacetOptions.__super__.constructor.apply(this, arguments);
-        return _ref;
+        return ListFacetOptions.__super__.constructor.apply(this, arguments);
       }
 
       ListFacetOptions.prototype.className = 'container';
 
       ListFacetOptions.prototype.initialize = function() {
-        var _this = this;
         this.showing = null;
         this.showingIncrement = 50;
         this.filtered_items = this.collection.models;
-        this.listenTo(this.collection, 'sort', function() {
-          _this.filtered_items = _this.collection.models;
-          return _this.render();
-        });
+        this.listenTo(this.collection, 'sort', (function(_this) {
+          return function() {
+            _this.filtered_items = _this.collection.models;
+            return _this.render();
+          };
+        })(this));
         return this.render();
       };
 
@@ -50,11 +50,11 @@
       };
 
       ListFacetOptions.prototype.appendOptions = function() {
-        var option, tpl, _i, _len, _ref1;
+        var option, tpl, _i, _len, _ref;
         tpl = '';
-        _ref1 = this.filtered_items.slice(this.showing - this.showingIncrement, +this.showing + 1 || 9e9);
-        for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
-          option = _ref1[_i];
+        _ref = this.filtered_items.slice(this.showing - this.showingIncrement, +this.showing + 1 || 9e9);
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          option = _ref[_i];
           tpl += tpls['faceted-search/facets/list.option']({
             option: option
           });
@@ -63,11 +63,11 @@
       };
 
       ListFacetOptions.prototype.appendAllOptions = function() {
-        var option, tpl, _i, _len, _ref1;
+        var option, tpl, _i, _len, _ref;
         tpl = '';
-        _ref1 = this.filtered_items.slice(this.showing);
-        for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
-          option = _ref1[_i];
+        _ref = this.filtered_items.slice(this.showing);
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          option = _ref[_i];
           tpl += tpls['faceted-search/facets/list.option']({
             option: option
           });
@@ -97,8 +97,7 @@
       };
 
       ListFacetOptions.prototype.checkChanged = function(ev) {
-        var $target, id,
-          _this = this;
+        var $target, id;
         $target = ev.currentTarget.tagName === 'LABEL' ? this.$('i[data-value="' + ev.currentTarget.getAttribute('data-value') + '"]') : $(ev.currentTarget);
         $target.toggleClass('fa-square-o');
         $target.toggleClass('fa-check-square-o');
@@ -107,9 +106,11 @@
         if (this.$('i.fa-check-square-o').length === 0) {
           return this.triggerChange();
         } else {
-          return Fn.timeoutWithReset(1000, function() {
-            return _this.triggerChange();
-          });
+          return Fn.timeoutWithReset(1000, (function(_this) {
+            return function() {
+              return _this.triggerChange();
+            };
+          })(this));
         }
       };
 
@@ -124,10 +125,10 @@
         });
       };
 
+
       /*
       		Called by parent (ListFacet) when user types in the search input
-      */
-
+       */
 
       ListFacetOptions.prototype.filterOptions = function(value) {
         var re;
@@ -143,10 +144,10 @@
       };
 
       ListFacetOptions.prototype.setCheckboxes = function(ev) {
-        var model, _i, _len, _ref1;
-        _ref1 = this.collection.models;
-        for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
-          model = _ref1[_i];
+        var model, _i, _len, _ref;
+        _ref = this.collection.models;
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          model = _ref[_i];
           model.set('checked', ev.currentTarget.checked);
         }
         this.render();

@@ -3,7 +3,7 @@
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
   define(function(require) {
-    var DateFacet, Models, _ref;
+    var DateFacet, Models;
     Models = {
       Facet: require('models/facet')
     };
@@ -11,8 +11,7 @@
       __extends(DateFacet, _super);
 
       function DateFacet() {
-        _ref = DateFacet.__super__.constructor.apply(this, arguments);
-        return _ref;
+        return DateFacet.__super__.constructor.apply(this, arguments);
       }
 
       DateFacet.prototype.parse = function(attrs) {

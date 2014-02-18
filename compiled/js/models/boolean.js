@@ -3,7 +3,7 @@
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
   define(function(require) {
-    var BooleanFacet, Models, _ref;
+    var BooleanFacet, Models;
     Models = {
       Facet: require('models/facet')
     };
@@ -11,8 +11,7 @@
       __extends(BooleanFacet, _super);
 
       function BooleanFacet() {
-        _ref = BooleanFacet.__super__.constructor.apply(this, arguments);
-        return _ref;
+        return BooleanFacet.__super__.constructor.apply(this, arguments);
       }
 
       BooleanFacet.prototype.set = function(attrs, options) {
@@ -25,8 +24,8 @@
       };
 
       BooleanFacet.prototype.parseOptions = function(options) {
-        var _ref1;
-        options = (_ref1 = this.get('options')) != null ? _ref1 : options;
+        var _ref;
+        options = (_ref = this.get('options')) != null ? _ref : options;
         if (options.length === 1) {
           options.push({
             name: (!JSON.parse(options[0].name)).toString(),

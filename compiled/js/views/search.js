@@ -3,7 +3,7 @@
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
   define(function(require) {
-    var Models, Search, Views, config, tpls, _ref;
+    var Models, Search, Views, config, tpls;
     config = require('config');
     Models = {
       Search: require('models/search')
@@ -16,19 +16,19 @@
       __extends(Search, _super);
 
       function Search() {
-        _ref = Search.__super__.constructor.apply(this, arguments);
-        return _ref;
+        return Search.__super__.constructor.apply(this, arguments);
       }
 
       Search.prototype.className = 'facet search';
 
       Search.prototype.initialize = function(options) {
-        var _this = this;
         Search.__super__.initialize.apply(this, arguments);
         this.model = new Models.Search(config.textSearchOptions);
-        this.listenTo(this.model, 'change', function() {
-          return _this.trigger('change', _this.model.queryData());
-        });
+        this.listenTo(this.model, 'change', (function(_this) {
+          return function() {
+            return _this.trigger('change', _this.model.queryData());
+          };
+        })(this));
         return this.render();
       };
 
@@ -58,7 +58,7 @@
       };
 
       Search.prototype.checkboxChanged = function(ev) {
-        var attr, cb, checkedArray, _i, _len, _ref1;
+        var attr, cb, checkedArray, _i, _len, _ref;
         if (attr = ev.currentTarget.getAttribute('data-attr')) {
           if (attr === 'searchInTranscriptions') {
             this.$('ul.textlayers').toggle(ev.currentTarget.checked);
@@ -66,9 +66,9 @@
           this.model.set(attr, ev.currentTarget.checked);
         } else if (attr = ev.currentTarget.getAttribute('data-attr-array')) {
           checkedArray = [];
-          _ref1 = this.el.querySelectorAll('[data-attr-array="' + attr + '"]');
-          for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
-            cb = _ref1[_i];
+          _ref = this.el.querySelectorAll('[data-attr-array="' + attr + '"]');
+          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+            cb = _ref[_i];
             if (cb.checked) {
               checkedArray.push(cb.getAttribute('data-value'));
             }

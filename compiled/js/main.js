@@ -12,7 +12,7 @@
   });
 
   define(function(require) {
-    var FacetedSearch, Fn, MainModel, Views, config, dom, facetViewMap, pubsub, tpls, _ref;
+    var FacetedSearch, Fn, MainModel, Views, config, dom, facetViewMap, pubsub, tpls;
     Fn = require('hilib/functions/general');
     dom = require('hilib/functions/dom');
     pubsub = require('hilib/mixins/pubsub');
@@ -32,13 +32,11 @@
       __extends(FacetedSearch, _super);
 
       function FacetedSearch() {
-        _ref = FacetedSearch.__super__.constructor.apply(this, arguments);
-        return _ref;
+        return FacetedSearch.__super__.constructor.apply(this, arguments);
       }
 
       FacetedSearch.prototype.initialize = function(options) {
-        var queryOptions,
-          _this = this;
+        var queryOptions;
         this.facetViews = {};
         _.extend(this, pubsub);
         _.extend(facetViewMap, options.facetViewMap);
@@ -49,37 +47,49 @@
         queryOptions = _.extend(config.queryOptions, config.textSearchOptions);
         this.render();
         this.model = new MainModel(queryOptions);
-        this.listenTo(this.model.searchResults, 'change:results', function(responseModel) {
-          _this.renderFacets();
-          return _this.trigger('results:change', responseModel);
-        });
-        this.listenTo(this.model.searchResults, 'change:cursor', function(responseModel) {
-          return _this.trigger('results:change', responseModel);
-        });
-        this.listenTo(this.model.searchResults, 'change:page', function(responseModel, database) {
-          return _this.trigger('results:change', responseModel, database);
-        });
-        this.listenTo(this.model.searchResults, 'request', function() {
-          var bb, div, el, loader, top;
-          el = _this.el.querySelector('.faceted-search');
-          div = _this.el.querySelector('.overlay');
-          div.style.width = el.clientWidth + 'px';
-          div.style.height = el.clientHeight + 'px';
-          div.style.display = 'block';
-          loader = _this.el.querySelector('.overlay div');
-          bb = dom(el).boundingBox();
-          loader.style.left = bb.left + bb.width / 2 + 'px';
-          top = bb.height > document.documentElement.clientHeight ? '50vh' : bb.height / 2 + 'px';
-          return loader.style.top = top;
-        });
-        this.listenTo(this.model.searchResults, 'sync', function() {
-          var el;
-          el = _this.el.querySelector('.overlay');
-          return el.style.display = 'none';
-        });
-        return this.listenTo(this.model.searchResults, 'unauthorised', function() {
-          return _this.trigger('unauthorised');
-        });
+        this.listenTo(this.model.searchResults, 'change:results', (function(_this) {
+          return function(responseModel) {
+            _this.renderFacets();
+            return _this.trigger('results:change', responseModel);
+          };
+        })(this));
+        this.listenTo(this.model.searchResults, 'change:cursor', (function(_this) {
+          return function(responseModel) {
+            return _this.trigger('results:change', responseModel);
+          };
+        })(this));
+        this.listenTo(this.model.searchResults, 'change:page', (function(_this) {
+          return function(responseModel, database) {
+            return _this.trigger('results:change', responseModel, database);
+          };
+        })(this));
+        this.listenTo(this.model.searchResults, 'request', (function(_this) {
+          return function() {
+            var bb, div, el, loader, top;
+            el = _this.el.querySelector('.faceted-search');
+            div = _this.el.querySelector('.overlay');
+            div.style.width = el.clientWidth + 'px';
+            div.style.height = el.clientHeight + 'px';
+            div.style.display = 'block';
+            loader = _this.el.querySelector('.overlay div');
+            bb = dom(el).boundingBox();
+            loader.style.left = bb.left + bb.width / 2 + 'px';
+            top = bb.height > document.documentElement.clientHeight ? '50vh' : bb.height / 2 + 'px';
+            return loader.style.top = top;
+          };
+        })(this));
+        this.listenTo(this.model.searchResults, 'sync', (function(_this) {
+          return function() {
+            var el;
+            el = _this.el.querySelector('.overlay');
+            return el.style.display = 'none';
+          };
+        })(this));
+        return this.listenTo(this.model.searchResults, 'unauthorised', (function(_this) {
+          return function() {
+            return _this.trigger('unauthorised');
+          };
+        })(this));
       };
 
       FacetedSearch.prototype.render = function() {
@@ -91,8 +101,7 @@
       };
 
       FacetedSearch.prototype.renderFacets = function(data) {
-        var View, facetData, fragment, index, textSearch, _ref1,
-          _this = this;
+        var View, facetData, fragment, index, textSearch, _ref;
         this.$('.loader').hide();
         this.$('.faceted-search > i.fa-compress').css('visibility', 'visible');
         if (this.model.searchResults.length === 1) {
@@ -100,23 +109,27 @@
           if (config.search) {
             textSearch = new Views.TextSearch();
             this.$('.search-placeholder').html(textSearch.el);
-            this.listenTo(textSearch, 'change', function(queryOptions) {
-              return _this.model.set(queryOptions);
-            });
+            this.listenTo(textSearch, 'change', (function(_this) {
+              return function(queryOptions) {
+                return _this.model.set(queryOptions);
+              };
+            })(this));
             this.facetViews['textSearch'] = textSearch;
           }
-          _ref1 = this.model.searchResults.current.get('facets');
-          for (index in _ref1) {
-            if (!__hasProp.call(_ref1, index)) continue;
-            facetData = _ref1[index];
+          _ref = this.model.searchResults.current.get('facets');
+          for (index in _ref) {
+            if (!__hasProp.call(_ref, index)) continue;
+            facetData = _ref[index];
             if (facetData.type in facetViewMap) {
               View = facetViewMap[facetData.type];
               this.facetViews[facetData.name] = new View({
                 attrs: facetData
               });
-              this.listenTo(this.facetViews[facetData.name], 'change', function(queryOptions) {
-                return _this.model.set(queryOptions);
-              });
+              this.listenTo(this.facetViews[facetData.name], 'change', (function(_this) {
+                return function(queryOptions) {
+                  return _this.model.set(queryOptions);
+                };
+              })(this));
               fragment.appendChild(this.facetViews[facetData.name].el);
             } else {
               console.error('Unknown facetView', facetData.type);
@@ -136,34 +149,35 @@
       };
 
       FacetedSearch.prototype.toggleFacets = function(ev) {
-        var $button, facetNames, index, open, slideFacet,
-          _this = this;
+        var $button, facetNames, index, open, slideFacet;
         $button = $(ev.currentTarget);
         open = $button.hasClass('fa-expand');
         $button.toggleClass('fa-compress');
         $button.toggleClass('fa-expand');
         facetNames = _.keys(this.facetViews);
         index = 0;
-        slideFacet = function() {
-          var facet, facetName;
-          facetName = facetNames[index++];
-          facet = _this.facetViews[facetName];
-          if (facet != null) {
-            if (facetName === 'textSearch') {
-              return slideFacet();
-            } else {
-              if (open) {
-                return facet.showBody(function() {
-                  return slideFacet();
-                });
+        slideFacet = (function(_this) {
+          return function() {
+            var facet, facetName;
+            facetName = facetNames[index++];
+            facet = _this.facetViews[facetName];
+            if (facet != null) {
+              if (facetName === 'textSearch') {
+                return slideFacet();
               } else {
-                return facet.hideBody(function() {
-                  return slideFacet();
-                });
+                if (open) {
+                  return facet.showBody(function() {
+                    return slideFacet();
+                  });
+                } else {
+                  return facet.hideBody(function() {
+                    return slideFacet();
+                  });
+                }
               }
             }
-          }
-        };
+          };
+        })(this);
         return slideFacet();
       };
 
@@ -194,29 +208,29 @@
       };
 
       FacetedSearch.prototype.update = function() {
-        var data, index, _ref1, _results;
+        var data, index, _ref, _results;
         if (this.facetViews.hasOwnProperty('textSearch')) {
           this.facetViews.textSearch.update();
         }
-        _ref1 = this.model.searchResults.current.get('facets');
+        _ref = this.model.searchResults.current.get('facets');
         _results = [];
-        for (index in _ref1) {
-          if (!__hasProp.call(_ref1, index)) continue;
-          data = _ref1[index];
+        for (index in _ref) {
+          if (!__hasProp.call(_ref, index)) continue;
+          data = _ref[index];
           _results.push(this.facetViews[data.name].update(data.options));
         }
         return _results;
       };
 
       FacetedSearch.prototype.reset = function() {
-        var data, index, _ref1;
+        var data, index, _ref;
         if (this.facetViews.hasOwnProperty('textSearch')) {
           this.facetViews.textSearch.reset();
         }
-        _ref1 = this.model.searchResults.last().get('facets');
-        for (index in _ref1) {
-          if (!__hasProp.call(_ref1, index)) continue;
-          data = _ref1[index];
+        _ref = this.model.searchResults.last().get('facets');
+        for (index in _ref) {
+          if (!__hasProp.call(_ref, index)) continue;
+          data = _ref[index];
           if (this.facetViews[data.name].reset) {
             this.facetViews[data.name].reset();
           }
