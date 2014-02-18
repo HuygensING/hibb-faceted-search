@@ -7,7 +7,7 @@
     "email": "agijsbro@gmail.com",
     "url": "https://github.com/Gijsjan"
   },
-  "main": "app/index.js",
+  "main": "src/coffee/main.coffee",
   "repository": {
     "type": "git",
     "url": "https://github.com/HuygensING/faceted-search"
@@ -16,28 +16,24 @@
     "test": "node ./.test/bin/server.js"
   },
   "devDependencies": {
-    "coffee-script": "*",
-    "stylus": "*",
-    "jade": "*",
-    "express": "*",
-    "underscore": "~1.4.4",
-    "grunt": "*",
-    "grunt-shell": "*",
-    "grunt-contrib-watch": "*",
-    "grunt-contrib-coffee": "*",
-    "grunt-contrib-jade": "*",
-    "grunt-contrib-stylus": "*",
-    "grunt-contrib-requirejs": "~0.4.1",
-    "grunt-contrib-copy": "~0.4.1",
-    "grunt-text-replace": "~0.3.6",
-    "grunt-contrib-uglify": "~0.2.2",
-    "grunt-contrib-cssmin": "~0.6.1",
-    "grunt-contrib-concat": "~0.3.0",
-    "grunt-contrib-connect": "~0.5.0",
-    "grunt-newer": "*",
-    "grunt-concurrent": "*",
-    "load-grunt-tasks": "*",
-    "my-grunt-modules": "Gijsjan/my-grunt-modules",
-    "grunt-touch": "~0.1.0"
+    "gulp-connect": "~0.3.1",
+    "gulp-util": "~2.2.14",
+    "gulp": "~3.5.2",
+    "gulp-concat": "~2.1.7",
+    "gulp-clean": "~0.2.4",
+    "gulp-stylus": "0.0.12",
+    "gulp-rename": "~1.0.0",
+    "gulp-browserify": "~0.4.4",
+    "browserify": "~3.28.0",
+    "coffeeify": "~0.6.0",
+    "jadeify": "~2.1.1",
+    "backbone": "~1.0.0",
+    "hilib": "HuygensING/hilib",
+    "jquery": "~2.1.0",
+    "underscore": "~1.6.0",
+    "coffee-script": "~1.7.1"
+  },
+  "browserify": {
+    "transform": ["jadeify", "coffeeify"]
   }
 }

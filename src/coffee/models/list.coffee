@@ -1,6 +1,6 @@
-define (require) ->
+Models =
+	Facet: require './facet'
 
-	Models =
-		Facet: require 'models/facet'
+class List extends Models.Facet
 
-	class List extends Models.Facet
+module.exports = List

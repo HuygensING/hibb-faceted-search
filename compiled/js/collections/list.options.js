@@ -3,7 +3,7 @@
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
   define(function(require) {
-    var ListItems, Models, _ref;
+    var ListItems, Models;
     Models = {
       Option: require('models/list.option')
     };
@@ -11,8 +11,7 @@
       __extends(ListItems, _super);
 
       function ListItems() {
-        _ref = ListItems.__super__.constructor.apply(this, arguments);
-        return _ref;
+        return ListItems.__super__.constructor.apply(this, arguments);
       }
 
       ListItems.prototype.model = Models.Option;
@@ -44,37 +43,41 @@
       };
 
       ListItems.prototype.revert = function() {
-        var _this = this;
-        this.each(function(option) {
-          return option.set('checked', false, {
-            silent: true
-          });
-        });
+        this.each((function(_this) {
+          return function(option) {
+            return option.set('checked', false, {
+              silent: true
+            });
+          };
+        })(this));
         return this.trigger('change');
       };
 
       ListItems.prototype.updateOptions = function(newOptions) {
-        var _this = this;
         if (newOptions == null) {
           newOptions = [];
         }
-        this.each(function(option) {
-          return option.set('count', 0, {
-            silent: true
-          });
-        });
-        _.each(newOptions, function(newOption) {
-          var opt;
-          opt = _this.get(newOption.name);
-          if (opt != null) {
-            return opt.set('count', newOption.count, {
+        this.each((function(_this) {
+          return function(option) {
+            return option.set('count', 0, {
               silent: true
             });
-          } else {
-            opt = new Models.Option(newOption);
-            return _this.add(opt);
-          }
-        });
+          };
+        })(this));
+        _.each(newOptions, (function(_this) {
+          return function(newOption) {
+            var opt;
+            opt = _this.get(newOption.name);
+            if (opt != null) {
+              return opt.set('count', newOption.count, {
+                silent: true
+              });
+            } else {
+              opt = new Models.Option(newOption);
+              return _this.add(opt);
+            }
+          };
+        })(this));
         return this.sort();
       };
 

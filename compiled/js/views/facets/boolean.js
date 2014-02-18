@@ -3,7 +3,7 @@
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
   define(function(require) {
-    var BooleanFacet, Models, StringFn, Views, tpls, _ref;
+    var BooleanFacet, Models, StringFn, Views, tpls;
     StringFn = require('hilib/functions/string');
     Models = {
       Boolean: require('models/boolean')
@@ -16,8 +16,7 @@
       __extends(BooleanFacet, _super);
 
       function BooleanFacet() {
-        _ref = BooleanFacet.__super__.constructor.apply(this, arguments);
-        return _ref;
+        return BooleanFacet.__super__.constructor.apply(this, arguments);
       }
 
       BooleanFacet.prototype.className = 'facet boolean';
@@ -30,14 +29,14 @@
       };
 
       BooleanFacet.prototype.checkChanged = function(ev) {
-        var $target, option, value, _i, _len, _ref1;
+        var $target, option, value, _i, _len, _ref;
         $target = ev.currentTarget.tagName === 'LABEL' ? this.$('i[data-value="' + ev.currentTarget.getAttribute('data-value') + '"]') : $(ev.currentTarget);
         $target.toggleClass('fa-square-o');
         $target.toggleClass('fa-check-square-o');
         value = $target.attr('data-value');
-        _ref1 = this.model.get('options');
-        for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
-          option = _ref1[_i];
+        _ref = this.model.get('options');
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          option = _ref[_i];
           if (option.name === value) {
             option.checked = $target.hasClass('fa-check-square-o');
           }

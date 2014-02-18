@@ -3,7 +3,7 @@
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
   define(function(require) {
-    var Models, RangeFacet, _ref;
+    var Models, RangeFacet;
     Models = {
       Facet: require('models/facet')
     };
@@ -11,8 +11,7 @@
       __extends(RangeFacet, _super);
 
       function RangeFacet() {
-        _ref = RangeFacet.__super__.constructor.apply(this, arguments);
-        return _ref;
+        return RangeFacet.__super__.constructor.apply(this, arguments);
       }
 
       RangeFacet.prototype.parse = function(attrs) {

@@ -1,15 +1,18 @@
-define (require) ->
-	class ListItem extends Backbone.Model
+Backbone = require 'backbone'
 
-		idAttribute: 'name'
+class ListOption extends Backbone.Model
 
-		defaults: ->
-			name: ''
-			count: 0
-			total: 0
-			checked: false
+	idAttribute: 'name'
 
-		parse: (attrs) ->
-			attrs.total = attrs.count
-			
-			attrs
+	defaults: ->
+		name: ''
+		count: 0
+		total: 0
+		checked: false
+
+	parse: (attrs) ->
+		attrs.total = attrs.count
+		
+		attrs
+
+module.exports = ListOption

@@ -3,7 +3,7 @@
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
   define(function(require) {
-    var SearchResult, SearchResults, ajax, config, pubsub, token, _ref;
+    var SearchResult, SearchResults, ajax, config, pubsub, token;
     pubsub = require('hilib/mixins/pubsub');
     SearchResult = require('models/searchresult');
     ajax = require('hilib/managers/ajax');
@@ -13,8 +13,7 @@
       __extends(SearchResults, _super);
 
       function SearchResults() {
-        _ref = SearchResults.__super__.constructor.apply(this, arguments);
-        return _ref;
+        return SearchResults.__super__.constructor.apply(this, arguments);
       }
 
       SearchResults.prototype.model = SearchResult;
@@ -33,8 +32,7 @@
       };
 
       SearchResults.prototype.runQuery = function(queryOptions, cache) {
-        var cacheString, options, resultRows, searchResult,
-          _this = this;
+        var cacheString, options, resultRows, searchResult;
         if (cache == null) {
           cache = true;
         }
@@ -55,17 +53,18 @@
           }
           searchResult = new SearchResult(null, options);
           return searchResult.fetch({
-            success: function(model) {
-              _this.cachedModels[cacheString] = model;
-              return _this.add(model);
-            }
+            success: (function(_this) {
+              return function(model) {
+                _this.cachedModels[cacheString] = model;
+                return _this.add(model);
+              };
+            })(this)
           });
         }
       };
 
       SearchResults.prototype.moveCursor = function(direction) {
-        var searchResult, url,
-          _this = this;
+        var searchResult, url;
         url = direction === '_prev' || direction === '_next' ? this.current.get(direction) : direction;
         if (url != null) {
           if (this.cachedModels.hasOwnProperty(url)) {
@@ -75,10 +74,12 @@
               url: url
             });
             return searchResult.fetch({
-              success: function(model, response, options) {
-                _this.cachedModels[url] = model;
-                return _this.add(model);
-              }
+              success: (function(_this) {
+                return function(model, response, options) {
+                  _this.cachedModels[url] = model;
+                  return _this.add(model);
+                };
+              })(this)
             });
           }
         }

@@ -3,7 +3,7 @@
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
   define(function(require) {
-    var Models, RangeFacet, Views, handleSize, tpls, _ref;
+    var Models, RangeFacet, Views, handleSize, tpls;
     Models = {
       Range: require('models/range')
     };
@@ -16,8 +16,7 @@
       __extends(RangeFacet, _super);
 
       function RangeFacet() {
-        _ref = RangeFacet.__super__.constructor.apply(this, arguments);
-        return _ref;
+        return RangeFacet.__super__.constructor.apply(this, arguments);
       }
 
       RangeFacet.prototype.className = 'facet range';
@@ -34,18 +33,21 @@
       };
 
       RangeFacet.prototype.render = function() {
-        var rtpl,
-          _this = this;
+        var rtpl;
         RangeFacet.__super__.render.apply(this, arguments);
         rtpl = tpls['faceted-search/facets/range.body'](this.model.attributes);
         this.$('.body').html(rtpl);
         this.$('header i.openclose').hide();
-        setTimeout((function() {
-          return _this.postRender();
-        }), 0);
-        this.$el.mouseleave(function() {
-          return _this.stopDragging();
-        });
+        setTimeout(((function(_this) {
+          return function() {
+            return _this.postRender();
+          };
+        })(this)), 0);
+        this.$el.mouseleave((function(_this) {
+          return function() {
+            return _this.stopDragging();
+          };
+        })(this));
         return this;
       };
 

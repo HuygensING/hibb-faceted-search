@@ -3,14 +3,13 @@
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
   define(function(require) {
-    var FacetedSearch, SearchResults, _ref;
+    var FacetedSearch, SearchResults;
     SearchResults = require('collections/searchresults');
     return FacetedSearch = (function(_super) {
       __extends(FacetedSearch, _super);
 
       function FacetedSearch() {
-        _ref = FacetedSearch.__super__.constructor.apply(this, arguments);
-        return _ref;
+        return FacetedSearch.__super__.constructor.apply(this, arguments);
       }
 
       FacetedSearch.prototype.defaults = function() {
@@ -21,12 +20,13 @@
       };
 
       FacetedSearch.prototype.initialize = function(queryOptions, options) {
-        var _this = this;
         this.queryOptions = queryOptions;
         this.searchResults = new SearchResults();
-        this.on('change', function(model, options) {
-          return _this.searchResults.runQuery(_.clone(_this.attributes));
-        });
+        this.on('change', (function(_this) {
+          return function(model, options) {
+            return _this.searchResults.runQuery(_.clone(_this.attributes));
+          };
+        })(this));
         return this.trigger('change');
       };
 
@@ -63,15 +63,12 @@
       };
 
       FacetedSearch.prototype.refresh = function(newQueryOptions) {
-        var key, value;
         if (newQueryOptions == null) {
           newQueryOptions = {};
         }
-        for (key in newQueryOptions) {
-          if (!__hasProp.call(newQueryOptions, key)) continue;
-          value = newQueryOptions[key];
-          this.set(key, value);
-        }
+        this.set(newQueryOptions, {
+          silent: true
+        });
         return this.searchResults.runQuery(_.clone(this.attributes), false);
       };
 

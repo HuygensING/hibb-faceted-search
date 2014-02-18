@@ -3,7 +3,7 @@
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
   define(function(require) {
-    var Collections, Fn, ListFacet, Models, Views, tpls, _ref;
+    var Collections, Fn, ListFacet, Models, Views, tpls;
     Fn = require('hilib/functions/general');
     Models = {
       List: require('models/list')
@@ -20,8 +20,7 @@
       __extends(ListFacet, _super);
 
       function ListFacet() {
-        _ref = ListFacet.__super__.constructor.apply(this, arguments);
-        return _ref;
+        return ListFacet.__super__.constructor.apply(this, arguments);
       }
 
       ListFacet.prototype.className = 'facet list';
@@ -36,8 +35,7 @@
       };
 
       ListFacet.prototype.render = function() {
-        var body, menu,
-          _this = this;
+        var body, menu;
         ListFacet.__super__.render.apply(this, arguments);
         this.collection = new Collections.Options(this.options.attrs.options, {
           parse: true
@@ -55,9 +53,11 @@
         });
         this.$('.body').html(this.optionsView.el);
         this.listenTo(this.optionsView, 'filter:finished', this.renderFilteredOptionCount);
-        this.listenTo(this.optionsView, 'change', function(data) {
-          return _this.trigger('change', data);
-        });
+        this.listenTo(this.optionsView, 'change', (function(_this) {
+          return function(data) {
+            return _this.trigger('change', data);
+          };
+        })(this));
         return this;
       };
 
