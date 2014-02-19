@@ -7,7 +7,7 @@
     "email": "agijsbro@gmail.com",
     "url": "https://github.com/Gijsjan"
   },
-  "main": "app/index.js",
+  "main": "src/coffee/main.coffee",
   "repository": {
     "type": "git",
     "url": "https://github.com/HuygensING/faceted-search"

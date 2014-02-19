@@ -1,3 +1,5 @@
+_ = require 'underscore'
+
 StringFn = require 'hilib/src/utils/string'
 
 Models =
