@@ -148,6 +148,7 @@ class MainView extends Backbone.View
 	# next facet starts sliding. That's why we use a recursive function.
 	toggleFacets: (ev) ->
 		$button = $ ev.currentTarget
+		
 		open = $button.hasClass 'fa-expand'
 		$button.toggleClass 'fa-compress'
 		$button.toggleClass 'fa-expand'

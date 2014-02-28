@@ -29,7 +29,7 @@ class Facet extends Backbone.View
 		@$('header .options input[name="filter"]').focus()
 
 	hideMenu: ->
-		$button = $ 'header i.fa'
+		$button = @$ 'header i.fa'
 		$button.addClass 'fa-plus-square-o'
 		$button.removeClass 'fa-minus-square-o'
 

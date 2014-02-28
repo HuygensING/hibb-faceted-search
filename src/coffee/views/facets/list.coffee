@@ -1,3 +1,4 @@
+$ = require 'jquery'
 _ = require 'underscore'
 
 Fn = require 'hilib/src/utils/general'
@@ -55,6 +56,8 @@ class ListFacet extends Views.Facet
 		@listenTo @optionsView, 'filter:finished', @renderFilteredOptionCount
 		# Pass through the change event
 		@listenTo @optionsView, 'change', (data) => @trigger 'change', data
+
+		@$('header i.openclose').hide() if @collection.length <= 3
 
 		@
 

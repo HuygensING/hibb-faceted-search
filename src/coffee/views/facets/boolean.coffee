@@ -16,6 +16,27 @@ class BooleanFacet extends Views.Facet
 
 	className: 'facet boolean'
 
+	# ### Initialize
+	initialize: (options) ->
+		super
+
+		@model = new Models.Boolean options.attrs, parse: true
+		@listenTo @model, 'change:options', @render
+
+		@render()
+
+	# ### Render
+	render: ->
+		super
+
+		rtpl = bodyTpl _.extend @model.attributes, ucfirst: StringFn.ucfirst
+		@$('.body').html rtpl
+
+		@$('header i.fa').remove()
+
+		@
+
+	# ### Events
 	events: -> _.extend {}, super,
 		'click i': 'checkChanged'
 		'click label': 'checkChanged'
@@ -37,24 +58,7 @@ class BooleanFacet extends Views.Facet
 				name: @model.get 'name'
 				values: _.map @$('i.fa-check-square-o'), (cb) -> cb.getAttribute 'data-value'
 
-	initialize: (options) ->
-		super
-
-		@model = new Models.Boolean options.attrs, parse: true
-		@listenTo @model, 'change:options', @render
-
-		@render()
-
-	render: ->
-		super
-
-		rtpl = bodyTpl _.extend @model.attributes, ucfirst: StringFn.ucfirst
-		@$('.body').html rtpl
-
-		@$('header i.fa').remove()
-
-		@
-
+	# ### Methods
 	update: (newOptions) -> @model.set 'options', newOptions
 	reset: -> @render()
 

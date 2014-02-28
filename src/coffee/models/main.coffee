@@ -63,8 +63,8 @@ class MainModel extends Backbone.Model
 	# model, instead of fetching a new one from the server.
 	# The newQueryOptions are optional. The can be used to add or update one or more queryOptions
 	# before sending the same (or now altered) queryOptions to the server again.
-	refresh: (newQueryOptions={}) -> 
-		@set key, value for own key, value of newQueryOptions
+	refresh: (newQueryOptions={}) ->
+		@set newQueryOptions, silent: true
 		@searchResults.runQuery _.clone(@attributes), false
 
 module.exports = MainModel

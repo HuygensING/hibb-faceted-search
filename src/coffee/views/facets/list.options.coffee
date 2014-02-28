@@ -1,4 +1,5 @@
 Backbone = require 'backbone'
+$ = require 'jquery'
 _ = require 'underscore'
 
 Fn = require 'hilib/src/utils/general'
@@ -7,8 +8,6 @@ Models =
 	List: require '../../models/list'
 
 optionTpl = require '../../../jade/facets/list.option.jade'
-				
-
 
 class ListFacetOptions extends Backbone.View
 
@@ -34,7 +33,7 @@ class ListFacetOptions extends Backbone.View
 
 		# Set the height of the <ul> dynamically, to prevent glitches
 		# when the options are rendered on scrolling.
-		ul.style.height =  (@filtered_items.length * 15) + 'px'
+		# ul.style.height =  (@filtered_items.length * 15) + 'px'
 
 		@el.innerHTML = ''
 		@el.appendChild ul
