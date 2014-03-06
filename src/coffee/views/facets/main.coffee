@@ -1,5 +1,6 @@
 Backbone = require 'backbone'
 $ = require 'jquery'
+_ = require 'underscore'
 tpl = require '../../../jade/facets/main.jade'
 
 class Facet extends Backbone.View
@@ -17,19 +18,23 @@ class Facet extends Backbone.View
 	# ### Events
 	events: ->
 		'click h3': 'toggleBody'
-		'click header i.openclose': 'toggleMenu'
+		# 'click header i.openclose': 'toggleMenu'
+		# 'focus header input[name="dummy"]': 'toggleMenu'
+		# 'blur header input[name="dummy"]': 'toggleMenu'
 
 	# ### Show/hide menu/body
-	toggleMenu: (ev) ->
-		$button = $ ev.currentTarget
-		$button.toggleClass 'fa-plus-square-o'
-		$button.toggleClass 'fa-minus-square-o'
-
-		@$('header .options').slideToggle(150)
-		@$('header .options input[name="filter"]').focus()
+	# toggleMenu: (ev) ->
+	# 	# $button = $ ev.currentTarget
+	# 	# $button.toggleClass 'fa-plus-square-o'
+	# 	# $button.toggleClass 'fa-minus-square-o'
+	# 	@$('header input[name="dummy"]').hide()
+		
+	# 	@$('header .options').slideToggle 150, => 
+	# 		@$('header .options input[name="filter"]').focus()
+	# 		@$('header .options input[name="filter"]').focus()
 
 	hideMenu: ->
-		$button = @$ 'header i.fa'
+		$button = @$ 'header i.openclose'
 		$button.addClass 'fa-plus-square-o'
 		$button.removeClass 'fa-minus-square-o'
 

@@ -2,12 +2,26 @@
 	div
 		i.fa.fa-spinner.fa-spin.fa-2x
 .faceted-search
-	i.fa.fa-compress(title="Expand/collapse facets")
-	i.fa.fa-refresh(title="Reset search")
 	form
 		.search-placeholder
+		ul.facets-menu
+			li.switch
+				
+				//- The rest of the sentence is finished by CSS, depending on config.textSearch as className.
+				//- ie: "advanced search" or "simple search"
+				button
+					i.fa.fa-angle-double-down
+					span Switch to
+			li.collapse-expand
+				button
+					i.fa.fa-compress
+					span Collapse facets
+			li.reset
+				button
+					i.fa.fa-refresh 
+					span Reset search
 		.facets
 			div.loader
-				h4 Loading facets...
+				h4 Loading search...
 				br
 				i.fa.fa-spinner.fa-spin.fa-2x

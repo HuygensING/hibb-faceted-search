@@ -1,0 +1,80 @@
+.faceted-search.search-type-simple, .faceted-search.search-type-advanced
+	border none
+	background none
+
+	form
+		box-shadow none
+
+		.text-search
+			position relative
+			box-shadow none
+			background none
+
+			.pad3
+				padding 0 3%
+
+			.body
+				
+				.menu
+					margin-bottom 18px
+					display none
+
+					&:hover
+						i.fa-times
+							opacity 1
+
+					i.fa-times
+						opacity 0
+						float right
+						margin-right 2px
+						font-size 1.4em
+						transition opacity 500ms
+
+				.row-1, .row-2
+					margin 10px 0 0 2px
+
+					.cell-1, .cell-2
+						display inline-block
+						vertical-align top
+
+					.cell-1
+						width 120px
+
+				label
+					font-size 0.9em
+
+				input[type="checkbox"]
+					margin-right 4px
+
+				ul.textlayers, ul.searchins
+					margin-top 6px
+					list-style none
+			
+				input[name="search"]
+					height 24px
+
+.faceted-search.search-type-advanced
+	form
+		ul.facets-menu
+			li
+				&.collapse-expand, &.reset
+					display block
+
+				&.switch
+					span:after
+						content ' simple'
+
+.faceted-search.search-type-simple
+	form
+		ul.facets-menu
+			li
+				&.collapse-expand, &.reset
+					display none
+
+				&.switch
+					span:after
+						content ' advanced'
+
+		.facets
+			display none
+			

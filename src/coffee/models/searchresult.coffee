@@ -1,4 +1,5 @@
 Backbone = require 'backbone'
+_ = require 'underscore'
 
 ajax = require 'hilib/src/managers/ajax'
 token = require 'hilib/src/managers/token'
@@ -35,10 +36,17 @@ class SearchResult extends Backbone.Model
 			if @options.url?
 				@getResults @options.url, options.success
 			else
-				jqXHR = ajax.post
+				ajaxOptions =
 					url: config.baseUrl + config.searchPath
 					data: JSON.stringify @options.queryOptions
 					dataType: 'text'
+
+				# This is used for extra options to the ajax call,
+				# such as setting custom headers (e.g., VRE_ID)
+				if config.hasOwnProperty 'requestOptions'
+					_.extend ajaxOptions, config.requestOptions 
+
+				jqXHR = ajax.post ajaxOptions
 
 				jqXHR.done (data, textStatus, jqXHR) =>
 					if jqXHR.status is 201
