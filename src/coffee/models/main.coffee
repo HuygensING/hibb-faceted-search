@@ -8,7 +8,7 @@ class MainModel extends Backbone.Model
 		# an array of objects containing a facet name and values: {name: 'facet_s_writers', values: ['pietje', 'pukje']}
 		facetValues: []
 		# an array of objects containing fieldname and direction: {fieldname: 'language', direction: 'desc'}
-		sortParameters: []
+		# sortParameters: []
 
 	# ### Initialize
 
