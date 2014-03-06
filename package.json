@@ -15,6 +15,9 @@
   "scripts": {
     "test": "node ./.test/bin/server.js"
   },
+  "dependencies": {
+    "hilib": "HuygensING/hilib#gulp-browserify"
+  },
   "devDependencies": {
     "gulp-connect": "~0.3.1",
     "gulp-util": "~2.2.14",
@@ -28,7 +31,6 @@
     "coffeeify": "~0.6.0",
     "jadeify": "~2.1.1",
     "backbone": "~1.0.0",
-    "hilib": "HuygensING/hilib#gulp-browserify",
     "jquery": "~2.1.0",
     "underscore": "~1.6.0",
     "coffee-script": "~1.7.1"
