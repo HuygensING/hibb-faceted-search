@@ -98,7 +98,7 @@ class MainView extends Backbone.View
 				
 	renderFacets: (data) ->
 		@$('.loader').hide()
-		@$('.faceted-search > i.fa-compress').css 'visibility', 'visible'
+		@$('.faceted-search > i.fa').css 'visibility', 'visible'
 
 		# If the size of the searchResults is 1 then it's the first time we render the facets
 		if @model.searchResults.length is 1
@@ -132,6 +132,8 @@ class MainView extends Backbone.View
 	events: ->
 		'click i.fa-compress': 'toggleFacets'
 		'click i.fa-expand': 'toggleFacets'
+		# Don't use @refresh as String, because the ev object will be passed.
+		'click i.fa-refresh': -> @refresh()
 
 	# ### Methods
 

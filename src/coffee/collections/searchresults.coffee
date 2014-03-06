@@ -32,7 +32,6 @@ class SearchResults extends Backbone.Collection
 			resultRows = queryOptions.resultRows
 			delete queryOptions.resultRows
 
-
 		cacheString = JSON.stringify queryOptions
 
 		# The search results are cached by the query options string,
