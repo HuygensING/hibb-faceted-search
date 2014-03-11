@@ -14,7 +14,7 @@ class ListFacetOptions extends Backbone.View
 	className: 'container'
 
 	# ### Initialize
-	initialize: ->
+	initialize: (@options={}) ->
 		@showing = null
 		@showingIncrement = 50
 		@filtered_items = @collection.models
