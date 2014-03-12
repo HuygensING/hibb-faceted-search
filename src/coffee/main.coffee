@@ -133,7 +133,7 @@ class MainView extends Backbone.View
 		'click i.fa-compress': 'toggleFacets'
 		'click i.fa-expand': 'toggleFacets'
 		# Don't use @refresh as String, because the ev object will be passed.
-		'click i.fa-refresh': -> @refresh()
+		'click i.fa-refresh': -> @reset()
 
 	# ### Methods
 
