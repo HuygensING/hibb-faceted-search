@@ -1,6 +1,7 @@
 Backbone = require 'backbone'
 _ = require 'underscore'
 SearchResults = require '../collections/searchresults'
+config = require '../config'
 
 class MainModel extends Backbone.Model
 
@@ -23,8 +24,9 @@ class MainModel extends Backbone.Model
 		@on 'change', (model, options) => @searchResults.runQuery _.clone(@attributes)
 
 		# Manually trigger the change event, because the initial @querySettings, don't trigger the change event
-		# and thus searchResult.runQuery isn't called.
-		@trigger 'change'
+		# and thus searchResult.runQuery isn't called. If textSearch is 'simple', we don't need to fetch the
+		# facet values, because they are not visible.
+		@trigger 'change' unless config.textSearch is 'simple'
 
 	# ### Overrides
 	set: (attrs, options) ->

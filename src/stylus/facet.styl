@@ -1,21 +1,44 @@
 @import './import/*'
 
 .faceted-search
-	
-	.facet
-		header
-			margin-bottom 10px
+	hr
+		border none
+		height 1px
+		background-color #EEE
+		margin 10px 8px
 
-			i
-				cursor pointer
-				font-size 1.2em
-				color #AAA
+		&:last-child
+			display none
+
+	i
+		cursor pointer
+		font-size 1.2em
+		color #AAA
+
+		&:hover, &.active
+			color #555
+
+
+	.facet
+		position relative
+		// border-bottom 1px solid #EEE
+		// margin-bottom 10px
+		// padding-bottom 10px
+
+		// &:last-child
+		// 	border none
+
+
+		
+		header
+			i.openclose
+				position absolute
+				left -8px
+				top 9px
+				color #DDD
 
 				&:hover, &.active
-					color #555
-
-				&.openclose
-					float right
+					color #AAA
 
 			h3
 				padding 0
@@ -25,9 +48,9 @@
 
 			.options
 				display none
-				background-color darken(backgroundcolor, 5%)
-				padding 2%
-				box-shadow 1px 1px 4px #BDBDBD
+				background-color #EEE
+				margin 10px -4%
+				padding 2% 4%
 				border-radius 4px
 				margin-top 10px
 
@@ -91,3 +114,4 @@
 		
 		.body
 			max-height 200px
+			margin-top 10px

@@ -1,5 +1,6 @@
 Backbone = require 'backbone'
 $ = require 'jquery'
+_ = require 'underscore'
 tpl = require '../../../jade/facets/main.jade'
 
 class Facet extends Backbone.View
@@ -29,7 +30,7 @@ class Facet extends Backbone.View
 		@$('header .options input[name="filter"]').focus()
 
 	hideMenu: ->
-		$button = @$ 'header i.fa'
+		$button = @$ 'header i.openclose'
 		$button.addClass 'fa-plus-square-o'
 		$button.removeClass 'fa-minus-square-o'
 

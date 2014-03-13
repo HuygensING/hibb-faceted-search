@@ -1,3 +1,4 @@
+Backbone = require 'backbone'
 _ = require 'underscore'
 
 config = require '../config'
@@ -12,16 +13,16 @@ Views =
 # 	Menu: require 'text!html/facet/search.menu.html'
 # 	Body: require 'text!html/facet/search.body.html'
 
-menuTpl = require '../../jade/facets/search.menu.jade'
-bodyTpl = require '../../jade/facets/search.body.jade'
+# menuTpl = require '../../jade/facets/search.menu.jade'
+tpl = require '../../jade/facets/search.jade'
 
-class SearchView extends Views.Facet
+class SearchView extends Backbone.View
 
-	className: 'facet search'
+	className: 'text-search'
 
 	# ### Initialize
 	initialize: (options) ->
-		super
+		# super
 
 		@model = new Models.Search config.textSearchOptions
 		@listenTo @model, 'change', => @trigger 'change', @model.queryData()
@@ -31,36 +32,25 @@ class SearchView extends Views.Facet
 	# * TODO: search input (<input id="">) should not have an ID, because there can be several Faceted Search instances.
 	# ### Render
 	render: ->
-		super
-		# console.log @model.attributes
-		# menu = _.template Templates.Menu, @model.attributes
-		menu = menuTpl model: @model
-		body = bodyTpl model: @model
-
-
-		@$('.options').html menu
-		@$('.body').html body
-
-		# checkboxes = @$(':checkbox')
-		# checkboxes.change (ev) =>
-		# 	_.each checkboxes, (cb) =>
-		# 		prop = cb.getAttribute 'data-prop'
-		# 		console.log prop
-		# 		if prop?
-		# 			checked = if $(cb).attr('checked') is 'checked' then true else false
-		# 			# console.log cb.checked
-		# 			@model.set prop, checked
-
-			# console.log @model.attributes
+		@$el.html tpl model: @model
 
 		@
 
 	# ### Events
-	events: -> _.extend {}, super,
+	events: ->
 		'click button': (ev) -> ev.preventDefault()
 		'click button.active': 'search'
 		'keyup input': 'activateSearchButton'
 		'change input[type="checkbox"]': 'checkboxChanged'
+		'click header i.openclose': 'toggleMenu'
+
+	# ### Show/hide menu/body
+	toggleMenu: (ev) ->
+		$button = $ ev.currentTarget
+		$button.toggleClass 'fa-plus-square-o'
+		$button.toggleClass 'fa-minus-square-o'
+
+		@$('.body .options').slideToggle(150)
 
 	checkboxChanged: (ev) ->
 		if attr = ev.currentTarget.getAttribute('data-attr')
