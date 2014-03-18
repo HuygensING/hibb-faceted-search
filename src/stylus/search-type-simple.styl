@@ -13,16 +13,6 @@
 			.pad3
 				padding 0 3%
 
-			header
-				// i.openclose
-				// 	position absolute
-				// 	left -8px
-				// 	top 9px
-				// 	color #DDD
-
-				// 	&:hover, &.active
-				// 		color #AAA
-
 			.body
 				
 				.menu
@@ -65,29 +55,25 @@
 
 .faceted-search.search-type-advanced
 	form
-		.text-search ul li
-			span.advanced:after
-				content ' advanced search'
-
-		ul.menu
+		ul.facets-menu
 			li
 				&.collapse-expand, &.reset
 					display block
 
 				&.switch
-					span.advanced:after
-						content ' simple search'
+					span:after
+						content ' simple'
 
 .faceted-search.search-type-simple
 	form
-		ul.menu
+		ul.facets-menu
 			li
 				&.collapse-expand, &.reset
 					display none
 
 				&.switch
-					span.advanced:after
-						content ' advanced search'
+					span:after
+						content ' advanced'
 
 		.facets
 			display none

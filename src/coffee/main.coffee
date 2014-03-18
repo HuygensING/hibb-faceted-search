@@ -57,10 +57,12 @@ class MainView extends Backbone.View
 
 		@$('.faceted-search').addClass "search-type-#{config.textSearch}"
 
-		if config.textSearch isnt 'none'
+		# See config for more about none, simple and advanced options.
+		if config.textSearch is 'simple' or 'advanced'
 			@renderTextSearch()
-		else
-			@$('.loader').fadeIn('slow')
+		
+		if config.textSearch is 'none' or 'advanced'
+			setTimeout @showLoader.bind(@), 0
 
 		@
 
@@ -105,10 +107,14 @@ class MainView extends Backbone.View
 
 	# ### Events
 	events: ->
-		'click ul.menu li.collapse-expand': 'toggleFacets'
+		'click ul.facets-menu li.collapse-expand': 'toggleFacets'
 		# Don't use @refresh as String, because the ev object will be passed.
-		'click ul.menu li.reset': -> @reset()
-		'click span.advanced': ->
+		'click ul.facets-menu li.reset': (ev) -> 
+			ev.preventDefault()
+			@reset()
+		'click ul.facets-menu li.switch button': (ev) ->
+			ev.preventDefault()
+
 			config.textSearch = if config.textSearch is 'advanced' then 'simple' else 'advanced'
 
 			@$('.faceted-search').toggleClass 'search-type-simple'
@@ -117,56 +123,19 @@ class MainView extends Backbone.View
 			if @model.searchResults.length is 0
 				@model.trigger 'change'
 			else
-				@renderFacets()
-
-	# ### Methods
-
-	addListeners: ->
-		# Listen to the change:results event and (re)render the facets everytime the result changes.
-		@listenTo @model.searchResults, 'change:results', (responseModel) => 
-			@renderFacets()
-			@trigger 'results:change', responseModel
-
-		@listenTo @model.searchResults, 'change:cursor', (responseModel) => 
-			@trigger 'results:change', responseModel
-
-		@listenTo @model.searchResults, 'change:page', (responseModel, database) => 
-			@trigger 'results:change', responseModel, database
-		
-		@listenTo @model.searchResults, 'request', @showLoader
-			
-		@listenTo @model.searchResults, 'sync', =>
-			el = @el.querySelector '.overlay'
-			el.style.display = 'none'
-
-		@listenTo @model.searchResults, 'unauthorised', => @trigger 'unauthorised'
-
-	showLoader: ->
-		facetedSearch = @$('.faceted-search')
-		overlay = @$('.overlay')
-		loader = overlay.find('div')
-
-		overlay.width facetedSearch.width()
-		overlay.height facetedSearch.height()
-		overlay.css 'display', 'block'
-
-		left =  facetedSearch.offset().left + facetedSearch.width()/2 - 12
-		loader.css 'left', left
-
-		top =  facetedSearch.offset().top + facetedSearch.height()/2 - 12
-		top = '50vh' if facetedSearch.height() > $(window).height()
-		loader.css 'top', top
+				@update()
 
 	# The facets are slided one by one. When the slide of a facet is finished, the
 	# next facet starts sliding. That's why we use a recursive function.
 	toggleFacets: (ev) ->
+		ev.preventDefault()
+
 		icon = $(ev.currentTarget).find('i.fa')
 		span = $(ev.currentTarget).find('span')
 
 		open = icon.hasClass 'fa-expand'
 		icon.toggleClass 'fa-compress'
 		icon.toggleClass 'fa-expand'
-
 
 		text = if open then 'Collapse' else 'Expand'
 		span.text "#{text} facets"
@@ -189,6 +158,42 @@ class MainView extends Backbone.View
 						facet.hideBody -> slideFacet()
 
 		slideFacet()
+
+	# ### Methods
+
+	addListeners: ->
+		# Listen to the change:results event and (re)render the facets everytime the result changes.
+		@listenTo @model.searchResults, 'change:results', (responseModel) => 
+			@renderFacets()
+			@trigger 'results:change', responseModel
+
+		@listenTo @model.searchResults, 'change:cursor', (responseModel) => 
+			@trigger 'results:change', responseModel
+
+		@listenTo @model.searchResults, 'change:page', (responseModel, database) => 
+			@trigger 'results:change', responseModel, database
+		
+		@listenTo @model.searchResults, 'request', @showLoader
+			
+		@listenTo @model.searchResults, 'sync', => @$('.overlay').hide()
+
+		@listenTo @model.searchResults, 'unauthorised', => @trigger 'unauthorised'
+
+	showLoader: ->
+		facetedSearch = @$('.faceted-search')
+		overlay = @$('.overlay')
+		loader = overlay.find('div')
+
+		overlay.width facetedSearch.width()
+		overlay.height facetedSearch.height()
+		overlay.css 'display', 'block'
+
+		left =  facetedSearch.offset().left + facetedSearch.width()/2 - 12
+		loader.css 'left', left
+
+		top =  facetedSearch.offset().top + facetedSearch.height()/2 - 12
+		top = '50vh' if facetedSearch.height() > $(window).height()
+		loader.css 'top', top
 
 	page: (pagenumber, database) -> @model.searchResults.current.page pagenumber, database
 

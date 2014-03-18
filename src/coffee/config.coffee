@@ -7,9 +7,9 @@ module.exports =
 	searchPath: ''
 
 	# textSearch has three options: 'none', 'simple', 'advanced'
-	# none: text search is hidden, facets are shown
-	# simple: text search is shown, facets are hidden
-	# advanced: text search is shown, facets are shown
+	# none: text search is hidden, facets are shown, loader is shown
+	# simple: text search is shown, facets are hidden, loader is hidden
+	# advanced: text search is shown, facets are shown, loader is shown
 	textSearch: 'advanced'
 
 	token: null
