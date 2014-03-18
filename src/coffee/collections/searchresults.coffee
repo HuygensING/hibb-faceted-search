@@ -24,8 +24,8 @@ class SearchResults extends Backbone.Collection
 		@on 'add', @setCurrent, @
 
 	setCurrent: (@current) ->
-		message = if @current.options.url? then 'change:cursor' else 'change:results'
-		@trigger message, @current
+		changeMessage = if @current.options.url? then 'change:cursor' else 'change:results'
+		@trigger changeMessage, @current
 
 	runQuery: (queryOptions, cache=true) ->
 		if queryOptions.hasOwnProperty 'resultRows'
