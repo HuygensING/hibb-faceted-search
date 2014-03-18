@@ -1,6 +1,8 @@
 Backbone = require 'backbone'
 _ = require 'underscore'
 
+dom = require 'hilib/src/utils/dom'
+
 config = require '../config'
 
 Models =
@@ -9,11 +11,6 @@ Models =
 Views = 
 	Facet: require './facets/main'
 
-# Templates =
-# 	Menu: require 'text!html/facet/search.menu.html'
-# 	Body: require 'text!html/facet/search.body.html'
-
-# menuTpl = require '../../jade/facets/search.menu.jade'
 tpl = require '../../jade/facets/search.jade'
 
 class SearchView extends Backbone.View
@@ -41,16 +38,18 @@ class SearchView extends Backbone.View
 		'click button': (ev) -> ev.preventDefault()
 		'click button.active': 'search'
 		'keyup input': 'activateSearchButton'
+		'focus input': -> @$('.body .menu').slideDown(150)
+		'click .menu .fa-times': -> @$('.body .menu').slideUp(150)
 		'change input[type="checkbox"]': 'checkboxChanged'
-		'click header i.openclose': 'toggleMenu'
+		# 'click header i.openclose': 'toggleMenu'
 
 	# ### Show/hide menu/body
 	toggleMenu: (ev) ->
-		$button = $ ev.currentTarget
-		$button.toggleClass 'fa-plus-square-o'
-		$button.toggleClass 'fa-minus-square-o'
+		# $button = $ ev.currentTarget
+		# $button.toggleClass 'fa-plus-square-o'
+		# $button.toggleClass 'fa-minus-square-o'
 
-		@$('.body .options').slideToggle(150)
+		
 
 	checkboxChanged: (ev) ->
 		if attr = ev.currentTarget.getAttribute('data-attr')

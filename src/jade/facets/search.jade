@@ -1,6 +1,6 @@
 .placeholder.pad3
-	header
-		i.openclose.fa.fa-minus-square-o
+	//- header
+	//- 	i.openclose.fa.fa-minus-square-o
 	.body
 
 		.row.span4.align.middle
@@ -10,7 +10,8 @@
 			.cell.span1
 				button.search Search
 
-		.options
+		.menu
+			i.fa.fa-times
 			.row-1
 				.cell-1
 					input#cb_casesensitive(type="checkbox", name="cb_casesensitive", data-attr="caseSensitive")
@@ -41,16 +42,3 @@
 								li.textlayer
 									input(id='cb_textlayer'+textLayer, type="checkbox", data-attr-array="textLayers", data-value=textLayer, checked=true)
 									label(for='cb_textlayer'+textLayer)= textLayer
-
-		ul
-			li
-				i.fa.fa-angle-double-down
-				//- The rest of the sentence is finished by CSS, depending on config.textSearch as className.
-				//- ie: "advanced search" or "simple search"
-				span.advanced Switch to
-			li
-				i.fa.fa-compress
-				span Collapse facets
-			li
-				i.fa.fa-refresh 
-				span Reset search

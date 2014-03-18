@@ -4,6 +4,18 @@
 .faceted-search
 	form
 		.search-placeholder
+		ul.menu
+			li.switch
+				i.fa.fa-angle-double-down
+				//- The rest of the sentence is finished by CSS, depending on config.textSearch as className.
+				//- ie: "advanced search" or "simple search"
+				span.advanced Switch to
+			li.collapse-expand
+				i.fa.fa-compress
+				span Collapse facets
+			li.reset
+				i.fa.fa-refresh 
+				span Reset search
 		.facets
 			div.loader
 				h4 Loading search...

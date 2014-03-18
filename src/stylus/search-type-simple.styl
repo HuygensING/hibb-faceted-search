@@ -11,22 +11,34 @@
 			background none
 
 			.pad3
-				padding-top 0
+				padding 0 3%
 
 			header
-				i.openclose
-					position absolute
-					left -8px
-					top 9px
-					color #DDD
+				// i.openclose
+				// 	position absolute
+				// 	left -8px
+				// 	top 9px
+				// 	color #DDD
 
-					&:hover, &.active
-						color #AAA
+				// 	&:hover, &.active
+				// 		color #AAA
 
 			.body
 				
-				.options
+				.menu
 					margin-bottom 18px
+					display none
+
+					&:hover
+						i.fa-times
+							opacity 1
+
+					i.fa-times
+						opacity 0
+						float right
+						margin-right 2px
+						font-size 1.4em
+						transition opacity 500ms
 
 				.row-1, .row-2
 					margin 10px 0 0 2px
@@ -51,49 +63,31 @@
 				input[name="search"]
 					height 24px
 
-			ul
-				list-style none
-
-				li
-
-					i.fa
-						cursor pointer
-						transition transform 300ms
-						font-size 1em
-						display inline-block
-						width 12px 
-						text-align center
-
-					&:hover
-						i.fa
-
-							&.fa-compress
-								animation shrink 1s 0 1
-
-							&.fa-expand
-								animation grow 1s 0 1
-
-							&.fa-refresh
-								transform rotate(180deg)
-
-					span
-						padding-left 2px
-						color #B325A0
-						cursor pointer
-
-						&.advanced:after
-							content ' simple search'
-
 .faceted-search.search-type-advanced
-	.text-search
-		.body .options
-			display none
-
-.faceted-search.search-type-simple
-	form 
+	form
 		.text-search ul li
 			span.advanced:after
 				content ' advanced search'
+
+		ul.menu
+			li
+				&.collapse-expand, &.reset
+					display block
+
+				&.switch
+					span.advanced:after
+						content ' simple search'
+
+.faceted-search.search-type-simple
+	form
+		ul.menu
+			li
+				&.collapse-expand, &.reset
+					display none
+
+				&.switch
+					span.advanced:after
+						content ' advanced search'
 
 		.facets
 			display none

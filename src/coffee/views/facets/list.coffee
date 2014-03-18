@@ -34,6 +34,7 @@ class ListFacet extends Views.Facet
 		
 		@render()
 
+	# ### Render
 	render: ->
 		super
 
@@ -75,10 +76,19 @@ class ListFacet extends Views.Facet
 
 		@
 
+	# ### Events
 	events: -> _.extend {}, super,
 		'keyup input[name="filter"]': (ev) -> @optionsView.filterOptions ev.currentTarget.value
 		'change header .options input[type="checkbox"][name="all"]': (ev) -> @optionsView.setCheckboxes ev
-		'click .orderby i': 'changeOrder'
+		'click header .menu i.filter': 'toggleFilterMenu'
+		'click header .menu i.alpha': 'changeOrder'
+		'click header .menu i.amount': 'changeOrder'
+
+	toggleFilterMenu: ->
+		@$('i.filter').toggleClass 'active'
+		@$('header .options').slideToggle 150, => 
+			@$('header .options input[name="filter"]').focus()
+			@renderFilteredOptionCount()
 
 	# We use the class opposite instead of ascending/descending, because the options are ascending and
 	# and the count is descending. With opposite we can use a generic name.
