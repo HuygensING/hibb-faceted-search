@@ -165,13 +165,13 @@ class MainView extends Backbone.View
 		# Listen to the change:results event and (re)render the facets everytime the result changes.
 		@listenTo @model.searchResults, 'change:results', (responseModel) => 
 			@renderFacets()
-			@trigger 'results:change', responseModel
+			@trigger 'change:results', responseModel
 
-		@listenTo @model.searchResults, 'change:cursor', (responseModel) => 
-			@trigger 'results:change', responseModel
+		# The cursor is changed when @next or @prev are called. They are rarely used, since hilib
+		# pagination uses @page.
+		@listenTo @model.searchResults, 'change:cursor', (responseModel) => @trigger 'change:results', responseModel
 
-		@listenTo @model.searchResults, 'change:page', (responseModel, database) => 
-			@trigger 'results:change', responseModel, database
+		@listenTo @model.searchResults, 'change:page', (responseModel, database) => @trigger 'change:page', responseModel, database
 		
 		@listenTo @model.searchResults, 'request', @showLoader
 			
