@@ -8,23 +8,12 @@ class ListOptions extends Backbone.Collection
 
 	model: Models.Option
 
-	strategies:
-		alpha_asc: (model) -> model.get('name')
-		alpha_desc: (model) -> 
-			# http://stackoverflow.com/questions/5636812/sorting-strings-in-reverse-order-with-backbone-js/5639070#5639070
-			String.fromCharCode.apply String, _.map model.get('name').split(''), (c) -> 0xffff - c.charCodeAt()
-		amount_asc: (model) -> +model.get('count')
-		amount_desc: (model) -> -1 * +model.get('count')
-	
-	orderBy: (strategy) ->
-		@comparator = @strategies[strategy]
-		@sort()
-
+	# ### Initialize
 	initialize: ->
 		# Set the default comparator
 		@comparator = @strategies.amount_desc
 
-	# comparator: do => @strategies.count_descending
+	# ### Methods
 
 	# Alias for reset, because a collection already has a reset method.
 	revert: -> 
@@ -47,6 +36,31 @@ class ListOptions extends Backbone.Collection
 				opt = new Models.Option newOption
 				@add opt
 
+		@sort()
+
+	strategies:
+		# Name from A to Z
+		alpha_asc: (model) -> model.get('visible') + model.get('name')
+		# Name from Z to A
+		alpha_desc: (model) -> 
+			# http://stackoverflow.com/questions/5636812/sorting-strings-in-reverse-order-with-backbone-js/5639070#5639070
+			str = String.fromCharCode.apply String, _.map model.get('name').split(''), (c) -> 0xffff - c.charCodeAt()
+			model.get('visible') + str
+		# Count from low to high
+		amount_asc: (model) -> 
+			add = if model.get('visible') then 10000000 else 0
+			add + +model.get('count')
+		# Count from high to low (default)
+		amount_desc: (model) -> 
+			add = if model.get('visible') then -10000000 else 0
+			add + -1 * +model.get('count')
+	
+	orderBy: (strategy) ->
+		@comparator = @strategies[strategy]
+		@sort()
+
+	setAllVisible: -> 
+		@each (model) -> model.set 'visible', true
 		@sort()
 
 module.exports = ListOptions

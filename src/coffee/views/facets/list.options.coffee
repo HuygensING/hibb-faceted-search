@@ -15,20 +15,16 @@ class ListFacetOptions extends Backbone.View
 
 	# ### Initialize
 	initialize: ->
-		@showing = null
+		@showingCursor = 0
 		@showingIncrement = 50
-		@filtered_items = @collection.models
 
-		@listenTo @collection, 'sort', =>
-			@filtered_items = @collection.models
-			@render()
+
+		@listenTo @collection, 'sort', => @rerender()
 
 		@render()
 
 	# ### Render
 	render: ->
-		@showing = 50
-
 		ul = document.createElement 'ul'
 
 		# Set the height of the <ul> dynamically, to prevent glitches
@@ -41,25 +37,50 @@ class ListFacetOptions extends Backbone.View
 
 		@
 
+	rerender: ->
+		tpl = ''
+
+		i = 0
+		model = @collection.at(i)
+		visible = model.get('visible')
+		while visible
+			tpl += optionTpl option: model
+			i = i + 1
+			model = @collection.at(i)
+			visible = if model? and model.get('visible') then true else false
+
+		@$('ul').html tpl
+
+	appendOptions: (all=false) ->
+		# If true is passed as argument, all options are added.
+		@showingIncrement = @collection.length if all
+
+		tpl = ''
+
+		console.log @showingIncrement
+		while @showingCursor < @showingIncrement and @showingCursor < @collection.length
+			model = @collection.at(@showingCursor)
+			model.set 'visible', true
+			tpl += optionTpl option: model
+			@showingCursor = @showingCursor + 1
+
+		@$('ul').append tpl
+
 	# Unused, but could be handy in the future.
 	renderAll: ->
 		@render()
-		@appendAllOptions()
+		@appendAll()
 
-	appendOptions: ->
-		tpl = ''
-		for option in @filtered_items[@showing-@showingIncrement..@showing]
-			tpl += optionTpl option: option
+	# # Unused, but could be handy in the future.
+	# appendAll: ->
+	# 	tpl = ''
+	# 	while @showingCursor < @collection.length
+	# 		model = @collection.at(@showingCursor)
+	# 		model.set 'visible', true
+	# 		tpl += optionTpl option: model
+	# 		@showingCursor = @showingCursor + 1
 
-		@$('ul').append tpl
-
-	# Unused, but could be handy in the future.
-	appendAllOptions: ->
-		tpl = ''
-		for option in @filtered_items[@showing..]
-			tpl += tpl option: option
-
-		@$('ul').append tpl
+	# 	@$('ul').append tpl
 
 	# ### Events
 	events: ->
@@ -68,14 +89,13 @@ class ListFacetOptions extends Backbone.View
 		'scroll': 'onScroll'
 
 	onScroll: (ev) ->
-		target = ev.currentTarget
-		topPerc = target.scrollTop / target.scrollHeight
+		if @showingCursor < @collection.length
+			target = ev.currentTarget
+			topPerc = target.scrollTop / target.scrollHeight
 
-		if topPerc > (@showing/2)/@collection.length && @showing < @collection.length
-			@showing += @showingIncrement
-			@showing = @collection.length if @showing > @collection.length
-			# console.log @showing
-			@appendOptions()
+			if topPerc > (@showingCursor/2)/@collection.length
+				@showingIncrement += @showingIncrement
+				@appendOptions()
 
 	checkChanged: (ev) ->
 		$target = if ev.currentTarget.tagName is 'LABEL' then @$ 'i[data-value="'+ev.currentTarget.getAttribute('data-value')+'"]' else $ ev.currentTarget
@@ -89,9 +109,10 @@ class ListFacetOptions extends Backbone.View
 		
 		if @$('i.fa-check-square-o').length is 0 then @triggerChange() else Fn.timeoutWithReset 1000, => @triggerChange()
 
-	triggerChange: =>
-		filtered = _.filter @filtered_items, (item) -> item.get 'checked'
-		values = _.map filtered, (item) -> item.get('name')
+	triggerChange: (values) =>
+		unless values?
+			checkedModels = @collection.filter (item) -> item.get 'checked'
+			values = _.map checkedModels, (item) -> item.get('name')
 
 		@trigger 'change',
 			facetValue:
@@ -104,21 +125,26 @@ class ListFacetOptions extends Backbone.View
 	Called by parent (ListFacet) when user types in the search input
 	###
 	filterOptions: (value) ->
-		re = new RegExp value, 'i'
-		@filtered_items = @collection.filter (item) -> re.test item.id
-		@filtered_items = @collection.models if @filtered_items.length is 0
+		@collection.map (model) -> 
+			re = new RegExp value, 'i'
+			model.set 'visible', re.test model.id
+		# @filtered_items = @collection.models if @filtered_items.length is 0
 
+		@collection.sort()
 		@trigger 'filter:finished'
 
-		@render()
+		# @render()
 
 	setCheckboxes: (ev) ->
-		model.set 'checked', ev.currentTarget.checked for model in @filtered_items
+		visibleModels = @collection.filter (model) -> model.get 'visible'
+		model.set 'checked', ev.currentTarget.checked for model in visibleModels
+
+		values = _.map visibleModels, (item) -> item.get('name')
 
 		# Call @render so the checked and/or unchecked checkboxes show up.
-		@render()
+		# @render()
 
 		# @triggerChange will send the new values to the server and call @render again.
-		@triggerChange()
+		@triggerChange values
 
 module.exports = ListFacetOptions
