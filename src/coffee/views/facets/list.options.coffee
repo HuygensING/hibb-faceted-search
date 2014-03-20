@@ -57,7 +57,6 @@ class ListFacetOptions extends Backbone.View
 
 		tpl = ''
 
-		console.log @showingIncrement
 		while @showingCursor < @showingIncrement and @showingCursor < @collection.length
 			model = @collection.at(@showingCursor)
 			model.set 'visible', true
