@@ -35,8 +35,7 @@ class ListFacetOptions extends Backbone.View
 		# when the options are rendered on scrolling.
 		# ul.style.height =  (@filtered_items.length * 15) + 'px'
 
-		@el.innerHTML = ''
-		@el.appendChild ul
+		@$el.html ul
 
 		@appendOptions()
 
@@ -91,10 +90,13 @@ class ListFacetOptions extends Backbone.View
 		if @$('i.fa-check-square-o').length is 0 then @triggerChange() else Fn.timeoutWithReset 1000, => @triggerChange()
 
 	triggerChange: =>
+		filtered = _.filter @filtered_items, (item) -> item.get 'checked'
+		values = _.map filtered, (item) -> item.get('name')
+
 		@trigger 'change',
 			facetValue:
 				name: @options.facetName
-				values: _.map @$('i.fa-check-square-o'), (cb) -> cb.getAttribute 'data-value'
+				values: values
 
 	# ### Methods
 	
@@ -111,21 +113,12 @@ class ListFacetOptions extends Backbone.View
 		@render()
 
 	setCheckboxes: (ev) ->
-		model.set 'checked', ev.currentTarget.checked for model in @collection.models
+		model.set 'checked', ev.currentTarget.checked for model in @filtered_items
+
+		# Call @render so the checked and/or unchecked checkboxes show up.
 		@render()
+
+		# @triggerChange will send the new values to the server and call @render again.
 		@triggerChange()
-
-		# @selectAll = not @selectAll
-
-		# checkboxes = @el.querySelectorAll('.body i.fa')
-		# for cb in checkboxes
-		# 	$cb = $ cb
-
-		# 	if @selectAll
-		# 		$cb.removeClass 'fa-square-o'
-		# 		$cb.addClass 'fa-check-square-o' 
-		# 	else 
-		# 		$cb.removeClass 'fa-check-square-o'
-		# 		$cb.addClass 'fa-square-o'
 
 module.exports = ListFacetOptions
