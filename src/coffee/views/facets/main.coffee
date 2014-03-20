@@ -9,7 +9,6 @@ class Facet extends Backbone.View
 
 	# ### Render
 	render: ->
-		# console.log @model.attributes
 		rtpl = tpl @model.attributes
 		@$el.html rtpl
 

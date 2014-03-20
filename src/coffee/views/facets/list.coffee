@@ -31,6 +31,7 @@ class ListFacet extends Views.Facet
 		super
 
 		@model = new Models.List @options.attrs, parse: true
+		@collection = new Collections.Options @options.attrs.options, parse: true
 		
 		@render()
 
@@ -38,11 +39,7 @@ class ListFacet extends Views.Facet
 	render: ->
 		super
 
-		@collection = new Collections.Options @options.attrs.options, parse: true
-
-		menu = menuTpl
-			model: @model.attributes
-			selectAll: @collection.length <= 20
+		menu = menuTpl model: @model.attributes
 		body = bodyTpl @model.attributes
 
 		@el.querySelector('header .options').innerHTML = menu
@@ -64,15 +61,21 @@ class ListFacet extends Views.Facet
 
 	# Renders the count of the filtered options (ie: "3 of 8") next to the filter <input>
 	renderFilteredOptionCount: ->
-		filteredLength = @optionsView.filtered_items.length
-		collectionLength = @optionsView.collection.length
+		# filteredLength = @optionsView.filtered_items.length
+		# collectionLength = @optionsView.collection.length
+		visibleModels = @collection.filter (model) -> model.get('visible')
+		value = if 0 < visibleModels.length < 21 then 'visible' else 'hidden'
+		@$('input[type="checkbox"][name="all"]').css 'visibility', value
 
-		if filteredLength is 0 or filteredLength is collectionLength
+		filteredModels = @collection.filter (model) -> model.get('visible')
+
+		if filteredModels.length is 0 or filteredModels.length is @collection.length
 			@$('header .options input[name="filter"]').addClass 'nonefound'
-			@$('header small.optioncount').html ''
+			# @$('header small.optioncount').html ''
 		else
 			@$('header .options input[name="filter"]').removeClass 'nonefound'
-			@$('header small.optioncount').html filteredLength + ' of ' + collectionLength
+		
+		@$('header small.optioncount').html filteredModels.length + ' of ' + @collection.length
 
 		@
 
@@ -85,10 +88,20 @@ class ListFacet extends Views.Facet
 		'click header .menu i.amount': 'changeOrder'
 
 	toggleFilterMenu: ->
-		@$('i.filter').toggleClass 'active'
-		@$('header .options').slideToggle 150, => 
-			@$('header .options input[name="filter"]').focus()
-			@renderFilteredOptionCount()
+		optionsDiv = @$('header .options')
+		filterIcon = @$('i.filter')
+		filterIcon.toggleClass 'active'
+
+		optionsDiv.slideToggle 150, =>
+			input = optionsDiv.find('input[name="filter"]')
+			
+			if filterIcon.hasClass 'active'
+				input.focus()
+				@optionsView.appendOptions true
+				@renderFilteredOptionCount()
+			else
+				input.val('')
+				@collection.setAllVisible()
 
 	# We use the class opposite instead of ascending/descending, because the options are ascending and
 	# and the count is descending. With opposite we can use a generic name.
