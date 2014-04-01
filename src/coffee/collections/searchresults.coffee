@@ -27,7 +27,10 @@ class SearchResults extends Backbone.Collection
 		changeMessage = if @current.options.url? then 'change:cursor' else 'change:results'
 		@trigger changeMessage, @current
 
-	runQuery: (queryOptions, cache=true) ->
+	runQuery: (queryOptions, options={}) ->
+		options.cache ?= true
+		options.reset ?= false
+
 		if queryOptions.hasOwnProperty 'resultRows'
 			resultRows = queryOptions.resultRows
 			delete queryOptions.resultRows
@@ -36,19 +39,20 @@ class SearchResults extends Backbone.Collection
 
 		# The search results are cached by the query options string,
 		# so we check if there is such a string to find the cached result.
-		if cache and @cachedModels.hasOwnProperty cacheString
+		if options.cache and @cachedModels.hasOwnProperty cacheString
 			@setCurrent @cachedModels[cacheString]
 		else
 			@trigger 'request'
 
-			options = {}
-			options.cacheString = cacheString
-			options.queryOptions = queryOptions
-			options.resultRows = resultRows if resultRows?
+			opts = {}
+			opts.cacheString = cacheString
+			opts.queryOptions = queryOptions
+			opts.resultRows = resultRows if resultRows?
 
-			searchResult = new SearchResult null, options
+			searchResult = new SearchResult null, opts
 			searchResult.fetch
-				success: (model) => 
+				success: (model) =>
+					model.set 'reset', options.reset
 					@cachedModels[cacheString] = model
 					@add model
 

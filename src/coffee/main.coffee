@@ -69,37 +69,51 @@ class MainView extends Backbone.View
 	renderTextSearch: ->
 		textSearch = new Views.TextSearch()
 		@$('.faceted-search form').prepend textSearch.el
-		# if config.textSearch is 'simple'
-		# 	@$('.facet.search header').insertAfter(@$('.facet.search .body'))
 
 		@listenTo textSearch, 'change', (queryOptions) => @model.set queryOptions
 		
+		# TODO Remove textSearch from @facetViews
 		@facetViews['textSearch'] = textSearch
-				
+
+	destroyFacets: ->
+		for own viewName, view of @facetViews
+			if viewName isnt 'textSearch' 
+				view.destroy()
+				delete @facetViews[viewName]
+
 	renderFacets: ->
+		fragment = document.createDocumentFragment()		
+
+		for own index, facetData of @model.searchResults.current.get('facets')
+			if facetData.type of facetViewMap
+				View = facetViewMap[facetData.type]
+				@facetViews[facetData.name] = new View attrs: facetData
+
+				# fetchResults and updateFacets when user changes a facets state
+				@listenTo @facetViews[facetData.name], 'change', (queryOptions) => @model.set queryOptions
+				
+				fragment.appendChild @facetViews[facetData.name].el
+				fragment.appendChild document.createElement 'hr'
+			else 
+				console.error 'Unknown facetView', facetData.type
+
+		fragment
+				
+	updateFacets: ->
 		return if config.textSearch is 'simple'
 
 		@$('.loader').hide()
 		@$('.faceted-search > i.fa').css 'visibility', 'visible'
 
+		current = @model.searchResults.current
+
 		# If the size of the searchResults is 1 then it's the first time we render the facets
-		if @model.searchResults.length is 1
-			fragment = document.createDocumentFragment()			
+		if @model.searchResults.length is 1 or current.get('reset')
+			
+			@destroyFacets()
 
-			for own index, facetData of @model.searchResults.current.get('facets')
-				if facetData.type of facetViewMap
-					View = facetViewMap[facetData.type]
-					@facetViews[facetData.name] = new View attrs: facetData
-
-					# fetchResults and renderFacets when user changes a facets state
-					@listenTo @facetViews[facetData.name], 'change', (queryOptions) => @model.set queryOptions
-					
-					fragment.appendChild @facetViews[facetData.name].el
-					fragment.appendChild document.createElement 'hr'
-				else 
-					console.error 'Unknown facetView', facetData.type
-
-			@el.querySelector('.facets').appendChild fragment
+			# Render facets and attach to DOM
+			@$('.facets').html @renderFacets()
 
 		# If the size is greater than 1, the facets are already rendered and we call their update methods.
 		else
@@ -164,7 +178,7 @@ class MainView extends Backbone.View
 	addListeners: ->
 		# Listen to the change:results event and (re)render the facets everytime the result changes.
 		@listenTo @model.searchResults, 'change:results', (responseModel) => 
-			@renderFacets()
+			@updateFacets()
 			@trigger 'change:results', responseModel
 
 		# The cursor is changed when @next or @prev are called. They are rarely used, since hilib
@@ -215,8 +229,9 @@ class MainView extends Backbone.View
 	reset: ->
 		@facetViews.textSearch.reset() if @facetViews.hasOwnProperty 'textSearch'
 
-		for own index, data of @model.searchResults.last().get('facets')
-			@facetViews[data.name].reset() if @facetViews[data.name].reset
+		for own facetView of @facetViews
+			facetView.reset() if facetView.reset?
+
 		@model.reset()
 
 	refresh: (newQueryOptions) -> @model.refresh newQueryOptions
