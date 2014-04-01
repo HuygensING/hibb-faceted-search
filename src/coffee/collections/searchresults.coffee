@@ -55,6 +55,7 @@ class SearchResults extends Backbone.Collection
 					model.set 'reset', options.reset
 					@cachedModels[cacheString] = model
 					@add model
+				error: (model, jqXHR, options) => @trigger 'unauthorized' if jqXHR.status is 401
 
 	moveCursor: (direction) ->
 		url = if direction is '_prev' or direction is '_next' then @current.get direction else direction

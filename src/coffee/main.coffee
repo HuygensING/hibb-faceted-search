@@ -191,7 +191,7 @@ class MainView extends Backbone.View
 			
 		@listenTo @model.searchResults, 'sync', => @$('.overlay').hide()
 
-		@listenTo @model.searchResults, 'unauthorised', => @trigger 'unauthorised'
+		@listenTo @model.searchResults, 'unauthorized', => @trigger 'unauthorized'
 
 	showLoader: ->
 		facetedSearch = @$('.faceted-search')

@@ -55,9 +55,8 @@ class SearchResult extends Backbone.Model
 
 						@getResults url, options.success
 
-				jqXHR.fail (jqXHR, textStatus, errorThrown) =>
-					@collection.trigger 'unauthorized' if jqXHR.status is 401
-					console.error 'Failed getting FacetedSearch results from the server!', arguments
+				jqXHR.fail (jqXHR, textStatus, errorThrown) => options.error jqXHR
+					# console.error 'Failed getting FacetedSearch results from the server!', arguments
 
 	getResults: (url, done) ->
 		ajax.token = config.token
