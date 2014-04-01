@@ -124,7 +124,7 @@ class ListFacet extends Views.Facet
 
 		@collection.orderBy type+'_'+order
 
-	update: (newOptions) -> @optionsView.collection.updateOptions(newOptions)
-	reset: -> @optionsView.collection.revert()
+	update: (newOptions) -> @collection.updateOptions(newOptions)
+	reset: -> @collection.revert()
 
 module.exports = ListFacet

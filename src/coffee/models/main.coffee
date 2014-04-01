@@ -58,7 +58,9 @@ class MainModel extends Backbone.Model
 		@clear silent: true
 		@set @defaults(), silent: true
 		@set @queryOptions, silent: true
-		@trigger 'change'
+		@searchResults.runQuery _.clone(@attributes), 
+			cache: false
+			reset: true
 
 	# A refresh of the Faceted Search means (re)sending the current @attributes (queryOptions) again.
 	# We set the cache flag to false, otherwise the searchResults collection will return the cached
@@ -67,7 +69,7 @@ class MainModel extends Backbone.Model
 	# before sending the same (or now altered) queryOptions to the server again.
 	refresh: (newQueryOptions={}) ->
 		@set newQueryOptions, silent: true
-		@searchResults.runQuery _.clone(@attributes), false
+		@searchResults.runQuery _.clone(@attributes), cache: false
 
 module.exports = MainModel
 

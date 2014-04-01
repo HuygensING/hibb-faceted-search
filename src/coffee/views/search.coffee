@@ -13,7 +13,7 @@ Views =
 
 tpl = require '../../jade/facets/search.jade'
 
-class SearchView extends Backbone.View
+class TextSearch extends Backbone.View
 
 	className: 'text-search'
 
@@ -85,6 +85,9 @@ class SearchView extends Backbone.View
 
 	# ### Methods
 	update: -> @$('input[name="search"]').removeClass 'loading'
+	
 	reset: -> @render()
 
-module.exports = SearchView
+	destroy: -> @remove()
+
+module.exports = TextSearch

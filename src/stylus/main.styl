@@ -22,113 +22,113 @@
 	100%
 		transform scale(1, 1)	
 
+.faceted-search-placeholder
+	.overlay
+		background rgba(0, 0, 0, 0.2)
+		position absolute
+		z-index 1
+		border-radius 8px
+		display none
 
-.overlay
-	background rgba(0, 0, 0, 0.2)
-	position absolute
-	z-index 1
-	border-radius 8px
-	display none
+		div
+			position fixed
+			padding 20px
+			background #FFF
+			border-radius 30px
+			box-shadow 1px 1px 10px #000
+			margin-left -20px
+			margin-top -20px
 
-	div
-		position fixed
-		padding 20px
-		background #FFF
-		border-radius 30px
-		box-shadow 1px 1px 10px #000
-		margin-left -20px
-		margin-top -20px
+	.faceted-search
 
-.faceted-search
-
-	button
-		background none
-		box-shadow none
-		border 1px solid #CCC
-		border-radius 3px
-		cursor pointer
-		line-height 24px
-		width 100%
-
-	ul
-		margin 0
-		padding 0
-
-	input[type="checkbox"]
-		margin 0
-		padding 0
-	
-	form
-		border-radius 8px // Put a border radius for the box-shadow
-		box-shadow 0 0 6px #AAA
-
-		h3, h4
-			margin 0
-			color black
+		button
+			background none
+			box-shadow none
+			border 1px solid #CCC
+			border-radius 3px
+			cursor pointer
+			line-height 24px
+			width 100%
 
 		ul
-			li
-				margin 0
-
-		input[type=text]
-			border 1px solid #DDD
-			border-radius 4px
-			padding-left 4%
 			margin 0
-			width 96%
+			padding 0
 
-			&#search
-				height 24px
-				
-				&.loading
-					background white url('../images/loader.gif') no-repeat
-					background-position right 2% center
+		input[type="checkbox"]
+			margin 0
+			padding 0
 		
-		.facets			
-			.loader
-				display none
-				text-align center
-				padding 30px 0
+		form
+			border-radius 8px // Put a border radius for the box-shadow
+			box-shadow 0 0 6px #AAA
 
-		.align.middle
-			line-height 24px
+			h3, h4
+				margin 0
+				color black
 
-			& *
-				vertical-align middle
+			ul
+				li
+					margin 0
 
-		ul.facets-menu
-			list-style none
-			margin 0 0 10px 10px
+			// input[type=text]
+			// 	border 1px solid #DDD
+			// 	border-radius 4px
+			// 	padding-left 4%
+			// 	margin 0
+			// 	width 96%
 
-			li
-				&.switch
-					margin-bottom 16px
+			// 	&#search
+			// 		height 24px
+					
+			// 		&.loading
+			// 			background white url('../images/loader.gif') no-repeat
+			// 			background-position right 2% center
+			
+			.facets			
+				.loader
+					display none
+					text-align center
+					padding 30px 0
 
-				&:hover
-					i.fa
-						&.fa-compress
-							animation shrink 1s 0 1
+			.align.middle
+				line-height 24px
 
-						&.fa-expand
-							animation grow 1s 0 1
+				& *
+					vertical-align middle
 
-						&.fa-refresh
-							transform rotate(180deg)
+			ul.facets-menu
+				list-style none
+				margin 0 0 10px 10px
 
-				button
-					line-height 16px
-					width 160px
-					border 1px solid #EEE
-					text-align left
+				li
+					&.switch
+						margin-bottom 16px
 
-					i.fa
-						cursor pointer
-						transition transform 300ms
-						font-size 1em
-						display inline-block
-						width 12px 
-						text-align center
+					&:hover
+						i.fa
+							&.fa-compress
+								animation shrink 1s 0 1
 
-					span
-						padding-left 6px
-						cursor pointer
+							&.fa-expand
+								animation grow 1s 0 1
+
+							&.fa-refresh
+								transform rotate(180deg)
+
+					button
+						line-height 16px
+						width 160px
+						border 1px solid #EEE
+						text-align left
+
+						i.fa
+							cursor pointer
+							transition transform 300ms
+							font-size 1em
+							display inline-block
+							width 12px 
+							text-align center
+
+						span
+							padding-left 6px
+							cursor pointer
