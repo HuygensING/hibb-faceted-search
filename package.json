@@ -17,6 +17,6 @@
   },
   "homepage": "https://github.com/HuygensING/faceted-search",
   "devDependencies": {
-    "faceted-search-v1.0": "HuygensING/faceted-search#v1.0"
+    "faceted-search": "HuygensING/faceted-search#v1.0"
   }
 }
