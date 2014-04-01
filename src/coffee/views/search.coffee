@@ -35,8 +35,9 @@ class SearchView extends Backbone.View
 
 	# ### Events
 	events: ->
-		'click button': (ev) -> ev.preventDefault()
-		'click button.active': 'search'
+		# 'click button': (ev) -> ev.preventDefault()
+		# 'click button.active': 'search'
+		'click i.fa-search': 'search'
 		'keyup input': 'activateSearchButton'
 		'focus input': -> @$('.body .menu').slideDown(150)
 		'click .menu .fa-times': -> @$('.body .menu').slideUp(150)
@@ -77,20 +78,10 @@ class SearchView extends Backbone.View
 	search: (ev) ->
 		ev.preventDefault()
 
-		# Prevent user from searching the same query twice
-		@$('button').removeClass 'active'
 		$search = @$('input[name="search"]')
-		# * FIX: use classList polyfill
-		$search.addClass 'loading'
+		inputValue = $search.val()
 
-		inputValue = @el.querySelector('input[name="search"]').value
-		@model.set 'term', inputValue
-
-		# # The currentSearchText can never be equal to the input value, because if it was,
-		# # the search button would not be clickable.
-		# @currentSearchText = inputValue
-
-		# @trigger 'change', @searchData inputValue
+		@model.set 'term', inputValue unless inputValue is ''
 
 	# ### Methods
 	update: -> @$('input[name="search"]').removeClass 'loading'
