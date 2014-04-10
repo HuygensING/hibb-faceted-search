@@ -5,6 +5,10 @@
 	form
 		.search-placeholder
 		ul.facets-menu
+			li.reset
+				button
+					i.fa.fa-refresh 
+					span Reset search
 			li.switch
 				
 				//- The rest of the sentence is finished by CSS, depending on config.textSearch as className.
@@ -16,10 +20,6 @@
 				button
 					i.fa.fa-compress
 					span Collapse facets
-			li.reset
-				button
-					i.fa.fa-refresh 
-					span Reset search
 		.facets
 			div.loader
 				h4 Loading search...

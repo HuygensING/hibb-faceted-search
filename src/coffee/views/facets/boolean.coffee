@@ -1,3 +1,4 @@
+$ = require 'jquery'
 _ = require 'underscore'
 
 StringFn = require 'hilib/src/utils/string'
