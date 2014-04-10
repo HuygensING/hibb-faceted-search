@@ -21,10 +21,13 @@ class TextSearch extends Backbone.View
 	initialize: (options) ->
 		# super
 
+		@reset()
+
+	setModel: ->
+		@stopListening @model if @model?
+
 		@model = new Models.Search config.textSearchOptions
 		@listenTo @model, 'change', => @trigger 'change', @model.queryData()
-
-		@render()
 
 	# * TODO: search input (<input id="">) should not have an ID, because there can be several Faceted Search instances.
 	# ### Render
@@ -38,14 +41,17 @@ class TextSearch extends Backbone.View
 		# 'click button': (ev) -> ev.preventDefault()
 		# 'click button.active': 'search'
 		'click i.fa-search': 'search'
-		'keyup input': 'activateSearchButton'
+		'keydown input': (ev) ->
+			if ev.keyCode is 13
+				ev.preventDefault()
+				@search ev
 		'focus input': -> @$('.body .menu').slideDown(150)
 		'click .menu .fa-times': -> @$('.body .menu').slideUp(150)
 		'change input[type="checkbox"]': 'checkboxChanged'
 		# 'click header i.openclose': 'toggleMenu'
 
 	# ### Show/hide menu/body
-	toggleMenu: (ev) ->
+	# toggleMenu: (ev) ->
 		# $button = $ ev.currentTarget
 		# $button.toggleClass 'fa-plus-square-o'
 		# $button.toggleClass 'fa-minus-square-o'
@@ -63,17 +69,23 @@ class TextSearch extends Backbone.View
 				checkedArray.push cb.getAttribute('data-value')
 			@model.set attr, checkedArray
 
-		@activateSearchButton true
+		# @activateSearchButton true
 
-	activateSearchButton: (checkboxChanged=false) ->
-		checkboxChanged = false if checkboxChanged.hasOwnProperty 'target'
+	# activateSearchButton: (ev=false) ->
+	# 	if ev.hasOwnProperty 'target'
+	# 		ev.preventDefault()
+	# 		checkboxChanged = false
+	# 	else
+	# 		checkboxChanged = ev
 
-		inputValue = @el.querySelector('input[name="search"]').value
+	# 	console.log ev.keyCode
 
-		if inputValue.length > 1 and (@model.get('term') isnt inputValue or checkboxChanged)
-			@$('button').addClass 'active'
-		else
-			@$('button').removeClass 'active'
+	# 	inputValue = @el.querySelector('input[name="search"]').value
+
+	# 	if inputValue.length > 1 and (@model.get('term') isnt inputValue or checkboxChanged)
+	# 		@$('button').addClass 'active'
+	# 	else
+	# 		@$('button').removeClass 'active'
 
 	search: (ev) ->
 		ev.preventDefault()
@@ -86,7 +98,9 @@ class TextSearch extends Backbone.View
 	# ### Methods
 	update: -> @$('input[name="search"]').removeClass 'loading'
 	
-	reset: -> @render()
+	reset: -> 
+		@setModel()
+		@render()
 
 	destroy: -> @remove()
 
