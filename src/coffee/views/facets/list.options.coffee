@@ -43,12 +43,12 @@ class ListFacetOptions extends Backbone.View
 		i = 0
 		model = @collection.at(i)
 		visible = model.get('visible')
+
 		while visible
 			tpl += optionTpl option: model
 			i = i + 1
 			model = @collection.at(i)
 			visible = if model? and model.get('visible') then true else false
-
 		@$('ul').html tpl
 
 	appendOptions: (all=false) ->
@@ -70,16 +70,6 @@ class ListFacetOptions extends Backbone.View
 		@render()
 		@appendAll()
 
-	# # Unused, but could be handy in the future.
-	# appendAll: ->
-	# 	tpl = ''
-	# 	while @showingCursor < @collection.length
-	# 		model = @collection.at(@showingCursor)
-	# 		model.set 'visible', true
-	# 		tpl += optionTpl option: model
-	# 		@showingCursor = @showingCursor + 1
-
-	# 	@$('ul').append tpl
 
 	# ### Events
 	events: ->
@@ -87,6 +77,7 @@ class ListFacetOptions extends Backbone.View
 		'click label': 'checkChanged'
 		'scroll': 'onScroll'
 
+	# When scolling lazy render the rest of the options. This speeds up page load.
 	onScroll: (ev) ->
 		if @showingCursor < @collection.length
 			target = ev.currentTarget
