@@ -58,6 +58,7 @@ class MainModel extends Backbone.Model
 		@clear silent: true
 		@set @defaults(), silent: true
 		@set @queryOptions, silent: true
+		@searchResults.clearCache()
 		@searchResults.runQuery _.clone(@attributes), 
 			cache: false
 			reset: true
