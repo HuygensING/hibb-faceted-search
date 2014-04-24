@@ -1,3 +1,5 @@
+_ = require 'underscore'
+
 Models =
 	Range: require '../../models/range'
 
