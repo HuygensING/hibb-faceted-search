@@ -175,9 +175,13 @@ class MainView extends Backbone.View
 
 	# ### Methods
 
+	destroy: -> 
+		@destroyFacets()
+		@remove()
+
 	addListeners: ->
 		# Listen to the change:results event and (re)render the facets everytime the result changes.
-		@listenTo @model.searchResults, 'change:results', (responseModel) => 
+		@listenTo @model.searchResults, 'change:results', (responseModel) =>
 			@updateFacets()
 			@trigger 'change:results', responseModel
 
