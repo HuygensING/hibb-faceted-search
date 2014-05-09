@@ -4,9 +4,12 @@ _ = require 'underscore'
 
 Fn = require 'hilib/src/utils/general'
 
+config = require '../../config'
+
 Models =
 	List: require '../../models/list'
 
+bodyTpl = require '../../../jade/facets/list.body.jade'
 optionTpl = require '../../../jade/facets/list.option.jade'
 
 class ListFacetOptions extends Backbone.View
@@ -14,24 +17,24 @@ class ListFacetOptions extends Backbone.View
 	className: 'container'
 
 	# ### Initialize
-	initialize: ->
+	initialize: (@options) ->
 		@showingCursor = 0
 		@showingIncrement = 50
 
-
 		@listenTo @collection, 'sort', => @rerender()
+
+		optionTpl = config.templates['list.option'] if config.templates.hasOwnProperty 'list.option'
 
 		@render()
 
 	# ### Render
 	render: ->
-		ul = document.createElement 'ul'
+		bodyTpl = config.templates['list.body'] if config.templates.hasOwnProperty 'list.body'
+		@$el.html bodyTpl facetName: @options.facetName
 
 		# Set the height of the <ul> dynamically, to prevent glitches
 		# when the options are rendered on scrolling.
 		# ul.style.height =  (@filtered_items.length * 15) + 'px'
-
-		@$el.html ul
 
 		@appendOptions()
 
@@ -67,14 +70,13 @@ class ListFacetOptions extends Backbone.View
 
 	# Unused, but could be handy in the future.
 	renderAll: ->
-		@render()
-		@appendAll()
+		@appendOptions true
 
 
 	# ### Events
 	events: ->
-		'click i': 'checkChanged'
-		'click label': 'checkChanged'
+		'click li': 'checkChanged'
+		# 'click label': 'checkChanged'
 		'scroll': 'onScroll'
 
 	# When scolling lazy render the rest of the options. This speeds up page load.
@@ -88,16 +90,22 @@ class ListFacetOptions extends Backbone.View
 				@appendOptions()
 
 	checkChanged: (ev) ->
-		$target = if ev.currentTarget.tagName is 'LABEL' then @$ 'i[data-value="'+ev.currentTarget.getAttribute('data-value')+'"]' else $ ev.currentTarget
-
-		$target.toggleClass 'fa-square-o'
-		$target.toggleClass 'fa-check-square-o'
-
+		# $target = if ev.currentTarget.tagName is 'LABEL' then @$ 'i[data-value="'+ev.currentTarget.getAttribute('data-value')+'"]' else $ ev.currentTarget
+		$target = $ ev.currentTarget
 		id = $target.attr 'data-value'
-		@collection.get(id).set 'checked', $target.hasClass 'fa-check-square-o'
 
-		
-		if @$('i.fa-check-square-o').length is 0 then @triggerChange() else Fn.timeoutWithReset 1000, => @triggerChange()
+		$target.find("i.checked").toggle()
+		$target.find("i.unchecked").toggle()
+
+		@collection.get(id).set 'checked', $target.find("i.checked").is(':visible')
+
+		# If there are no checked options or autoSearch is off (false), than triggerChange,
+		# otherwise (autoSearch is true and there are options checked), set a 1s timeout to
+		# give the user time to check another option before autoSearch kicks in.
+		if @$('i.checked').length is 0 or not config.autoSearch
+			@triggerChange()
+		else
+			Fn.timeoutWithReset 1000, => @triggerChange()
 
 	triggerChange: (values) =>
 		unless values?

@@ -1,4 +1,7 @@
+$ = require 'jquery'
 _ = require 'underscore'
+
+config = require '../../config'
 
 Models =
 	Range: require '../../models/range'
@@ -30,10 +33,13 @@ class RangeFacet extends Views.Facet
 
 	render: ->
 		super
+
+		bodyTpl = config.templates['range.body'] if config.templates.hasOwnProperty 'range.body'
+
 		rtpl = bodyTpl @model.attributes
 		@$('.body').html rtpl
 
-		@$('header i.openclose').hide()
+		@$('header .menu').hide()
 
 		# Call postRender after the view has been attached to the DOM.
 		setTimeout (=> @postRender()), 0
@@ -62,8 +68,8 @@ class RangeFacet extends Views.Facet
 		@$maxHandle.css 'left', @maxHandleLeft
 
 	events: ->
-		'mousedown .max-handle': -> @draggingMax = true
-		'mousedown .min-handle': -> @draggingMin = true
+		'mousedown .max-handle': 'startDragging'
+		'mousedown .min-handle': 'startDragging'
 		'mouseup': 'stopDragging'
 		'mousemove': 'drag'
 		'click .slider': 'moveHandle'
@@ -72,7 +78,13 @@ class RangeFacet extends Views.Facet
 	doSearch: (ev) ->
 		ev.preventDefault()
 
-		@trigger 'change',
+		@triggerChange()
+
+	triggerChange: (silent=false) ->
+		eventName = 'change'
+		eventName = 'change:silent' unless silent
+
+		@trigger eventName,
 			facetValue:
 				name: @model.get 'name'
 				lowerLimit: +(@$minValue.html()+'0101')
@@ -93,9 +105,38 @@ class RangeFacet extends Views.Facet
 			@$bar.css 'right', @sliderWidth - left
 			@updateValue @$maxValue, left
 
+	startDragging: (ev) ->
+		target = $ ev.currentTarget
+
+		if target.hasClass 'max-handle'
+			@draggingMax = true
+			@$minHandle.css 'z-index', 10
+		else if target.hasClass 'min-handle'
+			@draggingMin = true
+			@$maxHandle.css 'z-index', 10
+
+		target.css 'z-index', 11
+
 	stopDragging: ->
 		@draggingMin = false
 		@draggingMax = false
+
+		minRect = @$minValue[0].getBoundingClientRect()
+		maxRect = @$maxValue[0].getBoundingClientRect()
+
+		if !(minRect.right < maxRect.left || minRect.left > maxRect.right || minRect.bottom < maxRect.top || minRect.top > maxRect.bottom)
+			# Change opacity so element keeps taking it's space
+			@$minValue.css 'opacity', 0
+			@$maxValue.css 'opacity', 0
+			@$('.single-value').show()
+			handlesCenter = @minHandleLeft + ((@maxHandleLeft - @minHandleLeft)/2)
+			left = handlesCenter - @$('.single-value').width()/2 + 6
+			left = @sliderWidth - @$('.single-value').width() + 18 if @sliderWidth - left < @$('.single-value').width()
+			@$('.single-value').css 'left', left
+		else
+			@$minValue.css 'opacity', 1
+			@$maxValue.css 'opacity', 1
+			@$('.single-value').hide()
 
 	drag: (ev) ->
 		if @draggingMin
@@ -105,7 +146,7 @@ class RangeFacet extends Views.Facet
 			if -1 < left <= @sliderWidth and @maxHandleLeft > @minHandleLeft
 				@$minHandle.css 'left', @minHandleLeft
 				@$bar.css 'left', left
-				@updateValue @$minValue, left
+				@updateValue 'minValue', left
 
 		if @draggingMax
 			left = ev.clientX - @sliderLeft
@@ -114,15 +155,22 @@ class RangeFacet extends Views.Facet
 			if -1 < left <= @sliderWidth and @maxHandleLeft > @minHandleLeft
 				@$maxHandle.css 'left', @maxHandleLeft
 				@$bar.css 'right', @sliderWidth - left
-				@updateValue @$maxValue, left
+				@updateValue 'maxValue', left
 
-	updateValue: ($el, left) ->
+	updateValue: (handle, left) ->
 		@$('button').show()
 
 		ll = @model.get('options').lowerLimit
 		ul = @model.get('options').upperLimit
 		value = Math.floor (left/@sliderWidth * (ul - ll)) + ll
+
+		$el = if handle is 'minValue' then @$minValue else @$maxValue
 		$el.html value
+
+		html = if handle is 'minValue' then "#{value} - #{@$maxValue.html()}" else "#{@$minValue.html()} - #{value}"
+		@$('.single-value').html html
+
+		@triggerChange true
 
 	getLeftPosFromYear: (year) ->
 		ll = @model.get('options').lowerLimit
@@ -135,12 +183,15 @@ class RangeFacet extends Views.Facet
 		@$minHandle.css 'left', left
 		@$minValue.html year
 		@$bar.css 'left', left
+		@minHandleLeft = left - (handleSize/2)
+		
 
 	setMaxValue: (year) ->
 		left = @getLeftPosFromYear year
 		@$maxHandle.css 'left', left
 		@$maxValue.html year
 		@$bar.css 'right', @sliderWidth - left
+		@maxHandleLeft = left - (handleSize/2)
 
 	update: (newOptions) ->
 		newOptions = newOptions[0] if _.isArray(newOptions)
