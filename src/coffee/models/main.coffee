@@ -21,7 +21,10 @@ class MainModel extends Backbone.Model
 		# Run a new query everytime something changes on the model (@attributes are the queryOptions).
 		# Clone the attributes/queryOptions to preserve the hash, because we remove the resultRows
 		# before sending the hash to the server.
-		@on 'change', (model, options) => @searchResults.runQuery _.clone(@attributes)
+		if config.autoSearch
+			@on 'change', @search
+		else
+			@once 'change', @search
 
 		# Manually trigger the change event, because the initial @querySettings, don't trigger the change event
 		# and thus searchResult.runQuery isn't called. If textSearch is 'simple', we don't need to fetch the
@@ -53,6 +56,9 @@ class MainModel extends Backbone.Model
 		
 	# ### Methods
 
+	search: (cache=true) ->
+		@searchResults.runQuery _.clone(@attributes), cache: cache
+
 	# Silently change @attributes and trigger a change event manually afterwards.
 	reset: ->
 		@clear silent: true
@@ -70,7 +76,7 @@ class MainModel extends Backbone.Model
 	# before sending the same (or now altered) queryOptions to the server again.
 	refresh: (newQueryOptions={}) ->
 		@set newQueryOptions, silent: true
-		@searchResults.runQuery _.clone(@attributes), cache: false
+		@search false
 
 module.exports = MainModel
 
