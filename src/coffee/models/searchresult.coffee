@@ -72,9 +72,10 @@ class SearchResult extends Backbone.Model
 		url += "&database=#{database}" if database?
 
 		@getResults url, (data) =>
-			# Set the data returned by the server as the attributes of this searchresult model.
-			# Do it silent, because otherwise, the change:result event would be triggered.
-			@set data, silent: true
-			@collection.trigger 'change:page', @, database
+			# # Set the data returned by the server as the attributes of this searchresult model.
+			# # Do it silent, because otherwise, the change:result event would be triggered.
+			# @set data, silent: true
+			sr = new SearchResult data
+			@collection.trigger 'change:page', sr, database
 
 module.exports = SearchResult
