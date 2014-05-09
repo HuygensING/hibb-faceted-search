@@ -1,6 +1,8 @@
 $ = require 'jquery'
 _ = require 'underscore'
 
+config = require '../../config'
+
 Fn = require 'hilib/src/utils/general'
 
 Models =
@@ -13,11 +15,7 @@ Views =
 	Facet: require './main'
 	Options: require './list.options'
 
-# Templates =
-# 	Menu: require 'text!html/facet/list.menu.html'
-# 	Body: require 'text!html/facet/list.body.html'
 menuTpl = require '../../../jade/facets/list.menu.jade'
-bodyTpl = require '../../../jade/facets/list.body.jade'
 
 class ListFacet extends Views.Facet
 
@@ -39,11 +37,10 @@ class ListFacet extends Views.Facet
 	render: ->
 		super
 
-		menu = menuTpl model: @model.attributes
-		body = bodyTpl @model.attributes
-
-		@el.querySelector('header .options').innerHTML = menu
-		@el.querySelector('.body').innerHTML = body
+		if @$('header .options').length > 0
+			menuTpl = config.templates['list.menu'] if config.templates.hasOwnProperty 'list.menu'
+			menu = menuTpl model: @model.attributes
+			@$('header .options').html menu
 
 		@optionsView = new Views.Options
 			collection: @collection
