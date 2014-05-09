@@ -15,8 +15,14 @@ module.exports =
 	token: null
 
 	queryOptions: {}
+	# * resultRows
 
 	# The facetNameMap is used for giving user friendly names to facets. Sometimes the database has
 	# an unwanted name or no name, so the user is given the option to pass their own.
 	# TODO: Rename to facetTitleMap (name is for computer, title is for user, these 'names' are titles)
 	facetNameMap: {}
+
+	templates: {}
+
+	# When set to true, a search is performed whenever the mainModel (queryOptions) change.
+	autoSearch: true
