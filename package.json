@@ -16,24 +16,29 @@
     "test": "node ./.test/bin/server.js"
   },
   "devDependencies": {
-    "gulp-connect": "~0.3.1",
-    "gulp-util": "~2.2.14",
-    "gulp": "~3.5.2",
-    "gulp-concat": "~2.1.7",
-    "gulp-clean": "~0.2.4",
-    "gulp-stylus": "0.0.12",
-    "gulp-rename": "~1.0.0",
-    "gulp-browserify": "~0.4.4",
-    "browserify": "~3.28.0",
-    "coffeeify": "~0.6.0",
-    "jadeify": "~2.1.1",
     "backbone": "~1.0.0",
+    "browserify": "~3.28.0",
+    "coffee-script": "~1.7.1",
+    "coffeeify": "~0.6.0",
+    "envify": "^1.2.1",
+    "gulp": "~3.5.2",
+    "gulp-browserify": "~0.4.4",
+    "gulp-clean": "~0.2.4",
+    "gulp-concat": "~2.1.7",
+    "gulp-connect": "~0.3.1",
+    "gulp-rename": "~1.0.0",
+    "gulp-stylus": "0.0.12",
+    "gulp-util": "~2.2.14",
     "hilib": "HuygensING/hilib",
+    "jadeify": "~2.1.1",
     "jquery": "~2.1.0",
-    "underscore": "~1.6.0",
-    "coffee-script": "~1.7.1"
+    "underscore": "~1.6.0"
   },
   "browserify": {
-    "transform": ["jadeify", "coffeeify"]
+    "transform": [
+      "jadeify",
+      "coffeeify",
+      "envify"
+    ]
   }
 }
