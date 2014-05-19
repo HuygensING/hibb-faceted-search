@@ -35,10 +35,6 @@
     "underscore": "~1.6.0"
   },
   "browserify": {
-    "transform": [
-      "jadeify",
-      "coffeeify",
-      "envify"
-    ]
+    "transform": ["jadeify", "coffeeify"]
   }
 }
