@@ -97,11 +97,14 @@ class MainView extends Backbone.View
 
 		view
 	renderFacets: ->
-
+		# If there is a template for main, than use the template and
+		# attach facets to their placeholder.
 		if config.templates.hasOwnProperty 'main'
 			for facetData, index in @model.searchResults.current.get('facets')
 				if facetViewMap.hasOwnProperty facetData.type
 					@$(".#{facetData.name}-placeholder").html @createFacetView(facetData).el
+		# If there is no template for main, create a document fragment and append
+		# all facets to it and attach it to the DOM.
 		else
 			fragment = document.createDocumentFragment()		
 
@@ -123,7 +126,7 @@ class MainView extends Backbone.View
 		current = @model.searchResults.current
 
 		# If the size of the searchResults is 1 then it's the first time we render the facets
-		if @model.searchResults.length is 1 or current.get('reset')
+		if @model.searchResults.queryAmount is 1 or current.get('reset')
 			
 			@destroyFacets()
 

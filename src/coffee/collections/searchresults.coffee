@@ -24,6 +24,10 @@ class SearchResults extends Backbone.Collection
 		# a new Collection.
 		@cachedModels = {}
 
+		# Hold a count of the number of run queries. We can't use @length, because
+		# if the second query is fetched from cache, the length stays at length one.
+		@queryAmount = 0
+
 		@on 'add', @setCurrent, @
 
 	clearCache: -> @cachedModels = {}
@@ -32,7 +36,15 @@ class SearchResults extends Backbone.Collection
 		changeMessage = if @current.options.url? then 'change:cursor' else 'change:results'
 		@trigger changeMessage, @current
 
+	# options.cache Boolean
+	# 	Determines if the result can be fetched from the cachedModels (searchResult models).
+	# 	In case of a reset or a refresh, options.cache is set to false.
+	# options.reset	Boolean 
+	#	If the query is used for resetting the Faceted Search, the reset boolean is set to the searchResult model. 
+	# 	This attribute is used in the main view to determine how to render the facets.
 	runQuery: (queryOptions, options={}) ->
+		@queryAmount += 1
+
 		options.cache ?= true
 		options.reset ?= false
 
