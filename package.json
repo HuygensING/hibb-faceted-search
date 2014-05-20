@@ -15,12 +15,14 @@
   "scripts": {
     "test": "node ./.test/bin/server.js"
   },
+  "dependencies": {
+    "envify": "^1.2.1"
+  },
   "devDependencies": {
     "backbone": "~1.0.0",
     "browserify": "~3.28.0",
     "coffee-script": "~1.7.1",
     "coffeeify": "~0.6.0",
-    "envify": "^1.2.1",
     "gulp": "~3.5.2",
     "gulp-browserify": "~0.4.4",
     "gulp-clean": "~0.2.4",
@@ -35,6 +37,6 @@
     "underscore": "~1.6.0"
   },
   "browserify": {
-    "transform": ["jadeify", "coffeeify"]
+    "transform": ["jadeify", "coffeeify", "envify"]
   }
 }
