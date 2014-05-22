@@ -79,13 +79,7 @@ class MainView extends Backbone.View
 		# TODO Remove textSearch from @facetViews
 		@facetViews['textSearch'] = textSearch
 
-	destroyFacets: ->
-		for own viewName, view of @facetViews
-			if viewName isnt 'textSearch' 
-				view.destroy()
-				delete @facetViews[viewName]
-
-	createFacetView: (facetData) =>
+	renderFacet: (facetData) =>
 		if _.isString(facetData)
 			facetData = _.findWhere @model.searchResults.first().get('facets'), name: facetData
 
@@ -96,13 +90,14 @@ class MainView extends Backbone.View
 		@listenTo view, 'change', (queryOptions) => @model.set queryOptions
 
 		view
+
 	renderFacets: ->
 		# If there is a template for main, than use the template and
 		# attach facets to their placeholder.
 		if config.templates.hasOwnProperty 'main'
 			for facetData, index in @model.searchResults.current.get('facets')
 				if facetViewMap.hasOwnProperty facetData.type
-					@$(".#{facetData.name}-placeholder").html @createFacetView(facetData).el
+					@$(".#{facetData.name}-placeholder").html @renderFacet(facetData).el
 		# If there is no template for main, create a document fragment and append
 		# all facets to it and attach it to the DOM.
 		else
@@ -110,13 +105,13 @@ class MainView extends Backbone.View
 
 			for own index, facetData of @model.searchResults.current.get('facets')
 				if facetViewMap.hasOwnProperty facetData.type
-					fragment.appendChild @createFacetView(facetData).el
+					fragment.appendChild @renderFacet(facetData).el
 					fragment.appendChild document.createElement 'hr'
 				else 
 					console.error 'Unknown facetView', facetData.type
 
 			@$('.facets').html fragment
-				
+
 	updateFacets: ->
 		return if config.textSearch is 'simple'
 
@@ -196,6 +191,13 @@ class MainView extends Backbone.View
 	destroy: -> 
 		@destroyFacets()
 		@remove()
+
+	
+	destroyFacets: ->
+		for own viewName, view of @facetViews
+			if viewName isnt 'textSearch' 
+				view.destroy()
+				delete @facetViews[viewName]
 
 	addListeners: ->
 		# Listen to the change:results event and (re)render the facets everytime the result changes.
