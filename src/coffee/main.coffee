@@ -192,7 +192,7 @@ class MainView extends Backbone.View
 		@destroyFacets()
 		@remove()
 
-	
+
 	destroyFacets: ->
 		for own viewName, view of @facetViews
 			if viewName isnt 'textSearch' 
