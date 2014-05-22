@@ -13,14 +13,15 @@
     "url": "https://github.com/HuygensING/faceted-search"
   },
   "scripts": {
-    "test": "node ./.test/bin/server.js"
+    "test": "mocha -w --compilers coffee:coffee-script/register,jade:jade --reporter html-cov tests/unit/* > cov.html"
   },
   "dependencies": {
     "envify": "^1.2.1"
   },
   "devDependencies": {
-    "backbone": "~1.0.0",
+    "backbone": "^1.1.2",
     "browserify": "~3.28.0",
+    "chai": "^1.9.1",
     "coffee-script": "~1.7.1",
     "coffeeify": "~0.6.0",
     "gulp": "~3.5.2",
@@ -34,9 +35,18 @@
     "hilib": "HuygensING/hilib",
     "jadeify": "~2.1.1",
     "jquery": "~2.1.0",
+    "jsdom": "^0.10.5",
+    "mocha": "^1.19.0",
+    "require-jade": "0.0.1",
+    "sinon": "^1.10.0",
+    "sinon-chai": "^2.5.0",
     "underscore": "~1.6.0"
   },
   "browserify": {
-    "transform": ["jadeify", "coffeeify", "envify"]
+    "transform": [
+      "jadeify",
+      "coffeeify",
+      "envify"
+    ]
   }
 }
