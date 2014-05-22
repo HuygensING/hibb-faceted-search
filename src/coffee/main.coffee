@@ -23,6 +23,8 @@ Views =
 
 tpl = require '../jade/main.jade'
 
+SearchResults = require './collections/searchresults'
+
 class MainView extends Backbone.View
 
 	# ### Initialize
@@ -50,6 +52,11 @@ class MainView extends Backbone.View
 		@render()
 
 		@addListeners()
+
+		if config.development
+			@model.searchResults.add JSON.parse localStorage.getItem('faceted-search-dev-model')
+			@model.searchResults.cachedModels['{"facetValues":[],"sortParameters":[]}'] = @model.searchResults.first()
+			setTimeout (=> @$('.overlay').hide()), 100
 
 	# ### Render
 	render: ->
@@ -132,6 +139,12 @@ class MainView extends Backbone.View
 		else
 			@update()
 
+	destroyFacets: ->
+		for own viewName, view of @facetViews
+			if viewName isnt 'textSearch' 
+				view.destroy()
+				delete @facetViews[viewName]
+
 	# ### Events
 	events: ->
 		'click ul.facets-menu li.collapse-expand': 'toggleFacets'
@@ -191,13 +204,6 @@ class MainView extends Backbone.View
 	destroy: -> 
 		@destroyFacets()
 		@remove()
-
-
-	destroyFacets: ->
-		for own viewName, view of @facetViews
-			if viewName isnt 'textSearch' 
-				view.destroy()
-				delete @facetViews[viewName]
 
 	addListeners: ->
 		# Listen to the change:results event and (re)render the facets everytime the result changes.
