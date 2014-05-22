@@ -248,13 +248,13 @@ class MainView extends Backbone.View
 		for own index, data of @model.searchResults.current.get('facets')
 			@facetViews[data.name]?.update(data.options)
 
-	reset: ->
+	reset: (cache) ->
 		@facetViews.textSearch.reset() if @facetViews.hasOwnProperty 'textSearch'
 
 		for own facetView of @facetViews
 			facetView.reset() if facetView.reset?
 
-		@model.reset()
+		@model.reset cache
 
 	refresh: (newQueryOptions) -> @model.refresh newQueryOptions
 

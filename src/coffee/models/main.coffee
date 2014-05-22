@@ -60,13 +60,16 @@ class MainModel extends Backbone.Model
 		@searchResults.runQuery _.clone(@attributes), cache: cache
 
 	# Silently change @attributes and trigger a change event manually afterwards.
-	reset: ->
+	# arguments.cache Boolean Tells searchResults if we want to fetch result from cache.
+	# 	In an app where data is dynamic, we usually don't want cache (get new result from server),
+	#	in an app where data is static, we can use cache to speed up the app.
+	reset: (cache=false) ->
 		@clear silent: true
 		@set @defaults(), silent: true
 		@set @queryOptions, silent: true
-		@searchResults.clearCache()
+		@searchResults.clearCache() unless cache
 		@searchResults.runQuery _.clone(@attributes),
-			cache: false
+			cache: cache
 			reset: true
 
 	# A refresh of the Faceted Search means (re)sending the current @attributes (queryOptions) again.
