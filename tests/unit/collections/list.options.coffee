@@ -42,40 +42,20 @@ describe 'Collection ListOptions', ->
 		
 	describe 'initialize', ->
 		it 'should be ordered by count descending, visibles first', ->
-			listOptions.first().get('name').should.equal 'Marieke'
-			listOptions.models[1].get('name').should.equal 'Gijs'
-			listOptions.models[2].get('name').should.equal 'Jaap'
-			listOptions.models[3].get('name').should.equal 'Ed'
-			listOptions.models[4].get('name').should.equal 'Tine'
-			listOptions.last().get('name').should.equal 'Bert'
+			listOptions.pluck('name').should.eql ['Marieke', 'Gijs', 'Jaap', 'Ed', 'Tine', 'Bert']
 
 	describe 'orderBy', ->
 		it 'should order alphabetically ascending, visibles first', ->
 			listOptions.orderBy 'alpha_asc'
-			listOptions.first().get('name').should.equal 'Gijs'
-			listOptions.models[1].get('name').should.equal 'Jaap'
-			listOptions.models[2].get('name').should.equal 'Marieke'
-			listOptions.models[3].get('name').should.equal 'Bert'
-			listOptions.models[4].get('name').should.equal 'Ed'
-			listOptions.last().get('name').should.equal 'Tine'
+			listOptions.pluck('name').should.eql ['Gijs', 'Jaap', 'Marieke', 'Bert', 'Ed', 'Tine']
 
 		it 'should order alphabetically descending, visibles first', ->
 			listOptions.orderBy 'alpha_desc'
-			listOptions.first().get('name').should.equal 'Marieke'
-			listOptions.models[1].get('name').should.equal 'Jaap'
-			listOptions.models[2].get('name').should.equal 'Gijs'
-			listOptions.models[3].get('name').should.equal 'Tine'
-			listOptions.models[4].get('name').should.equal 'Ed'
-			listOptions.last().get('name').should.equal 'Bert'
+			listOptions.pluck('name').should.eql ['Marieke', 'Jaap', 'Gijs', 'Tine', 'Ed', 'Bert']
 
 		it 'should order count ascending, visibles first', ->
 			listOptions.orderBy 'amount_asc'
-			listOptions.first().get('name').should.equal 'Jaap'
-			listOptions.models[1].get('name').should.equal 'Gijs'
-			listOptions.models[2].get('name').should.equal 'Marieke'
-			listOptions.models[3].get('name').should.equal 'Bert'
-			listOptions.models[4].get('name').should.equal 'Tine'
-			listOptions.last().get('name').should.equal 'Ed'
+			listOptions.pluck('name').should.eql ['Jaap', 'Gijs', 'Marieke', 'Bert', 'Tine', 'Ed']
 
 	describe 'revert', ->
 		it 'should set all options checked attribute to false', ->
