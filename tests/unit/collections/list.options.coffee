@@ -1,22 +1,6 @@
-chai = require 'chai'
-sinon = require 'sinon'
-sinonChai = require 'sinon-chai'
-requireJade = require 'require-jade'
-jsdom = require 'jsdom'
+setup = require '../setup'
 
-$ = require 'jquery'
-Backbone = require 'backbone'
-_= require 'underscore'
-
-global.window = jsdom.jsdom().createWindow()
-global.document = window.document
-global.Backbone = Backbone
-Backbone.$ = $
-
-chai.should()
-chai.use sinonChai
-
-ListOptions = require '../../../src/coffee/collections/list.options'
+ListOptions = require basePath + 'collections/list.options'
 
 models = [
 	visible: true
@@ -100,12 +84,12 @@ describe 'Collection ListOptions', ->
 			listOptions.where(checked: false).length.should.equal 6
 
 		it 'should trigger a change event', ->
-			listOptions.trigger = sinon.spy()
+			listOptions.trigger = setup.sinon.spy()
 			listOptions.revert()
 			listOptions.trigger.should.have.been.calledWith 'change'
 
 	describe 'updateOptions', ->
-		it 'should set all counts to 0 and update counts', ->
+		it 'should set all counts to 0 and update counts of existing models', ->
 			listOptions.where(count: 72).length.should.equal 1
 
 			newOptions = [
@@ -123,6 +107,16 @@ describe 'Collection ListOptions', ->
 
 			# Ed should be reverted to count 0
 			listOptions.findWhere(name: 'Ed').get('count').should.equal 0
+
+		it 'should add a model when it does not exists', ->
+			newOptions = [
+				name: 'Marianne'
+				count: 71
+			]
+
+			listOptions.updateOptions newOptions
+			listOptions.length.should.equal 7
+
 
 		it 'should set all counts to 0', ->
 			listOptions.where(count: 72).length.should.equal 1
