@@ -94,8 +94,17 @@ class ListFacetOptions extends Backbone.View
 		$target = $ ev.currentTarget
 		id = $target.attr 'data-value'
 
-		$target.find("i.checked").toggle()
-		$target.find("i.unchecked").toggle()
+		checked = $target.find("i.checked")
+		unchecked = $target.find("i.unchecked")
+
+		# Don't use $.toggle, because it will toggle the <i> set to display:none
+		# to display: inline, instead of inline-block.
+		if checked.is(':visible')
+			checked.hide()
+			unchecked.css 'display', 'inline-block'
+		else
+			checked.css 'display', 'inline-block'
+			unchecked.hide()
 
 		@collection.get(id).set 'checked', $target.find("i.checked").is(':visible')
 
