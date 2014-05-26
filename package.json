@@ -13,7 +13,7 @@
     "url": "https://github.com/HuygensING/faceted-search"
   },
   "scripts": {
-    "test": "mocha -w --compilers coffee:coffee-script/register,jade:jade --reporter spec tests/unit/*",
+    "test": "mocha --recursive -w --compilers coffee:coffee-script/register,jade:jade --reporter spec tests/unit/*",
     "coverage": "gulp coffee && jscoverage --no-highlight compiled coverage && COVERAGE=true mocha --compilers coffee:coffee-script/register,jade:jade --reporter html-cov tests/unit/* > coverage.html && rm -rf compiled && rm -rf coverage"
   },
   "dependencies": {
@@ -33,16 +33,17 @@
     "gulp-rename": "~1.0.0",
     "gulp-stylus": "0.0.12",
     "gulp-util": "~2.2.14",
+    "hilib": "git+https://github.com/HuygensING/hilib.git#v0.0.4",
     "jadeify": "^2.3.0",
     "jquery": "~2.1.0",
     "jsdom": "^0.10.5",
+    "localStorage": "^1.0.2",
     "mocha": "^1.19.0",
     "require-jade": "0.0.1",
     "sinon": "^1.10.0",
     "sinon-chai": "^2.5.0",
     "underscore": "~1.6.0",
-    "vinyl-source-stream": "^0.1.1",
-    "hilib": "git+https://github.com/HuygensING/hilib.git#v0.0.4"
+    "vinyl-source-stream": "^0.1.1"
   },
   "browserify": {
     "transform": [
