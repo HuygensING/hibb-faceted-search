@@ -6,11 +6,12 @@ jsdom = require 'jsdom'
 
 global.window = jsdom.jsdom().createWindow()
 global.document = window.document
+global.localStorage = global.sessionStorage = require 'localStorage'
 global.$ = require 'jquery'
 global.Backbone = require 'backbone'
 global.Backbone.$ = $
 global._= require 'underscore'
-global.basePath = if process.env.COVERAGE then '../../../coverage/' else '../../../src/coffee/'
+global.basePath = if process.env.COVERAGE then '../../coverage/' else '../../src/coffee/'
 
 chai.should()
 chai.use sinonChai
