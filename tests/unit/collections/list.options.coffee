@@ -1,6 +1,6 @@
 setup = require '../setup'
 
-ListOptions = require basePath + 'collections/list.options'
+ListOptions = require "../#{basePath}collections/list.options"
 
 models = [
 	visible: true
