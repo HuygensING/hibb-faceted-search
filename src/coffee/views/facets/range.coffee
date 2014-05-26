@@ -201,6 +201,4 @@ class RangeFacet extends Views.Facet
 
 		@$('button').hide()
 
-	reset: ->
-
 module.exports = RangeFacet

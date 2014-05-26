@@ -16,7 +16,7 @@ class ListOptions extends Backbone.Collection
 	# ### Methods
 
 	# Alias for reset, because a collection already has a reset method.
-	revert: -> 
+	revert: ->
 		@each (option) => option.set 'checked', false, silent: true
 		@trigger 'change'
 

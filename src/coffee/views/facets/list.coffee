@@ -19,10 +19,6 @@ menuTpl = require '../../../jade/facets/list.menu.jade'
 
 class ListFacet extends Views.Facet
 
-	# checked: []
-
-	# filtered_items: []
-
 	className: 'facet list'
 
 	initialize: (@options) ->
@@ -41,7 +37,6 @@ class ListFacet extends Views.Facet
 			menuTpl = config.templates['list.menu'] if config.templates.hasOwnProperty 'list.menu'
 			menu = menuTpl model: @model.attributes
 			@$('header .options').html menu
-
 		@optionsView = new Views.Options
 			collection: @collection
 			facetName: @model.get 'name'
