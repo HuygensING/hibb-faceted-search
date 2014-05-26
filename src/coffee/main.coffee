@@ -28,7 +28,7 @@ SearchResults = require './collections/searchresults'
 class MainView extends Backbone.View
 
 	# ### Initialize
-	initialize: (options) ->
+	initialize: (options={}) ->
 
 		@facetViews = {}
 
@@ -259,7 +259,7 @@ class MainView extends Backbone.View
 	reset: (cache) ->
 		@facetViews.textSearch.reset() if @facetViews.hasOwnProperty 'textSearch'
 
-		for own facetView of @facetViews
+		for own key, facetView of @facetViews
 			facetView.reset() if facetView.reset?
 
 		@model.reset cache
