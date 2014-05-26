@@ -2,7 +2,6 @@ Backbone = require 'backbone'
 _ = require 'underscore'
 
 ajax = require 'hilib/src/managers/ajax'
-token = require 'hilib/src/managers/token'
 
 config = require '../config'
 
@@ -59,7 +58,7 @@ class SearchResult extends Backbone.Model
 					# console.error 'Failed getting FacetedSearch results from the server!', arguments
 
 	getResults: (url, done) ->
-		ajax.token = config.token
+		# ajax.token = config.token
 		jqXHR = ajax.get url: url
 		jqXHR.done (data, textStatus, jqXHR) =>	done data
 		jqXHR.fail (jqXHR, textStatus, errorThrown) =>
