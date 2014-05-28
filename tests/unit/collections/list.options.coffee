@@ -39,7 +39,7 @@ describe 'Collection ListOptions', ->
 
 	beforeEach ->
 		listOptions = new ListOptions models
-		
+
 	describe 'initialize', ->
 		it 'should be ordered by count descending, visibles first', ->
 			listOptions.pluck('name').should.eql ['Marieke', 'Gijs', 'Jaap', 'Ed', 'Tine', 'Bert']

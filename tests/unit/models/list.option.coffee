@@ -7,7 +7,7 @@ describe 'Model ListOption', ->
 
 	beforeEach ->
 		listOption = new ListOption count: 12
-		
+
 	describe 'parse', ->
 		it 'should set total to equal count', ->
 			listOption.parse listOption.attributes
