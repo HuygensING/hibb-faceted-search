@@ -25,7 +25,6 @@ class TextSearch extends Backbone.View
     @stopListening @model if @model?
 
     @model = new Models.Search config.textSearchOptions
-    @listenTo @model, 'change', => @trigger 'change', @model.queryData()
 
   # ### Render
   render: ->
@@ -50,8 +49,8 @@ class TextSearch extends Backbone.View
     # to the mainModel. When autoSearch is off and the user wants to
     # perform a search, the term is known to the queryModel.
     if @model.get('term') isnt ev.currentTarget.value
-      @model.set {term: ev.currentTarget.value}, {silent: true}
-      @trigger 'change', @model.queryData(), silent: true
+      @model.set term: ev.currentTarget.value
+      @updateQueryModel()
 
     if ev.keyCode is 13
       ev.preventDefault()
@@ -68,11 +67,15 @@ class TextSearch extends Backbone.View
         checkedArray.push cb.getAttribute('data-value')
       @model.set attr, checkedArray
 
+    @updateQueryModel()
+
   search: (ev) ->
     ev.preventDefault()
     @trigger 'search'
 
   # ### Methods
+  updateQueryModel: -> @trigger 'change', @model.queryData()
+
   update: -> @$('input[name="search"]').removeClass 'loading'
 
   reset: ->

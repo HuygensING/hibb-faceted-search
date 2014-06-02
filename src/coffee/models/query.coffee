@@ -3,7 +3,7 @@ _ = require 'underscore'
 SearchResults = require '../collections/searchresults'
 config = require '../config'
 
-class MainModel extends Backbone.Model
+class QueryOptions extends Backbone.Model
 
   defaults: ->
     # an array of objects containing a facet name and values: {name: 'facet_s_writers', values: ['pietje', 'pukje']}
@@ -81,7 +81,7 @@ class MainModel extends Backbone.Model
     @set newQueryOptions, silent: true
     @search false
 
-module.exports = MainModel
+module.exports = QueryOptions
 
 # EXAMPLE QUERY:
 # {

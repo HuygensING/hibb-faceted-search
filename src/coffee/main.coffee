@@ -10,7 +10,7 @@ dom = require 'hilib/src/utils/dom'
 config = require './config'
 facetViewMap = require './facetviewmap'
 
-MainModel = require './models/main'
+QueryOptions = require './models/query'
 
 Views =
   TextSearch: require './views/text-search'
@@ -45,7 +45,7 @@ class MainView extends Backbone.View
 
     # Initialize the FacetedSearch model.
     queryOptions = _.extend config.queryOptions, config.textSearchOptions
-    @model = new MainModel queryOptions
+    @model = new QueryOptions queryOptions
 
     @render()
 
@@ -78,7 +78,8 @@ class MainView extends Backbone.View
     @textSearch = new Views.TextSearch()
     @$('.text-search-placeholder').html @textSearch.el
 
-    @listenTo @textSearch, 'change', (queryOptions, options={}) => @model.set queryOptions, options
+    @listenTo @textSearch, 'change', (queryOptions) => @model.set queryOptions, silent: true
+    @listenTo @textSearch, 'search', => console.log 'serachign'
 
   renderFacet: (facetData) =>
     if _.isString(facetData)

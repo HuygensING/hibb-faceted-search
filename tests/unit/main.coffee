@@ -1,6 +1,6 @@
 setup = require './setup'
 
-MainModel = require basePath + 'models/main'
+QueryOptions = require basePath + 'models/query'
 TextSearch = require basePath + 'views/text-search'
 FacetView = require basePath + 'views/facets/main'
 Main = require basePath + 'main'
@@ -19,8 +19,8 @@ describe 'View Main', ->
     it 'should have a model', ->
       mainView.model.should.exist
 
-    it 'should have a model of instance MainModel', ->
-      mainView.model.should.be.instanceof MainModel
+    it 'should have a model of instance QueryOptions', ->
+      mainView.model.should.be.instanceof QueryOptions
 
     it 'should call render', ->
       mainView.render = setup.sinon.spy()
