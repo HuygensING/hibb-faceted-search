@@ -75,14 +75,10 @@ class MainView extends Backbone.View
     @
 
   renderTextSearch: ->
-    textSearch = new Views.TextSearch()
-    @$('.text-search-placeholder').html textSearch.el
+    @textSearch = new Views.TextSearch()
+    @$('.text-search-placeholder').html @textSearch.el
 
-    # TODO Remove textSearch from @facetViews
-    @facetViews['textSearch'] = textSearch
-
-    @listenTo textSearch, 'change', (queryOptions) => @model.set queryOptions
-    @listenTo textSearch, 'change:silent', (queryOptions) -> @model.set queryOptions, silent: true
+    @listenTo @textSearch, 'change', (queryOptions, options={}) => @model.set queryOptions, options
 
   renderFacet: (facetData) =>
     if _.isString(facetData)
@@ -127,7 +123,6 @@ class MainView extends Backbone.View
 
     # If the size of the searchResults is 1 then it's the first time we render the facets
     if @model.searchResults.queryAmount is 1 or current.get('reset')
-
       @destroyFacets()
 
       # Render facets and attach to DOM
@@ -139,9 +134,8 @@ class MainView extends Backbone.View
 
   destroyFacets: ->
     for own viewName, view of @facetViews
-      if viewName isnt 'textSearch'
-        view.destroy()
-        delete @facetViews[viewName]
+      view.destroy()
+      delete @facetViews[viewName]
 
   # ### Events
   events: ->
@@ -173,14 +167,10 @@ class MainView extends Backbone.View
       facet = @facetViews[facetName]
 
       if facet?
-        # Don't close textSearch facet, but close others.
-        if facetName is 'textSearch'
-          slideFacet()
+        if open
+          facet.showBody -> slideFacet()
         else
-          if open
-            facet.showBody -> slideFacet()
-          else
-            facet.hideBody -> slideFacet()
+          facet.hideBody -> slideFacet()
 
     slideFacet()
 
@@ -253,13 +243,13 @@ class MainView extends Backbone.View
   sortResultsBy: (field) -> @model.set sort: field
 
   update: ->
-    @facetViews.textSearch.update() if @facetViews.hasOwnProperty 'textSearch'
+    @textSearch.update() if @textSearch?
 
     for own index, data of @model.searchResults.current.get('facets')
       @facetViews[data.name]?.update(data.options)
 
   reset: (cache) ->
-    @facetViews.textSearch.reset() if @facetViews.hasOwnProperty 'textSearch'
+    @textSearch.reset() if @textSearch?
 
     for own key, facetView of @facetViews
       facetView.reset() if facetView.reset?

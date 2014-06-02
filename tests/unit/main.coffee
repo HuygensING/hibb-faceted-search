@@ -97,10 +97,6 @@ describe 'View Main', ->
     it 'should attach textSearch to mainView', ->
       mainView.$('.text-search-placeholder').find('.search-input').length.should.equal 1
 
-    it 'should add textSearch view to facetViews map', ->
-      mainView.facetViews.hasOwnProperty('textSearch').should.be.ok
-      mainView.facetViews.textSearch.should.be.instanceof TextSearch
-
   describe 'reset', ->
     it 'should call the main models reset method', ->
       mainView.model.reset = setup.sinon.spy()

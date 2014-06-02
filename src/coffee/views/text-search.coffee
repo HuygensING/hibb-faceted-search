@@ -47,11 +47,11 @@ class TextSearch extends Backbone.View
 
   onKeyUp: (ev) ->
     # Update the mainModel (queryOptions) silently. We want to set the term
-    # to the mainModel. When autoSearch is set to false and the user wants to
-    # perform a search, the term is known to the mainModel.
+    # to the mainModel. When autoSearch is off and the user wants to
+    # perform a search, the term is known to the queryModel.
     if @model.get('term') isnt ev.currentTarget.value
       @model.set {term: ev.currentTarget.value}, {silent: true}
-      @trigger 'change:silent', @model.queryData()
+      @trigger 'change', @model.queryData(), silent: true
 
     if ev.keyCode is 13
       ev.preventDefault()
@@ -70,11 +70,7 @@ class TextSearch extends Backbone.View
 
   search: (ev) ->
     ev.preventDefault()
-
-    $search = @$('input[name="search"]')
-    inputValue = $search.val()
-
-    @model.set 'term', inputValue unless inputValue is ''
+    @trigger 'search'
 
   # ### Methods
   update: -> @$('input[name="search"]').removeClass 'loading'
