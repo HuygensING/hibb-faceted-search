@@ -11,7 +11,7 @@ Models =
 Views = 
   Facet: require './facets/main'
 
-tpl = require '../../jade/facets/search.jade'
+tpl = require '../../jade/facets/text-search.jade'
 
 class TextSearch extends Backbone.View
 
@@ -27,7 +27,6 @@ class TextSearch extends Backbone.View
     @model = new Models.Search config.textSearchOptions
     @listenTo @model, 'change', => @trigger 'change', @model.queryData()
 
-  # * TODO: search input (<input id="">) should not have an ID, because there can be several Faceted Search instances.
   # ### Render
   render: ->
     tpl = config.templates['search'] if config.templates.hasOwnProperty 'search'
@@ -41,8 +40,8 @@ class TextSearch extends Backbone.View
     # 'click button.active': 'search'
     # 'click header i.openclose': 'toggleMenu'
     'click i.fa-search': 'search'
-    'keyup input': 'onKeyUp'
-    'focus input': -> @$('.body .menu').slideDown(150)
+    'keyup input[name="search"]': 'onKeyUp'
+    'focus input[name="search"]': -> @$('.body .menu').slideDown(150)
     'click .menu .fa-times': -> @$('.body .menu').slideUp(150)
     'change input[type="checkbox"]': 'checkboxChanged'
 

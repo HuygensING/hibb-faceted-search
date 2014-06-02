@@ -1,7 +1,7 @@
 setup = require './setup'
 
 MainModel = require basePath + 'models/main'
-TextSearch = require basePath + 'views/search'
+TextSearch = require basePath + 'views/text-search'
 FacetView = require basePath + 'views/facets/main'
 Main = require basePath + 'main'
 config = require basePath + 'config'

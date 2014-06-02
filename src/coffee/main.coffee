@@ -13,7 +13,7 @@ facetViewMap = require './facetviewmap'
 MainModel = require './models/main'
 
 Views =
-  TextSearch: require './views/search'
+  TextSearch: require './views/text-search'
   Facets:
     List: require './views/facets/list'
     Boolean: require './views/facets/boolean'
@@ -25,24 +25,26 @@ SearchResults = require './collections/searchresults'
 
 class MainView extends Backbone.View
 
-  # ### Initialize
-  initialize: (options={}) ->
-
-    @facetViews = {}
-
-    _.extend facetViewMap, options.facetViewMap
-    delete options.facetViewMap
-
+  extendConfig: (options) ->
     _.extend config.facetNameMap, options.facetNameMap
     delete options.facetNameMap
 
     _.extend config, options
-    queryOptions = _.extend config.queryOptions, config.textSearchOptions
 
     # Set the default of config type in case the user sends an unknown string.
     config.textSearch = 'advanced' if ['none', 'simple', 'advanced'].indexOf(config.textSearch) is -1
 
+  # ### Initialize
+  initialize: (options={}) ->
+    @facetViews = {}
+
+    @extendConfig options
+
+    _.extend facetViewMap, options.facetViewMap
+    delete options.facetViewMap
+
     # Initialize the FacetedSearch model.
+    queryOptions = _.extend config.queryOptions, config.textSearchOptions
     @model = new MainModel queryOptions
 
     @render()
@@ -145,21 +147,8 @@ class MainView extends Backbone.View
   events: ->
     'click ul.facets-menu li.collapse-expand': 'toggleFacets'
     # Don't use @refresh as String, because the ev object will be passed.
-    'click ul.facets-menu li.reset': (ev) ->
-      ev.preventDefault()
-      @reset()
-    'click ul.facets-menu li.switch button': (ev) ->
-      ev.preventDefault()
-
-      config.textSearch = if config.textSearch is 'advanced' then 'simple' else 'advanced'
-
-      @$('.faceted-search').toggleClass 'search-type-simple'
-      @$('.faceted-search').toggleClass 'search-type-advanced'
-
-      if @model.searchResults.length is 0
-        @model.trigger 'change'
-      else
-        @update()
+    'click ul.facets-menu li.reset': 'onReset'
+    'click ul.facets-menu li.switch button': 'onSwitchType'
 
   # The facets are slided one by one. When the slide of a facet is finished, the
   # next facet starts sliding. That's why we use a recursive function.
@@ -194,6 +183,23 @@ class MainView extends Backbone.View
             facet.hideBody -> slideFacet()
 
     slideFacet()
+
+  onSwitchType: (ev) ->
+    ev.preventDefault()
+
+    config.textSearch = if config.textSearch is 'advanced' then 'simple' else 'advanced'
+
+    @$('.faceted-search').toggleClass 'search-type-simple'
+    @$('.faceted-search').toggleClass 'search-type-advanced'
+
+    if @model.searchResults.length is 0
+      @model.trigger 'change'
+    else
+      @update()
+
+  onReset: (ev) ->
+    ev.preventDefault()
+    @reset()
 
   # ### Methods
 
