@@ -90,7 +90,7 @@ class MainView extends Backbone.View
     view = @facetViews[facetData.name] = new View attrs: facetData
 
     # fetchResults and updateFacets when user changes a facets state
-    @listenTo view, 'change', (queryOptions) => @model.set queryOptions
+    @listenTo view, 'change', (queryOptions, options={}) => @model.set queryOptions, options
 
     view
 
