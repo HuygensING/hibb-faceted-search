@@ -8,9 +8,6 @@ config = require '../config'
 Models =
   Search: require '../models/search'
 
-Views = 
-  Facet: require './facets/main'
-
 tpl = require '../../jade/facets/text-search.jade'
 
 class TextSearch extends Backbone.View

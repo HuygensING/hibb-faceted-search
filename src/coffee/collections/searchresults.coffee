@@ -1,6 +1,3 @@
-# queryOptions:
-# 	resultRows: Number => number of results to return by the server
-
 Backbone = require 'backbone'
 _ = require 'underscore'
 
@@ -32,46 +29,34 @@ class SearchResults extends Backbone.Collection
   clearCache: -> @cachedModels = {}
 
   setCurrent: (@current) ->
-    changeMessage = if @current.options.url? then 'change:cursor' else 'change:results'
+    changeMessage = if @current.options?.url? then 'change:cursor' else 'change:results'
     @trigger changeMessage, @current
 
   # options.cache Boolean
   # 	Determines if the result can be fetched from the cachedModels (searchResult models).
   # 	In case of a reset or a refresh, options.cache is set to false.
-  # options.reset	Boolean
-  #	If the query is used for resetting the Faceted Search, the reset boolean is set to the searchResult model.
-  # 	This attribute is used in the main view to determine how to render the facets.
   runQuery: (queryOptions, options={}) ->
-    @queryAmount += 1
-
     options.cache ?= true
-    options.reset ?= false
+
+    @queryAmount += 1
 
     if queryOptions.hasOwnProperty 'resultRows'
       resultRows = queryOptions.resultRows
       delete queryOptions.resultRows
 
-    cacheString = JSON.stringify queryOptions
+    queryOptionsString = JSON.stringify queryOptions
 
     # The search results are cached by the query options string,
     # so we check if there is such a string to find the cached result.
-    if options.cache and @cachedModels.hasOwnProperty cacheString
-      @setCurrent @cachedModels[cacheString]
+    if options.cache and @cachedModels.hasOwnProperty queryOptionsString
+      @setCurrent @cachedModels[queryOptionsString]
     else
-      @trigger 'request'
+      @postQuery queryOptions, (url) =>
+        @getResults url, (response) => @addModel response, queryOptionsString
 
-      opts = {}
-      opts.cacheString = cacheString
-      opts.queryOptions = queryOptions
-      opts.resultRows = resultRows if resultRows?
-
-      searchResult = new SearchResult null, opts
-      searchResult.fetch
-        success: (model) =>
-          model.set 'reset', options.reset
-          @cachedModels[cacheString] = model
-          @add model
-        error: (model, jqXHR, options) => @trigger 'unauthorized' if jqXHR.status is 401
+  addModel: (attrs, cacheId) ->
+    @cachedModels[cacheId] = new @model attrs
+    @add @cachedModels[cacheId]
 
   moveCursor: (direction) ->
     url = if direction is '_prev' or direction is '_next' then @current.get direction else direction
@@ -80,10 +65,52 @@ class SearchResults extends Backbone.Collection
       if @cachedModels.hasOwnProperty url
         @setCurrent @cachedModels[url]
       else
-        searchResult = new SearchResult null, url: url
-        searchResult.fetch
-          success: (model, response, options) =>
-            @cachedModels[url] = model
-            @add model
+        @getResults url, (response) => @addModel response, url
+
+  page: (pagenumber, database) ->
+    start = config.resultRows * (pagenumber - 1)
+    url = @postURL + "?rows=#{config.resultRows}&start=#{start}"
+    url += "&database=#{database}" if database?
+
+    @getResults url, (attrs) =>
+      @trigger 'change:page', new @model(attrs), database
+
+  postQuery: (queryOptions, done) ->
+    @trigger 'request'
+
+    ajaxOptions =
+      url: config.baseUrl + config.searchPath
+      data: JSON.stringify queryOptions
+      dataType: 'text'
+
+    # This is used for extra options to the ajax call,
+    # such as setting custom headers (e.g., VRE_ID)
+    if config.hasOwnProperty 'requestOptions'
+      _.extend ajaxOptions, config.requestOptions
+
+    jqXHR = ajax.post ajaxOptions
+    jqXHR.done (data, textStatus, jqXHR) =>
+      if jqXHR.status is 201
+        @postURL = jqXHR.getResponseHeader('Location')
+        url = if config.resultRows? then @postURL + '?rows=' + config.resultRows else @postURL
+
+        done url
+
+    jqXHR.fail (jqXHR, textStatus, errorThrown) =>
+      @trigger 'unauthorized' if jqXHR.status is 401
+      console.error 'Failed posting FacetedSearch queryOptions to the server!', arguments
+
+  getResults: (url, done) ->
+    @trigger 'request'
+
+    jqXHR = ajax.get url: url
+
+    jqXHR.done (data, textStatus, jqXHR) =>
+        done data
+        @trigger 'sync'
+
+    jqXHR.fail (jqXHR, textStatus, errorThrown) =>
+      @trigger 'unauthorized' if jqXHR.status is 401
+      console.error 'Failed getting FacetedSearch results from the server!', arguments
 
 module.exports = SearchResults

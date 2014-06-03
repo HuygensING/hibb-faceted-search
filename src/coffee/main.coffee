@@ -8,52 +8,40 @@ Fn = require 'hilib/src/utils/general'
 dom = require 'hilib/src/utils/dom'
 
 config = require './config'
-facetViewMap = require './facetviewmap'
 
-QueryOptions = require './models/query'
+
+QueryOptions = require './models/query-options'
+SearchResults = require './collections/searchresults'
 
 Views =
   TextSearch: require './views/text-search'
-  Facets:
-    List: require './views/facets/list'
-    Boolean: require './views/facets/boolean'
-    Date: require './views/facets/date'
+  Facets: require './views/facets'
 
 tpl = require '../jade/main.jade'
 
-SearchResults = require './collections/searchresults'
-
 class MainView extends Backbone.View
-
-  extendConfig: (options) ->
-    _.extend config.facetNameMap, options.facetNameMap
-    delete options.facetNameMap
-
-    _.extend config, options
-
-    # Set the default of config type in case the user sends an unknown string.
-    config.textSearch = 'advanced' if ['none', 'simple', 'advanced'].indexOf(config.textSearch) is -1
 
   # ### Initialize
   initialize: (options={}) ->
-    @facetViews = {}
+    # The facetViewMap is removed from the options, so it is not added to config.
+    # Do this before @extendConfig
+    facetViewMap = _.clone options.facetViewMap
+    delete options.facetViewMap
 
     @extendConfig options
 
-    _.extend facetViewMap, options.facetViewMap
-    delete options.facetViewMap
+    @instantiateQueryOptions()
 
-    # Initialize the FacetedSearch model.
-    queryOptions = _.extend config.queryOptions, config.textSearchOptions
-    @model = new QueryOptions queryOptions
+    @instantiateSearchResults()
+
+    # Instantiate the Facets view after instantiating the QueryOptions model
+    @instantiateFacets facetViewMap
 
     @render()
 
-    @addListeners()
-
     if config.development
-      @model.searchResults.add JSON.parse localStorage.getItem('faceted-search-dev-model')
-      @model.searchResults.cachedModels['{"facetValues":[],"sortParameters":[]}'] = @model.searchResults.first()
+      @searchResults.add JSON.parse localStorage.getItem('faceted-search-dev-model')
+      @searchResults.cachedModels['{"facetValues":[],"sortParameters":[]}'] = @searchResults.first()
       setTimeout (=> @$('.overlay').hide()), 100
 
   # ### Render
@@ -69,50 +57,21 @@ class MainView extends Backbone.View
     if config.textSearch is 'simple' or config.textSearch is 'advanced'
       @renderTextSearch()
 
-    if config.textSearch is 'none' or config.textSearch is 'advanced'
-      setTimeout @showLoader.bind(@), 0
+    @$('.facets').html @facets.el
+
+    setTimeout @postRender.bind(@), 0
 
     @
+
+  postRender: ->
+    @search() unless config.textSearch is 'simple'
 
   renderTextSearch: ->
     @textSearch = new Views.TextSearch()
     @$('.text-search-placeholder').html @textSearch.el
 
-    @listenTo @textSearch, 'change', (queryOptions) => @model.set queryOptions, silent: true
-    @listenTo @textSearch, 'search', => console.log 'serachign'
-
-  renderFacet: (facetData) =>
-    if _.isString(facetData)
-      facetData = _.findWhere @model.searchResults.first().get('facets'), name: facetData
-
-    View = facetViewMap[facetData.type]
-    view = @facetViews[facetData.name] = new View attrs: facetData
-
-    # fetchResults and updateFacets when user changes a facets state
-    @listenTo view, 'change', (queryOptions, options={}) => @model.set queryOptions, options
-
-    view
-
-  renderFacets: ->
-    # If there is a template for main, than use the template and
-    # attach facets to their placeholder.
-    if config.templates.hasOwnProperty 'main'
-      for facetData, index in @model.searchResults.current.get('facets')
-        if facetViewMap.hasOwnProperty facetData.type
-          @$(".#{facetData.name}-placeholder").html @renderFacet(facetData).el
-    # If there is no template for main, create a document fragment and append
-    # all facets to it and attach it to the DOM.
-    else
-      fragment = document.createDocumentFragment()
-
-      for own index, facetData of @model.searchResults.current.get('facets')
-        if facetViewMap.hasOwnProperty facetData.type
-          fragment.appendChild @renderFacet(facetData).el
-          fragment.appendChild document.createElement 'hr'
-        else
-          console.error 'Unknown facetView', facetData.type
-
-      @$('.facets').html fragment
+    @listenTo @textSearch, 'change', (queryOptions) => @queryOptions.set queryOptions, silent: true
+    @listenTo @textSearch, 'search', @search
 
   updateFacets: ->
     return false if config.textSearch is 'simple'
@@ -120,60 +79,19 @@ class MainView extends Backbone.View
     @$('.loader').hide()
     @$('.faceted-search > i.fa').css 'visibility', 'visible'
 
-    current = @model.searchResults.current
-
     # If the size of the searchResults is 1 then it's the first time we render the facets
-    if @model.searchResults.queryAmount is 1 or current.get('reset')
-      @destroyFacets()
-
-      # Render facets and attach to DOM
-      @renderFacets()
-
+    if @searchResults.queryAmount is 1 or @searchResults.current.get('reset')
+      @facets.render @el, @searchResults.current.get('facets')
     # If the size is greater than 1, the facets are already rendered and we call their update methods.
     else
       @update()
 
-  destroyFacets: ->
-    for own viewName, view of @facetViews
-      view.destroy()
-      delete @facetViews[viewName]
-
   # ### Events
   events: ->
-    'click ul.facets-menu li.collapse-expand': 'toggleFacets'
+    'click ul.facets-menu li.collapse-expand': (ev) -> @facets.toggle ev
     # Don't use @refresh as String, because the ev object will be passed.
     'click ul.facets-menu li.reset': 'onReset'
     'click ul.facets-menu li.switch button': 'onSwitchType'
-
-  # The facets are slided one by one. When the slide of a facet is finished, the
-  # next facet starts sliding. That's why we use a recursive function.
-  toggleFacets: (ev) ->
-    ev.preventDefault()
-
-    icon = $(ev.currentTarget).find('i.fa')
-    span = $(ev.currentTarget).find('span')
-
-    open = icon.hasClass 'fa-expand'
-    icon.toggleClass 'fa-compress'
-    icon.toggleClass 'fa-expand'
-
-    text = if open then 'Collapse' else 'Expand'
-    span.text "#{text} facets"
-
-    facetNames = _.keys @facetViews
-    index = 0
-
-    slideFacet = =>
-      facetName = facetNames[index++]
-      facet = @facetViews[facetName]
-
-      if facet?
-        if open
-          facet.showBody -> slideFacet()
-        else
-          facet.hideBody -> slideFacet()
-
-    slideFacet()
 
   onSwitchType: (ev) ->
     ev.preventDefault()
@@ -183,8 +101,8 @@ class MainView extends Backbone.View
     @$('.faceted-search').toggleClass 'search-type-simple'
     @$('.faceted-search').toggleClass 'search-type-advanced'
 
-    if @model.searchResults.length is 0
-      @model.trigger 'change'
+    if @searchResults.length is 0
+      @search()
     else
       @update()
 
@@ -195,68 +113,116 @@ class MainView extends Backbone.View
   # ### Methods
 
   destroy: ->
-    @destroyFacets()
+    @facets.destroy()
+    @textSearch.destroy()
+
     @remove()
 
-  addListeners: ->
+  extendConfig: (options) ->
+    _.extend config.facetNameMap, options.facetNameMap
+    delete options.facetNameMap
+
+    _.extend config, options
+
+    # Set the default of config type in case the user sends an unknown string.
+    config.textSearch = 'advanced' if ['none', 'simple', 'advanced'].indexOf(config.textSearch) is -1
+
+  instantiateQueryOptions: ->
+    attrs = _.extend config.queryOptions, config.textSearchOptions
+    @queryOptions = new QueryOptions attrs
+
+    if config.autoSearch
+      @listenTo @queryOptions, 'change', @search
+
+  instantiateSearchResults: ->
+    @searchResults = new SearchResults()
+
     # Listen to the change:results event and (re)render the facets everytime the result changes.
-    @listenTo @model.searchResults, 'change:results', (responseModel) =>
+    @listenTo @searchResults, 'change:results', (responseModel) =>
       @updateFacets()
       @trigger 'change:results', responseModel
 
     # The cursor is changed when @next or @prev are called. They are rarely used, since hilib
     # pagination uses @page.
-    @listenTo @model.searchResults, 'change:cursor', (responseModel) => @trigger 'change:results', responseModel
+    @listenTo @searchResults, 'change:cursor', (responseModel) => @trigger 'change:results', responseModel
 
-    @listenTo @model.searchResults, 'change:page', (responseModel, database) => @trigger 'change:page', responseModel, database
+    @listenTo @searchResults, 'change:page', (responseModel, database) => @trigger 'change:page', responseModel, database
 
-    @listenTo @model.searchResults, 'request', @showLoader
+    @listenTo @searchResults, 'request', @showLoader
+    @listenTo @searchResults, 'sync', @hideLoader
 
-    @listenTo @model.searchResults, 'sync', => @$('.overlay').hide()
+    @listenTo @searchResults, 'unauthorized', => @trigger 'unauthorized'
 
-    @listenTo @model.searchResults, 'unauthorized', => @trigger 'unauthorized'
+  instantiateFacets: (viewMap) ->
+    @facets = new Views.Facets viewMap: viewMap
+    @listenTo @facets, 'change', @queryOptions.set.bind @queryOptions
 
   showLoader: ->
-    facetedSearch = @$('.faceted-search')
-    overlay = @$('.overlay')
-    loader = overlay.find('div')
+    overlay = @el.querySelector('.overlay')
+    return if overlay.style.display is 'block'
 
-    overlay.width facetedSearch.width()
-    overlay.height facetedSearch.height()
-    overlay.css 'display', 'block'
+    loader = overlay.children[0]
+    facetedSearch = @el.querySelector('.faceted-search')
 
-    left =  facetedSearch.offset().left + facetedSearch.width()/2 - 12
-    loader.css 'left', left
+    fsBox = dom(facetedSearch).boundingBox()
 
-    top =  facetedSearch.offset().top + facetedSearch.height()/2 - 12
-    top = '50vh' if facetedSearch.height() > $(window).height()
-    loader.css 'top', top
+    overlay.style.width = fsBox.width + 'px'
+    overlay.style.height = fsBox.height + 'px'
+    overlay.style.display = 'block'
 
-  page: (pagenumber, database) -> @model.searchResults.current.page pagenumber, database
+#    facetedSearch = @$('.faceted-search')
+    left =  fsBox.left + fsBox.width/2 - 12
+    loader.style.left = left + 'px'
 
-  next: -> @model.searchResults.moveCursor '_next'
-  prev: -> @model.searchResults.moveCursor '_prev'
+    top = fsBox.top + fsBox.height/2 - 12
+    top = '50vh' if fsBox.height > window.innerHeight
+    loader.style.top = top + 'px'
 
-  hasNext: -> @model.searchResults.current.has '_next'
-  hasPrev: -> @model.searchResults.current.has '_prev'
+  hideLoader: -> @el.querySelector('.overlay').style.display = 'none'
+
+  page: (pagenumber, database) -> @searchResults.page pagenumber, database
+
+  next: -> @searchResults.moveCursor '_next'
+  prev: -> @searchResults.moveCursor '_prev'
+
+  hasNext: -> @searchResults.current.has '_next'
+  hasPrev: -> @searchResults.current.has '_prev'
 
   # TODO: Restore change:sort listener
-  sortResultsBy: (field) -> @model.set sort: field
+  sortResultsBy: (field) -> @queryOptions.set sort: field
 
   update: ->
     @textSearch.update() if @textSearch?
 
-    for own index, data of @model.searchResults.current.get('facets')
-      @facetViews[data.name]?.update(data.options)
+    @facets.update @searchResults.current.get('facets')
 
-  reset: (cache) ->
+  # Silently change @attributes and trigger a change event manually afterwards.
+  # arguments.cache Boolean Tells searchResults if we want to fetch result from cache.
+  # 	In an app where data is dynamic, we usually don't want cache (get new result from server),
+  #	in an app where data is static, we can use cache to speed up the app.
+  reset: (cache=false) ->
     @textSearch.reset() if @textSearch?
 
-    for own key, facetView of @facetViews
-      facetView.reset() if facetView.reset?
+    @facets.reset()
 
-    @model.reset cache
+    @queryOptions.reset()
 
-  refresh: (newQueryOptions) -> @model.refresh newQueryOptions
+    @searchResults.clearCache() unless cache
+#    @searchResults.runQuery _.clone(@queryOptions.attributes),
+    @search cache: cache
+
+  # A refresh of the Faceted Search means (re)sending the current @attributes (queryOptions) again.
+  # We set the cache flag to false, otherwise the searchResults collection will return the cached
+  # model, instead of fetching a new one from the server.
+  # The newQueryOptions are optional. The can be used to add or update one or more queryOptions
+  # before sending the same (or now altered) queryOptions to the server again.
+  refresh: (newQueryOptions={}) ->
+    if Object.keys(newQueryOptions).length > 0
+      @set newQueryOptions, silent: true
+    @search cache: false
+
+  search: (options={}) ->
+    options = _.extend {wait: true}, options
+    @searchResults.runQuery @queryOptions.attributes, options
 
 module.exports = MainView
