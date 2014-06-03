@@ -73,8 +73,6 @@ class TextSearch extends Backbone.View
   # ### Methods
   updateQueryModel: -> @trigger 'change', @model.queryData()
 
-  update: -> @$('input[name="search"]').removeClass 'loading'
-
   reset: ->
     @setModel()
     @render()

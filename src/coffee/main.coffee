@@ -9,7 +9,6 @@ dom = require 'hilib/src/utils/dom'
 
 config = require './config'
 
-
 QueryOptions = require './models/query-options'
 SearchResults = require './collections/searchresults'
 
@@ -25,8 +24,9 @@ class MainView extends Backbone.View
   initialize: (options={}) ->
     # The facetViewMap is removed from the options, so it is not added to config.
     # Do this before @extendConfig
-    facetViewMap = _.clone options.facetViewMap
-    delete options.facetViewMap
+    if options.facetViewMap?
+      facetViewMap = _.clone options.facetViewMap
+      delete options.facetViewMap
 
     @extendConfig options
 
@@ -72,19 +72,6 @@ class MainView extends Backbone.View
 
     @listenTo @textSearch, 'change', (queryOptions) => @queryOptions.set queryOptions, silent: true
     @listenTo @textSearch, 'search', @search
-
-  updateFacets: ->
-    return false if config.textSearch is 'simple'
-
-    @$('.loader').hide()
-    @$('.faceted-search > i.fa').css 'visibility', 'visible'
-
-    # If the size of the searchResults is 1 then it's the first time we render the facets
-    if @searchResults.queryAmount is 1 or @searchResults.current.get('reset')
-      @facets.render @el, @searchResults.current.get('facets')
-    # If the size is greater than 1, the facets are already rendered and we call their update methods.
-    else
-      @update()
 
   # ### Events
   events: ->
@@ -139,7 +126,8 @@ class MainView extends Backbone.View
 
     # Listen to the change:results event and (re)render the facets everytime the result changes.
     @listenTo @searchResults, 'change:results', (responseModel) =>
-      @updateFacets()
+      # Nothing needs updating if the facets aren't visible.
+      @update() if config.textSearch isnt 'simple'
       @trigger 'change:results', responseModel
 
     # The cursor is changed when @next or @prev are called. They are rarely used, since hilib
@@ -148,12 +136,16 @@ class MainView extends Backbone.View
 
     @listenTo @searchResults, 'change:page', (responseModel, database) => @trigger 'change:page', responseModel, database
 
+    # Backbone triggers a request event when sending a request to the server.
+    # In searchResults the request event is triggered manually, because searchResults.sync
+    # isnt used.
     @listenTo @searchResults, 'request', @showLoader
+    # Same goes for sync, but this event is triggered when the response is received.
     @listenTo @searchResults, 'sync', @hideLoader
 
     @listenTo @searchResults, 'unauthorized', => @trigger 'unauthorized'
 
-  instantiateFacets: (viewMap) ->
+  instantiateFacets: (viewMap={}) ->
     @facets = new Views.Facets viewMap: viewMap
     @listenTo @facets, 'change', @queryOptions.set.bind @queryOptions
 
@@ -180,6 +172,14 @@ class MainView extends Backbone.View
 
   hideLoader: -> @el.querySelector('.overlay').style.display = 'none'
 
+  update: ->
+    # If the size of the searchResults is 1 then it's the first time we render the facets
+    if @searchResults.queryAmount is 1
+      @facets.render @el, @searchResults.current.get('facets')
+    # If the size is greater than 1, the facets are already rendered and we call their update methods.
+    else
+      @facets.update @searchResults.current.get('facets')
+
   page: (pagenumber, database) -> @searchResults.page pagenumber, database
 
   next: -> @searchResults.moveCursor '_next'
@@ -188,13 +188,7 @@ class MainView extends Backbone.View
   hasNext: -> @searchResults.current.has '_next'
   hasPrev: -> @searchResults.current.has '_prev'
 
-  # TODO: Restore change:sort listener
   sortResultsBy: (field) -> @queryOptions.set sort: field
-
-  update: ->
-    @textSearch.update() if @textSearch?
-
-    @facets.update @searchResults.current.get('facets')
 
   # Silently change @attributes and trigger a change event manually afterwards.
   # arguments.cache Boolean Tells searchResults if we want to fetch result from cache.

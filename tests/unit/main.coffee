@@ -1,12 +1,13 @@
 setup = require './setup'
 
-QueryOptions = require basePath + 'models/query'
+QueryOptions = require basePath + 'models/query-options'
+SearchResults = require basePath + 'collections/searchresults'
 TextSearch = require basePath + 'views/text-search'
 FacetView = require basePath + 'views/facets/main'
 Main = require basePath + 'main'
 config = require basePath + 'config'
 
-describe 'View Main', ->
+describe 'View : Main ::', ->
   mainView = null
 
   beforeEach ->
@@ -15,22 +16,42 @@ describe 'View Main', ->
   afterEach ->
     config.textSearch = 'advanced'
 
-  describe 'initialize', ->
-    it 'should have a model', ->
-      mainView.model.should.exist
-
+  describe 'initialize :::', ->
     it 'should have a model of instance QueryOptions', ->
-      mainView.model.should.be.instanceof QueryOptions
+      mainView.queryOptions.should.be.instanceof QueryOptions
+
+    it 'should have a collection of instance SearchResults', ->
+      mainView.searchResults.should.be.instanceof SearchResults
+
+
 
     it 'should call render', ->
       mainView.render = setup.sinon.spy()
       mainView.initialize()
       mainView.render.should.have.been.called
 
-    it 'should call addListeners', ->
-      mainView.addListeners = setup.sinon.spy()
-      mainView.initialize()
-      mainView.addListeners.should.have.been.called
+    it 'should call instantiateFacets with facetViewMap', ->
+      mainView.instantiateFacets = setup.sinon.spy()
+      mainView.initialize
+        facetViewMap:
+          FACETTYPE: 'someViewClass'
+      mainView.instantiateFacets.should.have.been.calledWith FACETTYPE: 'someViewClass'
+
+    it 'should extend config with options', ->
+      mainView.initialize
+        # add
+        myattr: 'attr'
+        # override
+        autoSearch: false
+        # nested add and override
+        queryOptions:
+          nonExistentAttr: ['some', 'sort', 'para']
+          fuzzy: true
+
+      config.should.have.ownProperty 'myattr'
+      config.autoSearch.should.not.be.ok
+      config.queryOptions.fuzzy.should.be.ok
+      config.queryOptions.should.have.ownProperty 'nonExistentAttr'
 
     it 'should set search type to config', ->
       mainView = new Main textSearch: 'simple'
@@ -45,7 +66,7 @@ describe 'View Main', ->
       mainView = new Main textSearch: 'some-non-existent-text-search-type'
       config.textSearch.should.equal 'advanced'
 
-  describe 'render', ->
+  describe 'render :::', ->
     clock = setup.sinon.useFakeTimers();
 
     it 'should load the template', ->
@@ -61,11 +82,11 @@ describe 'View Main', ->
       mainView.render()
       mainView.renderTextSearch.should.have.been.called
 
-    it 'should call showLoader when textSearch type is advanced', ->
-      mainView.showLoader = setup.sinon.spy()
-      mainView.render()
-      clock.tick(100)
-      mainView.showLoader.should.have.been.called
+#    it 'should call showLoader when textSearch type is advanced', ->
+#      mainView.showLoader = setup.sinon.spy()
+#      mainView.render()
+#      clock.tick(100)
+#      mainView.showLoader.should.have.been.called
 
     it 'should render textSearch when search type is simple', ->
       mainView = new Main textSearch: 'simple'
@@ -73,12 +94,12 @@ describe 'View Main', ->
       mainView.render()
       mainView.renderTextSearch.should.have.been.called
 
-    it 'should not call showLoader when textSearch type is simple', ->
-      mainView = new Main textSearch: 'simple'
-      mainView.showLoader = setup.sinon.spy()
-      mainView.render()
-      clock.tick(100)
-      mainView.showLoader.should.not.have.been.called
+#    it 'should not call showLoader when textSearch type is simple', ->
+#      mainView = new Main textSearch: 'simple'
+#      mainView.showLoader = setup.sinon.spy()
+#      mainView.render()
+#      clock.tick(100)
+#      mainView.showLoader.should.not.have.been.called
 
     it 'should not render textSearch when search type is none', ->
       mainView = new Main textSearch: 'none'
@@ -86,15 +107,15 @@ describe 'View Main', ->
       mainView.render()
       mainView.renderTextSearch.should.not.have.been.called
 
-    it 'should call showLoader when textSearch type is none', ->
-      mainView = new Main textSearch: 'none'
-      mainView = new Main textSearch: 'none'
-      mainView.showLoader = setup.sinon.spy()
-      mainView.render()
-      clock.tick(100)
-      mainView.showLoader.should.have.been.called
+#    it 'should call showLoader when textSearch type is none', ->
+#      mainView = new Main textSearch: 'none'
+#      mainView = new Main textSearch: 'none'
+#      mainView.showLoader = setup.sinon.spy()
+#      mainView.render()
+#      clock.tick(100)
+#      mainView.showLoader.should.have.been.called
 
-  describe 'renderTextSearch', ->
+  describe 'renderTextSearch :::', ->
     it 'should attach textSearch to mainView', ->
       mainView.$('.text-search-placeholder').find('.search-input').length.should.equal 1
 
@@ -119,53 +140,3 @@ describe 'View Main', ->
 #
 #      mainView.textSearch.reset.should.have.been.called
 
-  describe 'updateFacets', ->
-    it 'should return false if textSearch is simple', ->
-      config.textSearch = 'simple'
-      mainView.updateFacets().should.not.be.ok
-
-    it 'should hide the loader', ->
-      mainView.searchResults.queryAmount = 1
-      mainView.searchResults.current = new Backbone.Model(reset: false)
-      mainView.renderFacets = setup.sinon.spy()
-      mainView.destroyFacets = setup.sinon.spy()
-      mainView.updateFacets()
-      mainView.$('.loader').css('display').should.equal 'none'
-
-    it 'should call destroyFacets and renderFacets after first searchResult', ->
-      mainView.searchResults.queryAmount = 1
-      mainView.searchResults.current = new Backbone.Model(reset: false)
-      mainView.destroyFacets = setup.sinon.spy()
-      mainView.renderFacets = setup.sinon.spy()
-      mainView.updateFacets()
-      mainView.destroyFacets.should.have.been.called
-      mainView.renderFacets.should.have.been.called
-
-    it 'should call destroyFacets and renderFacets after first searchResult', ->
-      mainView.searchResults.queryAmount = 12
-      mainView.searchResults.current = new Backbone.Model(reset: true)
-      mainView.destroyFacets = setup.sinon.spy()
-      mainView.renderFacets = setup.sinon.spy()
-      mainView.updateFacets()
-      mainView.destroyFacets.should.have.been.called
-      mainView.renderFacets.should.have.been.called
-
-    it 'should call update after second searchResult', ->
-      mainView.searchResults.queryAmount = 2
-      mainView.searchResults.current = new Backbone.Model(reset: false)
-      mainView.update = setup.sinon.spy()
-      mainView.updateFacets()
-      mainView.update.should.have.been.called
-
-  describe 'renderFacet', ->
-    args =
-      name: 'testFacet'
-      type: 'LIST'
-      title: 'Test facet'
-    it 'should return a facetView', ->
-      mainView.renderFacet(args).should.be.instanceof FacetView
-
-    it 'should call listenTo', ->
-      mainView.listenTo = setup.sinon.spy()
-      mainView.renderFacet(args)
-      mainView.listenTo.should.have.been.called
