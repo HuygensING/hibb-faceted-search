@@ -19,10 +19,9 @@ module.exports =
   queryOptions: {}
   # * resultRows
 
-  # The facetNameMap is used for giving user friendly names to facets. Sometimes the database has
+  # The facetTitleMap is used for giving user friendly names to facets. Sometimes the database has
   # an unwanted name or no name, so the user is given the option to pass their own.
-  # TODO: Rename to facetTitleMap (name is for computer, title is for user, these 'names' are titles)
-  facetNameMap: {}
+  facetTitleMap: {}
 
   templates: {}
 

@@ -119,8 +119,8 @@ class MainView extends Backbone.View
     @remove()
 
   extendConfig: (options) ->
-    _.extend config.facetNameMap, options.facetNameMap
-    delete options.facetNameMap
+    _.extend config.facetTitleMap, options.facetTitleMap
+    delete options.facetTitleMap
 
     _.extend config, options
 
