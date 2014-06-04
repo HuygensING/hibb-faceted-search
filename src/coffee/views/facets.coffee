@@ -55,13 +55,13 @@ class Facets extends Backbone.View
     view
 
   # ### Methods
-  update: (data) ->
-    for own index, facetData of data
-      @views[facetData.name]?.update(facetData.options)
+  update: (facets) ->
+    for own index, facetData of facets
+      @views[facetData.name].update(facetData.options) if @views.hasOwnProperty facetData.name
 
   reset: ->
     for own key, facetView of @views
-      facetView.reset() if facetView.reset?
+      facetView.reset() if facetView.hasOwnProperty 'reset'
 
   destroyFacets: ->
     @stopListening()
