@@ -7,7 +7,7 @@
     "email": "agijsbro@gmail.com",
     "url": "https://github.com/Gijsjan"
   },
-  "main": "src/coffee/main.coffee",
+  "main": "dist/latest/src.min.js",
   "repository": {
     "type": "git",
     "url": "https://github.com/HuygensING/faceted-search"
@@ -31,7 +31,9 @@
     "gulp-concat": "~2.1.7",
     "gulp-connect": "~0.3.1",
     "gulp-rename": "~1.0.0",
+    "gulp-streamify": "0.0.5",
     "gulp-stylus": "0.0.12",
+    "gulp-uglify": "^0.3.0",
     "gulp-util": "~2.2.14",
     "hilib": "git+https://github.com/HuygensING/hilib.git#v0.0.4",
     "jadeify": "^2.3.0",
@@ -42,6 +44,7 @@
     "require-jade": "0.0.1",
     "sinon": "^1.10.0",
     "sinon-chai": "^2.5.0",
+    "uglifyify": "^2.4.0",
     "underscore": "~1.6.0",
     "vinyl-source-stream": "^0.1.1"
   },
