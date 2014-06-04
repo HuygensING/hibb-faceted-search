@@ -8,11 +8,12 @@ doc = jsdom '<html><body></body></html>'
 global.window = doc.createWindow()
 global.document = global.window.document
 
-global.$ = require('jquery')
+global.$ = require 'jquery'
 global._ = require 'underscore'
 global.Backbone = require 'backbone'
 global.Backbone.$ = global.$
 
+#console.log document
 #.create(window) # WARNING: jQuery for testing is 1.8.3 - different to app
 
 

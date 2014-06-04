@@ -12,6 +12,7 @@ describe 'View : Main ::', ->
 
   beforeEach ->
     mainView = new Main()
+    document.querySelector('body').appendChild mainView.el
 
   afterEach ->
     config.textSearch = 'advanced'
