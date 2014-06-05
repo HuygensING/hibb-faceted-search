@@ -58,12 +58,7 @@ class MainView extends Backbone.View
 
     @$('.facets').html @facets.el
 
-    setTimeout @postRender.bind(@), 0
-
     @
-
-  postRender: ->
-    @search() unless config.textSearch is 'simple'
 
   renderTextSearch: ->
     @textSearch = new Views.TextSearch()
@@ -178,6 +173,8 @@ class MainView extends Backbone.View
     else
       @facets.update @searchResults.current.get('facets')
 
+  # ### Interface
+
   page: (pagenumber, database) -> @searchResults.page pagenumber, database
 
   next: -> @searchResults.moveCursor '_next'
@@ -200,7 +197,7 @@ class MainView extends Backbone.View
     @queryOptions.reset()
 
     @searchResults.clearCache() unless cache
-#    @searchResults.runQuery _.clone(@queryOptions.attributes),
+q
     @search cache: cache
 
   # A refresh of the Faceted Search means (re)sending the current @attributes (queryOptions) again.
