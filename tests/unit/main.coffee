@@ -12,7 +12,6 @@ describe 'View : Main ::', ->
 
   beforeEach ->
     mainView = new Main()
-    document.querySelector('body').appendChild mainView.el
 
   afterEach ->
     config.textSearch = 'advanced'
@@ -23,13 +22,6 @@ describe 'View : Main ::', ->
 
     it 'should have a collection of instance SearchResults', ->
       mainView.searchResults.should.be.instanceof SearchResults
-
-
-
-    it 'should call render', ->
-      mainView.render = setup.sinon.spy()
-      mainView.initialize()
-      mainView.render.should.have.been.called
 
     it 'should call instantiateFacets with facetViewMap', ->
       mainView.instantiateFacets = setup.sinon.spy()
@@ -64,6 +56,7 @@ describe 'View : Main ::', ->
       mainView = new Main textSearch: 'none'
       config.textSearch.should.equal 'none'
 
+    it 'should default search type to advanced', ->
       mainView = new Main textSearch: 'some-non-existent-text-search-type'
       config.textSearch.should.equal 'advanced'
 
@@ -72,6 +65,7 @@ describe 'View : Main ::', ->
 
     it 'should load the template', ->
       mainView.render()
+
       mainView.$('.overlay').length.should.equal 1
       mainView.$('.faceted-search').length.should.equal 1
 
@@ -83,24 +77,11 @@ describe 'View : Main ::', ->
       mainView.render()
       mainView.renderTextSearch.should.have.been.called
 
-#    it 'should call showLoader when textSearch type is advanced', ->
-#      mainView.showLoader = setup.sinon.spy()
-#      mainView.render()
-#      clock.tick(100)
-#      mainView.showLoader.should.have.been.called
-
     it 'should render textSearch when search type is simple', ->
       mainView = new Main textSearch: 'simple'
       mainView.renderTextSearch = setup.sinon.spy()
       mainView.render()
       mainView.renderTextSearch.should.have.been.called
-
-#    it 'should not call showLoader when textSearch type is simple', ->
-#      mainView = new Main textSearch: 'simple'
-#      mainView.showLoader = setup.sinon.spy()
-#      mainView.render()
-#      clock.tick(100)
-#      mainView.showLoader.should.not.have.been.called
 
     it 'should not render textSearch when search type is none', ->
       mainView = new Main textSearch: 'none'
@@ -108,36 +89,20 @@ describe 'View : Main ::', ->
       mainView.render()
       mainView.renderTextSearch.should.not.have.been.called
 
-#    it 'should call showLoader when textSearch type is none', ->
-#      mainView = new Main textSearch: 'none'
-#      mainView = new Main textSearch: 'none'
-#      mainView.showLoader = setup.sinon.spy()
-#      mainView.render()
-#      clock.tick(100)
-#      mainView.showLoader.should.have.been.called
-
-  describe 'renderTextSearch :::', ->
+  describe 'renderTextView :::', ->
     it 'should attach textSearch to mainView', ->
       mainView.$('.text-search-placeholder').find('.search-input').length.should.equal 1
 
-#  describe 'reset', ->
-#    it 'should call the main models reset method', ->
-#      mainView.model.reset = setup.sinon.spy()
-#
-#      mainView.reset true
-#      mainView.model.reset.should.have.been.calledWith true
-#
-#      mainView.reset false
-#      mainView.model.reset.should.have.been.calledWith false
+    it 'should set queryOptions when textSearch changes', ->
+      spy = setup.sinon.spy mainView.queryOptions, 'set'
+      mainView.textSearch.trigger 'change', qo: 'qo'
+      mainView.queryOptions.set.should.have.been.calledWith qo: 'qo'
 
-    # FIX How to test if it isn't called when no textSearch view exists?
-    # When the sinon spy is created, the facetViews has a textSearch object
-    # and it will be called by reset().
-#    it 'should call the textSearch reset method if textSearch is loaded', ->
-#      mainView.textSearch = {'id': 'dummyview'}
-#      mainView.textSearch.reset = setup.sinon.spy()
-#
-#      mainView.reset()
-#
-#      mainView.textSearch.reset.should.have.been.called
+    # We don't want to test if searchResults.runQuery is called,
+    # but there is no way to test if mainView.search is called,
+    # because we cannot spy it, because of Backbone.
+    it 'should call search when textSearch button clicked', ->
+      stub = setup.sinon.stub mainView.searchResults, 'runQuery'
+      mainView.textSearch.trigger 'search'
+      stub.should.have.been.called
 

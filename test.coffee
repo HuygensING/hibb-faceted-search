@@ -1,8 +1,12 @@
-chai = require 'chai'
-sinon = require 'sinon'
+global.chai = require 'chai'
+#global.XMLHttpRequest = require('xmlhttprequest').XMLHttpRequest
+#console.log global.XMLHttpRequest
+global.sinon = require 'sinon'
+#require("sinon/lib/sinon/util/fake_xml_http_request")
+
 sinonChai = require 'sinon-chai'
 requireJade = require 'require-jade'
-jsdom = require('jsdom').jsdom
+global.jsdom = require('jsdom').jsdom
 
 MainView = require './src/coffee/main'
 
@@ -20,12 +24,34 @@ global.localStorage = global.sessionStorage = require 'localStorage'
 chai.should()
 chai.use sinonChai
 
-mainView = new MainView el: document.querySelector('body')
-
 describe 'MainView', ->
+  mainView = null
+  before ->
+    mainView = new MainView
+      el: document.querySelector('body')
+      textSearch: 'simple'
+#    @xhr = sinon.useFakeXMLHttpRequest()
+#    requests = @requests = []
+#    @xhr.onCreate = (xhr) ->
+#      requests.push xhr
+
+  after ->
+#    @xhr.restore()
+
+
   describe 'renderTextView', ->
     it 'should have a textSearch subview', ->
       mainView.textSearch.should.exist
-      mainView.search = sinon.spy()
+
+    it 'should set queryOptions when textSearch changes', ->
+      spy = sinon.spy mainView.queryOptions, 'set'
+      mainView.textSearch.trigger 'change', qo: 'qo'
+      mainView.queryOptions.set.should.have.been.calledWith qo: 'qo'
+
+    # We don't want to test if searchResults.runQuery is called,
+    # but there is no way to test if mainView.search is called,
+    # because we cannot spy it, because of Backbone.
+    it 'should call search when textSearch button clicked', ->
+      stub = sinon.stub mainView.searchResults, 'runQuery'
       mainView.textSearch.trigger 'search'
-      mainView.search.should.have.been.called
+      stub.should.have.been.called
