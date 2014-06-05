@@ -1,8 +1,6 @@
 Backbone = require 'backbone'
 _ = require 'underscore'
 
-ajax = require 'hilib/src/managers/ajax'
-
 config = require '../config'
 
 class SearchResult extends Backbone.Model

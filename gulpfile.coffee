@@ -3,6 +3,7 @@ gutil = require 'gulp-util'
 stylus = require 'gulp-stylus'
 concat = require 'gulp-concat'
 browserify = require 'browserify'
+watchify = require 'watchify'
 source = require 'vinyl-source-stream'
 uglify = require 'gulp-uglify'
 streamify = require 'gulp-streamify'
@@ -17,9 +18,9 @@ gulp.task 'stylus', ->
     .pipe(gulp.dest(__dirname))
 
 gulp.task 'watch', ->
-  gulp.watch [paths.stylus], ['stylus']
+  gulp.watch ['./src/**/*.styl'], ['stylus']
 
-gulp.task 'default', ['watch']
+gulp.task 'default', ['watch', 'watchify']
 
 bundle = (bundler, opts={}) ->
 
@@ -35,9 +36,9 @@ createBundle = (watch=false) ->
   else
     bundler = browserify args
 
-  bundler.external 'jquery'
-  bundler.external 'backbone'
-  bundler.external 'underscore'
+  bundler.exclude 'jquery'
+  bundler.exclude 'backbone'
+  bundler.exclude 'underscore'
 
   bundle = ->
     gutil.log('Browserify: bundling')
@@ -51,7 +52,7 @@ createBundle = (watch=false) ->
   bundle()
 
 gulp.task 'browserify-src', -> createBundle false
-#gulp.task 'watchify', -> createBundle true
+gulp.task 'watchify', -> createBundle true
 
 gulp.task 'browserify-libs', ->
   libs =
@@ -78,15 +79,14 @@ gulp.task 'browserify', ['browserify-src', 'browserify-libs'], ->
   src = ["./dist/#{pkg.version}/libs.js", "./dist/#{pkg.version}/src.js"]
 
   gulp.src(src)
-  .pipe(concat("main.js"))
-  .pipe(gulp.dest("./dist/#{pkg.version}"))
-  .pipe(streamify(uglify()))
-  .pipe(rename(extname: '.min.js'))
-  .pipe(gulp.dest("./dist/#{pkg.version}"))
+    .pipe(concat("main.js"))
+    .pipe(gulp.dest("./dist/#{pkg.version}"))
+    .pipe(streamify(uglify()))
+    .pipe(rename(extname: '.min.js'))
+    .pipe(gulp.dest("./dist/#{pkg.version}"))
 
 gulp.task 'clean-latest', -> gulp.src('./dist/latest', read: false).pipe(clean())
 
 gulp.task 'build', ['browserify', 'clean-latest'], ->
   gulp.src("dist/#{pkg.version}/**/*")
     .pipe(gulp.dest("./dist/latest"))
-

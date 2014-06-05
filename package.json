@@ -7,7 +7,7 @@
     "email": "agijsbro@gmail.com",
     "url": "https://github.com/Gijsjan"
   },
-  "main": "dist/latest/src.min.js",
+  "main": "dist/latest/src.js",
   "repository": {
     "type": "git",
     "url": "https://github.com/HuygensING/faceted-search"
@@ -21,6 +21,7 @@
   },
   "devDependencies": {
     "backbone": "^1.1.2",
+    "brfs": "^1.1.1",
     "browserify": "~3.28.0",
     "chai": "^1.9.1",
     "coffee-script": "~1.7.1",
@@ -35,7 +36,6 @@
     "gulp-stylus": "0.0.12",
     "gulp-uglify": "^0.3.0",
     "gulp-util": "~2.2.14",
-    "hilib": "git+https://github.com/HuygensING/hilib.git#v0.0.4",
     "jadeify": "^2.3.0",
     "jquery": "~2.1.0",
     "jsdom": "^0.10.5",
@@ -46,7 +46,8 @@
     "sinon-chai": "^2.5.0",
     "uglifyify": "^2.4.0",
     "underscore": "~1.6.0",
-    "vinyl-source-stream": "^0.1.1"
+    "vinyl-source-stream": "^0.1.1",
+    "watchify": "^0.10.2"
   },
   "browserify": {
     "transform": [

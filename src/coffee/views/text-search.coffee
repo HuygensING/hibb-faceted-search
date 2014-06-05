@@ -1,8 +1,6 @@
 Backbone = require 'backbone'
 _ = require 'underscore'
 
-dom = require 'hilib/src/utils/dom'
-
 config = require '../config'
 
 Models =

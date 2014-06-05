@@ -3,8 +3,6 @@ _ = require 'underscore'
 
 config = require '../../config'
 
-Fn = require 'hilib/src/utils/general'
-
 Models =
 	List: require '../../models/list'
 

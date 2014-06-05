@@ -1,10 +1,8 @@
-StringFn = require 'hilib/src/utils/string'
-
 Models =
-	Date: require '../../models/date'
+  Date: require '../../models/date'
 
 Views = 
-	Facet: require './main'
+  Facet: require './main'
 
 # Templates =
 # 	Date: require 'text!html/facet/date.html'
@@ -13,24 +11,25 @@ tpl = require '../../../jade/facets/date.jade'
 
 class DateFacet extends Views.Facet
 
-	className: 'facet date'
+  className: 'facet date'
 
-	initialize: (options) ->
-		super
+  initialize: (options) ->
+    super
 
-		@model = new Models.Date options.attrs, parse: true
-		@listenTo @model, 'change:options', @render
-		@render()
+    @model = new Models.Date options.attrs, parse: true
+    @listenTo @model, 'change:options', @render
+    @render()
 
-	render: ->
-		super
+  render: ->
+    super
 
-		rtpl = tpl _.extend @model.attributes, ucfirst: StringFn.ucfirst
-		@$('.placeholder').html rtpl
+    rtpl = tpl _.extend @model.attributes,
+      ucfirst: (str) -> str.charAt(0).toUpperCase() + str.slice(1)
+    @$('.placeholder').html rtpl
 
-		@
+    @
 
-	update: (newOptions) ->
-	reset: ->
+  update: (newOptions) ->
+  reset: ->
 
 module.exports = DateFacet

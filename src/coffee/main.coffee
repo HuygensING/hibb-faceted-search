@@ -4,8 +4,7 @@ Backbone.$ = $
 
 _ = require 'underscore'
 
-Fn = require 'hilib/src/utils/general'
-dom = require 'hilib/src/utils/dom'
+funcky = require 'funcky.el'
 
 config = require './config'
 
@@ -130,8 +129,7 @@ class MainView extends Backbone.View
       @update() if config.textSearch isnt 'simple'
       @trigger 'change:results', responseModel
 
-    # The cursor is changed when @next or @prev are called. They are rarely used, since hilib
-    # pagination uses @page.
+    # The cursor is changed when @next or @prev are called. They are rarely used, since pagination uses @page and thus change:page.
     @listenTo @searchResults, 'change:cursor', (responseModel) => @trigger 'change:results', responseModel
 
     @listenTo @searchResults, 'change:page', (responseModel, database) => @trigger 'change:page', responseModel, database
@@ -156,7 +154,7 @@ class MainView extends Backbone.View
     loader = overlay.children[0]
     facetedSearch = @el.querySelector('.faceted-search')
 
-    fsBox = dom(facetedSearch).boundingBox()
+    fsBox = funcky(facetedSearch).boundingBox()
 
     overlay.style.width = fsBox.width + 'px'
     overlay.style.height = fsBox.height + 'px'

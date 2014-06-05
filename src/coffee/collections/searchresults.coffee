@@ -1,10 +1,9 @@
 Backbone = require 'backbone'
 _ = require 'underscore'
 
-pubsub = require 'hilib/src/mixins/pubsub'
 SearchResult = require '../models/searchresult'
 
-ajax = require 'hilib/src/managers/ajax'
+funcky = require 'funcky.req'
 
 config = require '../config'
 
@@ -13,7 +12,6 @@ class SearchResults extends Backbone.Collection
   model: SearchResult
 
   initialize: ->
-    _.extend @, pubsub
 
     # Init cachedModels in the initialize function, because when defined in the class
     # as a property, it is defined on the prototype and thus not refreshed when we instantiate
@@ -79,38 +77,34 @@ class SearchResults extends Backbone.Collection
     @trigger 'request'
 
     ajaxOptions =
-      url: config.baseUrl + config.searchPath
       data: JSON.stringify queryOptions
-      dataType: 'text'
 
     # This is used for extra options to the ajax call,
     # such as setting custom headers (e.g., VRE_ID)
     if config.hasOwnProperty 'requestOptions'
       _.extend ajaxOptions, config.requestOptions
 
-    jqXHR = ajax.post ajaxOptions
-    jqXHR.done (data, textStatus, jqXHR) =>
-      if jqXHR.status is 201
-        @postURL = jqXHR.getResponseHeader('Location')
+    req = funcky.post config.baseUrl + config.searchPath, ajaxOptions
+    req.done (res) =>
+      if res.status is 201
+        @postURL = res.getResponseHeader('Location')
         url = if config.resultRows? then @postURL + '?rows=' + config.resultRows else @postURL
-
         done url
-
-    jqXHR.fail (jqXHR, textStatus, errorThrown) =>
-      @trigger 'unauthorized' if jqXHR.status is 401
-      console.error 'Failed posting FacetedSearch queryOptions to the server!', arguments
+    req.fail (res) =>
+      @trigger 'unauthorized' if res.status is 401
+      console.error 'Failed posting FacetedSearch queryOptions to the server!', res
 
   getResults: (url, done) ->
     @trigger 'request'
 
-    jqXHR = ajax.get url: url
+    req = funcky.get url
 
-    jqXHR.done (data, textStatus, jqXHR) =>
-        done data
+    req.done (res) =>
+        done JSON.parse res.responseText
         @trigger 'sync'
 
-    jqXHR.fail (jqXHR, textStatus, errorThrown) =>
-      @trigger 'unauthorized' if jqXHR.status is 401
-      console.error 'Failed getting FacetedSearch results from the server!', arguments
+    req.fail (res) =>
+      @trigger 'unauthorized' if res.status is 401
+      console.error 'Failed getting FacetedSearch results from the server!', res
 
 module.exports = SearchResults
