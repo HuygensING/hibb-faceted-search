@@ -65,7 +65,7 @@ class MainView extends Backbone.View
     @$('.text-search-placeholder').html @textSearch.el
 
     @listenTo @textSearch, 'change', (queryOptions) => @queryOptions.set queryOptions, silent: true
-    @listenTo @textSearch, 'search', @search
+    @listenTo @textSearch, 'search', => @search()
 
   # ### Events
   events: ->
@@ -94,8 +94,8 @@ class MainView extends Backbone.View
   # ### Methods
 
   destroy: ->
-    @facets.destroy()
-    @textSearch.destroy()
+    @facets.destroy() if @facets?
+    @textSearch.destroy() if @textSearch?
 
     @remove()
 
@@ -113,7 +113,7 @@ class MainView extends Backbone.View
     @queryOptions = new QueryOptions attrs
 
     if config.autoSearch
-      @listenTo @queryOptions, 'change', @search
+      @listenTo @queryOptions, 'change', => @search()
 
   instantiateSearchResults: ->
     @searchResults = new SearchResults()
@@ -140,17 +140,16 @@ class MainView extends Backbone.View
 
   instantiateFacets: (viewMap={}) ->
     @facets = new Views.Facets viewMap: viewMap
-    @listenTo @facets, 'change', @queryOptions.set.bind @queryOptions
+    @listenTo @facets, 'change', => @queryOptions.set arguments
 
   showLoader: ->
     overlay = @el.querySelector('.overlay')
-    return if overlay.style.display is 'block'
+    return false if overlay.style.display is 'block'
 
     loader = overlay.children[0]
     facetedSearch = @el.querySelector('.faceted-search')
 
     fsBox = funcky(facetedSearch).boundingBox()
-
     overlay.style.width = fsBox.width + 'px'
     overlay.style.height = fsBox.height + 'px'
     overlay.style.display = 'block'
@@ -166,12 +165,14 @@ class MainView extends Backbone.View
   hideLoader: -> @el.querySelector('.overlay').style.display = 'none'
 
   update: ->
+    facets = @searchResults.current.get('facets')
+
     # If the size of the searchResults is 1 then it's the first time we render the facets
     if @searchResults.queryAmount is 1
-      @facets.render @el, @searchResults.current.get('facets')
+      @facets.render @el, facets
     # If the size is greater than 1, the facets are already rendered and we call their update methods.
-    else
-      @facets.update @searchResults.current.get('facets')
+    else if @searchResults.queryAmount > 1
+      @facets.update facets
 
   # ### Interface
 
@@ -197,7 +198,7 @@ class MainView extends Backbone.View
     @queryOptions.reset()
 
     @searchResults.clearCache() unless cache
-q
+
     @search cache: cache
 
   # A refresh of the Faceted Search means (re)sending the current @attributes (queryOptions) again.
@@ -205,13 +206,11 @@ q
   # model, instead of fetching a new one from the server.
   # The newQueryOptions are optional. The can be used to add or update one or more queryOptions
   # before sending the same (or now altered) queryOptions to the server again.
-  refresh: (newQueryOptions={}) ->
-    if Object.keys(newQueryOptions).length > 0
-      @set newQueryOptions, silent: true
-    @search cache: false
+#  refresh: (newQueryOptions={}) ->
+#    if Object.keys(newQueryOptions).length > 0
+#      @set newQueryOptions, silent: true
+#    @search cache: false
 
-  search: (options={}) ->
-    options = _.extend {wait: true}, options
-    @searchResults.runQuery @queryOptions.attributes, options
+  search: -> @searchResults.runQuery @queryOptions.attributes
 
 module.exports = MainView

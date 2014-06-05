@@ -28,8 +28,8 @@ class Facets extends Backbone.View
       for facetData, index in data
         if viewMap.hasOwnProperty facetData.type
           el.querySelector(".#{facetData.name}-placeholder").appendChild @renderFacet(facetData).el
-      # If there is no template for main, create a document fragment and append
-      # all facets to it and attach it to the DOM.
+    # If there is no template for main, create a document fragment and append
+    # all facets to it and attach it to the DOM.
     else
       fragment = document.createDocumentFragment()
 
@@ -42,6 +42,8 @@ class Facets extends Backbone.View
 
       el.querySelector('.facets').innerHTML = ''
       el.querySelector('.facets').appendChild fragment
+
+    @
 
   renderFacet: (facetData) =>
     if _.isString(facetData)

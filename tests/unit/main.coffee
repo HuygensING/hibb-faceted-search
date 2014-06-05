@@ -1,9 +1,12 @@
 setup = require './setup'
 
+funcky = require 'funcky.el'
+
 QueryOptions = require basePath + 'models/query-options'
 SearchResults = require basePath + 'collections/searchresults'
 TextSearch = require basePath + 'views/text-search'
 FacetView = require basePath + 'views/facets/main'
+FacetsView = require basePath + 'views/facets'
 Main = require basePath + 'main'
 config = require basePath + 'config'
 
@@ -17,9 +20,6 @@ describe 'View : Main ::', ->
     config.textSearch = 'advanced'
 
   describe 'initialize :::', ->
-    it 'should have a model of instance QueryOptions', ->
-      mainView.queryOptions.should.be.instanceof QueryOptions
-
     it 'should have a collection of instance SearchResults', ->
       mainView.searchResults.should.be.instanceof SearchResults
 
@@ -45,20 +45,6 @@ describe 'View : Main ::', ->
       config.autoSearch.should.not.be.ok
       config.queryOptions.fuzzy.should.be.ok
       config.queryOptions.should.have.ownProperty 'nonExistentAttr'
-
-    it 'should set search type to config', ->
-      mainView = new Main textSearch: 'simple'
-      config.textSearch.should.equal 'simple'
-
-      mainView = new Main textSearch: 'advanced'
-      config.textSearch.should.equal 'advanced'
-
-      mainView = new Main textSearch: 'none'
-      config.textSearch.should.equal 'none'
-
-    it 'should default search type to advanced', ->
-      mainView = new Main textSearch: 'some-non-existent-text-search-type'
-      config.textSearch.should.equal 'advanced'
 
   describe 'render :::', ->
     clock = setup.sinon.useFakeTimers();
@@ -102,7 +88,184 @@ describe 'View : Main ::', ->
     # but there is no way to test if mainView.search is called,
     # because we cannot spy it, because of Backbone.
     it 'should call search when textSearch button clicked', ->
-      stub = setup.sinon.stub mainView.searchResults, 'runQuery'
+      stub = setup.sinon.stub mainView, 'search'
       mainView.textSearch.trigger 'search'
       stub.should.have.been.called
 
+  describe 'onSwitchType :::', ->
+    ev = preventDefault: ->
+
+    it 'should set config.textSearch to simple if config.textSearch is advanced', ->
+      stub = setup.sinon.stub mainView, 'search'
+      config.textSearch = 'advanced'
+      mainView.onSwitchType ev
+      config.textSearch.should.equal 'simple'
+
+    it 'should set config.textSearch to advanced if config.textSearch is simple', ->
+      stub = setup.sinon.stub mainView, 'search'
+      config.textSearch = 'simple'
+      mainView.onSwitchType ev
+      config.textSearch.should.equal 'advanced'
+
+    it 'should call search if search hasn\'t been called yet', ->
+      stub = setup.sinon.stub mainView, 'search'
+      mainView.onSwitchType ev
+      stub.should.have.been.called
+
+    it 'should call update if search has been called before', ->
+      searchStub = setup.sinon.stub mainView, 'search'
+      stub = setup.sinon.stub mainView, 'update'
+      mainView.searchResults.length = 12
+      mainView.onSwitchType ev
+      searchStub.should.not.have.been.called
+      stub.should.have.been.called
+
+  describe 'destroy :::', ->
+    it 'should call destroy on facetsView', ->
+      stub = setup.sinon.stub mainView.facets, 'destroy'
+      mainView.destroy()
+      stub.should.have.been.called
+
+    it 'should call destroy on textSearch', ->
+      stub = setup.sinon.stub mainView.textSearch, 'destroy'
+      mainView.destroy()
+      stub.should.have.been.called
+
+    it 'should call remove', ->
+      stub = setup.sinon.stub mainView, 'remove'
+      mainView.destroy()
+      stub.should.have.been.called
+
+  describe 'extendConfig', ->
+    it 'should default search type to advanced', ->
+      mainView = new Main textSearch: 'some-non-existent-text-search-type'
+      config.textSearch.should.equal 'advanced'
+
+  describe 'instantiateQueryOptions :::', ->
+    it 'should have a model of instance QueryOptions', ->
+      mainView.queryOptions.should.be.instanceof QueryOptions
+
+    it 'should not call search when queryOptions change if autoSearch is false', ->
+      stub = setup.sinon.stub mainView, 'search'
+      config.autoSearch = false
+      mainView.queryOptions.trigger 'change'
+      stub.should.not.have.been.called
+
+    it 'should call search when queryOptions change if autoSearch is true', ->
+      stub = setup.sinon.stub mainView, 'search'
+      config.autoSearch = true
+      mainView.queryOptions.trigger 'change'
+      stub.should.have.been.called
+
+  describe 'instantiateFacets :::', ->
+    it 'should attach FacetsView to mainView ', ->
+      mainView.facets.should.be.instanceof FacetsView
+
+    it 'should set queryOptions when textSearch changes', ->
+      spy = setup.sinon.spy mainView.queryOptions, 'set'
+      mainView.facets.trigger 'change', {}
+      mainView.queryOptions.set.should.have.been.called
+
+  describe 'showLoader :::', ->
+    it 'should return false if loader is already visible', ->
+      mainView.$('.overlay').css 'display', 'block'
+      mainView.showLoader().should.not.be.ok
+
+  describe 'hideLoader :::', ->
+    it 'should set overlay to display: none', ->
+      mainView.$('.overlay').css 'display', 'block'
+      mainView.hideLoader()
+      mainView.$('.overlay').css('display').should.equal 'none'
+
+  describe 'update :::', ->
+    it 'should render facets after the first searchResult', ->
+      stub = setup.sinon.stub mainView.facets, 'render'
+      mainView.searchResults.current = get: ->
+
+      mainView.searchResults.queryAmount = 1
+      mainView.update()
+      mainView.facets.render.should.have.been.called
+
+    it 'should update facets after next searchResults', ->
+      stub = setup.sinon.stub mainView.facets, 'update'
+      mainView.searchResults.current = get: ->
+
+      mainView.searchResults.queryAmount = 12
+      mainView.update()
+      mainView.facets.update.should.have.been.called
+
+  describe 'page :::', ->
+    it 'should call page method on searchResults', ->
+      stub = setup.sinon.stub mainView.searchResults, 'page'
+      mainView.page 12, 'remdoc'
+      mainView.searchResults.page.should.have.been.calledWith 12, 'remdoc'
+
+  describe 'next :::', ->
+    it 'should call moveCursor on searchResults', ->
+      stub = setup.sinon.stub mainView.searchResults, 'moveCursor'
+      mainView.next()
+      mainView.searchResults.moveCursor.should.have.been.calledWith '_next'
+
+  describe 'prev :::', ->
+    it 'should call moveCursor on searchResults', ->
+      stub = setup.sinon.stub mainView.searchResults, 'moveCursor'
+      mainView.prev()
+      mainView.searchResults.moveCursor.should.have.been.calledWith '_prev'
+
+  describe 'hasNext :::', ->
+    it 'should call moveCursor on searchResults', ->
+      mainView.searchResults.current = new Backbone.Model _next: true
+      mainView.hasNext().should.be.ok
+
+  describe 'hasPrev :::', ->
+    it 'should call moveCursor on searchResults', ->
+      mainView.searchResults.current = new Backbone.Model _notaprev: true
+      mainView.hasPrev().should.not.be.ok
+
+  describe 'sortResultsBy :::', ->
+    it 'should call set on queryOptions with the sort field', ->
+      stub = setup.sinon.stub mainView.queryOptions, 'set'
+      mainView.sortResultsBy 'toetersenbellen'
+      stub.should.have.been.calledWith sort: 'toetersenbellen'
+
+  describe 'reset :::', ->
+    it 'should call reset on textSearch if textSearch exists', ->
+      searchStub = setup.sinon.stub mainView, 'search'
+      stub = setup.sinon.stub mainView.textSearch, 'reset'
+      mainView.reset()
+      stub.should.have.been.called
+
+    it 'should call reset on facets', ->
+      searchStub = setup.sinon.stub mainView, 'search'
+      stub = setup.sinon.stub mainView.facets, 'reset'
+      mainView.reset()
+      stub.should.have.been.called
+
+    it 'should call reset on queryOptions', ->
+      searchStub = setup.sinon.stub mainView, 'search'
+      stub = setup.sinon.stub mainView.queryOptions, 'reset'
+      mainView.reset()
+      stub.should.have.been.called
+
+    it 'should clear searchResults cache if cache is set to false', ->
+      searchStub = setup.sinon.stub mainView, 'search'
+      stub = setup.sinon.stub mainView.searchResults, 'clearCache'
+      mainView.reset()
+      stub.should.have.been.called
+
+    it 'should not clear searchResults cache if cache is set to true', ->
+      searchStub = setup.sinon.stub mainView, 'search'
+      stub = setup.sinon.stub mainView.searchResults, 'clearCache'
+      mainView.reset true
+      stub.should.not.have.been.called
+
+    it 'should call new search', ->
+      stub = setup.sinon.stub mainView, 'search'
+      mainView.reset()
+      stub.should.have.been.called
+
+  describe 'search :::', ->
+    it 'should runQuery with queryOptions attributes and wait: true', ->
+      stub = setup.sinon.stub mainView.searchResults, 'runQuery'
+      mainView.search()
+      stub.should.have.been.calledWith mainView.queryOptions.attributes
