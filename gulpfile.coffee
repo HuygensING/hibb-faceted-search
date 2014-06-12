@@ -13,11 +13,13 @@ clean = require 'gulp-clean'
 pkg = require './package.json'
 exec = require('child_process').exec
 
-currentVersion = pkg.version
+currentVersion = null
 
 gulp.task 'current-version', (done) ->
   exec 'git rev-parse --abbrev-ref HEAD', (err, stdout, stderr) ->
-    currentVersion = stdout if stdout is 'development'
+    #    Use stdout.trim() to remove the newline char
+    out = stdout.trim()
+    currentVersion = if out is 'development' then out else pkg.version
     done()
 
 
