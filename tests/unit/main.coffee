@@ -20,9 +20,6 @@ describe 'View : Main ::', ->
     config.textSearch = 'advanced'
 
   describe 'initialize :::', ->
-    it 'should have a collection of instance SearchResults', ->
-      mainView.searchResults.should.be.instanceof SearchResults
-
     it 'should call instantiateFacets with facetViewMap', ->
       mainView.instantiateFacets = setup.sinon.spy()
       mainView.initialize
@@ -146,23 +143,67 @@ describe 'View : Main ::', ->
       mainView.queryOptions.should.be.instanceof QueryOptions
 
     it 'should not call search when queryOptions change if autoSearch is false', ->
+      mainView = new Main autoSearch: false
       stub = setup.sinon.stub mainView, 'search'
-      config.autoSearch = false
       mainView.queryOptions.trigger 'change'
       stub.should.not.have.been.called
 
     it 'should call search when queryOptions change if autoSearch is true', ->
+      mainView = new Main autoSearch: true
       stub = setup.sinon.stub mainView, 'search'
-      config.autoSearch = true
       mainView.queryOptions.trigger 'change'
       stub.should.have.been.called
+
+  describe 'instantiateSearchResults :::', ->
+    it 'should have a collection of instance SearchResults', ->
+      mainView.searchResults.should.be.instanceof SearchResults
+
+    it 'should call @update if results change', ->
+      stub = setup.sinon.stub mainView, 'update'
+      mainView.searchResults.trigger 'change:results'
+      stub.should.have.been.called
+
+    it 'should trigger change:results event if results change', ->
+      updateStub = setup.sinon.stub mainView, 'update'
+      triggerStub = setup.sinon.stub mainView, 'trigger'
+      responseModel = new Backbone.Model()
+      mainView.searchResults.trigger 'change:results', responseModel
+      triggerStub.should.have.been.calledWith 'change:results', responseModel
+
+    it 'should trigger change:results event when cursor changes', ->
+      triggerStub = setup.sinon.stub mainView, 'trigger'
+      responseModel = new Backbone.Model()
+      mainView.searchResults.trigger 'change:cursor', responseModel
+      triggerStub.should.have.been.calledWith 'change:results', responseModel
+
+    it 'should trigger change:page event when page changes', ->
+      triggerStub = setup.sinon.stub mainView, 'trigger'
+      responseModel = new Backbone.Model()
+      mainView.searchResults.trigger 'change:page', responseModel, 'mydb'
+      triggerStub.should.have.been.calledWith 'change:page', responseModel, 'mydb'
+
+    it 'should show call @showLoader when the request event is triggered', ->
+      stub = setup.sinon.stub mainView, 'showLoader'
+      mainView.searchResults.trigger 'request'
+      stub.should.have.been.called
+
+    it 'should show call @hideLoader when the sync event is triggered', ->
+      stub = setup.sinon.stub mainView, 'hideLoader'
+      mainView.searchResults.trigger 'sync'
+      stub.should.have.been.called
+
+    it 'should show trigger unauthorized event when unauthorized event is triggered', ->
+      stub = setup.sinon.stub mainView, 'trigger'
+      mainView.searchResults.trigger 'unauthorized'
+      stub.should.have.been.calledWith 'unauthorized'
+
 
   describe 'instantiateFacets :::', ->
     it 'should attach FacetsView to mainView ', ->
       mainView.facets.should.be.instanceof FacetsView
 
     it 'should set queryOptions when textSearch changes', ->
-      spy = setup.sinon.spy mainView.queryOptions, 'set'
+      stub = setup.sinon.stub mainView.queryOptions, 'set'
       mainView.facets.trigger 'change', {}
       mainView.queryOptions.set.should.have.been.called
 

@@ -4,14 +4,14 @@ sinonChai = require 'sinon-chai'
 requireJade = require 'require-jade'
 jsdom = require('jsdom').jsdom
 
-doc = jsdom '<html><body></body></html>'
-global.window = doc.createWindow()
-global.document = global.window.document
-
-global.$ = require('jquery')(global.window)
-global._ = require 'underscore'
-global.Backbone = require 'backbone'
-global.Backbone.$ = global.$
+#doc = jsdom '<html><body></body></html>'
+#global.window = doc.createWindow()
+#global.document = global.window.document
+#
+#global.$ = require('jquery')(global.window)
+#global._ = require 'underscore'
+#global.Backbone = require 'backbone'
+#global.Backbone.$ = global.$
 
 
 
@@ -32,3 +32,4 @@ chai.should()
 chai.use sinonChai
 #
 module.exports.sinon = sinon
+module.exports.jsdom = jsdom
