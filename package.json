@@ -14,7 +14,7 @@
   },
   "scripts": {
     "test": "mocha --recursive -w --compilers coffee:coffee-script/register,jade:jade --reporter spec tests/unit/*",
-    "coverage": "gulp coffee && jscoverage --no-highlight compiled coverage && COVERAGE=true mocha --compilers coffee:coffee-script/register,jade:jade --reporter html-cov tests/unit/* > coverage.html && rm -rf compiled && rm -rf coverage"
+    "coverage": "gulp prepare-coverage && jscoverage --no-highlight compiled coverage && COVERAGE=true mocha --compilers coffee:coffee-script/register,jade:jade --reporter html-cov tests/unit/* > coverage.html && rm -rf compiled && rm -rf coverage"
   },
   "dependencies": {
     "envify": "^1.2.1"
@@ -29,6 +29,7 @@
     "gulp": "~3.5.2",
     "gulp-browserify": "~0.4.4",
     "gulp-clean": "~0.2.4",
+    "gulp-coffee": "^2.0.1",
     "gulp-concat": "~2.1.7",
     "gulp-connect": "~0.3.1",
     "gulp-rename": "~1.0.0",

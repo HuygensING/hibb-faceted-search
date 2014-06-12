@@ -2,6 +2,7 @@ gulp = require 'gulp'
 gutil = require 'gulp-util'
 stylus = require 'gulp-stylus'
 concat = require 'gulp-concat'
+coffee = require 'gulp-coffee'
 browserify = require 'browserify'
 watchify = require 'watchify'
 source = require 'vinyl-source-stream'
@@ -17,13 +18,21 @@ gulp.task 'stylus', ->
     .pipe(concat('main.css'))
     .pipe(gulp.dest(__dirname))
 
+gulp.task 'prepare-coverage', ['coffee'], ->
+  #  Copy .jade files to compiled so tests can find .jade files.
+  gulp.src('./src/jade/**/*')
+    .pipe(gulp.dest('./compiled/jade'))
+
+# Used by jscoverage
+gulp.task 'coffee', ->
+  gulp.src('./src/coffee/**/*')
+    .pipe(coffee())
+    .pipe(gulp.dest('./compiled/coffee'))
+
 gulp.task 'watch', ->
   gulp.watch ['./src/**/*.styl'], ['stylus']
 
 gulp.task 'default', ['watch', 'watchify']
-
-bundle = (bundler, opts={}) ->
-
 
 createBundle = (watch=false) ->
   args =
