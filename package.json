@@ -48,7 +48,10 @@
     "uglifyify": "^2.4.0",
     "underscore": "~1.6.0",
     "vinyl-source-stream": "^0.1.1",
-    "watchify": "^0.10.2"
+    "watchify": "^0.10.2",
+    "funcky.arr": "git+https://github.com/Gijsjan/funcky.arr.git",
+    "funcky.el": "git+https://github.com/Gijsjan/funcky.el.git",
+    "funcky.req": "git+https://github.com/Gijsjan/funcky.req.git"
   },
   "browserify": {
     "transform": [
