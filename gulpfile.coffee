@@ -11,6 +11,15 @@ streamify = require 'gulp-streamify'
 rename = require 'gulp-rename'
 clean = require 'gulp-clean'
 pkg = require './package.json'
+exec = require('child_process').exec
+
+currentVersion = pkg.version
+
+gulp.task 'current-version', (done) ->
+  exec 'git rev-parse --abbrev-ref HEAD', (err, stdout, stderr) ->
+    currentVersion = stdout if stdout is 'development'
+    done()
+
 
 gulp.task 'stylus', ->
   gulp.src(['./src/**/*.styl'])
@@ -53,17 +62,17 @@ createBundle = (watch=false) ->
     gutil.log('Browserify: bundling')
     bundler.bundle(standalone: 'FacetedSearch')
       .pipe(source("src.js"))
-      .pipe(gulp.dest("./dist/#{pkg.version}"))
+      .pipe(gulp.dest("./dist/#{currentVersion}"))
       .pipe(streamify(uglify()))
       .pipe(rename(extname: '.min.js'))
-      .pipe(gulp.dest("./dist/#{pkg.version}"))
+      .pipe(gulp.dest("./dist/#{currentVersion}"))
 
   bundle()
 
-gulp.task 'browserify-src', -> createBundle false
-gulp.task 'watchify', -> createBundle true
+gulp.task 'browserify-src', ['current-version'], -> createBundle false
+gulp.task 'watchify', ['current-version'], -> createBundle true
 
-gulp.task 'browserify-libs', ->
+gulp.task 'browserify-libs', ['current-version'], ->
   libs =
     jquery: './node_modules/jquery/dist/jquery'
     backbone: './node_modules/backbone/backbone'
@@ -79,23 +88,23 @@ gulp.task 'browserify-libs', ->
   gutil.log('Browserify: bundling libs')
   bundler.bundle()
     .pipe(source("libs.js"))
-    .pipe(gulp.dest("./dist/#{pkg.version}"))
+    .pipe(gulp.dest("./dist/#{currentVersion}"))
     .pipe(streamify(uglify()))
     .pipe(rename(extname: '.min.js'))
-    .pipe(gulp.dest("./dist/#{pkg.version}"))
+    .pipe(gulp.dest("./dist/#{currentVersion}"))
 
-gulp.task 'browserify', ['browserify-src', 'browserify-libs'], ->
-  src = ["./dist/#{pkg.version}/libs.js", "./dist/#{pkg.version}/src.js"]
+gulp.task 'browserify', ['browserify-src', 'browserify-libs', 'current-version'], ->
+  src = ["./dist/#{currentVersion}/libs.js", "./dist/#{currentVersion}/src.js"]
 
   gulp.src(src)
     .pipe(concat("main.js"))
-    .pipe(gulp.dest("./dist/#{pkg.version}"))
+    .pipe(gulp.dest("./dist/#{currentVersion}"))
     .pipe(streamify(uglify()))
     .pipe(rename(extname: '.min.js'))
-    .pipe(gulp.dest("./dist/#{pkg.version}"))
+    .pipe(gulp.dest("./dist/#{currentVersion}"))
 
 gulp.task 'clean-latest', -> gulp.src('./dist/latest', read: false).pipe(clean())
 
-gulp.task 'build', ['browserify', 'clean-latest'], ->
-  gulp.src("dist/#{pkg.version}/**/*")
+gulp.task 'build', ['browserify', 'clean-latest', 'current-version'], ->
+  gulp.src("dist/#{currentVersion}/**/*")
     .pipe(gulp.dest("./dist/latest"))
