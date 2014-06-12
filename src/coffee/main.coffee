@@ -132,9 +132,9 @@ class MainView extends Backbone.View
     # Backbone triggers a request event when sending a request to the server.
     # In searchResults the request event is triggered manually, because searchResults.sync
     # isnt used.
-    @listenTo @searchResults, 'request', @showLoader
+    @listenTo @searchResults, 'request', => @showLoader()
     # Same goes for sync, but this event is triggered when the response is received.
-    @listenTo @searchResults, 'sync', @hideLoader
+    @listenTo @searchResults, 'sync', => @hideLoader()
 
     @listenTo @searchResults, 'unauthorized', => @trigger 'unauthorized'
 
@@ -154,7 +154,6 @@ class MainView extends Backbone.View
     overlay.style.height = fsBox.height + 'px'
     overlay.style.display = 'block'
 
-#    facetedSearch = @$('.faceted-search')
     left =  fsBox.left + fsBox.width/2 - 12
     loader.style.left = left + 'px'
 
