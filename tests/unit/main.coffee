@@ -117,6 +117,14 @@ describe 'View : Main ::', ->
       searchStub.should.not.have.been.called
       stub.should.have.been.called
 
+  describe 'onReset', ->
+    it 'should call @reset', ->
+      stub = setup.sinon.stub mainView, 'reset'
+      ev =
+        preventDefault: ->
+      mainView.onReset ev
+      stub.should.have.been.called
+
   describe 'destroy :::', ->
     it 'should call destroy on facetsView', ->
       stub = setup.sinon.stub mainView.facets, 'destroy'

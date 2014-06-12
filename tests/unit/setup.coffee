@@ -4,14 +4,14 @@ sinonChai = require 'sinon-chai'
 requireJade = require 'require-jade'
 jsdom = require('jsdom').jsdom
 
-#doc = jsdom '<html><body></body></html>'
-#global.window = doc.createWindow()
-#global.document = global.window.document
-#
-#global.$ = require('jquery')(global.window)
-#global._ = require 'underscore'
-#global.Backbone = require 'backbone'
-#global.Backbone.$ = global.$
+doc = jsdom '<html><body></body></html>'
+global.window = doc.createWindow()
+global.document = global.window.document
+
+global.$ = require('jquery')(global.window)
+global._ = require 'underscore'
+global.Backbone = require 'backbone'
+global.Backbone.$ = global.$
 
 
 
@@ -26,7 +26,8 @@ jsdom = require('jsdom').jsdom
 global.localStorage = global.sessionStorage = require 'localStorage'
 #global.$ = require 'jquery'
 #global._= require 'underscore'
-global.basePath = if process.env.COVERAGE then '../../coverage/' else '../../src/coffee/'
+global.basePath = if process.env.COVERAGE then '../../coverage/coffee/' else '../../src/coffee/'
+
 #
 chai.should()
 chai.use sinonChai
