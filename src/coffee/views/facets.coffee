@@ -1,19 +1,18 @@
 Backbone = require 'backbone'
 _ = require 'underscore'
 
-viewMap =
-  BOOLEAN: require './facets/boolean'
-  DATE: require './facets/date'
-  RANGE: require './facets/range'
-  LIST: require './facets/list'
-
 config = require '../config'
 
 class Facets extends Backbone.View
+  viewMap:
+    BOOLEAN: require './facets/boolean'
+    DATE: require './facets/date'
+    RANGE: require './facets/range'
+    LIST: require './facets/list'
 
   # ### Initialize
   initialize: (options) ->
-    _.extend viewMap, options.viewMap
+    _.extend @viewMap, options.viewMap
 
     # A map of the facet views. Used for looping through all facet views
     # and call methods like update, reset and render.
@@ -26,7 +25,7 @@ class Facets extends Backbone.View
     # attach facets to their placeholder.
     if config.templates.hasOwnProperty 'main'
       for facetData, index in data
-        if viewMap.hasOwnProperty facetData.type
+        if @viewMap.hasOwnProperty facetData.type
           el.querySelector(".#{facetData.name}-placeholder").appendChild @renderFacet(facetData).el
     # If there is no template for main, create a document fragment and append
     # all facets to it and attach it to the DOM.
@@ -34,7 +33,7 @@ class Facets extends Backbone.View
       fragment = document.createDocumentFragment()
 
       for own index, facetData of data
-        if viewMap.hasOwnProperty facetData.type
+        if @viewMap.hasOwnProperty facetData.type
           fragment.appendChild @renderFacet(facetData).el
           fragment.appendChild document.createElement 'hr'
         else
@@ -49,7 +48,7 @@ class Facets extends Backbone.View
     if _.isString(facetData)
       facetData = _.findWhere @searchResults.first().get('facets'), name: facetData
 
-    View = viewMap[facetData.type]
+    View = @viewMap[facetData.type]
     view = @views[facetData.name] = new View attrs: facetData
 
     @listenTo view, 'change', (queryOptions, options={}) => @trigger 'change', queryOptions, options
