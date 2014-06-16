@@ -1,0 +1,32 @@
+<html>
+    <head>
+        <link href="//netdna.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">
+        <link rel="stylesheet" type="text/css" href="../static/main.css" />
+        <script src="../static/libs.js"></script>
+        <script src="../static/src.js"></script>
+        <style>
+            .faceted-search-placeholder {
+                width: 40%
+            }
+        </style>
+    </head>
+    <body>
+        <h1>Faceted Search Staging</h1>
+        <section class="faceted-search-placeholder"></section>
+        <section class="fs-results"></section>
+        <script>
+            var $ = require('jquery');
+
+            var fs = new FacetedSearch({
+                el: document.querySelector('.faceted-search-placeholder'),
+                baseUrl: 'http://localhost:9001/api/',
+                searchPath: 'search',
+                resultRows: 12
+            });
+            setTimeout(function() {
+                $('.facets').prepend($('.facet.range'));
+            }, 100)
+            fs.search();
+        </script>
+    </body>
+</html>

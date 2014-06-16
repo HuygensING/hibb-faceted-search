@@ -1,8 +1,10 @@
 gulp = require 'gulp'
 gutil = require 'gulp-util'
 stylus = require 'gulp-stylus'
+connect = require 'gulp-connect'
 concat = require 'gulp-concat'
 coffee = require 'gulp-coffee'
+minifyCss = require 'gulp-minify-css'
 browserify = require 'browserify'
 watchify = require 'watchify'
 source = require 'vinyl-source-stream'
@@ -10,24 +12,28 @@ uglify = require 'gulp-uglify'
 streamify = require 'gulp-streamify'
 rename = require 'gulp-rename'
 clean = require 'gulp-clean'
-pkg = require './package.json'
+bodyParser = require 'body-parser'
 exec = require('child_process').exec
 
-currentVersion = null
+connectRewrite = require './connect-rewrite'
+pkg = require './package.json'
 
-gulp.task 'current-version', (done) ->
-  exec 'git rev-parse --abbrev-ref HEAD', (err, stdout, stderr) ->
-    #    Use stdout.trim() to remove the newline char
-    out = stdout.trim()
-    currentVersion = if out is 'development' then out else pkg.version
-    done()
-
+gulp.task 'connect', ->
+  connect.server
+    root: './stage'
+    port: 9001
+    livereload: true
+    middleware: (connect, options) -> [bodyParser(), connectRewrite(connect, options)]
 
 gulp.task 'stylus', ->
   gulp.src(['./src/**/*.styl'])
     .pipe(stylus())
     .pipe(concat('main.css'))
-    .pipe(gulp.dest(__dirname))
+    .pipe(gulp.dest('./dist'))
+    .pipe(minifyCss())
+    .pipe(rename(extname:'.min.css'))
+    .pipe(gulp.dest('./dist'))
+    .pipe(connect.reload())
 
 gulp.task 'prepare-coverage', ['coffee'], ->
   #  Copy .jade files to compiled so tests can find .jade files.
@@ -42,6 +48,7 @@ gulp.task 'coffee', ->
 
 gulp.task 'watch', ->
   gulp.watch ['./src/**/*.styl'], ['stylus']
+  gulp.watch ['./stage/*'], -> connect.reload()
 
 gulp.task 'default', ['watch', 'watchify']
 
@@ -49,6 +56,16 @@ createBundle = (watch=false) ->
   args =
     entries: './src/coffee/main.coffee'
     extensions: ['.coffee', '.jade']
+
+  bundle = ->
+    gutil.log('Browserify: bundling')
+    bundler.bundle(standalone: 'FacetedSearch')
+    .pipe(source("src.js"))
+    .pipe(gulp.dest("./dist"))
+    .pipe(streamify(uglify()))
+    .pipe(rename(extname: '.min.js'))
+    .pipe(gulp.dest("./dist"))
+    .pipe(connect.reload())
 
   if watch
     bundler = watchify args
@@ -60,21 +77,12 @@ createBundle = (watch=false) ->
   bundler.exclude 'backbone'
   bundler.exclude 'underscore'
 
-  bundle = ->
-    gutil.log('Browserify: bundling')
-    bundler.bundle(standalone: 'FacetedSearch')
-      .pipe(source("src.js"))
-      .pipe(gulp.dest("./dist/#{currentVersion}"))
-      .pipe(streamify(uglify()))
-      .pipe(rename(extname: '.min.js'))
-      .pipe(gulp.dest("./dist/#{currentVersion}"))
-
   bundle()
 
-gulp.task 'browserify-src', ['current-version'], -> createBundle false
-gulp.task 'watchify', ['current-version'], -> createBundle true
+gulp.task 'browserify-src', -> createBundle false
+gulp.task 'watchify', -> createBundle true
 
-gulp.task 'browserify-libs', ['current-version'], ->
+gulp.task 'browserify-libs', ->
   libs =
     jquery: './node_modules/jquery/dist/jquery'
     backbone: './node_modules/backbone/backbone'
@@ -90,23 +98,23 @@ gulp.task 'browserify-libs', ['current-version'], ->
   gutil.log('Browserify: bundling libs')
   bundler.bundle()
     .pipe(source("libs.js"))
-    .pipe(gulp.dest("./dist/#{currentVersion}"))
+    .pipe(gulp.dest("./dist"))
     .pipe(streamify(uglify()))
     .pipe(rename(extname: '.min.js'))
-    .pipe(gulp.dest("./dist/#{currentVersion}"))
+    .pipe(gulp.dest("./dist"))
 
-gulp.task 'browserify', ['browserify-src', 'browserify-libs', 'current-version'], ->
-  src = ["./dist/#{currentVersion}/libs.js", "./dist/#{currentVersion}/src.js"]
+gulp.task 'browserify', ['browserify-src', 'browserify-libs'], ->
+  src = ["./dist/libs.js", "./dist/src.js"]
 
   gulp.src(src)
     .pipe(concat("main.js"))
-    .pipe(gulp.dest("./dist/#{currentVersion}"))
+    .pipe(gulp.dest("./dist"))
     .pipe(streamify(uglify()))
     .pipe(rename(extname: '.min.js'))
-    .pipe(gulp.dest("./dist/#{currentVersion}"))
+    .pipe(gulp.dest("./dist"))
 
-gulp.task 'clean-latest', -> gulp.src('./dist/latest', read: false).pipe(clean())
+#gulp.task 'clean-latest', -> gulp.src('./dist/latest', read: false).pipe(clean())
 
-gulp.task 'build', ['browserify', 'clean-latest', 'current-version'], ->
-  gulp.src("dist/#{currentVersion}/**/*")
-    .pipe(gulp.dest("./dist/latest"))
+gulp.task 'build', ['browserify', 'stylus']
+
+gulp.task 'default', ['connect', 'watch', 'watchify']

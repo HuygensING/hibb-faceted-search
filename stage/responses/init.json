@@ -1,0 +1,1114 @@
+{"facets": [
+  {
+    "name": "content_type",
+    "title": "Content Type",
+    "type": "LIST",
+    "options": [
+      {
+        "name": "publications (all)",
+        "count": 3164
+      },
+      {
+        "name": "works of art",
+        "count": 1953
+      },
+      {
+        "name": "books/e-books",
+        "count": 1770
+      },
+      {
+        "name": "painting",
+        "count": 1040
+      },
+      {
+        "name": "articles in magazines/journals",
+        "count": 648
+      },
+      {
+        "name": "drawing",
+        "count": 639
+      },
+      {
+        "name": "newspaper articles",
+        "count": 531
+      },
+      {
+        "name": "book reviews",
+        "count": 326
+      },
+      {
+        "name": "notarial acts",
+        "count": 320
+      },
+      {
+        "name": "municipal records",
+        "count": 182
+      }
+    ]
+  },
+  {
+    "name": "person_type",
+    "title": "Person Type",
+    "type": "LIST",
+    "options": [
+      {
+        "name": "authors of secundary literature after 1800",
+        "count": 2180
+      },
+      {
+        "name": "artist",
+        "count": 1960
+      },
+      {
+        "name": "notary",
+        "count": 321
+      },
+      {
+        "name": "depicted",
+        "count": 315
+      },
+      {
+        "name": "art dealer/broker",
+        "count": 275
+      },
+      {
+        "name": "art theorist",
+        "count": 269
+      },
+      {
+        "name": "auctioneer/broker/distributor",
+        "count": 173
+      },
+      {
+        "name": "cataloguer/compiler",
+        "count": 114
+      },
+      {
+        "name": "cashier/accountant",
+        "count": 110
+      },
+      {
+        "name": "inventory clerk",
+        "count": 78
+      }
+    ]
+  },
+  {
+    "name": "location",
+    "title": "Location",
+    "type": "LIST",
+    "options": [
+      {
+        "name": "Amsterdam",
+        "count": 1275
+      },
+      {
+        "name": "Den Haag",
+        "count": 640
+      },
+      {
+        "name": "New York",
+        "count": 360
+      },
+      {
+        "name": "Leiden",
+        "count": 298
+      },
+      {
+        "name": "Londen",
+        "count": 286
+      },
+      {
+        "name": "London",
+        "count": 282
+      },
+      {
+        "name": "Parijs",
+        "count": 234
+      },
+      {
+        "name": "Paris",
+        "count": 196
+      },
+      {
+        "name": "United States",
+        "count": 189
+      },
+      {
+        "name": "Nijmegen",
+        "count": 175
+      },
+      {
+        "name": "Haarlem",
+        "count": 144
+      },
+      {
+        "name": "Rotterdam",
+        "count": 125
+      },
+      {
+        "name": "Berlijn",
+        "count": 114
+      },
+      {
+        "name": "Utrecht",
+        "count": 105
+      },
+      {
+        "name": "München",
+        "count": 100
+      },
+      {
+        "name": "New York City",
+        "count": 92
+      },
+      {
+        "name": "Leeuwarden",
+        "count": 92
+      },
+      {
+        "name": "Frankfurt am Main",
+        "count": 91
+      },
+      {
+        "name": "The Hague",
+        "count": 83
+      },
+      {
+        "name": "Washington",
+        "count": 75
+      },
+      {
+        "name": "Dordrecht",
+        "count": 73
+      },
+      {
+        "name": "Cambridge",
+        "count": 55
+      },
+      {
+        "name": "Weimar",
+        "count": 52
+      },
+      {
+        "name": "Wenen",
+        "count": 50
+      },
+      {
+        "name": "Braunschweig",
+        "count": 49
+      },
+      {
+        "name": "Toronto",
+        "count": 49
+      },
+      {
+        "name": "Edinburgh",
+        "count": 48
+      },
+      {
+        "name": "Berlin",
+        "count": 48
+      },
+      {
+        "name": "Boston",
+        "count": 47
+      },
+      {
+        "name": "Leipzig",
+        "count": 47
+      },
+      {
+        "name": "Oxford",
+        "count": 46
+      }
+    ]
+  },
+  {
+    "name": "artist_name",
+    "title": "Author/artist name",
+    "type": "LIST",
+    "options": [
+      {
+        "name": "Rembrandt",
+        "count": 861
+      },
+      {
+        "name": "Roghman, Roelant",
+        "count": 160
+      },
+      {
+        "name": "Maes, Nicolaes",
+        "count": 158
+      },
+      {
+        "name": "Bol, Ferdinand",
+        "count": 125
+      },
+      {
+        "name": "Lastman, Pieter",
+        "count": 92
+      },
+      {
+        "name": "Flinck, Govert",
+        "count": 78
+      },
+      {
+        "name": "Doomer, Lambert",
+        "count": 71
+      },
+      {
+        "name": "Rembrandt Harmensz. van Rijn",
+        "count": 70
+      },
+      {
+        "name": "Vries, Abraham de",
+        "count": 63
+      },
+      {
+        "name": "Gerard Hoet",
+        "count": 57
+      },
+      {
+        "name": "Eeckhout, Gerbrand van den",
+        "count": 55
+      },
+      {
+        "name": "Jan Pietersz. Zomer",
+        "count": 51
+      },
+      {
+        "name": "Koninck, Philips",
+        "count": 50
+      },
+      {
+        "name": "Dou, Gerard",
+        "count": 48
+      },
+      {
+        "name": "Hoogstraten, Samuel van",
+        "count": 44
+      },
+      {
+        "name": "Gijsbert Hol",
+        "count": 41
+      },
+      {
+        "name": "RUSSELL, JOHN",
+        "count": 40
+      },
+      {
+        "name": "Anoniem / Anonymous",
+        "count": 37
+      },
+      {
+        "name": "Philippus van der Land",
+        "count": 36
+      }
+    ]
+  },
+  {
+    "name": "date_range",
+    "title": "date range",
+    "type": "RANGE",
+    "options": [
+      {
+        "lowerLimit": 14240101,
+        "upperLimit": 20131231
+      }
+    ]
+  }
+], "numFound": 6102, "results": {
+  "rkdimages": {
+    "solrquery": "q=*%3A*&fl=ft_title%2Cui_attributions%2Cui_img_src%2Cft_naam%2Cid%2Cscore%2Ccontent_type%2Cperson_type%2Cartist_name%2Cpublication_date%2Clocation&rows=50000&facet.field=content_type&facet.field=person_type&facet.field=location&facet.field=artist_name&facet.field=publication_date_lower&facet.field=publication_date_upper&facet=true&facet.mincount=1&facet.limit=10000&hl=true&hl.fragsize=100&hl.maxAnalyzedChars=-1&hl.fl=ft_name_artwork&hl.fl=ft_alternative_titles&hl.fl=ft_title&hl.fl=ft_naam&hl.fl=ft_rkd_algemene_trefwoorden&hl.fl=ft_collectienaam&hl.fl=ft_auctioneer&hl.fl=ft_buyer&hl.fl=ft_commissioner&hl.fl=ft_portrayed_person&hl.fl=ft_auction_house&hl.fl=ft_opmerking_algemeen&hl.q=*%3A*",
+    "term": "*:*",
+    "numFound": 1857,
+    "ids": ["rkdimages_125030", "rkdimages_125093", "rkdimages_125489", "rkdimages_125834", "rkdimages_126682", "rkdimages_126749", "rkdimages_126831", "rkdimages_126901", "rkdimages_126902", "rkdimages_126938", "rkdimages_127408", "rkdimages_127464"],
+    "results": [
+      {
+        "id": "rkdimages_125030",
+        "_kwic": {},
+        "ft_title": "Portrait of Maria van der Horn (1639-1704)",
+        "ui_attributions": ["huidig  Maes, Nicolaes"],
+        "location": ["Loosdrecht"],
+        "artist_name": ["Maes, Nicolaes"],
+        "ft_naam": "Maes, Nicolaes",
+        "person_type": ["artist", "depicted"],
+        "score": 1.0,
+        "ui_img_src": ["http://imagehandler.rkd.nl/wwwopac.ashx?command=getcontent&server=images&width=600&height=600&value=jpg\\035\\IB00025035.jpg"],
+        "publication_date": "1675-1699",
+        "content_type": ["works of art", "painting"]
+      },
+      {
+        "id": "rkdimages_125093",
+        "_kwic": {},
+        "ft_title": "Portrait of an unknown man",
+        "ui_attributions": ["huidig  Vries, Abraham de"],
+        "location": null,
+        "artist_name": ["Vries, Abraham de"],
+        "ft_naam": "Vries, Abraham de",
+        "person_type": ["artist", "depicted"],
+        "score": 1.0,
+        "ui_img_src": null,
+        "publication_date": "1628 gedateerd",
+        "content_type": ["works of art", "painting"]
+      },
+      {
+        "id": "rkdimages_125489",
+        "_kwic": {},
+        "ft_title": "Portrait of Simon van Alphen (1650-1730)",
+        "ui_attributions": ["huidig  Maes, Nicolaes"],
+        "location": ["Amsterdam"],
+        "artist_name": ["Maes, Nicolaes"],
+        "ft_naam": "Maes, Nicolaes",
+        "person_type": ["artist", "depicted"],
+        "score": 1.0,
+        "ui_img_src": ["http://imagehandler.rkd.nl/wwwopac.ashx?command=getcontent&server=images&width=600&height=600&value=jpg\\779\\IB00029779.jpg"],
+        "publication_date": "1675-1699",
+        "content_type": ["works of art", "painting"]
+      },
+      {
+        "id": "rkdimages_125834",
+        "_kwic": {},
+        "ft_title": "Portrait of Hieronymus van Beverninck (1614-1690)",
+        "ui_attributions": ["huidig attributed to Faber, Johan (I)", "huidig after Bloteling, Abraham", "huidig after Maes, Nicolaes"],
+        "location": ["Den Haag"],
+        "artist_name": ["Faber, Johan (I)", "Bloteling, Abraham", "Maes, Nicolaes"],
+        "ft_naam": "Faber, Johan (I); Bloteling, Abraham; Maes, Nicolaes",
+        "person_type": ["artist", "depicted"],
+        "score": 1.0,
+        "ui_img_src": ["http://imagehandler.rkd.nl/wwwopac.ashx?command=getcontent&server=images&width=600&height=600&value=jpg\\259\\0000200259.jpg", "http://imagehandler.rkd.nl/wwwopac.ashx?command=getcontent&server=images&width=600&height=600&value=jpg\\155\\IB00032155.jpg"],
+        "publication_date": "ca. 1695-1700",
+        "content_type": ["works of art", "drawing"]
+      },
+      {
+        "id": "rkdimages_126682",
+        "_kwic": {},
+        "ft_title": "Portrait of Eleazar Swalmius (1582-1652)",
+        "ui_attributions": ["huidig  Anoniem / Anonymous", "huidig after Rembrandt"],
+        "location": null,
+        "artist_name": ["Anoniem / Anonymous", "Rembrandt"],
+        "ft_naam": "Anoniem / Anonymous; Rembrandt",
+        "person_type": ["artist", "depicted"],
+        "score": 1.0,
+        "ui_img_src": ["http://imagehandler.rkd.nl/wwwopac.ashx?command=getcontent&server=images&width=600&height=600&value=jpg\\773\\IB00036773.jpg"],
+        "publication_date": "18de eeuw",
+        "content_type": ["works of art", "painting"]
+      },
+      {
+        "id": "rkdimages_126749",
+        "_kwic": {},
+        "ft_title": "Portrait of Everhard van Ruytenbeeck ( -1716)",
+        "ui_attributions": ["huidig  Maes, Nicolaes"],
+        "location": ["Maastricht", "Amsterdam"],
+        "artist_name": ["Maes, Nicolaes"],
+        "ft_naam": "Maes, Nicolaes",
+        "person_type": ["artist", "depicted"],
+        "score": 1.0,
+        "ui_img_src": ["http://imagehandler.rkd.nl/wwwopac.ashx?command=getcontent&server=images&width=600&height=600&value=jpg\\530\\IB00037530.jpg"],
+        "publication_date": "1675 gedateerd",
+        "content_type": ["works of art", "painting"]
+      },
+      {
+        "id": "rkdimages_126831",
+        "_kwic": {},
+        "ft_title": "Portrait of a boy",
+        "ui_attributions": ["huidig  Maes, Nicolaes"],
+        "location": ["Nijmegen"],
+        "artist_name": ["Maes, Nicolaes"],
+        "ft_naam": "Maes, Nicolaes",
+        "person_type": ["artist", "depicted"],
+        "score": 1.0,
+        "ui_img_src": ["http://imagehandler.rkd.nl/wwwopac.ashx?command=getcontent&server=images&width=600&height=600&value=jpg\\138\\IB00038138.jpg"],
+        "publication_date": "1665 gedateerd",
+        "content_type": ["works of art", "painting"]
+      },
+      {
+        "id": "rkdimages_126901",
+        "_kwic": {},
+        "ft_title": "Portrait of Jacob Ouzeel (1601-1666)",
+        "ui_attributions": ["huidig  Hoogstraten, Samuel van"],
+        "location": ["Dordrecht"],
+        "artist_name": ["Hoogstraten, Samuel van"],
+        "ft_naam": "Hoogstraten, Samuel van",
+        "person_type": ["artist", "depicted"],
+        "score": 1.0,
+        "ui_img_src": ["http://imagehandler.rkd.nl/wwwopac.ashx?command=getcontent&server=images&width=600&height=600&value=jpg\\654\\IB00038654.jpg"],
+        "publication_date": "1661 gedateerd",
+        "content_type": ["works of art", "painting"]
+      },
+      {
+        "id": "rkdimages_126902",
+        "_kwic": {},
+        "ft_title": "Portrait of Maria Stoop (1631-1709)",
+        "ui_attributions": ["huidig attributed to Hoogstraten, Samuel van"],
+        "location": ["Dordrecht"],
+        "artist_name": ["Hoogstraten, Samuel van"],
+        "ft_naam": "Hoogstraten, Samuel van",
+        "person_type": ["artist", "depicted"],
+        "score": 1.0,
+        "ui_img_src": ["http://imagehandler.rkd.nl/wwwopac.ashx?command=getcontent&server=images&width=600&height=600&value=jpg\\655\\IB00038655.jpg"],
+        "publication_date": "1650-1674",
+        "content_type": ["works of art", "painting"]
+      },
+      {
+        "id": "rkdimages_126938",
+        "_kwic": {},
+        "ft_title": "Portrait of Michiel Adriaensz. de Ruyter (1607-1676)",
+        "ui_attributions": ["huidig after Bol, Ferdinand"],
+        "location": ["Breda"],
+        "artist_name": ["Bol, Ferdinand"],
+        "ft_naam": "Bol, Ferdinand",
+        "person_type": ["artist", "depicted"],
+        "score": 1.0,
+        "ui_img_src": ["http://imagehandler.rkd.nl/wwwopac.ashx?command=getcontent&server=images&width=600&height=600&value=jpg\\904\\IB00038904.jpg"],
+        "publication_date": "1650-1674",
+        "content_type": ["works of art", "painting"]
+      },
+      {
+        "id": "rkdimages_127408",
+        "_kwic": {},
+        "ft_title": "Portrait of Michiel Adriaensz. de Ruyter (1607-1676)",
+        "ui_attributions": ["huidig after Bol, Ferdinand"],
+        "location": ["Den Haag"],
+        "artist_name": ["Bol, Ferdinand"],
+        "ft_naam": "Bol, Ferdinand",
+        "person_type": ["artist", "depicted"],
+        "score": 1.0,
+        "ui_img_src": ["http://imagehandler.rkd.nl/wwwopac.ashx?command=getcontent&server=images&width=600&height=600&value=IB00043655.jpg"],
+        "publication_date": "1650-1674",
+        "content_type": ["works of art", "painting"]
+      },
+      {
+        "id": "rkdimages_127464",
+        "_kwic": {},
+        "ft_title": "Portrait of Maerten van Sypesteyn (1645-1681)",
+        "ui_attributions": ["huidig  Maes, Nicolaes"],
+        "location": ["Loosdrecht"],
+        "artist_name": ["Maes, Nicolaes"],
+        "ft_naam": "Maes, Nicolaes",
+        "person_type": ["artist", "depicted"],
+        "score": 1.0,
+        "ui_img_src": ["http://imagehandler.rkd.nl/wwwopac.ashx?command=getcontent&server=images&width=600&height=600&value=jpg\\207\\IB00044207.jpg"],
+        "publication_date": "1650-1674",
+        "content_type": ["works of art", "painting"]
+      }
+    ],
+    "start": 0,
+    "rows": 12,
+    "sortableFields": ["id"],
+    "_next": "http://localhost:9001/api/result?database=rkdimages&start=12&rows=12"
+  },
+  "rkdartists": {
+    "solrquery": "q=*%3A*&fl=ui_img_src%2Cft_artist_name%2Cui_date%2Cid%2Cscore%2Ccontent_type%2Cperson_type%2Cartist_name%2Cpublication_date%2Clocation&rows=50000&facet.field=content_type&facet.field=person_type&facet.field=location&facet.field=artist_name&facet.field=publication_date_lower&facet.field=publication_date_upper&facet=true&facet.mincount=1&facet.limit=10000&hl=true&hl.fragsize=100&hl.maxAnalyzedChars=-1&hl.fl=ft_artist_name&hl.fl=ft_spelling_variants&hl.fl=ft_activity_places&hl.fl=ft_qualifications&hl.fl=ft_opmerking_algemeen&hl.q=*%3A*",
+    "term": "*:*",
+    "numFound": 59,
+    "ids": ["rkdartists_7991", "rkdartists_10080", "rkdartists_10858", "rkdartists_13052", "rkdartists_22804", "rkdartists_23808", "rkdartists_23965", "rkdartists_23986", "rkdartists_24317", "rkdartists_24730", "rkdartists_25549", "rkdartists_27138"],
+    "results": [
+      {
+        "id": "rkdartists_7991",
+        "_kwic": {},
+        "ft_artist_name": "Beijeren, Leendert van",
+        "location": null,
+        "artist_name": null,
+        "person_type": ["painter"],
+        "score": 1.0,
+        "ui_date": ["1619-1620 - 1649"],
+        "ui_img_src": null,
+        "publication_date": "1619-1620 - 1649",
+        "content_type": null
+      },
+      {
+        "id": "rkdartists_10080",
+        "_kwic": {},
+        "ft_artist_name": "Bol, Ferdinand",
+        "location": ["Dordrecht", "Amsterdam"],
+        "artist_name": null,
+        "person_type": ["painter", "draftsman", "printmaker", "decorative painter (of interiors)"],
+        "score": 1.0,
+        "ui_date": ["1616 - 1680"],
+        "ui_img_src": ["http://imagehandler.rkd.nl/wwwopac.ashx?command=getcontent&server=images&width=600&height=600&value=jpg\\320\\0000271320.jpg", "http://imagehandler.rkd.nl/wwwopac.ashx?command=getcontent&server=images&width=600&height=600&value=jpg\\679\\0000108679.jpg", "http://imagehandler.rkd.nl/wwwopac.ashx?command=getcontent&server=images&width=600&height=600&value=jpg\\899\\IB00019899.jpg", "http://imagehandler.rkd.nl/wwwopac.ashx?command=getcontent&server=images&width=600&height=600&value=jpg\\679\\0000030679.jpg", "http://imagehandler.rkd.nl/wwwopac.ashx?command=getcontent&server=images&width=600&height=600&value=jpg\\174\\0000063174.jpg", "http://imagehandler.rkd.nl/wwwopac.ashx?command=getcontent&server=images&width=600&height=600&value=jpg\\948\\0000000948.jpg", "http://imagehandler.rkd.nl/wwwopac.ashx?command=getcontent&server=images&width=600&height=600&value=jpg\\949\\0000000949.jpg", "http://imagehandler.rkd.nl/wwwopac.ashx?command=getcontent&server=images&width=600&height=600&value=jpg\\122\\0000063122.jpg", "http://imagehandler.rkd.nl/wwwopac.ashx?command=getcontent&server=images&width=600&height=600&value=jpg\\579\\0000079579.jpg", "http://imagehandler.rkd.nl/wwwopac.ashx?command=getcontent&server=images&width=600&height=600&value=jpg\\227\\IB00045227.jpg", "http://imagehandler.rkd.nl/wwwopac.ashx?command=getcontent&server=images&width=600&height=600&value=jpg\\936\\0000000936.jpg", "http://imagehandler.rkd.nl/wwwopac.ashx?command=getcontent&server=images&width=600&height=600&value=jpg\\947\\0000000947.jpg", "http://imagehandler.rkd.nl/wwwopac.ashx?command=getcontent&server=images&width=600&height=600&value=jpg\\867\\0000082867.jpg", "http://imagehandler.rkd.nl/wwwopac.ashx?command=getcontent&server=images&width=600&height=600&value=jpg\\869\\0000082869.jpg", "http://imagehandler.rkd.nl/wwwopac.ashx?command=getcontent&server=images&width=600&height=600&value=jpg\\123\\1000313123.jpg", "http://imagehandler.rkd.nl/wwwopac.ashx?command=getcontent&server=images&width=600&height=600&value=jpg\\531\\0000031531.jpg", "http://imagehandler.rkd.nl/wwwopac.ashx?command=getcontent&server=images&width=600&height=600&value=jpg\\532\\0000031532.jpg", "http://imagehandler.rkd.nl/wwwopac.ashx?command=getcontent&server=images&width=600&height=600&value=jpg\\533\\0000031533.jpg"],
+        "publication_date": "1616 - 1680",
+        "content_type": null
+      },
+      {
+        "id": "rkdartists_10858",
+        "_kwic": {},
+        "ft_artist_name": "Borssom, Anthonie van",
+        "location": ["Amsterdam", "Kleef"],
+        "artist_name": null,
+        "person_type": ["printmaker", "etcher", "painter", "draftsman", "scribe"],
+        "score": 1.0,
+        "ui_date": ["1630-1631 - 1677"],
+        "ui_img_src": null,
+        "publication_date": "1630-1631 - 1677",
+        "content_type": null
+      },
+      {
+        "id": "rkdartists_13052",
+        "_kwic": {},
+        "ft_artist_name": "Brouwer, Cornelis (?-1681)",
+        "location": ["Rotterdam"],
+        "artist_name": null,
+        "person_type": ["painter"],
+        "score": 1.0,
+        "ui_date": [" - 1681"],
+        "ui_img_src": null,
+        "publication_date": " - 1681",
+        "content_type": null
+      },
+      {
+        "id": "rkdartists_22804",
+        "_kwic": {},
+        "ft_artist_name": "Dijck, Abraham van",
+        "location": ["Dordrecht", "Alkmaar", "Amsterdam"],
+        "artist_name": null,
+        "person_type": ["painter", "draftsman"],
+        "score": 1.0,
+        "ui_date": ["1635-1636 - 1680"],
+        "ui_img_src": null,
+        "publication_date": "1635-1636 - 1680",
+        "content_type": null
+      },
+      {
+        "id": "rkdartists_23808",
+        "_kwic": {},
+        "ft_artist_name": "Doomer, Lambert",
+        "location": ["Amsterdam", "Nantes", "Frankrijk", "Paris", "Rouen", "Le Havre", "Amboise", "Saumur", "Angers", "Orléans", "Blois", "Tours", "Duitsland", "Kleef", "Elten", "Kalkar", "Anrath", "Mönchengladbach", "Keulen", "Alkmaar"],
+        "artist_name": null,
+        "person_type": ["painter", "draftsman", "art collector", "scribe", "collector of Dutch and Flemish painting"],
+        "score": 1.0,
+        "ui_date": ["1624 - 1700"],
+        "ui_img_src": null,
+        "publication_date": "1624 - 1700",
+        "content_type": null
+      },
+      {
+        "id": "rkdartists_23965",
+        "_kwic": {},
+        "ft_artist_name": "Dorsten, Jacobus Jansz. van",
+        "location": ["Dordrecht"],
+        "artist_name": null,
+        "person_type": ["painter", "draftsman"],
+        "score": 1.0,
+        "ui_date": ["1617-1637 - 1674"],
+        "ui_img_src": null,
+        "publication_date": "1617-1637 - 1674",
+        "content_type": null
+      },
+      {
+        "id": "rkdartists_23986",
+        "_kwic": {},
+        "ft_artist_name": "Dou, Gerard",
+        "location": ["Leiden"],
+        "artist_name": null,
+        "person_type": ["painter", "draftsman"],
+        "score": 1.0,
+        "ui_date": ["1613 - 1675"],
+        "ui_img_src": ["http://imagehandler.rkd.nl/wwwopac.ashx?command=getcontent&server=images&width=600&height=600&value=jpg\\117\\0000280117.jpg", "http://imagehandler.rkd.nl/wwwopac.ashx?command=getcontent&server=images&width=600&height=600&value=jpg\\403\\0000251403.jpg", "http://imagehandler.rkd.nl/wwwopac.ashx?command=getcontent&server=images&width=600&height=600&value=jpg\\159\\IB00117159.jpg", "http://imagehandler.rkd.nl/wwwopac.ashx?command=getcontent&server=images&width=600&height=600&value=jpg\\604\\0000372604.jpg", "http://imagehandler.rkd.nl/wwwopac.ashx?command=getcontent&server=images&width=600&height=600&value=jpg\\343\\0000000343.jpg", "http://imagehandler.rkd.nl/wwwopac.ashx?command=getcontent&server=images&width=600&height=600&value=jpg\\184\\0000031184.jpg", "http://imagehandler.rkd.nl/wwwopac.ashx?command=getcontent&server=images&width=600&height=600&value=jpg\\186\\0000031186.jpg", "http://imagehandler.rkd.nl/wwwopac.ashx?command=getcontent&server=images&width=600&height=600&value=jpg\\185\\0000031185.jpg", "http://imagehandler.rkd.nl/wwwopac.ashx?command=getcontent&server=images&width=600&height=600&value=jpg\\187\\0000031187.jpg", "http://imagehandler.rkd.nl/wwwopac.ashx?command=getcontent&server=images&width=600&height=600&value=jpg\\189\\0000031189.jpg", "http://imagehandler.rkd.nl/wwwopac.ashx?command=getcontent&server=images&width=600&height=600&value=jpg\\188\\0000031188.jpg", "http://imagehandler.rkd.nl/wwwopac.ashx?command=getcontent&server=images&width=600&height=600&value=jpg\\190\\0000031190.jpg", "http://imagehandler.rkd.nl/wwwopac.ashx?command=getcontent&server=images&width=600&height=600&value=jpg\\130\\0000323130.jpg", "http://imagehandler.rkd.nl/wwwopac.ashx?command=getcontent&server=images&width=600&height=600&value=jpg\\597\\IB00109597.jpg", "http://imagehandler.rkd.nl/wwwopac.ashx?command=getcontent&server=images&width=600&height=600&value=jpg\\667\\0000005667.jpg", "http://imagehandler.rkd.nl/wwwopac.ashx?command=getcontent&server=images&width=600&height=600&value=jpg\\050\\0000063050.jpg", "http://imagehandler.rkd.nl/wwwopac.ashx?command=getcontent&server=images&width=600&height=600&value=jpg\\666\\0000005666.jpg", "http://imagehandler.rkd.nl/wwwopac.ashx?command=getcontent&server=images&width=600&height=600&value=jpg\\971\\0000130971.jpg", "http://imagehandler.rkd.nl/wwwopac.ashx?command=getcontent&server=images&width=600&height=600&value=jpg\\846\\0000034846.jpg", "http://imagehandler.rkd.nl/wwwopac.ashx?command=getcontent&server=images&width=600&height=600&value=jpg\\845\\0000034845.jpg", "http://imagehandler.rkd.nl/wwwopac.ashx?command=getcontent&server=images&width=600&height=600&value=jpg\\815\\0000034815.jpg", "http://imagehandler.rkd.nl/wwwopac.ashx?command=getcontent&server=images&width=600&height=600&value=jpg\\150\\IB00121150.jpg", "http://imagehandler.rkd.nl/wwwopac.ashx?command=getcontent&server=images&width=600&height=600&value=jpg\\792\\1000311792.jpg", "http://imagehandler.rkd.nl/wwwopac.ashx?command=getcontent&server=images&width=600&height=600&value=jpg\\382\\0000339382.jpg"],
+        "publication_date": "1613 - 1675",
+        "content_type": null
+      },
+      {
+        "id": "rkdartists_24317",
+        "_kwic": {},
+        "ft_artist_name": "Drost, Willem",
+        "location": ["Amsterdam", "Venice"],
+        "artist_name": null,
+        "person_type": ["printmaker", "painter", "draftsman"],
+        "score": 1.0,
+        "ui_date": ["1633 - 1659"],
+        "ui_img_src": ["http://imagehandler.rkd.nl/wwwopac.ashx?command=getcontent&server=images&width=600&height=600&value=jpg\\549\\1001087549.jpg", "http://imagehandler.rkd.nl/wwwopac.ashx?command=getcontent&server=images&width=600&height=600&value=jpg\\140\\IB00079140.jpg", "http://imagehandler.rkd.nl/wwwopac.ashx?command=getcontent&server=images&width=600&height=600&value=jpg\\690\\0000134690.jpg", "http://imagehandler.rkd.nl/wwwopac.ashx?command=getcontent&server=images&width=600&height=600&value=jpg\\139\\IB00079139.jpg", "http://imagehandler.rkd.nl/wwwopac.ashx?command=getcontent&server=images&width=600&height=600&value=jpg\\921\\0000084921.jpg"],
+        "publication_date": "1633 - 1659",
+        "content_type": null
+      },
+      {
+        "id": "rkdartists_24730",
+        "_kwic": {},
+        "ft_artist_name": "Dullaert, Heyman",
+        "location": ["Amsterdam", "Rotterdam"],
+        "artist_name": null,
+        "person_type": ["painter", "draftsman", "poet", "musician"],
+        "score": 1.0,
+        "ui_date": ["1636 - 1684"],
+        "ui_img_src": ["http://imagehandler.rkd.nl/wwwopac.ashx?command=getcontent&server=images&width=600&height=600&value=jpg\\114\\0000151114.jpg", "http://imagehandler.rkd.nl/wwwopac.ashx?command=getcontent&server=images&width=600&height=600&value=jpg\\580\\IB00118580.jpg"],
+        "publication_date": "1636 - 1684",
+        "content_type": null
+      },
+      {
+        "id": "rkdartists_25549",
+        "_kwic": {},
+        "ft_artist_name": "Eeckhout, Gerbrand van den",
+        "location": ["Amsterdam", "Arnhem", "Haarlem", "Rhenen", "Kleef"],
+        "artist_name": null,
+        "person_type": ["poet", "printmaker", "painter", "draftsman"],
+        "score": 1.0,
+        "ui_date": ["1621 - 1674"],
+        "ui_img_src": ["http://imagehandler.rkd.nl/wwwopac.ashx?command=getcontent&server=images&width=600&height=600&value=jpg\\227\\0000375227.jpg"],
+        "publication_date": "1621 - 1674",
+        "content_type": null
+      },
+      {
+        "id": "rkdartists_27138",
+        "_kwic": {},
+        "ft_artist_name": "Fabritius, Carel",
+        "location": ["Amsterdam", "Beemster", "Delft"],
+        "artist_name": null,
+        "person_type": ["printmaker", "painter", "draftsman"],
+        "score": 1.0,
+        "ui_date": ["1622 - 1654"],
+        "ui_img_src": ["http://imagehandler.rkd.nl/wwwopac.ashx?command=getcontent&server=images&width=600&height=600&value=jpg\\880\\0000136880.jpg", "http://imagehandler.rkd.nl/wwwopac.ashx?command=getcontent&server=images&width=600&height=600&value=jpg\\561\\IB00037561.jpg", "http://imagehandler.rkd.nl/wwwopac.ashx?command=getcontent&server=images&width=600&height=600&value=jpg\\555\\IB00019555.jpg", "http://imagehandler.rkd.nl/wwwopac.ashx?command=getcontent&server=images&width=600&height=600&value=jpg\\888\\0000136888.jpg", "http://imagehandler.rkd.nl/wwwopac.ashx?command=getcontent&server=images&width=600&height=600&value=jpg\\792\\0000002792.jpg", "http://imagehandler.rkd.nl/wwwopac.ashx?command=getcontent&server=images&width=600&height=600&value=jpg\\043\\0000063043.jpg", "http://imagehandler.rkd.nl/wwwopac.ashx?command=getcontent&server=images&width=600&height=600&value=jpg\\791\\0000002791.jpg", "http://imagehandler.rkd.nl/wwwopac.ashx?command=getcontent&server=images&width=600&height=600&value=jpg\\879\\0000136879.jpg", "http://imagehandler.rkd.nl/wwwopac.ashx?command=getcontent&server=images&width=600&height=600&value=jpg\\894\\0000136894.jpg", "http://imagehandler.rkd.nl/wwwopac.ashx?command=getcontent&server=images&width=600&height=600&value=jpg\\494\\0000131494.jpg"],
+        "publication_date": "1622 - 1654",
+        "content_type": null
+      }
+    ],
+    "start": 0,
+    "rows": 12,
+    "sortableFields": ["id"],
+    "_next": "http://localhost:9001/api/result?database=rkdartists&start=12&rows=12"
+  },
+  "ruquest": {
+    "solrquery": "q=*%3A*&fl=ft_authors%2Cft_title%2Cft_publicationtitle%2Cft_publicationplace%2Cui_publisher%2Cui_isbn%2Cui_issn%2Cui_volume%2Cui_issue%2Cui_startpage%2Cui_endpage%2Cid%2Cscore%2Ccontent_type%2Cperson_type%2Cartist_name%2Cpublication_date%2Clocation&rows=50000&facet.field=content_type&facet.field=person_type&facet.field=location&facet.field=artist_name&facet.field=publication_date_lower&facet.field=publication_date_upper&facet=true&facet.mincount=1&facet.limit=10000&hl=true&hl.fragsize=100&hl.maxAnalyzedChars=-1&hl.fl=ft_title&hl.fl=ft_publicationtitle&hl.fl=ft_publicationplace&hl.fl=ft_authors&hl.fl=ft_subjectterms&hl.fl=ft_abstract&hl.q=*%3A*",
+    "term": "*:*",
+    "numFound": 2183,
+    "ids": ["ruquest_FETCH-radboud_catalog_8621297531", "ruquest_FETCH-radboud_catalog_2895753891", "ruquest_FETCH-radboud_catalog_2965298261", "ruquest_FETCH-radboud_catalog_2772746991", "ruquest_FETCH-radboud_catalog_2176419971", "ruquest_FETCH-radboud_catalog_06551193X1", "ruquest_FETCH-radboud_catalog_8306722571", "ruquest_FETCH-radboud_catalog_8636683051", "ruquest_FETCH-radboud_catalog_0364009041", "ruquest_FETCH-radboud_catalog_0586178331", "ruquest_FETCH-radboud_catalog_0813856091", "ruquest_FETCH-radboud_catalog_82084487X1"],
+    "results": [
+      {
+        "location": ["Leipzig"],
+        "ft_publicationplace": "Leipzig",
+        "ui_issue": null,
+        "person_type": ["authors of secundary literature after 1800"],
+        "score": 1.0,
+        "ui_isbn": null,
+        "ui_volume": null,
+        "id": "ruquest_FETCH-radboud_catalog_8621297531",
+        "ui_publisher": ["Meulenhoff"],
+        "_kwic": {},
+        "ft_title": "Rembrandt",
+        "ui_endpage": null,
+        "artist_name": null,
+        "ft_authors": null,
+        "ui_startpage": null,
+        "ft_publicationtitle": "Rembrandt",
+        "publication_date": "1905",
+        "content_type": ["articles in magazines/journals", "publications (all)"],
+        "ui_issn": null
+      },
+      {
+        "location": ["Zwolle"],
+        "ft_publicationplace": "Zwolle",
+        "ui_issue": null,
+        "person_type": ["authors of secundary literature after 1800"],
+        "score": 1.0,
+        "ui_isbn": ["9789040091650"],
+        "ui_volume": null,
+        "id": "ruquest_FETCH-radboud_catalog_2895753891",
+        "ui_publisher": ["Waanders"],
+        "_kwic": {},
+        "ft_title": "Rembrandt",
+        "ui_endpage": null,
+        "artist_name": null,
+        "ft_authors": null,
+        "ui_startpage": null,
+        "ft_publicationtitle": null,
+        "publication_date": "2006",
+        "content_type": ["books/e-books", "publications (all)"],
+        "ui_issn": null
+      },
+      {
+        "location": ["Dresden"],
+        "ft_publicationplace": "Dresden",
+        "ui_issue": null,
+        "person_type": ["authors of secundary literature after 1800"],
+        "score": 1.0,
+        "ui_isbn": null,
+        "ui_volume": null,
+        "id": "ruquest_FETCH-radboud_catalog_2965298261",
+        "ui_publisher": ["Kupferstich-Kabinett, Staatliche Kunstsammlungen Dresden"],
+        "_kwic": {},
+        "ft_title": "Rembrandt",
+        "ui_endpage": null,
+        "artist_name": null,
+        "ft_authors": null,
+        "ui_startpage": null,
+        "ft_publicationtitle": null,
+        "publication_date": "2006",
+        "content_type": ["books/e-books", "publications (all)"],
+        "ui_issn": null
+      },
+      {
+        "location": ["Bedburg-Hau"],
+        "ft_publicationplace": "Bedburg-Hau [etc.]",
+        "ui_issue": null,
+        "person_type": ["authors of secundary literature after 1800"],
+        "score": 1.0,
+        "ui_isbn": ["3935166273"],
+        "ui_volume": null,
+        "id": "ruquest_FETCH-radboud_catalog_2772746991",
+        "ui_publisher": ["Stiftung Museum Schloß Moyland [etc.]"],
+        "_kwic": {},
+        "ft_title": "Rembrandt",
+        "ui_endpage": null,
+        "artist_name": null,
+        "ft_authors": null,
+        "ui_startpage": null,
+        "ft_publicationtitle": null,
+        "publication_date": "2005",
+        "content_type": ["books/e-books", "publications (all)"],
+        "ui_issn": null
+      },
+      {
+        "location": ["Ljubljana"],
+        "ft_publicationplace": "Ljubljana",
+        "ui_issue": null,
+        "person_type": ["authors of secundary literature after 1800"],
+        "score": 1.0,
+        "ui_isbn": null,
+        "ui_volume": null,
+        "id": "ruquest_FETCH-radboud_catalog_2176419971",
+        "ui_publisher": ["Cankarjev dom, kulturni in kongresni center"],
+        "_kwic": {},
+        "ft_title": "Rembrandt",
+        "ui_endpage": null,
+        "artist_name": null,
+        "ft_authors": null,
+        "ui_startpage": null,
+        "ft_publicationtitle": null,
+        "publication_date": "2000",
+        "content_type": ["books/e-books", "publications (all)"],
+        "ui_issn": null
+      },
+      {
+        "location": ["Leipzig"],
+        "ft_publicationplace": "Leipzig",
+        "ui_issue": null,
+        "person_type": ["authors of secundary literature after 1800"],
+        "score": 1.0,
+        "ui_isbn": null,
+        "ui_volume": ["108.b"],
+        "id": "ruquest_FETCH-radboud_catalog_06551193X1",
+        "ui_publisher": ["Insel"],
+        "_kwic": {},
+        "ft_title": "Rembrandt",
+        "ui_endpage": null,
+        "artist_name": null,
+        "ft_authors": null,
+        "ui_startpage": null,
+        "ft_publicationtitle": null,
+        "publication_date": "19uu",
+        "content_type": ["books/e-books", "publications (all)"],
+        "ui_issn": null
+      },
+      {
+        "location": ["Arnhem"],
+        "ft_publicationplace": "Arnhem",
+        "ui_issue": null,
+        "person_type": ["authors of secundary literature after 1800"],
+        "score": 1.0,
+        "ui_isbn": null,
+        "ui_volume": null,
+        "id": "ruquest_FETCH-radboud_catalog_8306722571",
+        "ui_publisher": ["Van Loghum Slaterus"],
+        "_kwic": {},
+        "ft_title": "Rembrandt",
+        "ui_endpage": null,
+        "artist_name": null,
+        "ft_authors": null,
+        "ui_startpage": null,
+        "ft_publicationtitle": null,
+        "publication_date": "1934",
+        "content_type": ["books/e-books", "publications (all)"],
+        "ui_issn": null
+      },
+      {
+        "location": ["Leningrad"],
+        "ft_publicationplace": "Leningrad",
+        "ui_issue": null,
+        "person_type": ["authors of secundary literature after 1800"],
+        "score": 1.0,
+        "ui_isbn": null,
+        "ui_volume": null,
+        "id": "ruquest_FETCH-radboud_catalog_8636683051",
+        "ui_publisher": ["Aurora Art Publishers"],
+        "_kwic": {},
+        "ft_title": "Rembrandt",
+        "ui_endpage": null,
+        "artist_name": null,
+        "ft_authors": null,
+        "ui_startpage": null,
+        "ft_publicationtitle": null,
+        "publication_date": "1985",
+        "content_type": ["books/e-books", "publications (all)"],
+        "ui_issn": null
+      },
+      {
+        "location": ["Utrecht"],
+        "ft_publicationplace": "Utrecht",
+        "ui_issue": null,
+        "person_type": ["authors of secundary literature after 1800"],
+        "score": 1.0,
+        "ui_isbn": null,
+        "ui_volume": null,
+        "id": "ruquest_FETCH-radboud_catalog_0364009041",
+        "ui_publisher": ["De Haan"],
+        "_kwic": {},
+        "ft_title": "Rembrandt",
+        "ui_endpage": null,
+        "artist_name": null,
+        "ft_authors": null,
+        "ui_startpage": null,
+        "ft_publicationtitle": null,
+        "publication_date": "1935",
+        "content_type": ["books/e-books", "publications (all)"],
+        "ui_issn": null
+      },
+      {
+        "location": ["Oxford"],
+        "ft_publicationplace": "Oxford [etc.]",
+        "ui_issue": null,
+        "person_type": ["authors of secundary literature after 1800"],
+        "score": 1.0,
+        "ui_isbn": null,
+        "ui_volume": null,
+        "id": "ruquest_FETCH-radboud_catalog_0586178331",
+        "ui_publisher": ["Phaidon"],
+        "_kwic": {},
+        "ft_title": "Rembrandt",
+        "ui_endpage": null,
+        "artist_name": null,
+        "ft_authors": null,
+        "ui_startpage": null,
+        "ft_publicationtitle": null,
+        "publication_date": "1947",
+        "content_type": ["books/e-books", "publications (all)"],
+        "ui_issn": null
+      },
+      {
+        "location": ["Amsterdam"],
+        "ft_publicationplace": "Amsterdam [etc.]",
+        "ui_issue": null,
+        "person_type": ["authors of secundary literature after 1800"],
+        "score": 1.0,
+        "ui_isbn": null,
+        "ui_volume": null,
+        "id": "ruquest_FETCH-radboud_catalog_0813856091",
+        "ui_publisher": ["Van Ditmar"],
+        "_kwic": {},
+        "ft_title": "Rembrandt",
+        "ui_endpage": null,
+        "artist_name": null,
+        "ft_authors": null,
+        "ui_startpage": null,
+        "ft_publicationtitle": null,
+        "publication_date": "1947",
+        "content_type": ["books/e-books", "publications (all)"],
+        "ui_issn": null
+      },
+      {
+        "location": ["Baarn"],
+        "ft_publicationplace": "Baarn",
+        "ui_issue": null,
+        "person_type": ["authors of secundary literature after 1800"],
+        "score": 1.0,
+        "ui_isbn": null,
+        "ui_volume": null,
+        "id": "ruquest_FETCH-radboud_catalog_82084487X1",
+        "ui_publisher": ["Het Wereldvenster"],
+        "_kwic": {},
+        "ft_title": "Rembrandt",
+        "ui_endpage": null,
+        "artist_name": null,
+        "ft_authors": null,
+        "ui_startpage": null,
+        "ft_publicationtitle": null,
+        "publication_date": "1956",
+        "content_type": ["books/e-books", "publications (all)"],
+        "ui_issn": null
+      }
+    ],
+    "start": 0,
+    "rows": 12,
+    "sortableFields": ["id"],
+    "_next": "http://localhost:9001/api/result?database=ruquest&start=12&rows=12"
+  },
+  "remdoc": {
+    "solrquery": "q=*%3A*&fl=ft_entry_name%2Cui_name_of_object%2Cui_author_name%2Cui_author_role%2Cid%2Cscore%2Ccontent_type%2Cperson_type%2Cartist_name%2Cpublication_date%2Clocation&rows=50000&facet.field=content_type&facet.field=person_type&facet.field=location&facet.field=artist_name&facet.field=publication_date_lower&facet.field=publication_date_upper&facet=true&facet.mincount=1&facet.limit=10000&hl=true&hl.fragsize=100&hl.maxAnalyzedChars=-1&hl.fl=ft_entry_name&hl.fl=ft_diplomatic&hl.fl=ft_translation&hl.fl=ft_comments&hl.q=*%3A*",
+    "term": "*:*",
+    "numFound": 2003,
+    "ids": ["remdoc_14098", "remdoc_14099", "remdoc_14121", "remdoc_14097", "remdoc_14096", "remdoc_14100", "remdoc_14095", "remdoc_14223", "remdoc_14222", "remdoc_14602", "remdoc_14094", "remdoc_14093"],
+    "results": [
+      {
+        "id": "remdoc_14098",
+        "_kwic": {},
+        "location": ["Den Haag"],
+        "artist_name": ["Joachim von Sandrart"],
+        "person_type": ["art theorist"],
+        "score": 1.0,
+        "ui_name_of_object": ["L'Academia Todesca della architectura, scultura e pittura, oder Teutsche Academi der edlen Bau-Bild-Mahlerey-Künste, 4 vols, Nürnberg 1675-1679"],
+        "ui_author_role": ["kunsttheoreticus [art theorist]"],
+        "ui_author_name": ["Joachim von Sandrart"],
+        "publication_date": "1675",
+        "content_type": ["books/e-books", "publications (all)"],
+        "ft_entry_name": "Gerrit Dou recorded as a pupil of Rembrandt in Joachim von Sandrart’s “Academia Todesca” (1675)"
+      },
+      {
+        "id": "remdoc_14099",
+        "_kwic": {},
+        "location": ["Den Haag"],
+        "artist_name": ["Joachim von Sandrart"],
+        "person_type": ["art theorist"],
+        "score": 1.0,
+        "ui_name_of_object": ["L'Academia Todesca della architectura, scultura e pittura, oder Teutsche Academi der edlen Bau-Bild-Mahlerey-Künste, 4 vols, Nürnberg 1675-1679"],
+        "ui_author_role": ["kunsttheoreticus [art theorist]"],
+        "ui_author_name": ["Joachim von Sandrart"],
+        "publication_date": "1675",
+        "content_type": ["books/e-books", "publications (all)"],
+        "ft_entry_name": "Govert Flinck recorded as a pupil of Rembrandt in Joachim von Sandrart’s “Academia Todesca” (1675)"
+      },
+      {
+        "id": "remdoc_14121",
+        "_kwic": {},
+        "location": ["Den Haag"],
+        "artist_name": ["Joachim von Sandrart"],
+        "person_type": ["art theorist"],
+        "score": 1.0,
+        "ui_name_of_object": ["L'Academia Todesca della architectura, scultura e pittura, oder Teutsche Academi der edlen Bau-Bild-Mahlerey-Künste, 4 vols, Nürnberg 1675-1679"],
+        "ui_author_role": ["kunsttheoreticus [art theorist]"],
+        "ui_author_name": ["Joachim von Sandrart"],
+        "publication_date": "1675",
+        "content_type": ["books/e-books", "publications (all)"],
+        "ft_entry_name": "Joachim von Sandrart Rembrandt’s harmony of colours in his “Academia Todesca” (1675)"
+      },
+      {
+        "id": "remdoc_14097",
+        "_kwic": {},
+        "location": ["Den Haag"],
+        "artist_name": ["Joachim von Sandrart"],
+        "person_type": ["art theorist"],
+        "score": 1.0,
+        "ui_name_of_object": ["L'Academia Todesca della architectura, scultura e pittura, oder Teutsche Academi der edlen Bau-Bild-Mahlerey-Künste, 4 vols, Nürnberg 1675-1679"],
+        "ui_author_role": ["kunsttheoreticus [art theorist]"],
+        "ui_author_name": ["Joachim von Sandrart"],
+        "publication_date": "1675",
+        "content_type": ["books/e-books", "publications (all)"],
+        "ft_entry_name": "Joachim von Sandrart’s biography of Rembrandt in his “Academia Todesca” (1675)"
+      },
+      {
+        "id": "remdoc_14096",
+        "_kwic": {},
+        "location": ["Den Haag"],
+        "artist_name": ["Joachim von Sandrart"],
+        "person_type": ["art theorist"],
+        "score": 1.0,
+        "ui_name_of_object": ["L'Academia Todesca della architectura, scultura e pittura, oder Teutsche Academi der edlen Bau-Bild-Mahlerey-Künste, 4 vols, Nürnberg 1675-1679"],
+        "ui_author_role": ["kunsttheoreticus [art theorist]"],
+        "ui_author_name": ["Joachim von Sandrart"],
+        "publication_date": "1675",
+        "content_type": ["books/e-books", "publications (all)"],
+        "ft_entry_name": "Johann Ulrich Mayr recorded as a pupil of Rembrandt in Joachim von Sandrart’s “Academia Todesca” (1675)"
+      },
+      {
+        "id": "remdoc_14100",
+        "_kwic": {},
+        "location": ["Den Haag"],
+        "artist_name": ["Joachim von Sandrart"],
+        "person_type": ["art theorist"],
+        "score": 1.0,
+        "ui_name_of_object": ["L'Academia Todesca della architectura, scultura e pittura, oder Teutsche Academi der edlen Bau-Bild-Mahlerey-Künste, 4 vols, Nürnberg 1675-1679"],
+        "ui_author_role": ["kunsttheoreticus [art theorist]"],
+        "ui_author_name": ["Joachim von Sandrart"],
+        "publication_date": "1675",
+        "content_type": ["books/e-books", "publications (all)"],
+        "ft_entry_name": "Rembrandt pays a high price for prints by Lucas van Leyden according to Joachim von Sandrart in his “Academia Todesca” (1675)"
+      },
+      {
+        "id": "remdoc_14095",
+        "_kwic": {},
+        "location": ["Amsterdam"],
+        "artist_name": null,
+        "person_type": ["inventory clerk"],
+        "score": 1.0,
+        "ui_name_of_object": ["Register van de Inventarissen MM. Anno 1674 [CHECK]"],
+        "ui_author_role": ["inventarisator [inventory clerk]"],
+        "ui_author_name": null,
+        "publication_date": "1675-03-27/1675-04-27",
+        "content_type": ["municipal records"],
+        "ft_entry_name": "Rembrandt paintings of a “Jewess”, a “little David” (or “Danae”), and an unfinished “Portrait of Lady” in the estate of Gerrit Uylenburgh (27 March 1675)"
+      },
+      {
+        "id": "remdoc_14223",
+        "_kwic": {},
+        "location": ["Haarlem"],
+        "artist_name": ["Pieter Baes"],
+        "person_type": ["notary"],
+        "score": 1.0,
+        "ui_name_of_object": null,
+        "ui_author_role": ["notaris [notary]"],
+        "ui_author_name": ["Pieter Baes"],
+        "publication_date": "1675-04-28",
+        "content_type": ["notarial acts"],
+        "ft_entry_name": "A “History of Tobias” and a “Little man” by Rembrandt in the estate of Eduard van Cralen and his wife Agneta van den Heuvel, being appraised by Adriaen van Ostade and Willem Romeijn (28 April 1675)"
+      },
+      {
+        "id": "remdoc_14222",
+        "_kwic": {},
+        "location": ["Amsterdam"],
+        "artist_name": null,
+        "person_type": ["inventory clerk"],
+        "score": 1.0,
+        "ui_name_of_object": null,
+        "ui_author_role": ["inventarisator [inventory clerk]"],
+        "ui_author_name": null,
+        "publication_date": "1675-10-16",
+        "content_type": ["municipal records"],
+        "ft_entry_name": "The appraisal of two Rembrandt paintings, a “Little Danae” and a “Jewess”, in the estate of Gerrit Uylenburgh, husband of Elisabeth Just (16 October 1675)"
+      },
+      {
+        "id": "remdoc_14602",
+        "_kwic": {},
+        "location": ["Jakarta"],
+        "artist_name": null,
+        "person_type": null,
+        "score": 1.0,
+        "ui_name_of_object": ["Doopboeken der Nederduitsche Gemeente te Batavia"],
+        "ui_author_role": null,
+        "ui_author_name": null,
+        "publication_date": "1675-10-17",
+        "content_type": ["baptism, marriage and burial records"],
+        "ft_entry_name": "The baptism of Rembrandt Suijthof, another grandson of the painter who is named after him, recorded in Batavia (17 October 1675)"
+      },
+      {
+        "id": "remdoc_14094",
+        "_kwic": {},
+        "location": ["Amsterdam"],
+        "artist_name": ["Jacob de Winter"],
+        "person_type": ["notary"],
+        "score": 1.0,
+        "ui_name_of_object": ["Minuutacten van inventarissen"],
+        "ui_author_role": ["notaris [notary]"],
+        "ui_author_name": ["Jacob de Winter"],
+        "publication_date": "1676-01-07/1676-01-08",
+        "content_type": ["notarial acts"],
+        "ft_entry_name": "A copy of a head of Christ after Rembrandt in the inventory of Gerrit Reijersz. Elias, widower of Catharina van Beringen (7 January 1675)"
+      },
+      {
+        "id": "remdoc_14093",
+        "_kwic": {},
+        "location": ["Nijmegen"],
+        "artist_name": ["Gerard Hoet"],
+        "person_type": ["cataloguer/compiler"],
+        "score": 1.0,
+        "ui_name_of_object": ["Catalogus of naamlyst van schilderyen, met derzelver pryzen zedert een langen reeks van jaaren zoo in Holland als op andere plaatzen in het openbaar verkogt, 2 vols, ed. Pieter Gerard van Baalen, The Hague 1752"],
+        "ui_author_role": ["catalogiseerder/samensteller [cataloguer/compiler]"],
+        "ui_author_name": ["Gerard Hoet"],
+        "publication_date": "{1676-05-15, 1752}",
+        "content_type": ["books/e-books", "publications (all)"],
+        "ft_entry_name": "A “Paracelsus”, painted by Rembrandt, from the collection of Reynier van der Wolf and his children (inheriting from Miss M. Pessers) sold at auction in Rotterdam on 15 May 1676 and recorded in Gerard Hoet’s “Catalogus of naamlyst van schilderyen” (1752) "
+      }
+    ],
+    "start": 0,
+    "rows": 12,
+    "sortableFields": ["id"],
+    "_next": "http://localhost:9001/api/result?database=remdoc&start=12&rows=12"
+  }
+}}
