@@ -1,5 +1,5 @@
 Models =
-	Facet: require './facet'
+  Facet: require './facet'
 
 class List extends Models.Facet
 

@@ -7,7 +7,7 @@ funcky = require('funcky.util')
 config = require '../../config'
 
 Models =
-  List: require '../../models/list'
+  List: require '../../models/facets/list'
 
 bodyTpl = require '../../../jade/facets/list.body.jade'
 optionTpl = require '../../../jade/facets/list.option.jade'

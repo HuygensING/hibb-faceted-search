@@ -23,7 +23,7 @@ class TextSearch extends Backbone.View
 
   # ### Render
   render: ->
-    tpl = config.templates['search'] if config.templates.hasOwnProperty 'search'
+    tpl = config.templates['text-search'] if config.templates.hasOwnProperty 'text-search'
     @$el.html tpl model: @model
 
     @

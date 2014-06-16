@@ -4,7 +4,7 @@ _ = require 'underscore'
 config = require '../../config'
 
 Models =
-	List: require '../../models/list'
+	List: require '../../models/facets/list'
 
 Collections = 
 	Options: require '../../collections/list.options'

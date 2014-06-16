@@ -1,5 +1,5 @@
 Models =
-  Date: require '../../models/date'
+  Date: require '../../models/facets/date'
 
 Views = 
   Facet: require './main'

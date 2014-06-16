@@ -2,7 +2,7 @@ $ = require 'jquery'
 _ = require 'underscore'
 
 Models =
-  Boolean: require '../../models/boolean'
+  Boolean: require '../../models/facets/boolean'
 
 Views = 
   Facet: require './main'
