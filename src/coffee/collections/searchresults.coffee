@@ -36,7 +36,7 @@ class SearchResults extends Backbone.Collection
   runQuery: (queryOptions, options={}) ->
     options.cache ?= true
 
-    @queryAmount += 1
+    @queryAmount = @queryAmount + 1
 
     if queryOptions.hasOwnProperty 'resultRows'
       resultRows = queryOptions.resultRows
