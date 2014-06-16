@@ -1,4 +1,4 @@
-FacetModel = require 'facet'
+FacetModel = require './main'
 
 class RangeFacet extends FacetModel
 

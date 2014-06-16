@@ -1,5 +1,5 @@
 Models =
-  Facet: require './facet'
+  Facet: require './main'
 
 class BooleanFacet extends Models.Facet
 
