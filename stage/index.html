@@ -19,13 +19,17 @@
 
             var fs = new FacetedSearch({
                 el: document.querySelector('.faceted-search-placeholder'),
+
+                // Remote, for 'real' results
+//                baseUrl: 'http://demo7.huygens.knaw.nl/rembench-backend/',
+
+                // Local, for testing and fast result rendering
                 baseUrl: 'http://localhost:9001/api/',
+
                 searchPath: 'search',
                 resultRows: 12
             });
-            setTimeout(function() {
-                $('.facets').prepend($('.facet.range'));
-            }, 100)
+
             fs.search();
         </script>
     </body>
