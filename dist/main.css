@@ -10,11 +10,27 @@
 .faceted-search .facet {
   position: relative;
 }
+.faceted-search .facet header {
+  white-space: nowrap;
+  position: relative;
+}
 .faceted-search .facet header h3 {
   padding: 0;
   margin: 0;
-  display: inline;
   cursor: pointer;
+  width: calc(100% - 60px);
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.faceted-search .facet header div.menu {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  right: 0;
+}
+.faceted-search .facet header div.menu i.fa {
+  font-size: 1em;
+  margin: 2px 0 0 4px;
 }
 .faceted-search .facet header .options {
   display: none;
@@ -100,6 +116,22 @@
 .faceted-search .facet .body {
   max-height: 200px;
   margin-top: 10px;
+}
+@media (max-width: 640px) {
+  .faceted-search .facet header h3 {
+    width: calc(100% - 50px);
+  }
+  .faceted-search .facet header div.menu i.fa {
+    font-size: 0.8em;
+  }
+}
+@media (max-width: 460px) {
+  .faceted-search .facet header h3 {
+    width: calc(100% - 40px);
+  }
+  .faceted-search .facet header div.menu i.fa {
+    font-size: 0.6em;
+  }
 }
 
 .row {
@@ -942,7 +974,6 @@
   0% {
     transform: scale(1, 1);
   }
-<<<<<<< HEAD
   25% {
     transform: scale(0.7, 0.7);
   }
@@ -952,21 +983,6 @@
   75% {
     transform: scale(0.7, 0.7);
   }
-=======
-
-  25% {
-    transform: scale(0.7, 0.7);
-  }
-
-  50% {
-    transform: scale(1, 1);
-  }
-
-  75% {
-    transform: scale(0.7, 0.7);
-  }
-
->>>>>>> Remove version dirs from dist, version is tagged
   100% {
     transform: scale(1, 1);
   }
@@ -975,7 +991,6 @@
   0% {
     transform: scale(1, 1);
   }
-<<<<<<< HEAD
   25% {
     transform: scale(0.7, 0.7);
   }
@@ -985,21 +1000,6 @@
   75% {
     transform: scale(0.7, 0.7);
   }
-=======
-
-  25% {
-    transform: scale(0.7, 0.7);
-  }
-
-  50% {
-    transform: scale(1, 1);
-  }
-
-  75% {
-    transform: scale(0.7, 0.7);
-  }
-
->>>>>>> Remove version dirs from dist, version is tagged
   100% {
     transform: scale(1, 1);
   }
@@ -1008,7 +1008,6 @@
   0% {
     transform: scale(1, 1);
   }
-<<<<<<< HEAD
   25% {
     transform: scale(0.7, 0.7);
   }
@@ -1018,42 +1017,6 @@
   75% {
     transform: scale(0.7, 0.7);
   }
-=======
-
-  25% {
-    transform: scale(0.7, 0.7);
-  }
-
-  50% {
-    transform: scale(1, 1);
-  }
-
-  75% {
-    transform: scale(0.7, 0.7);
-  }
-
-  100% {
-    transform: scale(1, 1);
-  }
-}
-@-ms-keyframes shrink {
-  0% {
-    transform: scale(1, 1);
-  }
-
-  25% {
-    transform: scale(0.7, 0.7);
-  }
-
-  50% {
-    transform: scale(1, 1);
-  }
-
-  75% {
-    transform: scale(0.7, 0.7);
-  }
-
->>>>>>> Remove version dirs from dist, version is tagged
   100% {
     transform: scale(1, 1);
   }
@@ -1062,7 +1025,6 @@
   0% {
     transform: scale(1, 1);
   }
-<<<<<<< HEAD
   25% {
     transform: scale(0.7, 0.7);
   }
@@ -1072,21 +1034,6 @@
   75% {
     transform: scale(0.7, 0.7);
   }
-=======
-
-  25% {
-    transform: scale(0.7, 0.7);
-  }
-
-  50% {
-    transform: scale(1, 1);
-  }
-
-  75% {
-    transform: scale(0.7, 0.7);
-  }
-
->>>>>>> Remove version dirs from dist, version is tagged
   100% {
     transform: scale(1, 1);
   }
@@ -1095,7 +1042,6 @@
   0% {
     transform: scale(1, 1);
   }
-<<<<<<< HEAD
   25% {
     transform: scale(1.2, 1.2);
   }
@@ -1105,21 +1051,6 @@
   75% {
     transform: scale(1.2, 1.2);
   }
-=======
-
-  25% {
-    transform: scale(1.2, 1.2);
-  }
-
-  50% {
-    transform: scale(1, 1);
-  }
-
-  75% {
-    transform: scale(1.2, 1.2);
-  }
-
->>>>>>> Remove version dirs from dist, version is tagged
   100% {
     transform: scale(1, 1);
   }
@@ -1128,7 +1059,6 @@
   0% {
     transform: scale(1, 1);
   }
-<<<<<<< HEAD
   25% {
     transform: scale(1.2, 1.2);
   }
@@ -1138,21 +1068,6 @@
   75% {
     transform: scale(1.2, 1.2);
   }
-=======
-
-  25% {
-    transform: scale(1.2, 1.2);
-  }
-
-  50% {
-    transform: scale(1, 1);
-  }
-
-  75% {
-    transform: scale(1.2, 1.2);
-  }
-
->>>>>>> Remove version dirs from dist, version is tagged
   100% {
     transform: scale(1, 1);
   }
@@ -1161,7 +1076,6 @@
   0% {
     transform: scale(1, 1);
   }
-<<<<<<< HEAD
   25% {
     transform: scale(1.2, 1.2);
   }
@@ -1171,42 +1085,6 @@
   75% {
     transform: scale(1.2, 1.2);
   }
-=======
-
-  25% {
-    transform: scale(1.2, 1.2);
-  }
-
-  50% {
-    transform: scale(1, 1);
-  }
-
-  75% {
-    transform: scale(1.2, 1.2);
-  }
-
-  100% {
-    transform: scale(1, 1);
-  }
-}
-@-ms-keyframes grow {
-  0% {
-    transform: scale(1, 1);
-  }
-
-  25% {
-    transform: scale(1.2, 1.2);
-  }
-
-  50% {
-    transform: scale(1, 1);
-  }
-
-  75% {
-    transform: scale(1.2, 1.2);
-  }
-
->>>>>>> Remove version dirs from dist, version is tagged
   100% {
     transform: scale(1, 1);
   }
@@ -1215,7 +1093,6 @@
   0% {
     transform: scale(1, 1);
   }
-<<<<<<< HEAD
   25% {
     transform: scale(1.2, 1.2);
   }
@@ -1225,21 +1102,6 @@
   75% {
     transform: scale(1.2, 1.2);
   }
-=======
-
-  25% {
-    transform: scale(1.2, 1.2);
-  }
-
-  50% {
-    transform: scale(1, 1);
-  }
-
-  75% {
-    transform: scale(1.2, 1.2);
-  }
-
->>>>>>> Remove version dirs from dist, version is tagged
   100% {
     transform: scale(1, 1);
   }
@@ -1386,15 +1248,6 @@
 .facet.list header .options small.optioncount {
   margin-left: 8px;
 }
-.facet.list header div.menu {
-  display: inline-block;
-  float: right;
-  cursor: pointer;
-}
-.facet.list header div.menu i.fa {
-  font-size: 1em;
-  margin: 2px 0 0 4px;
-}
 .facet.list .body .container {
   max-height: inherit;
   overflow-y: auto;
@@ -1424,15 +1277,15 @@
 }
 .facet.range .body .slider button {
   display: none;
-  position: absolute;
-  left: 95px;
+  position: relative;
+  top: -35px;
   width: 80px;
-  border-radius: 4px;
+  margin: 0 auto;
+  color: #444;
+  background: rgba(255,189,223,0.3);
   outline: none;
   border: none;
-  background: rgba(255,189,223,0.3);
-  top: 18px;
-  color: #444;
+  border-radius: 4px;
 }
 .facet.range .body .slider .bar {
   height: 6px;
@@ -1442,8 +1295,7 @@
   position: absolute;
   z-index: 1;
 }
-.facet.range .body .slider .min-handle,
-.facet.range .body .slider .max-handle {
+.facet.range .body .slider .handle {
   position: absolute;
   width: 12px;
   height: 12px;
@@ -1453,31 +1305,28 @@
   cursor: pointer;
   z-index: 2;
 }
-.facet.range .body .slider .min-handle {
+.facet.range .body .slider .handle.handle-min {
   left: -6px;
   top: -3px;
 }
-.facet.range .body .slider .max-handle {
+.facet.range .body .slider .handle.handle-max {
   top: -3px;
-<<<<<<< HEAD
-=======
   right: -6px;
->>>>>>> Remove version dirs from dist, version is tagged
 }
-.facet.range .body .slider .min-value {
-  position: relative;
+.facet.range .body .slider label.min,
+.facet.range .body .slider label.max,
+.facet.range .body .slider label.single {
+  position: absolute;
   top: 20px;
-  display: inline-block;
 }
-.facet.range .body .slider .max-value {
-  position: relative;
-  top: 20px;
-  display: inline-block;
-  float: right;
+.facet.range .body .slider label.min,
+.facet.range .body .slider label.max {
+  cursor: pointer;
+  border: 1px solid #eee;
+  padding: 0 3px;
+  border-radius: 3px;
+  background: #fff;
 }
-<<<<<<< HEAD
-=======
-
-
-
->>>>>>> Remove version dirs from dist, version is tagged
+.facet.range .body .slider label.single {
+  display: none;
+}
