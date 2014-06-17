@@ -1,6 +1,11 @@
 FacetModel = require './main'
+_ = require 'underscore'
 
 class RangeFacet extends FacetModel
+
+  defaults: -> _.extend {}, super,
+    currentMin: null
+    currentMax: null
 
   parse: (attrs) ->
     super

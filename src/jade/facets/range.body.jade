@@ -1,7 +1,8 @@
 .slider
-  .min-handle
-  .max-handle
+  .handle-min.handle
+    label.min= options.lowerLimit
+  .handle-max.handle
+    label.max= options.upperLimit
   .bar &nbsp;
-  .min-value= options.lowerLimit
-  .max-value= options.upperLimit
   button Search?
+  label.single

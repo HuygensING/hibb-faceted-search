@@ -1,7 +1,7 @@
 @import '../import/*'
 
-// Sync handleSize with RangeFacet view!
-handleSize = 12px
+// Sync handleWidth with RangeFacet view!
+handleWidth = 12px
 sliderHeight = 6px
 
 .facet.range
@@ -17,19 +17,19 @@ sliderHeight = 6px
 			border-radius sliderHeight
 			box-shadow inset 1px 1px (sliderHeight/2) #888
 			position relative
-			margin 0 (handleSize/2)
+			margin 0 (handleWidth/2)
 
 			button
 				display none
-				position absolute
-				left 95px
+				position relative
+				top -35px
 				width 80px
-				border-radius 4px
+				margin 0 auto
+				color #444
+				background rgba(255, 189, 223, 0.3)
 				outline none
 				border none
-				background rgba(255, 189, 223, 0.3)
-				top 18px
-				color #444
+				border-radius 4px
 
 
 			.bar
@@ -41,31 +41,36 @@ sliderHeight = 6px
 				z-index 1
 
 
-			.min-handle, .max-handle
+			.handle
 				position absolute
-				width handleSize
-				height handleSize
-				border-radius handleSize
+				width handleWidth
+				height handleWidth
+				border-radius handleWidth
 				background #CCC
-				box-shadow inset 1px 1px (handleSize/2) #444
+				box-shadow inset 1px 1px (handleWidth/2) #444
 				cursor pointer
 				z-index 2
 
-			.min-handle
-				left -1 * (handleSize/2)
-				top ((handleSize - sliderHeight)/-2)
+				&.handle-min
+					left -1 * (handleWidth/2)
+					top ((handleWidth - sliderHeight)/-2)
 
-			.max-handle
-				// left 391px
-				top ((handleSize - sliderHeight)/-2)
+				&.handle-max
+					// left 391px
+					top ((handleWidth - sliderHeight)/-2)
+					right -1 * (handleWidth/2)
 
-			.min-value
-				position relative
-				top 20px
-				display inline-block
+			label
+				&.min, &.max, &.single
+					position: absolute
+					top 20px
 
-			.max-value
-				position relative
-				top 20px
-				display inline-block
-				float right
+				&.min, &.max
+					cursor pointer
+					border 1px solid #eeeeee
+					padding 0 3px
+					border-radius 3px
+					background white
+
+				&.single
+					display none
