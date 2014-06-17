@@ -12379,7 +12379,7 @@ Backbone = _dereq_('backbone');
 _ = _dereq_('underscore');
 
 Models = {
-  Option: _dereq_('../models/list.option')
+  Option: _dereq_('../models/facets/list.option.coffee')
 };
 
 ListOptions = (function(_super) {
@@ -12396,14 +12396,13 @@ ListOptions = (function(_super) {
   };
 
   ListOptions.prototype.revert = function() {
-    this.each((function(_this) {
+    return this.each((function(_this) {
       return function(option) {
         return option.set('checked', false, {
           silent: true
         });
       };
     })(this));
-    return this.trigger('change');
   };
 
   ListOptions.prototype.updateOptions = function(newOptions) {
@@ -12476,7 +12475,7 @@ ListOptions = (function(_super) {
 module.exports = ListOptions;
 
 
-},{"../models/list.option":12}],5:[function(_dereq_,module,exports){
+},{"../models/facets/list.option.coffee":11}],5:[function(_dereq_,module,exports){
 var Backbone, SearchResult, SearchResults, config, funcky, _,
   __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
@@ -12526,7 +12525,6 @@ SearchResults = (function(_super) {
       options.cache = true;
     }
     this.queryAmount = this.queryAmount + 1;
-    console.log(this.queryAmount);
     if (queryOptions.hasOwnProperty('resultRows')) {
       resultRows = queryOptions.resultRows;
       delete queryOptions.resultRows;
@@ -12845,8 +12843,8 @@ MainView = (function(_super) {
       viewMap: viewMap
     });
     return this.listenTo(this.facets, 'change', (function(_this) {
-      return function() {
-        return _this.queryOptions.set(arguments);
+      return function(queryOptions, options) {
+        return _this.queryOptions.set(queryOptions, options);
       };
     })(this));
   };
@@ -12940,13 +12938,13 @@ MainView = (function(_super) {
 module.exports = MainView;
 
 
-},{"../jade/main.jade":32,"./collections/searchresults":5,"./config":6,"./models/query-options":13,"./views/facets":17,"./views/text-search":24,"funcky.el":1}],8:[function(_dereq_,module,exports){
+},{"../jade/main.jade":32,"./collections/searchresults":5,"./config":6,"./models/query-options":14,"./views/facets":17,"./views/text-search":24,"funcky.el":1}],8:[function(_dereq_,module,exports){
 var BooleanFacet, Models,
   __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
 Models = {
-  Facet: _dereq_('./facet')
+  Facet: _dereq_('./main')
 };
 
 BooleanFacet = (function(_super) {
@@ -12984,13 +12982,13 @@ BooleanFacet = (function(_super) {
 module.exports = BooleanFacet;
 
 
-},{"./facet":10}],9:[function(_dereq_,module,exports){
+},{"./main":12}],9:[function(_dereq_,module,exports){
 var DateFacet, Models,
   __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
 Models = {
-  Facet: _dereq_('../models/facet')
+  Facet: _dereq_('./main')
 };
 
 DateFacet = (function(_super) {
@@ -13016,47 +13014,13 @@ DateFacet = (function(_super) {
 module.exports = DateFacet;
 
 
-},{"../models/facet":10}],10:[function(_dereq_,module,exports){
-var Backbone, Facet, config,
-  __hasProp = {}.hasOwnProperty,
-  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
-
-Backbone = _dereq_('backbone');
-
-config = _dereq_('../config');
-
-Facet = (function(_super) {
-  __extends(Facet, _super);
-
-  function Facet() {
-    return Facet.__super__.constructor.apply(this, arguments);
-  }
-
-  Facet.prototype.idAttribute = 'name';
-
-  Facet.prototype.parse = function(attrs) {
-    if (config.facetTitleMap.hasOwnProperty(attrs.name)) {
-      attrs.title = config.facetTitleMap[attrs.name];
-    } else {
-      config.facetTitleMap[attrs.name] = attrs.title;
-    }
-    return attrs;
-  };
-
-  return Facet;
-
-})(Backbone.Model);
-
-module.exports = Facet;
-
-
-},{"../config":6}],11:[function(_dereq_,module,exports){
+},{"./main":12}],10:[function(_dereq_,module,exports){
 var List, Models,
   __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
 Models = {
-  Facet: _dereq_('./facet')
+  Facet: _dereq_('./main')
 };
 
 List = (function(_super) {
@@ -13073,7 +13037,7 @@ List = (function(_super) {
 module.exports = List;
 
 
-},{"./facet":10}],12:[function(_dereq_,module,exports){
+},{"./main":12}],11:[function(_dereq_,module,exports){
 var Backbone, ListOption,
   __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
@@ -13111,7 +13075,89 @@ ListOption = (function(_super) {
 module.exports = ListOption;
 
 
-},{}],13:[function(_dereq_,module,exports){
+},{}],12:[function(_dereq_,module,exports){
+var Backbone, Facet, config,
+  __hasProp = {}.hasOwnProperty,
+  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
+
+Backbone = _dereq_('backbone');
+
+config = _dereq_('../../config');
+
+Facet = (function(_super) {
+  __extends(Facet, _super);
+
+  function Facet() {
+    return Facet.__super__.constructor.apply(this, arguments);
+  }
+
+  Facet.prototype.idAttribute = 'name';
+
+  Facet.prototype.defaults = function() {
+    return {
+      name: null,
+      title: null,
+      type: null,
+      options: null
+    };
+  };
+
+  Facet.prototype.parse = function(attrs) {
+    if (config.facetTitleMap.hasOwnProperty(attrs.name)) {
+      attrs.title = config.facetTitleMap[attrs.name];
+    } else {
+      config.facetTitleMap[attrs.name] = attrs.title;
+    }
+    return attrs;
+  };
+
+  return Facet;
+
+})(Backbone.Model);
+
+module.exports = Facet;
+
+
+},{"../../config":6}],13:[function(_dereq_,module,exports){
+var FacetModel, RangeFacet, _,
+  __hasProp = {}.hasOwnProperty,
+  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
+
+FacetModel = _dereq_('./main');
+
+_ = _dereq_('underscore');
+
+RangeFacet = (function(_super) {
+  __extends(RangeFacet, _super);
+
+  function RangeFacet() {
+    return RangeFacet.__super__.constructor.apply(this, arguments);
+  }
+
+  RangeFacet.prototype.defaults = function() {
+    return _.extend({}, RangeFacet.__super__.defaults.apply(this, arguments), {
+      currentMin: null,
+      currentMax: null
+    });
+  };
+
+  RangeFacet.prototype.parse = function(attrs) {
+    RangeFacet.__super__.parse.apply(this, arguments);
+    attrs.options = {
+      lowerLimit: +((attrs.options[0].lowerLimit + '').substr(0, 4)),
+      upperLimit: +((attrs.options[0].upperLimit + '').substr(0, 4))
+    };
+    return attrs;
+  };
+
+  return RangeFacet;
+
+})(FacetModel);
+
+module.exports = RangeFacet;
+
+
+},{"./main":12}],14:[function(_dereq_,module,exports){
 var Backbone, QueryOptions, config, _,
   __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
@@ -13178,37 +13224,7 @@ QueryOptions = (function(_super) {
 module.exports = QueryOptions;
 
 
-},{"../config":6}],14:[function(_dereq_,module,exports){
-var FacetModel, RangeFacet,
-  __hasProp = {}.hasOwnProperty,
-  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
-
-FacetModel = _dereq_('../models/facet');
-
-RangeFacet = (function(_super) {
-  __extends(RangeFacet, _super);
-
-  function RangeFacet() {
-    return RangeFacet.__super__.constructor.apply(this, arguments);
-  }
-
-  RangeFacet.prototype.parse = function(attrs) {
-    RangeFacet.__super__.parse.apply(this, arguments);
-    attrs.options = {
-      lowerLimit: +((attrs.options[0].lowerLimit + '').substr(0, 4)),
-      upperLimit: +((attrs.options[0].upperLimit + '').substr(0, 4))
-    };
-    return attrs;
-  };
-
-  return RangeFacet;
-
-})(FacetModel);
-
-module.exports = RangeFacet;
-
-
-},{"../models/facet":10}],15:[function(_dereq_,module,exports){
+},{"../config":6}],15:[function(_dereq_,module,exports){
 var Backbone, Search, _,
   __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
@@ -13393,7 +13409,7 @@ Facets = (function(_super) {
     for (key in _ref) {
       if (!__hasProp.call(_ref, key)) continue;
       facetView = _ref[key];
-      if (facetView.hasOwnProperty('reset')) {
+      if (typeof facetView.reset === 'function') {
         _results.push(facetView.reset());
       } else {
         _results.push(void 0);
@@ -13471,7 +13487,7 @@ $ = _dereq_('jquery');
 _ = _dereq_('underscore');
 
 Models = {
-  Boolean: _dereq_('../../models/boolean')
+  Boolean: _dereq_('../../models/facets/boolean')
 };
 
 Views = {
@@ -13556,13 +13572,13 @@ BooleanFacet = (function(_super) {
 module.exports = BooleanFacet;
 
 
-},{"../../../jade/facets/boolean.body.jade":25,"../../models/boolean":8,"./main":22}],19:[function(_dereq_,module,exports){
+},{"../../../jade/facets/boolean.body.jade":25,"../../models/facets/boolean":8,"./main":22}],19:[function(_dereq_,module,exports){
 var DateFacet, Models, Views, tpl,
   __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
 Models = {
-  Date: _dereq_('../../models/date')
+  Date: _dereq_('../../models/facets/date')
 };
 
 Views = {
@@ -13612,7 +13628,7 @@ DateFacet = (function(_super) {
 module.exports = DateFacet;
 
 
-},{"../../../jade/facets/date.jade":26,"../../models/date":9,"./main":22}],20:[function(_dereq_,module,exports){
+},{"../../../jade/facets/date.jade":26,"../../models/facets/date":9,"./main":22}],20:[function(_dereq_,module,exports){
 var $, Collections, ListFacet, Models, Views, config, menuTpl, _,
   __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
@@ -13624,7 +13640,7 @@ _ = _dereq_('underscore');
 config = _dereq_('../../config');
 
 Models = {
-  List: _dereq_('../../models/list')
+  List: _dereq_('../../models/facets/list')
 };
 
 Collections = {
@@ -13777,7 +13793,7 @@ ListFacet = (function(_super) {
 module.exports = ListFacet;
 
 
-},{"../../../jade/facets/list.menu.jade":28,"../../collections/list.options":4,"../../config":6,"../../models/list":11,"./list.options":21,"./main":22}],21:[function(_dereq_,module,exports){
+},{"../../../jade/facets/list.menu.jade":28,"../../collections/list.options":4,"../../config":6,"../../models/facets/list":10,"./list.options":21,"./main":22}],21:[function(_dereq_,module,exports){
 var $, Backbone, ListFacetOptions, Models, bodyTpl, config, funcky, optionTpl, _,
   __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
   __hasProp = {}.hasOwnProperty,
@@ -13794,7 +13810,7 @@ funcky = _dereq_('funcky.util');
 config = _dereq_('../../config');
 
 Models = {
-  List: _dereq_('../../models/list')
+  List: _dereq_('../../models/facets/list')
 };
 
 bodyTpl = _dereq_('../../../jade/facets/list.body.jade');
@@ -13977,7 +13993,7 @@ ListFacetOptions = (function(_super) {
 module.exports = ListFacetOptions;
 
 
-},{"../../../jade/facets/list.body.jade":27,"../../../jade/facets/list.option.jade":29,"../../config":6,"../../models/list":11,"funcky.util":34}],22:[function(_dereq_,module,exports){
+},{"../../../jade/facets/list.body.jade":27,"../../../jade/facets/list.option.jade":29,"../../config":6,"../../models/facets/list":10,"funcky.util":34}],22:[function(_dereq_,module,exports){
 var $, Backbone, Facet, config, tpl, _,
   __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
@@ -14070,7 +14086,7 @@ module.exports = Facet;
 
 
 },{"../../../jade/facets/main.jade":30,"../../config":6}],23:[function(_dereq_,module,exports){
-var $, Models, RangeFacet, Views, bodyTpl, config, handleSize, _,
+var $, Models, RangeFacet, Views, bodyTpl, config, dragStopper, resizer, _,
   __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
@@ -14081,7 +14097,7 @@ _ = _dereq_('underscore');
 config = _dereq_('../../config');
 
 Models = {
-  Range: _dereq_('../../models/range')
+  Range: _dereq_('../../models/facets/range')
 };
 
 Views = {
@@ -14090,7 +14106,9 @@ Views = {
 
 bodyTpl = _dereq_('../../../jade/facets/range.body.jade');
 
-handleSize = 12;
+dragStopper = null;
+
+resizer = null;
 
 RangeFacet = (function(_super) {
   __extends(RangeFacet, _super);
@@ -14102,13 +14120,14 @@ RangeFacet = (function(_super) {
   RangeFacet.prototype.className = 'facet range';
 
   RangeFacet.prototype.initialize = function(options) {
-    RangeFacet.__super__.initialize.apply(this, arguments);
     this.draggingMin = false;
-    this.dragginMax = false;
+    this.draggingMax = false;
     this.model = new Models.Range(options.attrs, {
       parse: true
     });
     this.listenTo(this.model, 'change:options', this.render);
+    this.listenTo(this.model, 'change:currentMin', this.checkLabelOverlap);
+    this.listenTo(this.model, 'change:currentMax', this.checkLabelOverlap);
     return this.render();
   };
 
@@ -14121,48 +14140,104 @@ RangeFacet = (function(_super) {
     rtpl = bodyTpl(this.model.attributes);
     this.$('.body').html(rtpl);
     this.$('header .menu').hide();
+    dragStopper = this.stopDragging.bind(this);
+    this.$el.on('mouseleave', dragStopper);
+    resizer = this.onResize.bind(this);
+    window.addEventListener('resize', resizer);
     setTimeout(((function(_this) {
       return function() {
         return _this.postRender();
       };
     })(this)), 0);
-    this.$el.mouseleave((function(_this) {
-      return function() {
-        return _this.stopDragging();
-      };
-    })(this));
     return this;
   };
 
   RangeFacet.prototype.postRender = function() {
-    var $slider;
-    this.$minHandle = this.$('.min-handle');
-    this.$maxHandle = this.$('.max-handle');
-    this.$minValue = this.$('.min-value');
-    this.$maxValue = this.$('.max-value');
-    this.$bar = this.$('.bar');
-    $slider = this.$('.slider');
-    this.sliderWidth = $slider.width();
-    this.sliderLeft = $slider.offset().left;
-    this.minHandleLeft = handleSize / -2;
-    this.maxHandleLeft = this.sliderWidth - (handleSize / 2);
-    return this.$maxHandle.css('left', this.maxHandleLeft);
+    this.slider = this.$('.slider');
+    this.sliderWidth = this.slider.width();
+    this.sliderLeft = this.slider.offset().left;
+    this.handleMin = this.$('.handle-min');
+    this.handleMax = this.$('.handle-max');
+    this.handleWidth = this.handleMin.width();
+    this.handleMinLeft = this.handleMin.position().left;
+    this.handleMaxLeft = this.handleMax.position().left;
+    this.labelMin = this.$('label.min');
+    this.labelMax = this.$('label.max');
+    this.bar = this.$('.bar');
+    this.labelSingle = this.$('label.single');
+    return this.button = this.el.querySelector('button');
   };
 
   RangeFacet.prototype.events = function() {
-    return {
-      'mousedown .max-handle': 'startDragging',
-      'mousedown .min-handle': 'startDragging',
+    return _.extend({}, RangeFacet.__super__.events.apply(this, arguments), {
+      'mousedown .handle': 'startDragging',
       'mouseup': 'stopDragging',
       'mousemove': 'drag',
-      'click .slider': 'moveHandle',
       'click button': 'doSearch'
-    };
+    });
   };
 
   RangeFacet.prototype.doSearch = function(ev) {
     ev.preventDefault();
     return this.triggerChange();
+  };
+
+  RangeFacet.prototype.startDragging = function(ev) {
+    var target;
+    target = $(ev.currentTarget);
+    if (target.hasClass('handle-min')) {
+      this.draggingMin = true;
+      this.handleMax.css('z-index', 10);
+    } else if (target.hasClass('handle-max')) {
+      this.draggingMax = true;
+      this.handleMin.css('z-index', 10);
+    }
+    return target.css('z-index', 11);
+  };
+
+  RangeFacet.prototype.drag = function(ev) {
+    var mousePosLeft;
+    mousePosLeft = ev.clientX - this.sliderLeft;
+    if (this.draggingMin) {
+      this.handleMinLeft = mousePosLeft - (this.handleWidth / 2);
+      if ((-1 < mousePosLeft && mousePosLeft <= this.handleMaxLeft)) {
+        this.handleMin.css('left', this.handleMinLeft);
+        this.bar.css('left', mousePosLeft);
+        this.updateHandleLabel('min', mousePosLeft);
+      }
+    }
+    if (this.draggingMax) {
+      this.handleMaxLeft = mousePosLeft - (this.handleWidth / 2);
+      if ((this.handleMinLeft < mousePosLeft && mousePosLeft <= this.sliderWidth)) {
+        this.handleMax.css('left', this.handleMaxLeft);
+        this.bar.css('right', this.sliderWidth - mousePosLeft);
+        return this.updateHandleLabel('max', mousePosLeft);
+      }
+    }
+  };
+
+  RangeFacet.prototype.stopDragging = function() {
+    if (this.draggingMin || this.draggingMax) {
+      this.draggingMin = false;
+      this.draggingMax = false;
+      this.model.set({
+        currentMin: +this.labelMin.html()
+      });
+      this.model.set({
+        currentMax: +this.labelMax.html()
+      });
+      if (!config.autoSearch) {
+        return this.triggerChange({
+          silent: true
+        });
+      }
+    }
+  };
+
+  RangeFacet.prototype.destroy = function() {
+    this.$el.off('mouseleave', dragStopper);
+    window.removeEventListener('resize', resizer);
+    return this.remove();
   };
 
   RangeFacet.prototype.triggerChange = function(options) {
@@ -14173,103 +14248,64 @@ RangeFacet = (function(_super) {
     queryOptions = {
       facetValue: {
         name: this.model.get('name'),
-        lowerLimit: +(this.$minValue.html() + '0101'),
-        upperLimit: +(this.$maxValue.html() + '1231')
+        lowerLimit: this.model.get('currentMin') + '0101',
+        upperLimit: this.model.get('currentMax') + '1231'
       }
     };
     return this.trigger('change', queryOptions, options);
   };
 
-  RangeFacet.prototype.moveHandle = function(ev) {
-    var left;
-    if (!(ev.target === this.el.querySelector('.slider') || ev.target === this.el.querySelector('.bar'))) {
-      return;
-    }
-    left = ev.clientX - this.sliderLeft;
-    if (Math.abs(this.$minHandle.position().left - left) < Math.abs(this.$maxHandle.position().left - left)) {
-      this.$minHandle.css('left', left - (handleSize / 2));
-      this.$bar.css('left', left);
-      return this.updateValue(this.$minValue, left);
-    } else {
-      this.$maxHandle.css('left', left - (handleSize / 2));
-      this.$bar.css('right', this.sliderWidth - left);
-      return this.updateValue(this.$maxValue, left);
-    }
+  RangeFacet.prototype.onResize = function() {
+    this.postRender();
+    this.update({
+      lowerLimit: this.model.get('currentMin'),
+      upperLimit: this.model.get('currentMax')
+    });
+    return this.checkLabelOverlap();
   };
 
-  RangeFacet.prototype.startDragging = function(ev) {
-    var target;
-    target = $(ev.currentTarget);
-    if (target.hasClass('max-handle')) {
-      this.draggingMax = true;
-      this.$minHandle.css('z-index', 10);
-    } else if (target.hasClass('min-handle')) {
-      this.draggingMin = true;
-      this.$maxHandle.css('z-index', 10);
-    }
-    return target.css('z-index', 11);
-  };
-
-  RangeFacet.prototype.stopDragging = function() {
+  RangeFacet.prototype.checkLabelOverlap = function() {
     var handlesCenter, left, maxRect, minRect;
-    this.draggingMin = false;
-    this.draggingMax = false;
-    minRect = this.$minValue[0].getBoundingClientRect();
-    maxRect = this.$maxValue[0].getBoundingClientRect();
+    minRect = this.labelMin[0].getBoundingClientRect();
+    maxRect = this.labelMax[0].getBoundingClientRect();
     if (!(minRect.right < maxRect.left || minRect.left > maxRect.right || minRect.bottom < maxRect.top || minRect.top > maxRect.bottom)) {
-      this.$minValue.css('opacity', 0);
-      this.$maxValue.css('opacity', 0);
-      this.$('.single-value').show();
-      handlesCenter = this.minHandleLeft + ((this.maxHandleLeft - this.minHandleLeft) / 2);
-      left = handlesCenter - this.$('.single-value').width() / 2 + 6;
-      if (this.sliderWidth - left < this.$('.single-value').width()) {
-        left = this.sliderWidth - this.$('.single-value').width() + 18;
+      this.labelMin.css('opacity', 0);
+      this.labelMax.css('opacity', 0);
+      this.labelSingle.show();
+      handlesCenter = this.handleMinLeft + ((this.handleMaxLeft - this.handleMinLeft) / 2);
+      left = handlesCenter - this.labelSingle.width() / 2 + 6;
+      if (this.sliderWidth - left < this.labelSingle.width()) {
+        left = this.sliderWidth - this.labelSingle.width() + 18;
       }
-      return this.$('.single-value').css('left', left);
+      return this.labelSingle.css('left', left);
     } else {
-      this.$minValue.css('opacity', 1);
-      this.$maxValue.css('opacity', 1);
-      return this.$('.single-value').hide();
+      this.labelMin.css('opacity', 1);
+      this.labelMax.css('opacity', 1);
+      return this.labelSingle.hide();
     }
   };
 
-  RangeFacet.prototype.drag = function(ev) {
-    var left;
-    if (this.draggingMin) {
-      left = ev.clientX - this.sliderLeft;
-      this.minHandleLeft = left - (handleSize / 2);
-      if ((-1 < left && left <= this.sliderWidth) && this.maxHandleLeft > this.minHandleLeft) {
-        this.$minHandle.css('left', this.minHandleLeft);
-        this.$bar.css('left', left);
-        this.updateValue('minValue', left);
-      }
+  RangeFacet.prototype.updateHandleLabel = function(handle, leftPos) {
+    var singleValue, year;
+    if (this.button != null) {
+      this.button.style.display = 'block';
     }
-    if (this.draggingMax) {
-      left = ev.clientX - this.sliderLeft;
-      this.maxHandleLeft = left - (handleSize / 2);
-      if ((-1 < left && left <= this.sliderWidth) && this.maxHandleLeft > this.minHandleLeft) {
-        this.$maxHandle.css('left', this.maxHandleLeft);
-        this.$bar.css('right', this.sliderWidth - left);
-        return this.updateValue('maxValue', left);
-      }
+    year = this.getYearFromLeftPos(leftPos);
+    if (handle === 'min') {
+      this.labelMin.html(year);
+      singleValue = "" + year + " - " + (this.labelMax.html());
+    } else {
+      this.labelMax.html(year);
+      singleValue = "" + (this.labelMin.html()) + " - " + year;
     }
+    return this.labelSingle.html(singleValue);
   };
 
-  RangeFacet.prototype.updateValue = function(handle, left) {
-    var $el, html, ll, ul, value;
-    this.$('button').show();
+  RangeFacet.prototype.getYearFromLeftPos = function(leftPos) {
+    var ll, ul;
     ll = this.model.get('options').lowerLimit;
     ul = this.model.get('options').upperLimit;
-    value = Math.floor((left / this.sliderWidth * (ul - ll)) + ll);
-    $el = handle === 'minValue' ? this.$minValue : this.$maxValue;
-    $el.html(value);
-    html = handle === 'minValue' ? "" + value + " - " + (this.$maxValue.html()) : "" + (this.$minValue.html()) + " - " + value;
-    this.$('.single-value').html(html);
-    if (!config.autoSearch) {
-      return this.triggerChange({
-        silent: true
-      });
-    }
+    return Math.floor(ll + leftPos / this.sliderWidth * (ul - ll));
   };
 
   RangeFacet.prototype.getLeftPosFromYear = function(year) {
@@ -14280,31 +14316,30 @@ RangeFacet = (function(_super) {
     return Math.floor(left);
   };
 
-  RangeFacet.prototype.setMinValue = function(year) {
-    var left;
-    left = this.getLeftPosFromYear(year);
-    this.$minHandle.css('left', left);
-    this.$minValue.html(year);
-    this.$bar.css('left', left);
-    return this.minHandleLeft = left - (handleSize / 2);
-  };
-
-  RangeFacet.prototype.setMaxValue = function(year) {
-    var left;
-    left = this.getLeftPosFromYear(year);
-    this.$maxHandle.css('left', left);
-    this.$maxValue.html(year);
-    this.$bar.css('right', this.sliderWidth - left);
-    return this.maxHandleLeft = left - (handleSize / 2);
-  };
-
   RangeFacet.prototype.update = function(newOptions) {
+    var leftMax, leftMin, yearMax, yearMin;
     if (_.isArray(newOptions)) {
       newOptions = newOptions[0];
     }
-    this.setMinValue(+(newOptions.lowerLimit + '').substr(0, 4));
-    this.setMaxValue(+(newOptions.upperLimit + '').substr(0, 4));
-    return this.$('button').hide();
+    yearMin = +(newOptions.lowerLimit + '').substr(0, 4);
+    yearMax = +(newOptions.upperLimit + '').substr(0, 4);
+    this.model.set({
+      currentMin: yearMin,
+      currentMax: yearMax
+    });
+    this.labelMin.html(yearMin);
+    this.labelMax.html(yearMax);
+    leftMin = this.getLeftPosFromYear(yearMin);
+    leftMax = this.getLeftPosFromYear(yearMax);
+    this.handleMin.css('left', leftMin - (this.handleWidth / 2));
+    this.handleMax.css('left', leftMax - (this.handleWidth / 2));
+    this.bar.css('left', leftMin);
+    this.bar.css('right', this.sliderWidth - leftMax);
+    this.handleMinLeft = leftMin - (this.handleWidth / 2);
+    this.handleMaxLeft = leftMax - (this.handleWidth / 2);
+    if (this.button != null) {
+      return this.button.style.display = 'none';
+    }
   };
 
   return RangeFacet;
@@ -14314,7 +14349,7 @@ RangeFacet = (function(_super) {
 module.exports = RangeFacet;
 
 
-},{"../../../jade/facets/range.body.jade":31,"../../config":6,"../../models/range":14,"./main":22}],24:[function(_dereq_,module,exports){
+},{"../../../jade/facets/range.body.jade":31,"../../config":6,"../../models/facets/range":13,"./main":22}],24:[function(_dereq_,module,exports){
 var Backbone, Models, TextSearch, config, tpl, _,
   __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
@@ -14352,8 +14387,8 @@ TextSearch = (function(_super) {
   };
 
   TextSearch.prototype.render = function() {
-    if (config.templates.hasOwnProperty('search')) {
-      tpl = config.templates['search'];
+    if (config.templates.hasOwnProperty('text-search')) {
+      tpl = config.templates['text-search'];
     }
     this.$el.html(tpl({
       model: this.model
@@ -14571,7 +14606,7 @@ var buf = [];
 var jade_mixins = {};
 var jade_interp;
 ;var locals_for_with = (locals || {});(function (options) {
-buf.push("<div class=\"slider\"><div class=\"min-handle\"></div><div class=\"max-handle\"></div><div class=\"bar\">&nbsp;</div><div class=\"min-value\">" + (jade.escape(null == (jade_interp = options.lowerLimit) ? "" : jade_interp)) + "</div><div class=\"max-value\">" + (jade.escape(null == (jade_interp = options.upperLimit) ? "" : jade_interp)) + "</div><button>Search?</button></div>");}("options" in locals_for_with?locals_for_with.options:typeof options!=="undefined"?options:undefined));;return buf.join("");
+buf.push("<div class=\"slider\"><div class=\"handle-min handle\"><label class=\"min\">" + (jade.escape(null == (jade_interp = options.lowerLimit) ? "" : jade_interp)) + "</label></div><div class=\"handle-max handle\"><label class=\"max\">" + (jade.escape(null == (jade_interp = options.upperLimit) ? "" : jade_interp)) + "</label></div><div class=\"bar\">&nbsp;</div><button>Search?</button><label class=\"single\"></label></div>");}("options" in locals_for_with?locals_for_with.options:typeof options!=="undefined"?options:undefined));;return buf.join("");
 };
 },{"jade/runtime":3}],32:[function(_dereq_,module,exports){
 var jade = _dereq_("jade/runtime");

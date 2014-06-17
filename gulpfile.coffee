@@ -20,7 +20,7 @@ connectRewrite = require './connect-rewrite'
 pkg = require './package.json'
 
 gulp.task 'connect', ->
-  connect.server
+  connect.servergulp
     root: './stage'
     port: 9001
     livereload: true
@@ -121,4 +121,4 @@ gulp.task 'browserify', ['browserify-src', 'browserify-libs'], ->
 
 gulp.task 'build', ['browserify', 'stylus']
 
-gulp.task 'default', ['connect', 'watch', 'watchify']
+gulp.task 'default', ['stylus', 'connect', 'watch', 'watchify']
