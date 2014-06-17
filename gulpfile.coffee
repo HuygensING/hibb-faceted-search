@@ -14,6 +14,7 @@ rename = require 'gulp-rename'
 clean = require 'gulp-clean'
 bodyParser = require 'body-parser'
 exec = require('child_process').exec
+nib = require 'nib'
 
 connectRewrite = require './connect-rewrite'
 pkg = require './package.json'
@@ -27,7 +28,10 @@ gulp.task 'connect', ->
 
 gulp.task 'stylus', ->
   gulp.src(['./src/**/*.styl'])
-    .pipe(stylus())
+    .pipe(stylus(
+      use: [nib()]
+      errors: true
+    ))
     .pipe(concat('main.css'))
     .pipe(gulp.dest('./dist'))
     .pipe(minifyCss())

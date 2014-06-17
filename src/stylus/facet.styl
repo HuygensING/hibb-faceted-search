@@ -10,40 +10,31 @@
 		&:last-child
 			display none
 
-	// i
-	// 	cursor pointer
-	// 	font-size 1.2em
-	// 	color #AAA
-
-	// 	&:hover, &.active
-	// 		color #555
-
 	.facet
 		position relative
-		// border-bottom 1px solid #EEE
-		// margin-bottom 10px
-		// padding-bottom 10px
 
-		// &:last-child
-		// 	border none
-
-
-		
 		header
-			// i.openclose
-			// 	position absolute
-			// 	left -8px
-			// 	top 9px
-			// 	color #DDD
-
-			// 	&:hover, &.active
-			// 		color #AAA
+			white-space nowrap
+			position relative
 
 			h3
 				padding 0
 				margin 0
-				display inline
 				cursor pointer
+				width calc(100% - 60px)
+				overflow: hidden;
+				text-overflow: ellipsis;
+
+
+			div.menu
+				position absolute
+				cursor pointer
+				top 0
+				right 0
+
+				i.fa
+					font-size 1em
+					margin 2px 0 0 4px
 
 			.options
 				display none
@@ -114,3 +105,26 @@
 		.body
 			max-height 200px
 			margin-top 10px
+
+@media (max-width: 640px)
+	.faceted-search
+		.facet
+			header
+				h3
+					width calc(100% - 50px)
+
+				div.menu
+					i.fa
+						font-size 0.8em
+
+
+@media (max-width: 460px)
+	.faceted-search
+		.facet
+			header
+				h3
+					width calc(100% - 40px)
+
+				div.menu
+					i.fa
+						font-size 0.6em
