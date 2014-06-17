@@ -21,43 +21,43 @@ describe 'View: Facets ::', ->
     it 'should initialize an empty views object', ->
       facetsView.views.should.eql {}
 
-#    WRONG DOCUMENT ERROR
-#  describe 'render', ->
-#    el = document.createElement 'div'
-#    facetsDiv = document.createElement 'div'
-#    facetsDiv.className = 'facets'
-#    el.appendChild facetsDiv
-#
-#    it 'should render facets', ->
-#      args = [
-#        name: 'testListFacet'
-#        type: 'LIST'
-#        title: 'Test list facet'
-#        options: [
-#          name: 'testsome'
-#          count: 12
-#          checked: false
-#        ,
-#          name: 'testmore'
-#          count: 6
-#          checked: false
-#        ]
-#      ,
-#        name: 'testBooleanFacet'
-#        type: 'BOOLEAN'
-#        title: 'Test boolean facet'
-#        options: [
-#          name: 'testsome'
-#          count: 12
-#          checked: false
-#        ,
-#          name: 'testmore'
-#          count: 6
-#          checked: false
-#        ]
-#      ]
-#
-#      facetsView.render el, args
+#  WRONG DOCUMENT ERROR
+  describe 'render', ->
+    el = document.createElement 'div'
+    facetsDiv = document.createElement 'div'
+    facetsDiv.className = 'facets'
+    el.appendChild facetsDiv
+
+    it 'should render facets', ->
+      args = [
+        name: 'testListFacet'
+        type: 'LIST'
+        title: 'Test list facet'
+        options: [
+          name: 'testsome'
+          count: 12
+          checked: false
+        ,
+          name: 'testmore'
+          count: 6
+          checked: false
+        ]
+      ,
+        name: 'testBooleanFacet'
+        type: 'BOOLEAN'
+        title: 'Test boolean facet'
+        options: [
+          name: 'testsome'
+          count: 12
+          checked: false
+        ,
+          name: 'testmore'
+          count: 6
+          checked: false
+        ]
+      ]
+
+      facetsView.render el, args
 
 
   describe 'renderFacet :::', ->

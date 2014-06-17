@@ -1,6 +1,6 @@
 setup = require '../setup'
 
-ListOption = require "../#{basePath}models/list.option"
+ListOption = require "../#{basePath}models/facets/list.option"
 
 describe 'Model ListOption', ->
 	listOption = null
