@@ -942,6 +942,7 @@
   0% {
     transform: scale(1, 1);
   }
+<<<<<<< HEAD
   25% {
     transform: scale(0.7, 0.7);
   }
@@ -951,6 +952,21 @@
   75% {
     transform: scale(0.7, 0.7);
   }
+=======
+
+  25% {
+    transform: scale(0.7, 0.7);
+  }
+
+  50% {
+    transform: scale(1, 1);
+  }
+
+  75% {
+    transform: scale(0.7, 0.7);
+  }
+
+>>>>>>> Remove version dirs from dist, version is tagged
   100% {
     transform: scale(1, 1);
   }
@@ -959,6 +975,7 @@
   0% {
     transform: scale(1, 1);
   }
+<<<<<<< HEAD
   25% {
     transform: scale(0.7, 0.7);
   }
@@ -968,6 +985,21 @@
   75% {
     transform: scale(0.7, 0.7);
   }
+=======
+
+  25% {
+    transform: scale(0.7, 0.7);
+  }
+
+  50% {
+    transform: scale(1, 1);
+  }
+
+  75% {
+    transform: scale(0.7, 0.7);
+  }
+
+>>>>>>> Remove version dirs from dist, version is tagged
   100% {
     transform: scale(1, 1);
   }
@@ -976,6 +1008,7 @@
   0% {
     transform: scale(1, 1);
   }
+<<<<<<< HEAD
   25% {
     transform: scale(0.7, 0.7);
   }
@@ -985,6 +1018,42 @@
   75% {
     transform: scale(0.7, 0.7);
   }
+=======
+
+  25% {
+    transform: scale(0.7, 0.7);
+  }
+
+  50% {
+    transform: scale(1, 1);
+  }
+
+  75% {
+    transform: scale(0.7, 0.7);
+  }
+
+  100% {
+    transform: scale(1, 1);
+  }
+}
+@-ms-keyframes shrink {
+  0% {
+    transform: scale(1, 1);
+  }
+
+  25% {
+    transform: scale(0.7, 0.7);
+  }
+
+  50% {
+    transform: scale(1, 1);
+  }
+
+  75% {
+    transform: scale(0.7, 0.7);
+  }
+
+>>>>>>> Remove version dirs from dist, version is tagged
   100% {
     transform: scale(1, 1);
   }
@@ -993,6 +1062,7 @@
   0% {
     transform: scale(1, 1);
   }
+<<<<<<< HEAD
   25% {
     transform: scale(0.7, 0.7);
   }
@@ -1002,6 +1072,21 @@
   75% {
     transform: scale(0.7, 0.7);
   }
+=======
+
+  25% {
+    transform: scale(0.7, 0.7);
+  }
+
+  50% {
+    transform: scale(1, 1);
+  }
+
+  75% {
+    transform: scale(0.7, 0.7);
+  }
+
+>>>>>>> Remove version dirs from dist, version is tagged
   100% {
     transform: scale(1, 1);
   }
@@ -1010,6 +1095,7 @@
   0% {
     transform: scale(1, 1);
   }
+<<<<<<< HEAD
   25% {
     transform: scale(1.2, 1.2);
   }
@@ -1019,6 +1105,21 @@
   75% {
     transform: scale(1.2, 1.2);
   }
+=======
+
+  25% {
+    transform: scale(1.2, 1.2);
+  }
+
+  50% {
+    transform: scale(1, 1);
+  }
+
+  75% {
+    transform: scale(1.2, 1.2);
+  }
+
+>>>>>>> Remove version dirs from dist, version is tagged
   100% {
     transform: scale(1, 1);
   }
@@ -1027,6 +1128,7 @@
   0% {
     transform: scale(1, 1);
   }
+<<<<<<< HEAD
   25% {
     transform: scale(1.2, 1.2);
   }
@@ -1036,6 +1138,21 @@
   75% {
     transform: scale(1.2, 1.2);
   }
+=======
+
+  25% {
+    transform: scale(1.2, 1.2);
+  }
+
+  50% {
+    transform: scale(1, 1);
+  }
+
+  75% {
+    transform: scale(1.2, 1.2);
+  }
+
+>>>>>>> Remove version dirs from dist, version is tagged
   100% {
     transform: scale(1, 1);
   }
@@ -1044,6 +1161,7 @@
   0% {
     transform: scale(1, 1);
   }
+<<<<<<< HEAD
   25% {
     transform: scale(1.2, 1.2);
   }
@@ -1053,6 +1171,42 @@
   75% {
     transform: scale(1.2, 1.2);
   }
+=======
+
+  25% {
+    transform: scale(1.2, 1.2);
+  }
+
+  50% {
+    transform: scale(1, 1);
+  }
+
+  75% {
+    transform: scale(1.2, 1.2);
+  }
+
+  100% {
+    transform: scale(1, 1);
+  }
+}
+@-ms-keyframes grow {
+  0% {
+    transform: scale(1, 1);
+  }
+
+  25% {
+    transform: scale(1.2, 1.2);
+  }
+
+  50% {
+    transform: scale(1, 1);
+  }
+
+  75% {
+    transform: scale(1.2, 1.2);
+  }
+
+>>>>>>> Remove version dirs from dist, version is tagged
   100% {
     transform: scale(1, 1);
   }
@@ -1061,6 +1215,7 @@
   0% {
     transform: scale(1, 1);
   }
+<<<<<<< HEAD
   25% {
     transform: scale(1.2, 1.2);
   }
@@ -1070,6 +1225,21 @@
   75% {
     transform: scale(1.2, 1.2);
   }
+=======
+
+  25% {
+    transform: scale(1.2, 1.2);
+  }
+
+  50% {
+    transform: scale(1, 1);
+  }
+
+  75% {
+    transform: scale(1.2, 1.2);
+  }
+
+>>>>>>> Remove version dirs from dist, version is tagged
   100% {
     transform: scale(1, 1);
   }
@@ -1289,6 +1459,10 @@
 }
 .facet.range .body .slider .max-handle {
   top: -3px;
+<<<<<<< HEAD
+=======
+  right: -6px;
+>>>>>>> Remove version dirs from dist, version is tagged
 }
 .facet.range .body .slider .min-value {
   position: relative;
@@ -1301,3 +1475,9 @@
   display: inline-block;
   float: right;
 }
+<<<<<<< HEAD
+=======
+
+
+
+>>>>>>> Remove version dirs from dist, version is tagged
