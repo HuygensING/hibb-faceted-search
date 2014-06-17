@@ -140,7 +140,7 @@ class MainView extends Backbone.View
 
   instantiateFacets: (viewMap={}) ->
     @facets = new Views.Facets viewMap: viewMap
-    @listenTo @facets, 'change', => @queryOptions.set arguments
+    @listenTo @facets, 'change', (queryOptions, options) => @queryOptions.set queryOptions, options
 
   showLoader: ->
     overlay = @el.querySelector('.overlay')
