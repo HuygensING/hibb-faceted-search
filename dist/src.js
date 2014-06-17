@@ -242,14 +242,13 @@ ListOptions = (function(_super) {
   };
 
   ListOptions.prototype.revert = function() {
-    this.each((function(_this) {
+    return this.each((function(_this) {
       return function(option) {
         return option.set('checked', false, {
           silent: true
         });
       };
     })(this));
-    return this.trigger('change');
   };
 
   ListOptions.prototype.updateOptions = function(newOptions) {
@@ -1256,7 +1255,7 @@ Facets = (function(_super) {
     for (key in _ref) {
       if (!__hasProp.call(_ref, key)) continue;
       facetView = _ref[key];
-      if (facetView.hasOwnProperty('reset')) {
+      if (typeof facetView.reset === 'function') {
         _results.push(facetView.reset());
       } else {
         _results.push(void 0);

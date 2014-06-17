@@ -62,7 +62,7 @@ class Facets extends Backbone.View
 
   reset: ->
     for own key, facetView of @views
-      facetView.reset() if facetView.hasOwnProperty 'reset'
+      facetView.reset() if typeof facetView.reset is 'function'
 
   destroyFacets: ->
     @stopListening()
