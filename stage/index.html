@@ -5,17 +5,36 @@
         <script src="../static/libs.js"></script>
         <script src="../static/src.js"></script>
         <style>
+            .faceted-search-placeholder, section.fs-results {
+                display: inline-block;
+                vertical-align: top;
+                box-sizing: border-box;
+            }
             .faceted-search-placeholder {
-                width: 40%
+                width: 40%;
+            }
+            section.fs-results {
+                margin-left: 5%;
+                width: 50%;
+            }
+            section.fs-results h2 {
+                margin: 0;
+                padding: 0;
             }
         </style>
     </head>
     <body>
         <h1>Faceted Search Staging</h1>
         <section class="faceted-search-placeholder"></section>
-        <section class="fs-results"></section>
+        <section class="fs-results">
+            <h2></h2>
+            <ul class="results">
+
+            </ul>
+        </section>
         <script>
             var $ = require('jquery');
+            var _ = require('underscore');
 
             var fs = new FacetedSearch({
                 el: document.querySelector('.faceted-search-placeholder'),
@@ -28,6 +47,15 @@
 
                 searchPath: 'search',
                 resultRows: 12
+            });
+
+            fs.on('change:results', function(resultModel) {
+                $('section.fs-results h2').html('Remdoc: '+resultModel.get('numFound'));
+
+                $('section.fs-results ul.results').html('');
+                _.each(resultModel.get('results').remdoc.results, function(result) {
+                    $('section.fs-results ul.results').append($('<li />').html(result.id));
+                })
             });
 
             fs.search();
