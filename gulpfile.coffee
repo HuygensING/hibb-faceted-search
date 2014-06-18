@@ -20,7 +20,7 @@ connectRewrite = require './connect-rewrite'
 pkg = require './package.json'
 
 gulp.task 'connect', ->
-  connect.servergulp
+  connect.server
     root: './stage'
     port: 9001
     livereload: true
