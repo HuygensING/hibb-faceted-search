@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<testsuites name="switch-type"
+             errors="0"
+             failures="0"
+             tests="7">
+  
+  <testsuite errors="0" failures="0" hostname="" id=""
+    name="Switch type" package="switch-type" skipped="0"
+    tests="7" time="" timestamp="">
+    
+    
+      <testcase name="Element &lt;section.fs-results ul.results li&gt; was visible after 68 milliseconds.">
+        
+        
+      </testcase>
+    
+      <testcase name="Testing if element &lt;.search-type-simple .facets&gt; is hidden.">
+        
+        
+      </testcase>
+    
+      <testcase name="Testing if element &lt;.search-type-simple .facets .facet.list&gt; is hidden.">
+        
+        
+      </testcase>
+    
+      <testcase name="Testing if element &lt;.search-type-simple .facets .facet.range&gt; is hidden.">
+        
+        
+      </testcase>
+    
+      <testcase name="Testing if element &lt;.search-type-advanced .facets&gt; is visible.">
+        
+        
+      </testcase>
+    
+      <testcase name="Testing if element &lt;.search-type-advanced .facets .facet.list&gt; is visible.">
+        
+        
+      </testcase>
+    
+      <testcase name="Testing if element &lt;.search-type-advanced .facets .facet.range&gt; is visible.">
+        
+        
+      </testcase>
+    
+    
+    </testsuite>
+  
+</testsuites>
