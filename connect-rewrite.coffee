@@ -39,27 +39,27 @@ module.exports = (connect, options) ->
           port: 3000
           path: req.url.substr(4)
           method: req.method
+          headers:
+            'Content-type': 'application/json; charset=utf-8'
 
         dbReq = http.request opts, (dbRes) ->
           dbRes.setEncoding 'utf8'
           data = ''
+
           dbRes.on 'data', (chunk) ->
-            # console.log 'Response' + chunk
             data += chunk
+
           dbRes.on 'end', ->
-            # console.log data
-#            res.setHeader 'Content-Type', 'application/json'
             res.statusCode = dbRes.statusCode
+
             for header, value of dbRes.headers
               res.setHeader header, value
 
             res.end data
-#            console.log dbRes
-#            res.end()
-
 
         if Object.keys(req.body).length > 0 and (req.method is 'POST' or req.method is 'PUT')
           dbReq.write JSON.stringify(req.body) if req.body?
+
         dbReq.end()
 
       # If request is a file and it doesnt exist, pass req to connect
