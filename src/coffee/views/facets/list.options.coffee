@@ -146,12 +146,13 @@ class ListFacetOptions extends Backbone.View
     visibleModels = @collection.filter (model) -> model.get 'visible'
     model.set 'checked', ev.currentTarget.checked for model in visibleModels
 
-    values = _.map visibleModels, (item) -> item.get('name')
 
-    # Call @render so the checked and/or unchecked checkboxes show up.
-    # @render()
+    if ev.currentTarget.checked
+      values = _.map visibleModels, (item) -> item.get('name')
+      @triggerChange values
+    else
+      @triggerChange()
 
-    # @triggerChange will send the new values to the server and call @render again.
-    @triggerChange values
+# @triggerChange will send the new values to the server and call @rerender.
 
 module.exports = ListFacetOptions

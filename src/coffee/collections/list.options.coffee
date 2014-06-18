@@ -19,6 +19,7 @@ class ListOptions extends Backbone.Collection
   revert: ->
     @each (option) => option.set 'checked', false, silent: true
 
+  # TODO Don't do two loops, combine into one.
   updateOptions: (newOptions=[]) ->
     # Reset all the options count to 0
     @each (option) => option.set 'count', 0, silent: true
