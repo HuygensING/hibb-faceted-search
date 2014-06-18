@@ -82,9 +82,9 @@ class MainView extends Backbone.View
     @$('.faceted-search').toggleClass 'search-type-simple'
     @$('.faceted-search').toggleClass 'search-type-advanced'
 
-    if @searchResults.length is 0
+    if @searchResults.queryAmount is 1
       @search()
-    else
+    else if @searchResults.queryAmount > 1
       @update()
 
   onReset: (ev) ->
