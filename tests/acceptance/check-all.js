@@ -8,9 +8,10 @@ module.exports = {
 
       // With more than 10 results, checking all checkboxes should not be possible.
       .assert.hidden('.facets .list:nth-child(5) .options input[name="all"]')
-
+      .pause(100)
       .assert.containsText('.facets .list:nth-child(5) .options small.optioncount', '31 of 31')
       .setValue('.facets .list:nth-child(5) .options input[name="filter"]', 'l')
+      .pause(100)
       .assert.containsText('.facets .list:nth-child(5) .options small.optioncount', '8 of 31')
 
       // With less than 10 results, checking all checkboxes should be possible.
