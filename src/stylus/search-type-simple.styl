@@ -2,76 +2,70 @@
 	border none
 	background none
 
-	form
+	.text-search
+		position relative
 		box-shadow none
+		background none
 
-		.text-search
-			position relative
-			box-shadow none
-			background none
+		.pad3
+			padding 0 3%
 
-			.pad3
-				padding 0 3%
+		.body
 
-			.body
+			.menu
+				margin-bottom 18px
+				display none
 
-				.menu
-					margin-bottom 18px
-					display none
-
-					&:hover
-						i.fa-times
-							opacity 1
-
+				&:hover
 					i.fa-times
-						opacity 0
-						float right
-						margin-right 2px
-						font-size 1.4em
-						transition opacity 500ms
+						opacity 1
 
-				.row-1, .row-2
-					margin 10px 0 0 2px
+				i.fa-times
+					opacity 0
+					float right
+					margin-right 2px
+					font-size 1.4em
+					transition opacity 500ms
 
-					.cell-1, .cell-2
-						display inline-block
-						vertical-align top
+			.row-1, .row-2
+				margin 10px 0 0 2px
 
-					.cell-1
-						width 120px
+				.cell-1, .cell-2
+					display inline-block
+					vertical-align top
 
-				label
-					font-size 0.9em
+				.cell-1
+					width 120px
 
-				input[type="checkbox"]
-					margin-right 4px
+			label
+				font-size 0.9em
 
-				ul.textlayers, ul.searchins
-					margin-top 6px
-					list-style none
+			input[type="checkbox"]
+				margin-right 4px
+
+			ul.textlayers, ul.searchins
+				margin-top 6px
+				list-style none
 
 .faceted-search.search-type-advanced
-	form
-		ul.facets-menu
-			li
-				&.collapse-expand
-					display block
+	ul.facets-menu
+		li
+			&.collapse-expand
+				display block
 
-				&.switch
-					span:after
-						content ' simple'
+			&.switch
+				span:after
+					content ' simple'
 
 .faceted-search.search-type-simple
-	form
-		ul.facets-menu
-			li
-				&.collapse-expand
-					display none
+	ul.facets-menu
+		li
+			&.collapse-expand
+				display none
 
-				&.switch
-					span:after
-						content ' advanced'
+			&.switch
+				span:after
+					content ' advanced'
 
-		.facets
-			display none
-			
+	.facets
+		display none

@@ -30,9 +30,6 @@ class TextSearch extends Backbone.View
 
   # ### Events
   events: ->
-    # 'click button': (ev) -> ev.preventDefault()
-    # 'click button.active': 'search'
-    # 'click header i.openclose': 'toggleMenu'
     'click i.fa-search': 'search'
     'keyup input[name="search"]': 'onKeyUp'
     'focus input[name="search"]': -> @$('.body .menu').slideDown(150)
@@ -40,6 +37,10 @@ class TextSearch extends Backbone.View
     'change input[type="checkbox"]': 'checkboxChanged'
 
   onKeyUp: (ev) ->
+    if ev.keyCode is 13
+      ev.preventDefault()
+      return @search ev
+
     # Update the mainModel (queryOptions) silently. We want to set the term
     # to the mainModel. When autoSearch is off and the user wants to
     # perform a search, the term is known to the queryModel.
@@ -47,9 +48,6 @@ class TextSearch extends Backbone.View
       @model.set term: ev.currentTarget.value
       @updateQueryModel()
 
-    if ev.keyCode is 13
-      ev.preventDefault()
-      @search ev
 
   checkboxChanged: (ev) ->
     if attr = ev.currentTarget.getAttribute('data-attr')

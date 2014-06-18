@@ -64,8 +64,11 @@ class MainView extends Backbone.View
     @textSearch = new Views.TextSearch()
     @$('.text-search-placeholder').html @textSearch.el
 
-    @listenTo @textSearch, 'change', (queryOptions) => @queryOptions.set queryOptions, silent: true
-    @listenTo @textSearch, 'search', => @search()
+    @listenTo @textSearch, 'change', (queryOptions) =>
+      @queryOptions.set queryOptions, silent: true
+
+    @listenTo @textSearch, 'search', =>
+      @search()
 
   # ### Events
   events: ->
@@ -161,7 +164,8 @@ class MainView extends Backbone.View
     top = '50vh' if fsBox.height > window.innerHeight
     loader.style.top = top + 'px'
 
-  hideLoader: -> @el.querySelector('.overlay').style.display = 'none'
+  hideLoader: ->
+    @el.querySelector('.overlay').style.display = 'none'
 
   update: ->
     facets = @searchResults.current.get('facets')
@@ -175,15 +179,23 @@ class MainView extends Backbone.View
 
   # ### Interface
 
-  page: (pagenumber, database) -> @searchResults.page pagenumber, database
+  page: (pagenumber, database) ->
+    @searchResults.page pagenumber, database
 
-  next: -> @searchResults.moveCursor '_next'
-  prev: -> @searchResults.moveCursor '_prev'
+  next: ->
+    @searchResults.moveCursor '_next'
 
-  hasNext: -> @searchResults.current.has '_next'
-  hasPrev: -> @searchResults.current.has '_prev'
+  prev: ->
+    @searchResults.moveCursor '_prev'
 
-  sortResultsBy: (field) -> @queryOptions.set sort: field
+  hasNext: ->
+    @searchResults.current.has '_next'
+
+  hasPrev: ->
+    @searchResults.current.has '_prev'
+
+  sortResultsBy: (field) ->
+    @queryOptions.set sort: field
 
   # Silently change @attributes and trigger a change event manually afterwards.
   # arguments.cache Boolean Tells searchResults if we want to fetch result from cache.
@@ -210,6 +222,7 @@ class MainView extends Backbone.View
 #      @set newQueryOptions, silent: true
 #    @search cache: false
 
-  search: -> @searchResults.runQuery @queryOptions.attributes
+  search: ->
+    @searchResults.runQuery @queryOptions.attributes
 
 module.exports = MainView
