@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<testsuites name="initial-results"
+             errors="0"
+             failures="0"
+             tests="6">
+  
+  <testsuite errors="0" failures="0" hostname="" id=""
+    name="Initial results" package="initial-results" skipped="0"
+    tests="6" time="" timestamp="">
+    
+    
+      <testcase name="Element &lt;section.fs-results ul.results li&gt; was visible after 57 milliseconds.">
+        
+        
+      </testcase>
+    
+      <testcase name="Testing if element &lt;section.fs-results h2&gt; contains text: &quot;Remdoc: 6102&quot;.">
+        
+        
+      </testcase>
+    
+      <testcase name="Testing if element &lt;section.fs-results li:first-child&gt; contains text: &quot;remdoc_14098&quot;.">
+        
+        
+      </testcase>
+    
+      <testcase name="Testing if element &lt;.facets .facet:first-child ul li:first-child&gt; contains text: &quot;publications (all)&quot;.">
+        
+        
+      </testcase>
+    
+      <testcase name="Testing if element &lt;.facets .facet.range .slider label.min&gt; contains text: &quot;1424&quot;.">
+        
+        
+      </testcase>
+    
+      <testcase name="Testing if element &lt;.facets .facet.range .slider label.max&gt; contains text: &quot;2013&quot;.">
+        
+        
+      </testcase>
+    
+    
+    </testsuite>
+  
+</testsuites>

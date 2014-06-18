@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<testsuites name="filter-list"
+             errors="0"
+             failures="0"
+             tests="9">
+  
+  <testsuite errors="0" failures="0" hostname="" id=""
+    name="Filter list" package="filter-list" skipped="0"
+    tests="9" time="" timestamp="">
+    
+    
+      <testcase name="Element &lt;section.fs-results ul.results li&gt; was visible after 82 milliseconds.">
+        
+        
+      </testcase>
+    
+      <testcase name="Element &lt;.facets .list .options&gt; was visible after 31 milliseconds.">
+        
+        
+      </testcase>
+    
+      <testcase name="Assertion passed: 10">
+        
+        
+      </testcase>
+    
+      <testcase name="Assertion passed: 4">
+        
+        
+      </testcase>
+    
+      <testcase name="Assertion passed: 3">
+        
+        
+      </testcase>
+    
+      <testcase name="Assertion passed: 1">
+        
+        
+      </testcase>
+    
+      <testcase name="Assertion passed: 3">
+        
+        
+      </testcase>
+    
+      <testcase name="Assertion passed: 4">
+        
+        
+      </testcase>
+    
+      <testcase name="Assertion passed: 10">
+        
+        
+      </testcase>
+    
+    
+    </testsuite>
+  
+</testsuites>

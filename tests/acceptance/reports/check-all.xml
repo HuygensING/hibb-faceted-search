@@ -1,0 +1,212 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<testsuites name="check-all"
+             errors="0"
+             failures="1"
+             tests="55">
+  
+  <testsuite errors="0" failures="1" hostname="" id=""
+    name="Check all options in list" package="check-all" skipped="16"
+    tests="55" time="" timestamp="">
+    
+    
+      <testcase name="Element &lt;section.fs-results ul.results li&gt; was visible after 48 milliseconds.">
+        
+        
+      </testcase>
+    
+      <testcase name="Element &lt;.facets .list:nth-child(5) .options&gt; was visible after 34 milliseconds.">
+        
+        
+      </testcase>
+    
+      <testcase name="Testing if element &lt;.facets .list:nth-child(5) .options input[name=&quot;all&quot;]&gt; is hidden.">
+        
+        
+      </testcase>
+    
+      <testcase name="Testing if element &lt;.facets .list:nth-child(5) .options small.optioncount&gt; contains text: &quot;31 of 31&quot;.">
+        
+        
+      </testcase>
+    
+      <testcase name="Testing if element &lt;.facets .list:nth-child(5) .options small.optioncount&gt; contains text: &quot;8 of 31&quot;.">
+        
+        
+      </testcase>
+    
+      <testcase name="Testing if element &lt;.facets .list:nth-child(5) .options input[name=&quot;all&quot;]&gt; is visible.">
+        
+        
+      </testcase>
+    
+      <testcase name="Testing if element &lt;.facets .list:nth-child(5) .body ul li:nth-child(1) i.unchecked&gt; has css class: &quot;visible&quot;.">
+        
+        
+      </testcase>
+    
+      <testcase name="Testing if element &lt;.facets .list:nth-child(5) .body ul li:nth-child(2) i.unchecked&gt; has css class: &quot;visible&quot;.">
+        
+        
+      </testcase>
+    
+      <testcase name="Testing if element &lt;.facets .list:nth-child(5) .body ul li:nth-child(3) i.unchecked&gt; has css class: &quot;visible&quot;.">
+        
+        
+      </testcase>
+    
+      <testcase name="Testing if element &lt;.facets .list:nth-child(5) .body ul li:nth-child(4) i.unchecked&gt; has css class: &quot;visible&quot;.">
+        
+        
+      </testcase>
+    
+      <testcase name="Testing if element &lt;.facets .list:nth-child(5) .body ul li:nth-child(5) i.unchecked&gt; has css class: &quot;visible&quot;.">
+        
+        
+      </testcase>
+    
+      <testcase name="Testing if element &lt;.facets .list:nth-child(5) .body ul li:nth-child(6) i.unchecked&gt; has css class: &quot;visible&quot;.">
+        
+        
+      </testcase>
+    
+      <testcase name="Testing if element &lt;.facets .list:nth-child(5) .body ul li:nth-child(7) i.unchecked&gt; has css class: &quot;visible&quot;.">
+        
+        
+      </testcase>
+    
+      <testcase name="Testing if element &lt;.facets .list:nth-child(5) .body ul li:nth-child(8) i.unchecked&gt; has css class: &quot;visible&quot;.">
+        
+        
+      </testcase>
+    
+      <testcase name="Testing if element &lt;.facets .list:nth-child(5) .body ul li:nth-child(1) i.checked&gt; has css class: &quot;hidden&quot;.">
+        
+        
+      </testcase>
+    
+      <testcase name="Testing if element &lt;.facets .list:nth-child(5) .body ul li:nth-child(2) i.checked&gt; has css class: &quot;hidden&quot;.">
+        
+        
+      </testcase>
+    
+      <testcase name="Testing if element &lt;.facets .list:nth-child(5) .body ul li:nth-child(3) i.checked&gt; has css class: &quot;hidden&quot;.">
+        
+        
+      </testcase>
+    
+      <testcase name="Testing if element &lt;.facets .list:nth-child(5) .body ul li:nth-child(4) i.checked&gt; has css class: &quot;hidden&quot;.">
+        
+        
+      </testcase>
+    
+      <testcase name="Testing if element &lt;.facets .list:nth-child(5) .body ul li:nth-child(5) i.checked&gt; has css class: &quot;hidden&quot;.">
+        
+        
+      </testcase>
+    
+      <testcase name="Testing if element &lt;.facets .list:nth-child(5) .body ul li:nth-child(6) i.checked&gt; has css class: &quot;hidden&quot;.">
+        
+        
+      </testcase>
+    
+      <testcase name="Testing if element &lt;.facets .list:nth-child(5) .body ul li:nth-child(7) i.checked&gt; has css class: &quot;hidden&quot;.">
+        
+        
+      </testcase>
+    
+      <testcase name="Testing if element &lt;.facets .list:nth-child(5) .body ul li:nth-child(8) i.checked&gt; has css class: &quot;hidden&quot;.">
+        
+        
+      </testcase>
+    
+      <testcase name="Testing if element &lt;.facets .list:nth-child(5) .body ul li:nth-child(1) i.unchecked&gt; has css class: &quot;hidden&quot;.">
+        
+        
+      </testcase>
+    
+      <testcase name="Testing if element &lt;.facets .list:nth-child(5) .body ul li:nth-child(2) i.unchecked&gt; has css class: &quot;hidden&quot;.">
+        
+        
+      </testcase>
+    
+      <testcase name="Testing if element &lt;.facets .list:nth-child(5) .body ul li:nth-child(3) i.unchecked&gt; has css class: &quot;hidden&quot;.">
+        
+        
+      </testcase>
+    
+      <testcase name="Testing if element &lt;.facets .list:nth-child(5) .body ul li:nth-child(4) i.unchecked&gt; has css class: &quot;hidden&quot;.">
+        
+        
+      </testcase>
+    
+      <testcase name="Testing if element &lt;.facets .list:nth-child(5) .body ul li:nth-child(5) i.unchecked&gt; has css class: &quot;hidden&quot;.">
+        
+        
+      </testcase>
+    
+      <testcase name="Testing if element &lt;.facets .list:nth-child(5) .body ul li:nth-child(6) i.unchecked&gt; has css class: &quot;hidden&quot;.">
+        
+        
+      </testcase>
+    
+      <testcase name="Testing if element &lt;.facets .list:nth-child(5) .body ul li:nth-child(7) i.unchecked&gt; has css class: &quot;hidden&quot;.">
+        
+        
+      </testcase>
+    
+      <testcase name="Testing if element &lt;.facets .list:nth-child(5) .body ul li:nth-child(8) i.unchecked&gt; has css class: &quot;hidden&quot;.">
+        
+        
+      </testcase>
+    
+      <testcase name="Testing if element &lt;.facets .list:nth-child(5) .body ul li:nth-child(1) i.checked&gt; has css class: &quot;visible&quot;.">
+        
+        
+      </testcase>
+    
+      <testcase name="Testing if element &lt;.facets .list:nth-child(5) .body ul li:nth-child(2) i.checked&gt; has css class: &quot;visible&quot;.">
+        
+        
+      </testcase>
+    
+      <testcase name="Testing if element &lt;.facets .list:nth-child(5) .body ul li:nth-child(3) i.checked&gt; has css class: &quot;visible&quot;.">
+        
+        
+      </testcase>
+    
+      <testcase name="Testing if element &lt;.facets .list:nth-child(5) .body ul li:nth-child(4) i.checked&gt; has css class: &quot;visible&quot;.">
+        
+        
+      </testcase>
+    
+      <testcase name="Testing if element &lt;.facets .list:nth-child(5) .body ul li:nth-child(5) i.checked&gt; has css class: &quot;visible&quot;.">
+        
+        
+      </testcase>
+    
+      <testcase name="Testing if element &lt;.facets .list:nth-child(5) .body ul li:nth-child(6) i.checked&gt; has css class: &quot;visible&quot;.">
+        
+        
+      </testcase>
+    
+      <testcase name="Testing if element &lt;.facets .list:nth-child(5) .body ul li:nth-child(7) i.checked&gt; has css class: &quot;visible&quot;.">
+        
+        
+      </testcase>
+    
+      <testcase name="Testing if element &lt;.facets .list:nth-child(5) .body ul li:nth-child(8) i.checked&gt; has css class: &quot;visible&quot;.">
+        
+        
+      </testcase>
+    
+      <testcase name="Testing if element &lt;.facets .list:nth-child(5) .body ul li:nth-child(1) i.unchecked&gt; has css class: &quot;visible&quot;.">
+        
+          <failure message="Expected &quot;has visible&quot; but got: &quot;unchecked fa fa-square-o hidden&quot;"></failure>
+        
+        
+      </testcase>
+    
+    
+    </testsuite>
+  
+</testsuites>

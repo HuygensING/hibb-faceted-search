@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<testsuites name="get-results"
+             errors="0"
+             failures="0"
+             tests="3">
+  
+  <testsuite errors="0" failures="0" hostname="" id=""
+    name="Use Faceted Search" package="get-results" skipped="0"
+    tests="3" time="" timestamp="">
+    
+    
+      <testcase name="Element &lt;section.fs-results ul.results li&gt; was visible after 775 milliseconds.">
+        
+        
+      </testcase>
+    
+      <testcase name="Testing if element &lt;section.fs-results h2&gt; contains text: &quot;Remdoc: 6102&quot;.">
+        
+        
+      </testcase>
+    
+      <testcase name="Testing if element &lt;section.fs-results li:first-child&gt; contains text: &quot;remdoc_14098&quot;.">
+        
+        
+      </testcase>
+    
+    
+    </testsuite>
+  
+</testsuites>

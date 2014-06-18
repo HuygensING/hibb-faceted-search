@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<testsuites name="collapse"
+             errors="0"
+             failures="0"
+             tests="21">
+  
+  <testsuite errors="0" failures="0" hostname="" id=""
+    name="Collapse facets" package="collapse" skipped="0"
+    tests="21" time="" timestamp="">
+    
+    
+      <testcase name="Element &lt;section.fs-results ul.results li&gt; was visible after 64 milliseconds.">
+        
+        
+      </testcase>
+    
+      <testcase name="Testing if element &lt;.facets .facet:nth-child(1) .body&gt; is hidden.">
+        
+        
+      </testcase>
+    
+      <testcase name="Testing if element &lt;.facets .facet:nth-child(3) .body&gt; is hidden.">
+        
+        
+      </testcase>
+    
+      <testcase name="Testing if element &lt;.facets .facet:nth-child(5) .body&gt; is hidden.">
+        
+        
+      </testcase>
+    
+      <testcase name="Testing if element &lt;.facets .facet:nth-child(7) .body&gt; is hidden.">
+        
+        
+      </testcase>
+    
+      <testcase name="Testing if element &lt;.facets .facet:nth-child(9) .body&gt; is hidden.">
+        
+        
+      </testcase>
+    
+      <testcase name="Testing if element &lt;.facets .facet:nth-child(1) .body&gt; is visible.">
+        
+        
+      </testcase>
+    
+      <testcase name="Testing if element &lt;.facets .facet:nth-child(3) .body&gt; is visible.">
+        
+        
+      </testcase>
+    
+      <testcase name="Testing if element &lt;.facets .facet:nth-child(5) .body&gt; is visible.">
+        
+        
+      </testcase>
+    
+      <testcase name="Testing if element &lt;.facets .facet:nth-child(7) .body&gt; is visible.">
+        
+        
+      </testcase>
+    
+      <testcase name="Testing if element &lt;.facets .facet:nth-child(9) .body&gt; is visible.">
+        
+        
+      </testcase>
+    
+      <testcase name="Testing if element &lt;.facets .facet:nth-child(1) .body&gt; is hidden.">
+        
+        
+      </testcase>
+    
+      <testcase name="Testing if element &lt;.facets .facet:nth-child(3) .body&gt; is hidden.">
+        
+        
+      </testcase>
+    
+      <testcase name="Testing if element &lt;.facets .facet:nth-child(5) .body&gt; is hidden.">
+        
+        
+      </testcase>
+    
+      <testcase name="Testing if element &lt;.facets .facet:nth-child(7) .body&gt; is hidden.">
+        
+        
+      </testcase>
+    
+      <testcase name="Testing if element &lt;.facets .facet:nth-child(9) .body&gt; is hidden.">
+        
+        
+      </testcase>
+    
+      <testcase name="Testing if element &lt;.facets .facet:nth-child(1) .body&gt; is visible.">
+        
+        
+      </testcase>
+    
+      <testcase name="Testing if element &lt;.facets .facet:nth-child(3) .body&gt; is visible.">
+        
+        
+      </testcase>
+    
+      <testcase name="Testing if element &lt;.facets .facet:nth-child(5) .body&gt; is visible.">
+        
+        
+      </testcase>
+    
+      <testcase name="Testing if element &lt;.facets .facet:nth-child(7) .body&gt; is visible.">
+        
+        
+      </testcase>
+    
+      <testcase name="Testing if element &lt;.facets .facet:nth-child(9) .body&gt; is visible.">
+        
+        
+      </testcase>
+    
+    
+    </testsuite>
+  
+</testsuites>
