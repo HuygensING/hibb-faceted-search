@@ -600,9 +600,9 @@ MainView = (function(_super) {
     config.textSearch = config.textSearch === 'advanced' ? 'simple' : 'advanced';
     this.$('.faceted-search').toggleClass('search-type-simple');
     this.$('.faceted-search').toggleClass('search-type-advanced');
-    if (this.searchResults.length === 0) {
+    if (this.searchResults.queryAmount === 1) {
       return this.search();
-    } else {
+    } else if (this.searchResults.queryAmount > 1) {
       return this.update();
     }
   };
@@ -1826,10 +1826,14 @@ ListFacetOptions = (function(_super) {
       model = visibleModels[_i];
       model.set('checked', ev.currentTarget.checked);
     }
-    values = _.map(visibleModels, function(item) {
-      return item.get('name');
-    });
-    return this.triggerChange(values);
+    if (ev.currentTarget.checked) {
+      values = _.map(visibleModels, function(item) {
+        return item.get('name');
+      });
+      return this.triggerChange(values);
+    } else {
+      return this.triggerChange();
+    }
   };
 
   return ListFacetOptions;
@@ -2257,15 +2261,15 @@ TextSearch = (function(_super) {
   };
 
   TextSearch.prototype.onKeyUp = function(ev) {
+    if (ev.keyCode === 13) {
+      ev.preventDefault();
+      return this.search(ev);
+    }
     if (this.model.get('term') !== ev.currentTarget.value) {
       this.model.set({
         term: ev.currentTarget.value
       });
-      this.updateQueryModel();
-    }
-    if (ev.keyCode === 13) {
-      ev.preventDefault();
-      return this.search(ev);
+      return this.updateQueryModel();
     }
   };
 
@@ -2442,7 +2446,7 @@ var buf = [];
 var jade_mixins = {};
 var jade_interp;
 ;var locals_for_with = (locals || {});(function (name, title) {
-buf.push("<div class=\"placeholder pad3\"><header><h3" + (jade.attr("data-name", name, true, false)) + ">" + (jade.escape(null == (jade_interp = title) ? "" : jade_interp)) + "</h3><div class=\"menu\"><i title=\"Filter options\" class=\"filter fa fa-filter\"></i><i title=\"Sort alphabetically\" class=\"alpha fa fa-sort-alpha-asc\"></i><i title=\"Sort numerically\" class=\"amount active fa fa-sort-amount-desc\"></i></div><div class=\"options\"></div></header><div class=\"body\"></div></div>");}("name" in locals_for_with?locals_for_with.name:typeof name!=="undefined"?name:undefined,"title" in locals_for_with?locals_for_with.title:typeof title!=="undefined"?title:undefined));;return buf.join("");
+buf.push("<div class=\"placeholder\"><header><h3" + (jade.attr("data-name", name, true, false)) + ">" + (jade.escape(null == (jade_interp = title) ? "" : jade_interp)) + "</h3><div class=\"menu\"><i title=\"Filter options\" class=\"filter fa fa-filter\"></i><i title=\"Sort alphabetically\" class=\"alpha fa fa-sort-alpha-asc\"></i><i title=\"Sort numerically\" class=\"amount active fa fa-sort-amount-desc\"></i></div><div class=\"options\"></div></header><div class=\"body\"></div></div>");}("name" in locals_for_with?locals_for_with.name:typeof name!=="undefined"?name:undefined,"title" in locals_for_with?locals_for_with.title:typeof title!=="undefined"?title:undefined));;return buf.join("");
 };
 },{"jade/runtime":3}],31:[function(_dereq_,module,exports){
 var jade = _dereq_("jade/runtime");
@@ -2462,7 +2466,7 @@ var buf = [];
 var jade_mixins = {};
 var jade_interp;
 
-buf.push("<div class=\"overlay\"><div><i class=\"fa fa-spinner fa-spin fa-2x\"></i></div></div><div class=\"faceted-search\"><form><div class=\"text-search-placeholder\"></div><ul class=\"facets-menu\"><li class=\"reset\"><button><i class=\"fa fa-refresh\"></i><span>Reset search</span></button></li><li class=\"switch\"><button><i class=\"fa fa-angle-double-down\"></i><span>Switch to</span></button></li><li class=\"collapse-expand\"><button><i class=\"fa fa-compress\"></i><span>Collapse facets</span></button></li></ul><div class=\"facets\"><div class=\"loader\"><h4>Loading search...</h4><br/><i class=\"fa fa-spinner fa-spin fa-2x\"></i></div></div></form></div>");;return buf.join("");
+buf.push("<div class=\"overlay\"><div><i class=\"fa fa-spinner fa-spin fa-2x\"></i></div></div><div class=\"faceted-search\"><div class=\"text-search-placeholder\"></div><ul class=\"facets-menu\"><li class=\"reset\"><button><i class=\"fa fa-refresh\"></i><span>Reset search</span></button></li><li class=\"switch\"><button><i class=\"fa fa-angle-double-down\"></i><span>Switch to</span></button></li><li class=\"collapse-expand\"><button><i class=\"fa fa-compress\"></i><span>Collapse facets</span></button></li></ul><div class=\"facets\"><div class=\"loader\"><h4>Loading search...</h4><br/><i class=\"fa fa-spinner fa-spin fa-2x\"></i></div></div></div>");;return buf.join("");
 };
 },{"jade/runtime":3}],33:[function(_dereq_,module,exports){
 var jade = _dereq_("jade/runtime");
@@ -2472,7 +2476,7 @@ var buf = [];
 var jade_mixins = {};
 var jade_interp;
 ;var locals_for_with = (locals || {});(function (model) {
-buf.push("<div class=\"placeholder pad3\"><div class=\"body\"><div class=\"search-input\"><input type=\"text\" name=\"search\"/><i class=\"fa fa-search\"></i></div><div class=\"menu\"><i class=\"fa fa-times\"></i><div class=\"row-1\"><div class=\"cell-1\"><input id=\"cb_casesensitive\" type=\"checkbox\" name=\"cb_casesensitive\" data-attr=\"caseSensitive\"/><label for=\"cb_casesensitive\">Match case</label></div><div class=\"cell-2\"><input id=\"cb_fuzzy\" type=\"checkbox\" name=\"cb_fuzzy\" data-attr=\"fuzzy\"/><label for=\"cb_fuzzy\">Fuzzy</label></div></div><div class=\"row-2\">");
+buf.push("<div class=\"placeholder\"><div class=\"body\"><div class=\"search-input\"><input type=\"text\" name=\"search\"/><i class=\"fa fa-search\"></i></div><div class=\"menu\"><i class=\"fa fa-times\"></i><div class=\"row-1\"><div class=\"cell-1\"><input id=\"cb_casesensitive\" type=\"checkbox\" name=\"cb_casesensitive\" data-attr=\"caseSensitive\"/><label for=\"cb_casesensitive\">Match case</label></div><div class=\"cell-2\"><input id=\"cb_fuzzy\" type=\"checkbox\" name=\"cb_fuzzy\" data-attr=\"fuzzy\"/><label for=\"cb_fuzzy\">Fuzzy</label></div></div><div class=\"row-2\">");
 if ( model.has('searchInAnnotations') || model.has('searchInTranscriptions'))
 {
 buf.push("<div class=\"cell-1\"><h4>Search in:</h4><ul class=\"searchins\">");
