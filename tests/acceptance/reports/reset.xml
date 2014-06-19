@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<testsuites name="reset"
+             errors="0"
+             failures="0"
+             tests="5">
+  
+  <testsuite errors="0" failures="0" hostname="" id=""
+    name="Reset" package="reset" skipped="0"
+    tests="5" time="" timestamp="">
+    
+    
+      <testcase name="Element &lt;section.fs-results ul.results li&gt; was visible after 1382 milliseconds.">
+        
+        
+      </testcase>
+    
+      <testcase name="Testing if element &lt;section.fs-results h2&gt; contains text: &quot;Remdoc: 6102&quot;.">
+        
+        
+      </testcase>
+    
+      <testcase name="Assertion passed: 3">
+        
+        
+      </testcase>
+    
+      <testcase name="Testing if element &lt;section.fs-results h2&gt; contains text: &quot;Remdoc: 57&quot;.">
+        
+        
+      </testcase>
+    
+      <testcase name="Assertion passed: 0">
+        
+        
+      </testcase>
+    
+    
+    </testsuite>
+  
+</testsuites>

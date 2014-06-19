@@ -3,7 +3,7 @@ module.exports = {
     browser
       .url("http://localhost:9001/stage")
       .waitForElementVisible('section.fs-results ul.results li', 1000)
-      .click('ul.facets-menu li.switch button')gi
+      .click('ul.facets-menu li.switch button')
       .assert.hidden('.search-type-simple .facets')
       .assert.hidden('.search-type-simple .facets .facet.list')
       .assert.hidden('.search-type-simple .facets .facet.range')

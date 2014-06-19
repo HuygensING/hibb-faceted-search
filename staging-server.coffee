@@ -15,13 +15,19 @@ app.post '/search', (req, res) ->
     resultId = 'select-content-type'
   else if reqBody is '{"facetValues":[],"sortParameters":[],"term":"saskia","caseSensitive":false,"fuzzy":false}'
     resultId = 'term-saskia'
+  else if reqBody is '{"facetValues":[{"name":"content_type","values":["works of art","books/e-books"]},{"name":"artist_name","values":["Gerard Hoet"]}],"sortParameters":[]}'
+    resultId = 'content-type-and-author'
 
   res.location 'http://localhost:9001/api/result/'+resultId
   res.status 201
   res.send 201
 
 app.get '/result/:id', (req, res) ->
-  json = require "./stage/responses/#{req.params.id}.json"
+  try
+    json = require "./stage/responses/#{req.params.id}.json"
+  catch
+    json = 404
+
   res.send json
 
 app.listen 3000

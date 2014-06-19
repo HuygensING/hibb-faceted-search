@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<testsuites name="full-text"
+             errors="0"
+             failures="0"
+             tests="5">
+  
+  <testsuite errors="0" failures="0" hostname="" id=""
+    name="Full text search" package="full-text" skipped="0"
+    tests="5" time="" timestamp="">
+    
+    
+      <testcase name="Element &lt;section.fs-results ul.results li&gt; was visible after 61 milliseconds.">
+        
+        
+      </testcase>
+    
+      <testcase name="Testing if element &lt;section.fs-results h2&gt; contains text: &quot;Remdoc: 6102&quot;.">
+        
+        
+      </testcase>
+    
+      <testcase name="Testing if element &lt;section.fs-results h2&gt; contains text: &quot;Remdoc: 130&quot;.">
+        
+        
+      </testcase>
+    
+      <testcase name="Testing if element &lt;section.fs-results h2&gt; contains text: &quot;Remdoc: 6102&quot;.">
+        
+        
+      </testcase>
+    
+      <testcase name="Testing if element &lt;section.fs-results h2&gt; contains text: &quot;Remdoc: 130&quot;.">
+        
+        
+      </testcase>
+    
+    
+    </testsuite>
+  
+</testsuites>
