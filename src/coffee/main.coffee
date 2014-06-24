@@ -105,7 +105,11 @@ class MainView extends Backbone.View
 			fragment = document.createDocumentFragment()
 
 			if config.search
-				textSearch = new Views.TextSearch()
+				if config.textSearchTitle?
+					textSearch = new Views.TextSearch title: config.textSearchTitle
+				else
+					textSearch = new Views.TextSearch
+
 				@$('.search-placeholder').html textSearch.el
 				@listenTo textSearch, 'change', (queryOptions) => @model.set queryOptions
 				@facetViews['textSearch'] = textSearch

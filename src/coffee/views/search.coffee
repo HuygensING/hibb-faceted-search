@@ -20,10 +20,10 @@ class SearchView extends Views.Facet
 	className: 'facet search'
 
 	# ### Initialize
-	initialize: (options) ->
+	initialize: (options={}) ->
 		super
 
-		@model = new Models.Search config.textSearchOptions
+		@model = new Models.Search _.extend _.clone(config.textSearchOptions ? {}), options
 		@listenTo @model, 'change', => @trigger 'change', @model.queryData()
 
 		@render()
