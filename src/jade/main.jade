@@ -1,15 +1,20 @@
 .overlay
 	//- img(src="../images/faceted-search/loader.gif")
 	div
-		i.fa.fa-spinner.fa-spin.fa-2x
+		i.fa.fa-refresh.fa-spin.fa-2x
 .faceted-search
-	i.fa.fa-compress
-	i.fa.fa-refresh
+	.control-panel
+		.btn.collapse
+			i.fa.fa-compress
+			span Collapse
+		.btn.reset
+			i.fa.fa-refresh
+			| Reset
 	form
 		.search-placeholder
 		.facets
 			div.loader
 				h4 Loading facets...
 				br
-				i.fa.fa-spinner.fa-spin.fa-2x
+				i.fa.fa-refresh.fa-spin.fa-2x
 				//- img(src="../images/faceted-search/loader.gif") <i class="fa fa-spinner fa-spin"></i>

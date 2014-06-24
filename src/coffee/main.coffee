@@ -130,10 +130,9 @@ class MainView extends Backbone.View
 
 	# ### Events
 	events: ->
-		'click i.fa-compress': 'toggleFacets'
-		'click i.fa-expand': 'toggleFacets'
+		'click .control-panel .collapse': 'toggleFacets'
 		# Don't use @refresh as String, because the ev object will be passed.
-		'click i.fa-refresh': -> @refresh()
+		'click .control-panel .reset': -> @reset()
 
 	# ### Methods
 
@@ -149,7 +148,7 @@ class MainView extends Backbone.View
 	# The facets are slided one by one. When the slide of a facet is finished, the
 	# next facet starts sliding. That's why we use a recursive function.
 	toggleFacets: (ev) ->
-		$button = $ ev.currentTarget
+		$button = $('i', ev.currentTarget)
 		
 		open = $button.hasClass 'fa-expand'
 		$button.toggleClass 'fa-compress'
