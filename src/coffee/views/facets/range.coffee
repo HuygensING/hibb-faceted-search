@@ -221,16 +221,18 @@ class RangeFacet extends Views.Facet
     Math.floor left
 
   update: (newOptions) ->
-    newOptions = newOptions[0] if _.isArray(newOptions)
+    if _.isArray(newOptions)
+      if newOptions[0]?
+        newOptions = newOptions[0]
+      else
+        newOptions =
+          lowerLimit: @model.get('options').lowerLimit
+          upperLimit: @model.get('options').upperLimit
 
     # Only use the year.
     yearMin = +(newOptions.lowerLimit+'').substr(0, 4)
     yearMax = +(newOptions.upperLimit+'').substr(0, 4)
 
-    # Set the current attribute in the range model.
-    @model.set
-      currentMin: yearMin
-      currentMax: yearMax
 
     # Update the labels.
     @labelMin.html yearMin
@@ -252,6 +254,11 @@ class RangeFacet extends Views.Facet
     # Position the handles.
     @handleMinLeft = leftMin - (@handleWidth/2)
     @handleMaxLeft = leftMax - (@handleWidth/2)
+
+    # Set the current attribute in the range model.
+    @model.set
+      currentMin: yearMin
+      currentMax: yearMax
 
     @button.style.display = 'none' if @button?
 

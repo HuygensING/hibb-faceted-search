@@ -17,6 +17,8 @@ app.post '/search', (req, res) ->
     resultId = 'term-saskia'
   else if reqBody is '{"facetValues":[{"name":"content_type","values":["works of art","books/e-books"]},{"name":"artist_name","values":["Gerard Hoet"]}],"sortParameters":[]}'
     resultId = 'content-type-and-author'
+  else if reqBody is '{"facetValues":[],"sortParameters":[],"term":"blabla","caseSensitive":false,"fuzzy":false}'
+    resultId = 'term-blabla'
 
   res.location 'http://localhost:9001/api/result/'+resultId
   res.status 201

@@ -558,7 +558,7 @@ MainView = (function(_super) {
   MainView.prototype.render = function() {
     this.$el.html(tpl());
     if (config.templates.hasOwnProperty('main')) {
-      this.$('form').html(config.templates.main());
+      this.$('.faceted-search').html(config.templates.main());
     }
     this.$('.faceted-search').addClass("search-type-" + config.textSearch);
     if (config.textSearch === 'simple' || config.textSearch === 'advanced') {
@@ -1233,17 +1233,18 @@ Facets = (function(_super) {
     return view;
   };
 
-  Facets.prototype.update = function(facets) {
-    var facetData, index, _results;
+  Facets.prototype.update = function(facetData) {
+    var data, options, view, viewName, _ref, _results;
+    _ref = this.views;
     _results = [];
-    for (index in facets) {
-      if (!__hasProp.call(facets, index)) continue;
-      facetData = facets[index];
-      if (this.views.hasOwnProperty(facetData.name)) {
-        _results.push(this.views[facetData.name].update(facetData.options));
-      } else {
-        _results.push(void 0);
-      }
+    for (viewName in _ref) {
+      if (!__hasProp.call(_ref, viewName)) continue;
+      view = _ref[viewName];
+      data = _.findWhere(facetData, {
+        name: viewName
+      });
+      options = data != null ? data.options : [];
+      _results.push(view.update(options));
     }
     return _results;
   };
@@ -2169,14 +2170,17 @@ RangeFacet = (function(_super) {
   RangeFacet.prototype.update = function(newOptions) {
     var leftMax, leftMin, yearMax, yearMin;
     if (_.isArray(newOptions)) {
-      newOptions = newOptions[0];
+      if (newOptions[0] != null) {
+        newOptions = newOptions[0];
+      } else {
+        newOptions = {
+          lowerLimit: this.model.get('options').lowerLimit,
+          upperLimit: this.model.get('options').upperLimit
+        };
+      }
     }
     yearMin = +(newOptions.lowerLimit + '').substr(0, 4);
     yearMax = +(newOptions.upperLimit + '').substr(0, 4);
-    this.model.set({
-      currentMin: yearMin,
-      currentMax: yearMax
-    });
     this.labelMin.html(yearMin);
     this.labelMax.html(yearMax);
     leftMin = this.getLeftPosFromYear(yearMin);
@@ -2187,6 +2191,10 @@ RangeFacet = (function(_super) {
     this.bar.css('right', this.sliderWidth - leftMax);
     this.handleMinLeft = leftMin - (this.handleWidth / 2);
     this.handleMaxLeft = leftMax - (this.handleWidth / 2);
+    this.model.set({
+      currentMin: yearMin,
+      currentMax: yearMax
+    });
     if (this.button != null) {
       return this.button.style.display = 'none';
     }

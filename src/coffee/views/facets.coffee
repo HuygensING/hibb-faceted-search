@@ -56,9 +56,14 @@ class Facets extends Backbone.View
     view
 
   # ### Methods
-  update: (facets) ->
-    for own index, facetData of facets
-      @views[facetData.name].update(facetData.options) if @views.hasOwnProperty facetData.name
+  update: (facetData) ->
+#    console.log facetData
+    for own viewName, view of @views
+      data = _.findWhere(facetData, name: viewName)
+      options = if data? then data.options else []
+
+      view.update options
+#      @views[facetData.name].update(facetData.options) if @views.hasOwnProperty facetData.name
 
   reset: ->
     for own key, facetView of @views

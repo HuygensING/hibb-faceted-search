@@ -48,7 +48,7 @@ class MainView extends Backbone.View
     @$el.html tpl()
 
     if config.templates.hasOwnProperty 'main'
-      @$('form').html config.templates.main()
+      @$('.faceted-search').html config.templates.main()
 
     @$('.faceted-search').addClass "search-type-#{config.textSearch}"
 
