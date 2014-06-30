@@ -70,8 +70,8 @@ class ListFacetOptions extends Backbone.View
 
   # Unused, but could be handy in the future.
   renderAll: ->
-    @appendOptions true
-
+#    @appendOptions true
+    @collection.setAllVisible()
 
   # ### Events
   events: ->
