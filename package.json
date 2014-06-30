@@ -31,6 +31,7 @@
     "funcky.arr": "git+https://github.com/Gijsjan/funcky.arr.git",
     "funcky.el": "git+https://github.com/Gijsjan/funcky.el.git",
     "funcky.req": "git+https://github.com/Gijsjan/funcky.req.git",
+    "funcky.util": "git+https://github.com/Gijsjan/funcky.util.git",
     "gulp": "~3.5.2",
     "gulp-browserify": "~0.4.4",
     "gulp-clean": "~0.2.4",
