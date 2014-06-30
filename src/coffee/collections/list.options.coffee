@@ -17,6 +17,8 @@ class ListOptions extends Backbone.Collection
 
   # Alias for reset, because a collection already has a reset method.
   revert: ->
+    @comparator = @strategies.amount_desc
+
     @each (option) => option.set 'checked', false, silent: true
 
   # TODO Don't do two loops, combine into one.
