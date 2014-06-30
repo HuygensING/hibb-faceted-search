@@ -2,6 +2,29 @@
 Backbone based library
 
 ### Changelog
+
+#### v2.0.5
+- ListFacet reset would not reset the sorting strategy.
+- ListFacet sorting is now split in two: count > 0 and count == 0.
+  Count > 0 has precedence over count == 0.
+  
+#### v2.0.4
+- Facets would not update if no results where returned by the server.
+
+#### v2.0.3
+- Remove switch type bug.
+- Remove <form> to prevent auto form submit.
+- Clean up mark up.
+
+#### v2.0.2
+- ListFacet would not reset properly.
+
+#### v2.0.1
+- Fix range resize bug.
+- Fix passing wrong arguments to queryOptions.
+- Add a standalone FS instance to be used for debugging and acceptance tests.
+- Move facets models to facet/ dir.
+
 #### v2.0.0
 - BREAKING: package is now available as a standalone browserify build through the /dist dir. 
   Javascript is now split in two: one file for libs (libs.js) and one for the faceted search (src.js).
