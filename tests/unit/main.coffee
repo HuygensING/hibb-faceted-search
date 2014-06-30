@@ -104,15 +104,16 @@ describe 'View : Main ::', ->
       mainView.onSwitchType ev
       config.textSearch.should.equal 'advanced'
 
-    it 'should call search if search hasn\'t been called yet', ->
+    it 'should call search if queryAmount is 1', ->
+      mainView.searchResults.queryAmount = 1
       stub = setup.sinon.stub mainView, 'search'
       mainView.onSwitchType ev
       stub.should.have.been.called
 
-    it 'should call update if search has been called before', ->
+    it 'should call update if queryAmount > 1', ->
       searchStub = setup.sinon.stub mainView, 'search'
       stub = setup.sinon.stub mainView, 'update'
-      mainView.searchResults.length = 12
+      mainView.searchResults.queryAmount = 12
       mainView.onSwitchType ev
       searchStub.should.not.have.been.called
       stub.should.have.been.called
