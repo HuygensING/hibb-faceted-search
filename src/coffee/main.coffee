@@ -73,8 +73,9 @@ class MainView extends Backbone.View
     textSearch = new Views.TextSearch()
     @$('.text-search-placeholder').html textSearch.el
 
-    @listenTo textSearch, 'change', (queryOptions) => @model.set queryOptions
-    @listenTo textSearch, 'change:silent', (queryOptions) => @model.set queryOptions, silent: true
+    @listenTo textSearch, 'submit', => @model.trigger 'change'
+    @listenTo textSearch, 'change', (queryOptions) =>
+      @model.set queryOptions, silent: true
 
     # TODO Remove textSearch from @facetViews
     @facetViews['textSearch'] = textSearch
