@@ -91,8 +91,11 @@ class SearchResults extends Backbone.Collection
         url = if config.resultRows? then @postURL + '?rows=' + config.resultRows else @postURL
         done url
     req.fail (res) =>
-      @trigger 'unauthorized' if res.status is 401
-      console.error 'Failed posting FacetedSearch queryOptions to the server!', res
+      if res.status is 401
+        @trigger 'unauthorized'
+      else
+        @trigger 'request:failed', res
+        throw new Error 'Failed posting FacetedSearch queryOptions to the server!', res
 
   getResults: (url, done) ->
     @trigger 'request'
@@ -104,7 +107,10 @@ class SearchResults extends Backbone.Collection
         @trigger 'sync'
 
     req.fail (res) =>
-      @trigger 'unauthorized' if res.status is 401
-      console.error 'Failed getting FacetedSearch results from the server!', res
+      if res.status is 401
+        @trigger 'unauthorized'
+      else
+        @trigger 'request:failed', res
+        throw new Error 'Failed getting FacetedSearch results from the server!', res
 
 module.exports = SearchResults

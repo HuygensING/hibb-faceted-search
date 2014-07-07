@@ -140,6 +140,7 @@ class MainView extends Backbone.View
     @listenTo @searchResults, 'sync', => @hideLoader()
 
     @listenTo @searchResults, 'unauthorized', => @trigger 'unauthorized'
+    @listenTo @searchResults, 'request:failed', (res) => @trigger 'request:failed', res
 
   instantiateFacets: (viewMap={}) ->
     @facets = new Views.Facets viewMap: viewMap

@@ -3,6 +3,9 @@ Backbone based library
 
 ### Changelog
 
+#### v2.0.6
+- Trigger request:failed event when a request made from the FS fails
+
 #### v2.0.5
 - ListFacet reset would not reset the sorting strategy.
 - ListFacet sorting is now split in two: count > 0 and count == 0.
