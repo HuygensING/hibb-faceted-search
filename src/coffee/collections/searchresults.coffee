@@ -54,6 +54,7 @@ class SearchResults extends Backbone.Collection
 
 	moveCursor: (direction) ->
 		url = if direction is '_prev' or direction is '_next' then @current.get direction else direction
+		url = url.replace /.+search/, config.baseUrl + config.searchPath
 
 		if url?
 			if @cachedModels.hasOwnProperty url
