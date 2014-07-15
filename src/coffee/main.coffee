@@ -114,7 +114,19 @@ class MainView extends Backbone.View
 				@listenTo textSearch, 'change', (queryOptions) => @model.set queryOptions
 				@facetViews['textSearch'] = textSearch
 
-			for own index, facetData of @model.searchResults.current.get('facets')
+			facets = @model.searchResults.current.get('facets')
+
+			if config.facetOrder?
+				replaceFacet = (name) ->
+					for idx of facets
+						facet = facets[idx]
+						if facet.name is name
+							facets.unshift facets.splice(idx, 1)[0]
+							break
+				for facetName in config.facetOrder.slice(0).reverse()
+					replaceFacet(facetName)
+
+			for own index, facetData of facets
 				if facetData.type of facetViewMap
 					View = facetViewMap[facetData.type]
 					@facetViews[facetData.name] = new View attrs: facetData
