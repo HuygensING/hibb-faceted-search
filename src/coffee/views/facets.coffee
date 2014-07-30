@@ -62,6 +62,9 @@ class Facets extends Backbone.View
     if _.isString(facetData)
       facetData = _.findWhere @searchResults.first().get('facets'), name: facetData
 
+    if @config.facetTitleMap?[facetData.name]?
+      facetData.title = @config.facetTitleMap[facetData.name]
+
     View = @viewMap[facetData.type]
     @views[facetData.name] = new View
       attrs: facetData,
