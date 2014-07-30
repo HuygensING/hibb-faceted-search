@@ -1,8 +1,6 @@
 Backbone = require 'backbone'
 _ = require 'underscore'
 
-config = require '../config'
-
 class Facets extends Backbone.View
   viewMap:
     BOOLEAN: require './facets/boolean'
@@ -14,6 +12,8 @@ class Facets extends Backbone.View
   initialize: (options) ->
     _.extend @viewMap, options.viewMap
 
+    @config = options.config
+
     # A map of the facet views. Used for looping through all facet views
     # and call methods like update, reset and render.
     @views = {}
@@ -23,7 +23,7 @@ class Facets extends Backbone.View
     @destroyFacets()
     # If there is a template for main, than use the template and
     # attach facets to their placeholder.
-    if config.templates.hasOwnProperty 'main'
+    if @config.templates.hasOwnProperty 'main'
       for facetData, index in data
         if @viewMap.hasOwnProperty facetData.type
           el.querySelector(".#{facetData.name}-placeholder").appendChild @renderFacet(facetData).el

@@ -48,15 +48,13 @@ class MainView extends Backbone.View
     @$el.html tpl()
 
     if config.templates.hasOwnProperty 'main'
-      @$('.faceted-search').html config.templates.main()
+      @$el.html config.templates.main()
 
     @$('.faceted-search').addClass "search-type-#{config.textSearch}"
 
     # See config for more about none, simple and advanced options.
     if config.textSearch is 'simple' or config.textSearch is 'advanced'
       @renderTextSearch()
-
-    @$('.facets').html @facets.el
 
     @
 
@@ -142,7 +140,7 @@ class MainView extends Backbone.View
     @listenTo @searchResults, 'unauthorized', => @trigger 'unauthorized'
 
   instantiateFacets: (viewMap={}) ->
-    @facets = new Views.Facets viewMap: viewMap
+    @facets = new Views.Facets viewMap: viewMap, config: config
     @listenTo @facets, 'change', (queryOptions, options) => @queryOptions.set queryOptions, options
 
   showLoader: ->
@@ -199,8 +197,8 @@ class MainView extends Backbone.View
 
   # Silently change @attributes and trigger a change event manually afterwards.
   # arguments.cache Boolean Tells searchResults if we want to fetch result from cache.
-  # 	In an app where data is dynamic, we usually don't want cache (get new result from server),
-  #	in an app where data is static, we can use cache to speed up the app.
+  # In an app where data is dynamic, we usually don't want cache (get new result from server),
+  # in an app where data is static, we can use cache to speed up the app.
   reset: (cache=false) ->
     @textSearch.reset() if @textSearch?
 
