@@ -13,18 +13,25 @@ streamify = require 'gulp-streamify'
 rename = require 'gulp-rename'
 clean = require 'gulp-clean'
 bodyParser = require 'body-parser'
+browserSync = require 'browser-sync'
+modRewrite = require 'connect-modrewrite'
+proxy = require('proxy-middleware')
 exec = require('child_process').exec
 nib = require 'nib'
+url = require('url')
 
 connectRewrite = require './connect-rewrite'
 pkg = require './package.json'
 
-gulp.task 'connect', ->
-  connect.server
-    root: './stage'
-    port: 9001
-    livereload: true
-    middleware: (connect, options) -> [bodyParser(), connectRewrite(connect, options)]
+
+gulp.task 'server', ['stylus', 'watch', 'watchify'], ->
+  proxyOptions = url.parse('http://localhost:3000')
+  proxyOptions.route = '/api'
+
+  browserSync.init null,
+    server:
+      baseDir: './stage'
+      middleware: [proxy(proxyOptions)]
 
 gulp.task 'stylus', ->
   gulp.src(['./src/**/*.styl'])
@@ -37,7 +44,7 @@ gulp.task 'stylus', ->
     .pipe(minifyCss())
     .pipe(rename(extname:'.min.css'))
     .pipe(gulp.dest('./dist'))
-    .pipe(connect.reload())
+#    .pipe(browserSync.reload(stream: true))
 
 gulp.task 'prepare-coverage', ['coffee'], ->
   #  Copy .jade files to compiled so tests can find .jade files.
@@ -52,7 +59,7 @@ gulp.task 'coffee', ->
 
 gulp.task 'watch', ->
   gulp.watch ['./src/**/*.styl'], ['stylus']
-  gulp.watch ['./stage/*'], -> connect.reload()
+  gulp.watch ['./stage/index.html', './stage/*/*.css'], -> browserSync.reload()
 
 gulp.task 'default', ['watch', 'watchify']
 
@@ -69,7 +76,7 @@ createBundle = (watch=false) ->
     .pipe(streamify(uglify()))
     .pipe(rename(extname: '.min.js'))
     .pipe(gulp.dest("./dist"))
-    .pipe(connect.reload())
+    .pipe(browserSync.reload(stream: true, once: true))
 
   if watch
     bundler = watchify args
@@ -121,4 +128,4 @@ gulp.task 'browserify', ['browserify-src', 'browserify-libs'], ->
 
 gulp.task 'build', ['browserify', 'stylus']
 
-gulp.task 'default', ['stylus', 'connect', 'watch', 'watchify']
+gulp.task 'default', ['server']

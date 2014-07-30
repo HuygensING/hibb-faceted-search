@@ -1,4 +1,6 @@
 @import '../import/*'
+@import 'nib'
+
 
 // Sync handleWidth with RangeFacet view!
 handleWidth = 12px
@@ -7,7 +9,7 @@ sliderHeight = 6px
 .facet.range
 	.body
 		height 32px
-		padding-top 6px
+		padding 6px 20px
 
 		.slider
 			select_none()
@@ -60,17 +62,43 @@ sliderHeight = 6px
 					top ((handleWidth - sliderHeight)/-2)
 					right -1 * (handleWidth/2)
 
-			label
-				&.min, &.max, &.single
-					position: absolute
-					top 20px
+				input
+					&.min, &.max, &.single
+						position: absolute
+						top 20px
 
-				&.min, &.max
-					cursor pointer
-					border 1px solid #eeeeee
-					padding 0 3px
-					border-radius 3px
-					background white
+
+					&.min, &.max
+						cursor pointer
+						border 1px solid #eeeeee
+						padding 0 3px
+						border-radius 3px
+						background rgba(255, 189, 223, 0.3)
+						width 50px
+						text-align center
+						transition border 1s
+
+						&.overlap
+							border 1px solid white
+
+						&[disabled]
+							background white
+							user-select none
+
+					&.min
+						left -20px
+						transition left 150ms
+
+			.dash
+				display none
+				position absolute
+				top 18px
+				z-index 12
+
+
+&.max
+					right -20px
+					transition right 150ms
 
 				&.single
 					display none

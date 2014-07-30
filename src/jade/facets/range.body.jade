@@ -1,8 +1,9 @@
 .slider
+  span.dash -
   .handle-min.handle
-    label.min= options.lowerLimit
+    input.min(value=options.lowerLimit, disabled)
   .handle-max.handle
-    label.max= options.upperLimit
+    input.max(value=options.upperLimit, disabled)
   .bar &nbsp;
   button Search?
   label.single

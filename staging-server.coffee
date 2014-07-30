@@ -20,7 +20,7 @@ app.post '/search', (req, res) ->
   else if reqBody is '{"facetValues":[],"sortParameters":[],"term":"blabla","caseSensitive":false,"fuzzy":false}'
     resultId = 'term-blabla'
 
-  res.location 'http://localhost:9001/api/result/'+resultId
+  res.location 'http://localhost:3001/api/result/'+resultId
   res.status 201
   res.send 201
 

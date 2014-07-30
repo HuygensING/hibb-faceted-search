@@ -508,7 +508,7 @@
 
 .facet.range .body {
   height: 32px;
-  padding-top: 6px;
+  padding: 6px 20px;
 }
 .facet.range .body .slider {
   -webkit-touch-callout: none;
@@ -516,10 +516,15 @@
   -khtml-user-select: none;
   -moz-user-select: none;
   -ms-user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
   user-select: none;
   height: 6px;
   background: #eee;
+  -webkit-border-radius: 6px;
   border-radius: 6px;
+  -webkit-box-shadow: inset 1px 1px 3px #888;
   box-shadow: inset 1px 1px 3px #888;
   position: relative;
   margin: 0 6px;
@@ -534,6 +539,7 @@
   background: rgba(255,189,223,0.3);
   outline: none;
   border: none;
+  -webkit-border-radius: 4px;
   border-radius: 4px;
 }
 .facet.range .body .slider .bar {
@@ -548,8 +554,10 @@
   position: absolute;
   width: 12px;
   height: 12px;
+  -webkit-border-radius: 12px;
   border-radius: 12px;
   background: #ccc;
+  -webkit-box-shadow: inset 1px 1px 6px #444;
   box-shadow: inset 1px 1px 6px #444;
   cursor: pointer;
   z-index: 2;
@@ -562,20 +570,62 @@
   top: -3px;
   right: -6px;
 }
-.facet.range .body .slider label.min,
-.facet.range .body .slider label.max,
-.facet.range .body .slider label.single {
+.facet.range .body .slider .handle input.min,
+.facet.range .body .slider .handle input.max,
+.facet.range .body .slider .handle input.single {
   position: absolute;
   top: 20px;
 }
-.facet.range .body .slider label.min,
-.facet.range .body .slider label.max {
+.facet.range .body .slider .handle input.min,
+.facet.range .body .slider .handle input.max {
   cursor: pointer;
   border: 1px solid #eee;
   padding: 0 3px;
+  -webkit-border-radius: 3px;
   border-radius: 3px;
-  background: #fff;
+  background: rgba(255,189,223,0.3);
+  width: 50px;
+  text-align: center;
+  -webkit-transition: border 1s;
+  -moz-transition: border 1s;
+  -o-transition: border 1s;
+  -ms-transition: border 1s;
+  transition: border 1s;
 }
-.facet.range .body .slider label.single {
+.facet.range .body .slider .handle input.min.overlap,
+.facet.range .body .slider .handle input.max.overlap {
+  border: 1px solid #fff;
+}
+.facet.range .body .slider .handle input.min[disabled],
+.facet.range .body .slider .handle input.max[disabled] {
+  background: #fff;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+.facet.range .body .slider .handle input.min {
+  left: -20px;
+  -webkit-transition: left 150ms;
+  -moz-transition: left 150ms;
+  -o-transition: left 150ms;
+  -ms-transition: left 150ms;
+  transition: left 150ms;
+}
+.facet.range .body .slider .dash {
+  display: none;
+  position: absolute;
+  top: 18px;
+  z-index: 12;
+}
+.max {
+  right: -20px;
+  -webkit-transition: right 150ms;
+  -moz-transition: right 150ms;
+  -o-transition: right 150ms;
+  -ms-transition: right 150ms;
+  transition: right 150ms;
+}
+.single {
   display: none;
 }

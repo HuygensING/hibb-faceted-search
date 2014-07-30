@@ -26,9 +26,12 @@ class RangeFacet extends Views.Facet
 
     @model = new Models.Range options.attrs, parse: true
     @listenTo @model, 'change:options', @render
+    @listenTo @model, 'change', (model) =>
+      if model.changed.hasOwnProperty('currentMin') or model.changed.hasOwnProperty('currentMax')
+        @checkInputOverlap()
 
-    @listenTo @model, 'change:currentMin', @checkLabelOverlap
-    @listenTo @model, 'change:currentMax', @checkLabelOverlap
+    @listenTo @model, 'change:currentMin', @updateMinHandle
+    @listenTo @model, 'change:currentMax', @updateMaxHandle
 
     @render()
 
@@ -72,8 +75,8 @@ class RangeFacet extends Views.Facet
     @handleMaxLeft = @handleMax.position().left
 
     # The labels holding the min and max value.
-    @labelMin = @$ 'label.min'
-    @labelMax = @$ 'label.max'
+    @inputMin = @$ 'input.min'
+    @inputMax = @$ 'input.max'
 
     # The space (selected range) between the min and max handle.
     @bar = @$ '.bar'
@@ -85,9 +88,22 @@ class RangeFacet extends Views.Facet
   # ### EVENTS
   events: -> _.extend {}, super,
     'mousedown .handle': 'startDragging'
+    'mousedown .bar': 'startDragging'
     'mouseup': 'stopDragging'
     'mousemove': 'drag'
+    'blur input': 'setYear'
+    'keyup input': 'setYear'
     'click button': 'doSearch'
+
+  setYear: (ev) ->
+    if ev.type is 'focusout' or ev.type is 'blur' or (ev.type is 'keyup' and ev.keyCode is 13)
+      if ev.currentTarget.className.indexOf('min') > -1
+        @model.set currentMin: +ev.currentTarget.value
+        @disableInputEditable @inputMin
+      else if ev.currentTarget.className.indexOf('max') > -1
+        @model.set currentMax: +ev.currentTarget.value
+        @disableInputEditable @inputMax
+
 
   doSearch: (ev) ->
     ev.preventDefault()
@@ -96,42 +112,108 @@ class RangeFacet extends Views.Facet
   startDragging: (ev) ->
     target = $ ev.currentTarget
 
-    if target.hasClass 'handle-min'
+    # Return if the input is editable, ie: not disabled.
+    input = target.find 'input'
+    # If the bar is dragged, an input is not found.
+    if input.length > 0
+      return unless input.attr('disabled')?
+
+    if target.hasClass('handle-min')
       @draggingMin = true
       @handleMax.css 'z-index', 10
+      target.css 'z-index', 11
     else if target.hasClass 'handle-max'
       @draggingMax = true
       @handleMin.css 'z-index', 10
-
-    target.css 'z-index', 11
+      target.css 'z-index', 11
+    else if target.hasClass 'bar'
+      # Set @draggingBar hash with offsetLeft and barWidth, which are
+      # needed while dragging.
+      @draggingBar =
+        offsetLeft: (ev.clientX - @sliderLeft) - @handleMinLeft
+        barWidth: @bar.width()
 
   # Called on every scroll event! Keep optimized!
   drag: (ev) ->
     mousePosLeft = ev.clientX - @sliderLeft
 
-    if @draggingMin
-      @handleMinLeft = mousePosLeft - (@handleWidth/2)
+    if @draggingMin or @draggingMax
+      @disableInputOverlap()
 
-      if -1 < mousePosLeft <= @handleMaxLeft
-        @handleMin.css 'left', @handleMinLeft
-        @bar.css 'left', mousePosLeft
-        @updateHandleLabel 'min', mousePosLeft
+    dragMin = (newPos) =>
+      if -1 < newPos <= @handleMaxLeft
+        @handleMinLeft = newPos
+        @handleMin.css 'left', newPos
+        @bar.css 'left', newPos
+        @updateDash()
+        @updateHandleLabel 'min', newPos
+
+    dragMax = (newPos) =>
+      if @handleMinLeft < newPos <= @sliderWidth
+        @handleMaxLeft = newPos
+        @handleMax.css 'left', newPos
+        @bar.css 'right', @sliderWidth - newPos
+        @updateHandleLabel 'max', newPos
+
+    if @draggingBar?
+      if @handleMinLeft + @draggingBar.barWidth <= @sliderWidth
+        dragMin mousePosLeft - @draggingBar.offsetLeft
+        dragMax @handleMinLeft + @draggingBar.barWidth
+
+    if @draggingMin
+      dragMin mousePosLeft - (@handleWidth/2)
 
     if @draggingMax
-      @handleMaxLeft = mousePosLeft - (@handleWidth/2)
+      dragMax mousePosLeft - (@handleWidth/2)
 
-      if @handleMinLeft < mousePosLeft <= @sliderWidth
-        @handleMax.css 'left', @handleMaxLeft
-        @bar.css 'right', @sliderWidth - mousePosLeft
-        @updateHandleLabel 'max', mousePosLeft
+  enableInputEditable: (input) ->
+    input.attr 'disabled', null
+    input.focus()
+
+  disableInputEditable: (input) ->
+    input.attr 'disabled', true
+
+  enableInputOverlap: (diff) ->
+    @inputMin.css 'left', -20 - diff/2
+    @inputMax.css 'right', -20 - diff/2
+
+    @updateDash()
+    @$('.dash').show()
+
+    @inputMin.addClass 'overlap'
+    @inputMax.addClass 'overlap'
+
+  updateDash: ->
+    @$('.dash').css 'left', @handleMinLeft + ((@handleMaxLeft - @handleMinLeft)/2) + 3
+
+  disableInputOverlap: ->
+    @inputMin.css 'left', -20
+    @inputMax.css 'right', -20
+
+    @$('.dash').hide()
+
+    @inputMin.removeClass 'overlap'
+    @inputMax.removeClass 'overlap'
 
   stopDragging: ->
     if @draggingMin or @draggingMax
+      if @draggingMin
+        if @model.get('currentMin') isnt +@inputMin.val()
+          @model.set currentMin: +@inputMin.val()
+        else
+          @enableInputEditable @inputMin
+
+      if @draggingMax
+        if @model.get('currentMax') isnt +@inputMax.val()
+          @model.set currentMax: +@inputMax.val()
+        else
+          @enableInputEditable @inputMax
+
       @draggingMin = false
       @draggingMax = false
 
-      @model.set currentMin: +@labelMin.html()
-      @model.set currentMax: +@labelMax.html()
+    if @draggingBar?
+      @draggingBar = null
 
       # If autoSearch is off, a change event is triggerd to update the queryModel.
       # If autoSearch is on, the range facet doesn't autoSearch, but displays a
@@ -167,26 +249,18 @@ class RangeFacet extends Views.Facet
       upperLimit: @model.get('currentMax')
 
     # The labels could be overlapping after resize.
-    @checkLabelOverlap()
+    @checkInputOverlap()
 
-  checkLabelOverlap: ->
-    minRect = @labelMin[0].getBoundingClientRect()
-    maxRect = @labelMax[0].getBoundingClientRect()
+  checkInputOverlap: ->
+    minRect = @inputMin[0].getBoundingClientRect()
+    maxRect = @inputMax[0].getBoundingClientRect()
 
     # If the labels overlap...
     if !(minRect.right < maxRect.left || minRect.left > maxRect.right || minRect.bottom < maxRect.top || minRect.top > maxRect.bottom)
-      # Change opacity so element keeps taking it's space
-      @labelMin.css 'opacity', 0
-      @labelMax.css 'opacity', 0
-      @labelSingle.show()
-      handlesCenter = @handleMinLeft + ((@handleMaxLeft - @handleMinLeft)/2)
-      left = handlesCenter - @labelSingle.width()/2 + 6
-      left = @sliderWidth - @labelSingle.width() + 18 if @sliderWidth - left < @labelSingle.width()
-      @labelSingle.css 'left', left
+      diff = minRect.right - maxRect.left
+      @enableInputOverlap diff
     else
-      @labelMin.css 'opacity', 1
-      @labelMax.css 'opacity', 1
-      @labelSingle.hide()
+      @disableInputOverlap()
 
   # Update the labels value.
   # Called on every scroll event! Keep optimized!
@@ -196,11 +270,11 @@ class RangeFacet extends Views.Facet
     year = @getYearFromLeftPos leftPos
 
     if handle is 'min'
-      @labelMin.html year
-      singleValue = "#{year} - #{@labelMax.html()}"
+      @inputMin.val year
+      singleValue = "#{year} - #{@inputMax.val()}"
     else
-      @labelMax.html year
-      singleValue = "#{@labelMin.html()} - #{year}"
+      @inputMax.val year
+      singleValue = "#{@inputMin.val()} - #{year}"
 
     @labelSingle.html singleValue
 
@@ -229,39 +303,37 @@ class RangeFacet extends Views.Facet
           lowerLimit: @model.get('options').lowerLimit
           upperLimit: @model.get('options').upperLimit
 
-    # Only use the year.
-    yearMin = +(newOptions.lowerLimit+'').substr(0, 4)
-    yearMax = +(newOptions.upperLimit+'').substr(0, 4)
-
-
-    # Update the labels.
-    @labelMin.html yearMin
-    @labelMax.html yearMax
-
-    # Get the position of the updated years.
-    leftMin = @getLeftPosFromYear yearMin
-    leftMax = @getLeftPosFromYear yearMax
-
-    # Set the handle position.
-    @handleMin.css 'left', leftMin - (@handleWidth/2)
-    @handleMax.css 'left', leftMax - (@handleWidth/2)
-
-    # Update the bar.
-    # Update the bar.
-    @bar.css 'left', leftMin
-    @bar.css 'right', @sliderWidth - leftMax
-
-    # Position the handles.
-    @handleMinLeft = leftMin - (@handleWidth/2)
-    @handleMaxLeft = leftMax - (@handleWidth/2)
-
-    # Set the current attribute in the range model.
+    # Set the current attributes in the range model.
+    # Only use the years from the newOptions lower and upper limits.
     @model.set
-      currentMin: yearMin
-      currentMax: yearMax
+      currentMin: +(newOptions.lowerLimit+'').substr(0, 4)
+      currentMax: +(newOptions.upperLimit+'').substr(0, 4)
 
     @button.style.display = 'none' if @button?
 
+  updateMaxHandle: (model) ->
+    year = model.get 'currentMax'
+    # Update the labels.
+    @inputMax.val year
 
+    # Get the position of the updated years
+    leftMax = @getLeftPosFromYear year
+
+    # Set the handle position.
+    @handleMax.css 'left', leftMax - (@handleWidth/2)
+
+    # Update the bar.
+    @bar.css 'right', @sliderWidth - leftMax
+
+    # Position the handles.
+    @handleMaxLeft = leftMax - (@handleWidth/2)
+
+  updateMinHandle: (model) ->
+    year = model.get 'currentMin'
+    @inputMin.val year
+    leftMin = @getLeftPosFromYear year
+    @handleMin.css 'left', leftMin - (@handleWidth/2)
+    @bar.css 'left', leftMin
+    @handleMinLeft = leftMin - (@handleWidth/2)
 
 module.exports = RangeFacet
