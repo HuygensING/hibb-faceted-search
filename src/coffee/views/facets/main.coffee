@@ -22,7 +22,7 @@ class Facet extends Backbone.View
 		'click h3': 'toggleBody'
 
 	toggleBody: (ev) ->
-		func = if @$('.body').is(':visible') then @hideBody else @showBody
+		func = if @$el.hasClass 'collapsed' then @showBody else @hideBody
 
 		# If ev is a function, than it is the callback. Use call to pass the context.
 		if _.isFunction ev then func.call @, ev else func.call @
@@ -38,14 +38,16 @@ class Facet extends Backbone.View
 	hideBody: (done) ->
 		@hideMenu()
 
-		@$('.body').slideUp 100, => 
+		@$('.body').one 'transitionend', ->
 			done() if done?
-			@$('header i.fa').fadeOut 100
+
+		@$el.addClass 'collapsed'
+
 
 	showBody: (done) ->
-		@$('.body').slideDown 100, => 
+		@$el.removeClass 'collapsed'
+		@$('.body').one 'transitionend', ->
 			done() if done?
-			@$('header i.fa').fadeIn 100
 
 	destroy: -> @remove()
 	

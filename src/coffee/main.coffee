@@ -140,7 +140,15 @@ class MainView extends Backbone.View
     @listenTo @searchResults, 'unauthorized', => @trigger 'unauthorized'
 
   instantiateFacets: (viewMap={}) ->
-    @facets = new Views.Facets viewMap: viewMap, config: config
+    facetOptions = 
+      viewMap: viewMap
+      config: config
+
+    if config.facets?
+      facetOptions.order = config.facets
+
+    @facets = new Views.Facets facetOptions
+
     @listenTo @facets, 'change', (queryOptions, options) => @queryOptions.set queryOptions, options
 
   showLoader: ->
