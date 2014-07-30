@@ -51,6 +51,9 @@ class Facets extends Backbone.View
     if @config.facetTitleMap?[facetData.name]?
       facetData.title = @config.facetTitleMap[facetData.name]
 
+    if @config.startCollapsed
+      facetData.collapsed = true
+
     View = @viewMap[facetData.type]
     view = @views[facetData.name] = new View attrs: facetData
 

@@ -7,13 +7,18 @@ config = require '../../config'
 tpl = require '../../../jade/facets/main.jade'
 
 class Facet extends Backbone.View
-
+	renderedBefore: false
 	# ### Initialize
 
 	# ### Render
 	render: ->
 		tpl = config.templates['facets.main'] if config.templates.hasOwnProperty 'facets.main'
 		@$el.html tpl @model.attributes
+
+		if @model.get('collapsed') and not @renderedBefore
+			@hideBody()
+
+		@renderedBefore = true
 
 		@
 
