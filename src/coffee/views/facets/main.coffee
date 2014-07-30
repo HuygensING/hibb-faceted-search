@@ -26,37 +26,33 @@ class Facet extends Backbone.View
   events: ->
     'click h3': 'toggleBody'
 
-  toggleBody: (ev) ->
-    func = if @$('.body').is(':visible') then @hideBody else @showBody
+	# ### Methods
+	hideMenu: ->
+		$button = @$ 'header i.openclose'
+		$button.addClass 'fa-plus-square-o'
+		$button.removeClass 'fa-minus-square-o'
 
-    # If ev is a function, than it is the callback. Use call to pass the context.
-    if _.isFunction ev then func.call @, ev else func.call @
+		@$('header .options').slideUp(150)
 
-  # ### Methods
-  hideMenu: ->
-    $button = @$ 'header i.openclose'
-    $button.addClass 'fa-plus-square-o'
-    $button.removeClass 'fa-minus-square-o'
+	hideBody: (done) ->
+		@hideMenu()
 
-    @$('header .options').slideUp(150)
+		@$('.body').one 'transitionend', ->
+			done() if done?
 
-  hideBody: (done) ->
-    @hideMenu()
+		@$el.addClass 'collapsed'
 
-    @$('.body').slideUp 100, =>
-      done() if done?
-      @$('header i.fa').fadeOut 100
 
-  showBody: (done) ->
-    @$('.body').slideDown 100, =>
-      done() if done?
-      @$('header i.fa').fadeIn 100
+	showBody: (done) ->
+		@$el.removeClass 'collapsed'
+		@$('.body').one 'transitionend', ->
+			done() if done?
 
-  destroy: -> @remove()
-
-  # NOOP: Override in child
-  update: (newOptions) -> # console.log newOptions
-  reset: ->
+	destroy: -> @remove()
+	
+	# NOOP: Override in child
+	update: (newOptions) -> # console.log newOptions
+	reset: ->
 
 
 module.exports = Facet

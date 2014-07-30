@@ -60,7 +60,6 @@ class MainView extends Backbone.View
     if @config.get('textSearch') is 'simple' or @config.get('textSearch') is 'advanced'
       @renderTextSearch()
 
-
     @
 
   renderTextSearch: ->

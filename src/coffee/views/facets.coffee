@@ -105,6 +105,8 @@ class Facets extends Backbone.View
   toggle: (ev) ->
     ev.preventDefault()
 
+    $ = Backbone.$
+
     icon = $(ev.currentTarget).find('i.fa')
     span = $(ev.currentTarget).find('span')
 
@@ -115,7 +117,7 @@ class Facets extends Backbone.View
     text = if open then 'Collapse' else 'Expand'
     span.text "#{text} facets"
 
-    facetNames = _.keys @views
+    facetNames = @config.facets ? _.keys @views
     index = 0
 
     slideFacet = =>

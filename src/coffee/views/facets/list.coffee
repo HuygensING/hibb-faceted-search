@@ -97,7 +97,7 @@ class ListFacet extends Views.Facet
   # We use the class opposite instead of ascending/descending, because the options are ascending and
   # and the count is descending. With opposite we can use a generic name.
   changeOrder: (ev) ->
-    $target = $(ev.currentTarget)
+    $target = Backbone.$(ev.currentTarget)
 
     if $target.hasClass 'active'
       if $target.hasClass 'alpha'
