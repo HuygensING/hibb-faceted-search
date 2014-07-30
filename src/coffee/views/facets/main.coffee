@@ -5,6 +5,8 @@ _ = require 'underscore'
 tpl = require '../../../jade/facets/main.jade'
 
 class Facet extends Backbone.View
+	renderedBefore: false
+	# ### Initialize
 
   # ### Initialize
   initialize: (options) ->
@@ -13,6 +15,7 @@ class Facet extends Backbone.View
     # Override the facet title if the user has given an alternative title in the config.
     options.attrs.title = @config.get('facetTitleMap')[options.attrs.name] if @config.get('facetTitleMap').hasOwnProperty options.attrs.name
 
+
   # ### Render
   render: ->
     tpl = @config.get('templates')['facets.main'] if @config.get('templates').hasOwnProperty 'facets.main'
@@ -20,39 +23,49 @@ class Facet extends Backbone.View
 
     @$el.attr 'data-name', @model.get('name')
 
+    if @model.get('collapsed') and not @renderedBefore
+	  @hideBody()
+
+    @renderedBefore = true
+
     @
 
   # ### Events
   events: ->
     'click h3': 'toggleBody'
 
-	# ### Methods
-	hideMenu: ->
-		$button = @$ 'header i.openclose'
-		$button.addClass 'fa-plus-square-o'
-		$button.removeClass 'fa-minus-square-o'
+  toggleBody: (ev) ->
+    func = if @$el.hasClass 'collapsed' then @showBody else @hideBody
 
-		@$('header .options').slideUp(150)
+    # If ev is a function, than it is the callback. Use call to pass the context.
+    if _.isFunction ev then func.call @, ev else func.call @
 
-	hideBody: (done) ->
-		@hideMenu()
+  # ### Methods
+  hideMenu: ->
+    $button = @$ 'header i.openclose'
+    $button.addClass 'fa-plus-square-o'
+    $button.removeClass 'fa-minus-square-o'
 
-		@$('.body').one 'transitionend', ->
-			done() if done?
+    @$('header .options').slideUp(150)
 
-		@$el.addClass 'collapsed'
+  hideBody: (done) ->
+    @hideMenu()
 
+    @$('.body').one 'transitionend', ->
+    done() if done?
 
-	showBody: (done) ->
-		@$el.removeClass 'collapsed'
-		@$('.body').one 'transitionend', ->
-			done() if done?
+    @$el.addClass 'collapsed'
 
-	destroy: -> @remove()
+  showBody: (done) ->
+    @$el.removeClass 'collapsed'
+    @$('.body').one 'transitionend', ->
+      done() if done?
+
+  destroy: -> @remove()
 	
-	# NOOP: Override in child
-	update: (newOptions) -> # console.log newOptions
-	reset: ->
+  # NOOP: Override in child
+  update: (newOptions) -> # console.log newOptions
+  reset: ->
 
 
 module.exports = Facet
