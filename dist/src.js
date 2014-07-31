@@ -2082,7 +2082,6 @@ RangeFacet = (function(_super) {
     this.inputMin = this.$('input.min');
     this.inputMax = this.$('input.max');
     this.bar = this.$('.bar');
-    this.labelSingle = this.$('label.single');
     return this.button = this.el.querySelector('button');
   };
 
@@ -2237,14 +2236,15 @@ RangeFacet = (function(_super) {
       }
       this.draggingMin = false;
       this.draggingMax = false;
-    }
-    if (this.draggingBar != null) {
-      this.draggingBar = null;
       if (!this.config.get('autoSearch')) {
-        return this.triggerChange({
+        console.log('triggering');
+        this.triggerChange({
           silent: true
         });
       }
+    }
+    if (this.draggingBar != null) {
+      return this.draggingBar = null;
     }
   };
 
@@ -2291,19 +2291,12 @@ RangeFacet = (function(_super) {
   };
 
   RangeFacet.prototype.updateHandleLabel = function(handle, leftPos) {
-    var singleValue, year;
-    if (this.button != null) {
+    var input;
+    if ((this.button != null) && this.config.get('autoSearch')) {
       this.button.style.display = 'block';
     }
-    year = this.getYearFromLeftPos(leftPos);
-    if (handle === 'min') {
-      this.inputMin.val(year);
-      singleValue = "" + year + " - " + (this.inputMax.val());
-    } else {
-      this.inputMax.val(year);
-      singleValue = "" + (this.inputMin.val()) + " - " + year;
-    }
-    return this.labelSingle.html(singleValue);
+    input = handle === 'min' ? this.inputMin : this.inputMax;
+    return input.val(this.getYearFromLeftPos(leftPos));
   };
 
   RangeFacet.prototype.getYearFromLeftPos = function(leftPos) {

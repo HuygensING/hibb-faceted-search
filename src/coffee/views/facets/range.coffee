@@ -82,8 +82,6 @@ class RangeFacet extends Views.Facet
     # The space (selected range) between the min and max handle.
     @bar = @$ '.bar'
 
-    @labelSingle = @$ 'label.single'
-
     @button = @el.querySelector('button')
 
   # ### EVENTS
@@ -213,16 +211,17 @@ class RangeFacet extends Views.Facet
       @draggingMin = false
       @draggingMax = false
 
-    if @draggingBar?
-      @draggingBar = null
-
       # If autoSearch is off, a change event is triggerd to update the queryModel.
       # If autoSearch is on, the range facet doesn't autoSearch, but displays a
       # search button. When the button is clicked, the queryModel is updated and
       # a new search is triggered. If we silently update the model beforehand,
       # the new search would not be triggered.
       unless @config.get('autoSearch')
+        console.log 'triggering'
         @triggerChange silent: true
+
+    if @draggingBar?
+      @draggingBar = null
 
   # ### METHODS
 
@@ -266,19 +265,10 @@ class RangeFacet extends Views.Facet
   # Update the labels value.
   # Called on every scroll event! Keep optimized!
   updateHandleLabel: (handle, leftPos) ->
-    @button.style.display = 'block' if @button?
+    @button.style.display = 'block' if @button? and @config.get('autoSearch')
 
-    year = @getYearFromLeftPos leftPos
-
-    if handle is 'min'
-      @inputMin.val year
-      singleValue = "#{year} - #{@inputMax.val()}"
-    else
-      @inputMax.val year
-      singleValue = "#{@inputMin.val()} - #{year}"
-
-    @labelSingle.html singleValue
-
+    input = if handle is 'min' then @inputMin else @inputMax
+    input.val @getYearFromLeftPos(leftPos)
 
   # Given a left position in px, return the corresponding year.
   # Called on every scroll event! Keep optimized!
