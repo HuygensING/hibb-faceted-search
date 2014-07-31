@@ -9,18 +9,14 @@
         i.fa.fa-refresh
         span Reset search
     li.switch
-
-      //- The rest of the sentence is finished by CSS, depending on config.textSearch as className.
-      //- ie: "advanced search" or "simple search"
       button
         i.fa.fa-angle-double-down
+        //- The rest of the sentence is finished by CSS, depending on
+        //- config.textSearch as className.
+        //- ie: "advanced search" or "simple search"
         span Switch to
     li.collapse-expand
       button
         i.fa.fa-compress
         span Collapse facets
-  .facets
-    div.loader
-      h4 Loading search...
-      br
-      i.fa.fa-spinner.fa-spin.fa-2x
+  .facets-placeholder

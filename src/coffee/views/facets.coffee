@@ -1,9 +1,10 @@
 Backbone = require 'backbone'
 _ = require 'underscore'
 
-config = require '../config'
-
 class Facets extends Backbone.View
+
+  className: 'facets'
+
   viewMap:
     BOOLEAN: require './facets/boolean'
     DATE: require './facets/date'
@@ -14,19 +15,32 @@ class Facets extends Backbone.View
   initialize: (options) ->
     _.extend @viewMap, options.viewMap
 
+    @config = options.config
+
     # A map of the facet views. Used for looping through all facet views
     # and call methods like update, reset and render.
     @views = {}
 
+    @render()
+
   # ### Render
-  render: (el, data) ->
+  render: ->
+    @el.innerHTML = @config.get('templates').facets() if @config.get('templates').hasOwnProperty 'facets'
+
+    @
+
+  renderFacets: (data) ->
     @destroyFacets()
+
     # If there is a template for main, than use the template and
     # attach facets to their placeholder.
-    if config.templates.hasOwnProperty 'main'
+    if @config.get('templates').hasOwnProperty 'facets'
       for facetData, index in data
         if @viewMap.hasOwnProperty facetData.type
-          el.querySelector(".#{facetData.name}-placeholder").appendChild @renderFacet(facetData).el
+          placeholder = @el.querySelector(".#{facetData.name}-placeholder")
+
+          if placeholder?
+            placeholder.parentNode.replaceChild @renderFacet(facetData).el, placeholder
     # If there is no template for main, create a document fragment and append
     # all facets to it and attach it to the DOM.
     else
@@ -39,8 +53,8 @@ class Facets extends Backbone.View
         else
           console.error 'Unknown facetView', facetData.type
 
-      el.querySelector('.facets').innerHTML = ''
-      el.querySelector('.facets').appendChild fragment
+      @el.innerHTML = ''
+      @el.appendChild fragment
 
     @
 
@@ -49,11 +63,14 @@ class Facets extends Backbone.View
       facetData = _.findWhere @searchResults.first().get('facets'), name: facetData
 
     View = @viewMap[facetData.type]
-    view = @views[facetData.name] = new View attrs: facetData
+    @views[facetData.name] = new View
+      attrs: facetData,
+      config: @config
 
-    @listenTo view, 'change', (queryOptions, options={}) => @trigger 'change', queryOptions, options
+    @listenTo @views[facetData.name], 'change', (queryOptions, options={}) =>
+      @trigger 'change', queryOptions, options
 
-    view
+    @views[facetData.name]
 
   # ### Methods
   update: (facetData) ->

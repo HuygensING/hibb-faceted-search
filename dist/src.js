@@ -329,7 +329,7 @@ module.exports = ListOptions;
 
 
 },{"../models/facets/list.option.coffee":12}],6:[function(_dereq_,module,exports){
-var Backbone, SearchResult, SearchResults, config, funcky, _,
+var Backbone, SearchResult, SearchResults, funcky, _,
   __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
@@ -341,8 +341,6 @@ SearchResult = _dereq_('../models/searchresult');
 
 funcky = _dereq_('funcky.req');
 
-config = _dereq_('../config');
-
 SearchResults = (function(_super) {
   __extends(SearchResults, _super);
 
@@ -352,7 +350,8 @@ SearchResults = (function(_super) {
 
   SearchResults.prototype.model = SearchResult;
 
-  SearchResults.prototype.initialize = function() {
+  SearchResults.prototype.initialize = function(options) {
+    this.config = options.config;
     this.cachedModels = {};
     this.queryAmount = 0;
     return this.on('add', this.setCurrent, this);
@@ -419,8 +418,8 @@ SearchResults = (function(_super) {
 
   SearchResults.prototype.page = function(pagenumber, database) {
     var start, url;
-    start = config.resultRows * (pagenumber - 1);
-    url = this.postURL + ("?rows=" + config.resultRows + "&start=" + start);
+    start = this.config.get('resultRows') * (pagenumber - 1);
+    url = this.postURL + ("?rows=" + (this.config.get('resultRows')) + "&start=" + start);
     if (database != null) {
       url += "&database=" + database;
     }
@@ -437,16 +436,16 @@ SearchResults = (function(_super) {
     ajaxOptions = {
       data: JSON.stringify(queryOptions)
     };
-    if (config.hasOwnProperty('requestOptions')) {
-      _.extend(ajaxOptions, config.requestOptions);
+    if (this.config.has('requestOptions')) {
+      _.extend(ajaxOptions, this.config.get('requestOptions'));
     }
-    req = funcky.post(config.baseUrl + config.searchPath, ajaxOptions);
+    req = funcky.post(this.config.get('baseUrl') + this.config.get('searchPath'), ajaxOptions);
     req.done((function(_this) {
       return function(res) {
         var url;
         if (res.status === 201) {
           _this.postURL = res.getResponseHeader('Location');
-          url = config.resultRows != null ? _this.postURL + '?rows=' + config.resultRows : _this.postURL;
+          url = _this.config.has('resultRows') ? _this.postURL + '?rows=' + _this.config.get('resultRows') : _this.postURL;
           return done(url);
         }
       };
@@ -492,22 +491,43 @@ SearchResults = (function(_super) {
 module.exports = SearchResults;
 
 
-},{"../config":7,"../models/searchresult":17,"funcky.req":2}],7:[function(_dereq_,module,exports){
-module.exports = {
-  resultRows: null,
-  baseUrl: '',
-  searchPath: '',
-  textSearch: 'advanced',
-  token: null,
-  queryOptions: {},
-  facetTitleMap: {},
-  templates: {},
-  autoSearch: true
-};
+},{"../models/searchresult":17,"funcky.req":2}],7:[function(_dereq_,module,exports){
+var Backbone, Config,
+  __hasProp = {}.hasOwnProperty,
+  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
+
+Backbone = _dereq_('backbone');
+
+Config = (function(_super) {
+  __extends(Config, _super);
+
+  function Config() {
+    return Config.__super__.constructor.apply(this, arguments);
+  }
+
+  Config.prototype.defaults = function() {
+    return {
+      resultRows: null,
+      baseUrl: '',
+      searchPath: '',
+      textSearch: 'advanced',
+      token: null,
+      queryOptions: {},
+      facetTitleMap: {},
+      templates: {},
+      autoSearch: true
+    };
+  };
+
+  return Config;
+
+})(Backbone.Model);
+
+module.exports = Config;
 
 
 },{}],8:[function(_dereq_,module,exports){
-var $, Backbone, MainView, QueryOptions, SearchResults, Views, config, funcky, tpl, _,
+var $, Backbone, Config, MainView, QueryOptions, SearchResults, Views, funcky, tpl, _,
   __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
@@ -521,7 +541,7 @@ _ = _dereq_('underscore');
 
 funcky = _dereq_('funcky.el');
 
-config = _dereq_('./config');
+Config = _dereq_('./config');
 
 QueryOptions = _dereq_('./models/query-options');
 
@@ -542,20 +562,18 @@ MainView = (function(_super) {
   }
 
   MainView.prototype.initialize = function(options) {
-    var facetViewMap;
     if (options == null) {
       options = {};
     }
     if (options.facetViewMap != null) {
-      facetViewMap = _.clone(options.facetViewMap);
+      this.facetViewMap = _.clone(options.facetViewMap);
       delete options.facetViewMap;
     }
     this.extendConfig(options);
-    this.instantiateQueryOptions();
-    this.instantiateSearchResults();
-    this.instantiateFacets(facetViewMap);
+    this.initQueryOptions();
+    this.initSearchResults();
     this.render();
-    if (config.development) {
+    if (this.config.get('development')) {
       this.searchResults.add(JSON.parse(localStorage.getItem('faceted-search-dev-model')));
       this.searchResults.cachedModels['{"facetValues":[],"sortParameters":[]}'] = this.searchResults.first();
       return setTimeout(((function(_this) {
@@ -567,21 +585,25 @@ MainView = (function(_super) {
   };
 
   MainView.prototype.render = function() {
-    this.$el.html(tpl());
-    if (config.templates.hasOwnProperty('main')) {
-      this.$('.faceted-search').html(config.templates.main());
+    if (this.config.get('templates').hasOwnProperty('main')) {
+      tpl = this.config.get('templates').main;
     }
-    this.$('.faceted-search').addClass("search-type-" + config.textSearch);
-    if (config.textSearch === 'simple' || config.textSearch === 'advanced') {
+    this.el.innerHTML = tpl();
+    this.$('.faceted-search').addClass("search-type-" + (this.config.get('textSearch')));
+    this.initFacets(this.facetViewMap);
+    if (this.config.get('textSearch') === 'simple' || this.config.get('textSearch') === 'advanced') {
       this.renderTextSearch();
     }
-    this.$('.facets').html(this.facets.el);
     return this;
   };
 
   MainView.prototype.renderTextSearch = function() {
-    this.textSearch = new Views.TextSearch();
-    this.$('.text-search-placeholder').html(this.textSearch.el);
+    var textSearchPlaceholder;
+    this.textSearch = new Views.TextSearch({
+      config: this.config
+    });
+    textSearchPlaceholder = this.el.querySelector('.text-search-placeholder');
+    textSearchPlaceholder.parentNode.replaceChild(this.textSearch.el, textSearchPlaceholder);
     this.listenTo(this.textSearch, 'change', (function(_this) {
       return function(queryOptions) {
         return _this.queryOptions.set(queryOptions, {
@@ -607,8 +629,12 @@ MainView = (function(_super) {
   };
 
   MainView.prototype.onSwitchType = function(ev) {
+    var textSearch;
     ev.preventDefault();
-    config.textSearch = config.textSearch === 'advanced' ? 'simple' : 'advanced';
+    textSearch = this.config.get('textSearch') === 'advanced' ? 'simple' : 'advanced';
+    this.config.set({
+      textSearch: textSearch
+    });
     this.$('.faceted-search').toggleClass('search-type-simple');
     this.$('.faceted-search').toggleClass('search-type-advanced');
     if (this.searchResults.queryAmount === 1) {
@@ -634,19 +660,25 @@ MainView = (function(_super) {
   };
 
   MainView.prototype.extendConfig = function(options) {
-    _.extend(config.facetTitleMap, options.facetTitleMap);
+    var ftm;
+    ftm = options.facetTitleMap;
     delete options.facetTitleMap;
-    _.extend(config, options);
-    if (['none', 'simple', 'advanced'].indexOf(config.textSearch) === -1) {
-      return config.textSearch = 'advanced';
+    this.config = new Config(options);
+    this.config.set({
+      facetTitleMap: _.extend(this.config.get('facetTitleMap'), ftm)
+    });
+    if (['none', 'simple', 'advanced'].indexOf(this.config.get('textSearch')) === -1) {
+      return this.config.set({
+        textSearch: 'advanced'
+      });
     }
   };
 
-  MainView.prototype.instantiateQueryOptions = function() {
+  MainView.prototype.initQueryOptions = function() {
     var attrs;
-    attrs = _.extend(config.queryOptions, config.textSearchOptions);
+    attrs = _.extend(this.config.get('queryOptions'), this.config.get('textSearchOptions'));
     this.queryOptions = new QueryOptions(attrs);
-    if (config.autoSearch) {
+    if (this.config.get('autoSearch')) {
       return this.listenTo(this.queryOptions, 'change', (function(_this) {
         return function() {
           return _this.search();
@@ -655,11 +687,13 @@ MainView = (function(_super) {
     }
   };
 
-  MainView.prototype.instantiateSearchResults = function() {
-    this.searchResults = new SearchResults();
+  MainView.prototype.initSearchResults = function() {
+    this.searchResults = new SearchResults({
+      config: this.config
+    });
     this.listenTo(this.searchResults, 'change:results', (function(_this) {
       return function(responseModel) {
-        if (config.textSearch !== 'simple') {
+        if (_this.config.get('textSearch') !== 'simple') {
           _this.update();
         }
         return _this.trigger('change:results', responseModel);
@@ -697,13 +731,17 @@ MainView = (function(_super) {
     })(this));
   };
 
-  MainView.prototype.instantiateFacets = function(viewMap) {
+  MainView.prototype.initFacets = function(viewMap) {
+    var facetsPlaceholder;
     if (viewMap == null) {
       viewMap = {};
     }
     this.facets = new Views.Facets({
-      viewMap: viewMap
+      viewMap: viewMap,
+      config: this.config
     });
+    facetsPlaceholder = this.el.querySelector('.facets-placeholder');
+    facetsPlaceholder.parentNode.replaceChild(this.facets.el, facetsPlaceholder);
     return this.listenTo(this.facets, 'change', (function(_this) {
       return function(queryOptions, options) {
         return _this.queryOptions.set(queryOptions, options);
@@ -740,7 +778,7 @@ MainView = (function(_super) {
     var facets;
     facets = this.searchResults.current.get('facets');
     if (this.searchResults.queryAmount === 1) {
-      return this.facets.render(this.el, facets);
+      return this.facets.renderFacets(facets);
     } else if (this.searchResults.queryAmount > 1) {
       return this.facets.update(facets);
     }
@@ -845,38 +883,10 @@ module.exports = BooleanFacet;
 
 
 },{"./main":13}],10:[function(_dereq_,module,exports){
-var DateFacet, Models,
-  __hasProp = {}.hasOwnProperty,
-  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
-
-Models = {
-  Facet: _dereq_('./main')
-};
-
-DateFacet = (function(_super) {
-  __extends(DateFacet, _super);
-
-  function DateFacet() {
-    return DateFacet.__super__.constructor.apply(this, arguments);
-  }
-
-  DateFacet.prototype.parse = function(attrs) {
-    attrs.options = _.map(_.pluck(attrs.options, 'name'), function(option) {
-      return option.substr(0, 4);
-    });
-    attrs.options = _.unique(attrs.options);
-    attrs.options.sort();
-    return attrs;
-  };
-
-  return DateFacet;
-
-})(Models.Facet);
-
-module.exports = DateFacet;
 
 
-},{"./main":13}],11:[function(_dereq_,module,exports){
+
+},{}],11:[function(_dereq_,module,exports){
 var List, Models,
   __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
@@ -962,15 +972,6 @@ Facet = (function(_super) {
       type: null,
       options: null
     };
-  };
-
-  Facet.prototype.parse = function(attrs) {
-    if (config.facetTitleMap.hasOwnProperty(attrs.name)) {
-      attrs.title = config.facetTitleMap[attrs.name];
-    } else {
-      config.facetTitleMap[attrs.name] = attrs.title;
-    }
-    return attrs;
   };
 
   return Facet;
@@ -1194,7 +1195,7 @@ module.exports = SearchResult;
 
 
 },{"../config":7}],18:[function(_dereq_,module,exports){
-var Backbone, Facets, config, _,
+var Backbone, Facets, _,
   __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
   __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
@@ -1203,8 +1204,6 @@ Backbone = _dereq_('backbone');
 
 _ = _dereq_('underscore');
 
-config = _dereq_('../config');
-
 Facets = (function(_super) {
   __extends(Facets, _super);
 
@@ -1212,6 +1211,8 @@ Facets = (function(_super) {
     this.renderFacet = __bind(this.renderFacet, this);
     return Facets.__super__.constructor.apply(this, arguments);
   }
+
+  Facets.prototype.className = 'facets';
 
   Facets.prototype.viewMap = {
     BOOLEAN: _dereq_('./facets/boolean'),
@@ -1222,17 +1223,29 @@ Facets = (function(_super) {
 
   Facets.prototype.initialize = function(options) {
     _.extend(this.viewMap, options.viewMap);
-    return this.views = {};
+    this.config = options.config;
+    this.views = {};
+    return this.render();
   };
 
-  Facets.prototype.render = function(el, data) {
-    var facetData, fragment, index, _i, _len;
+  Facets.prototype.render = function() {
+    if (this.config.get('templates').hasOwnProperty('facets')) {
+      this.el.innerHTML = this.config.get('templates').facets();
+    }
+    return this;
+  };
+
+  Facets.prototype.renderFacets = function(data) {
+    var facetData, fragment, index, placeholder, _i, _len;
     this.destroyFacets();
-    if (config.templates.hasOwnProperty('main')) {
+    if (this.config.get('templates').hasOwnProperty('facets')) {
       for (index = _i = 0, _len = data.length; _i < _len; index = ++_i) {
         facetData = data[index];
         if (this.viewMap.hasOwnProperty(facetData.type)) {
-          el.querySelector("." + facetData.name + "-placeholder").appendChild(this.renderFacet(facetData).el);
+          placeholder = this.el.querySelector("." + facetData.name + "-placeholder");
+          if (placeholder != null) {
+            placeholder.parentNode.replaceChild(this.renderFacet(facetData).el, placeholder);
+          }
         }
       }
     } else {
@@ -1247,24 +1260,25 @@ Facets = (function(_super) {
           console.error('Unknown facetView', facetData.type);
         }
       }
-      el.querySelector('.facets').innerHTML = '';
-      el.querySelector('.facets').appendChild(fragment);
+      this.el.innerHTML = '';
+      this.el.appendChild(fragment);
     }
     return this;
   };
 
   Facets.prototype.renderFacet = function(facetData) {
-    var View, view;
+    var View;
     if (_.isString(facetData)) {
       facetData = _.findWhere(this.searchResults.first().get('facets'), {
         name: facetData
       });
     }
     View = this.viewMap[facetData.type];
-    view = this.views[facetData.name] = new View({
-      attrs: facetData
+    this.views[facetData.name] = new View({
+      attrs: facetData,
+      config: this.config
     });
-    this.listenTo(view, 'change', (function(_this) {
+    this.listenTo(this.views[facetData.name], 'change', (function(_this) {
       return function(queryOptions, options) {
         if (options == null) {
           options = {};
@@ -1272,7 +1286,7 @@ Facets = (function(_super) {
         return _this.trigger('change', queryOptions, options);
       };
     })(this));
-    return view;
+    return this.views[facetData.name];
   };
 
   Facets.prototype.update = function(facetData) {
@@ -1366,7 +1380,7 @@ Facets = (function(_super) {
 module.exports = Facets;
 
 
-},{"../config":7,"./facets/boolean":19,"./facets/date":20,"./facets/list":21,"./facets/range":24}],19:[function(_dereq_,module,exports){
+},{"./facets/boolean":19,"./facets/date":20,"./facets/list":21,"./facets/range":24}],19:[function(_dereq_,module,exports){
 var $, BooleanFacet, Models, Views, bodyTpl, _,
   __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
@@ -1518,15 +1532,13 @@ module.exports = DateFacet;
 
 
 },{"../../../jade/facets/date.jade":27,"../../models/facets/date":10,"./main":23}],21:[function(_dereq_,module,exports){
-var $, Collections, ListFacet, Models, Views, config, menuTpl, _,
+var $, Collections, ListFacet, Models, Views, menuTpl, _,
   __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
 $ = _dereq_('jquery');
 
 _ = _dereq_('underscore');
-
-config = _dereq_('../../config');
 
 Models = {
   List: _dereq_('../../models/facets/list')
@@ -1553,12 +1565,12 @@ ListFacet = (function(_super) {
   ListFacet.prototype.className = 'facet list';
 
   ListFacet.prototype.initialize = function(options) {
-    this.options = options;
     ListFacet.__super__.initialize.apply(this, arguments);
-    this.model = new Models.List(this.options.attrs, {
+    this.config = options.config;
+    this.model = new Models.List(options.attrs, {
       parse: true
     });
-    this.collection = new Collections.Options(this.options.attrs.options, {
+    this.collection = new Collections.Options(options.attrs.options, {
       parse: true
     });
     return this.render();
@@ -1568,8 +1580,8 @@ ListFacet = (function(_super) {
     var menu;
     ListFacet.__super__.render.apply(this, arguments);
     if (this.$('header .options').length > 0) {
-      if (config.templates.hasOwnProperty('list.menu')) {
-        menuTpl = config.templates['list.menu'];
+      if (this.config.get('templates').hasOwnProperty('list.menu')) {
+        menuTpl = this.config.get('templates')['list.menu'];
       }
       menu = menuTpl({
         model: this.model.attributes
@@ -1578,7 +1590,8 @@ ListFacet = (function(_super) {
     }
     this.optionsView = new Views.Options({
       collection: this.collection,
-      facetName: this.model.get('name')
+      facetName: this.model.get('name'),
+      config: this.config
     });
     this.$('.body').html(this.optionsView.el);
     this.listenTo(this.optionsView, 'filter:finished', this.renderFilteredOptionCount);
@@ -1682,8 +1695,8 @@ ListFacet = (function(_super) {
 module.exports = ListFacet;
 
 
-},{"../../../jade/facets/list.menu.jade":29,"../../collections/list.options":5,"../../config":7,"../../models/facets/list":11,"./list.options":22,"./main":23}],22:[function(_dereq_,module,exports){
-var $, Backbone, ListFacetOptions, Models, bodyTpl, config, funcky, optionTpl, _,
+},{"../../../jade/facets/list.menu.jade":29,"../../collections/list.options":5,"../../models/facets/list":11,"./list.options":22,"./main":23}],22:[function(_dereq_,module,exports){
+var $, Backbone, ListFacetOptions, Models, bodyTpl, funcky, optionTpl, _,
   __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
   __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
@@ -1695,8 +1708,6 @@ $ = _dereq_('jquery');
 _ = _dereq_('underscore');
 
 funcky = _dereq_('funcky.util');
-
-config = _dereq_('../../config');
 
 Models = {
   List: _dereq_('../../models/facets/list')
@@ -1717,7 +1728,8 @@ ListFacetOptions = (function(_super) {
   ListFacetOptions.prototype.className = 'container';
 
   ListFacetOptions.prototype.initialize = function(options) {
-    this.options = options;
+    this.config = options.config;
+    this.facetName = options.facetName;
     this.showingCursor = 0;
     this.showingIncrement = 50;
     this.listenTo(this.collection, 'sort', (function(_this) {
@@ -1725,18 +1737,18 @@ ListFacetOptions = (function(_super) {
         return _this.rerender();
       };
     })(this));
-    if (config.templates.hasOwnProperty('list.option')) {
-      optionTpl = config.templates['list.option'];
+    if (this.config.get('templates').hasOwnProperty('list.option')) {
+      optionTpl = this.config.get('templates')['list.option'];
     }
     return this.render();
   };
 
   ListFacetOptions.prototype.render = function() {
-    if (config.templates.hasOwnProperty('list.body')) {
-      bodyTpl = config.templates['list.body'];
+    if (this.config.get('templates').hasOwnProperty('list.body')) {
+      bodyTpl = this.config.get('templates')['list.body'];
     }
     this.$el.html(bodyTpl({
-      facetName: this.options.facetName
+      facetName: this.facetName
     }));
     this.appendOptions();
     return this;
@@ -1839,7 +1851,7 @@ ListFacetOptions = (function(_super) {
     }
     return this.trigger('change', {
       facetValue: {
-        name: this.options.facetName,
+        name: this.facetName,
         values: values
       }
     });
@@ -1886,8 +1898,8 @@ ListFacetOptions = (function(_super) {
 module.exports = ListFacetOptions;
 
 
-},{"../../../jade/facets/list.body.jade":28,"../../../jade/facets/list.option.jade":30,"../../config":7,"../../models/facets/list":11,"funcky.util":3}],23:[function(_dereq_,module,exports){
-var $, Backbone, Facet, config, tpl, _,
+},{"../../../jade/facets/list.body.jade":28,"../../../jade/facets/list.option.jade":30,"../../models/facets/list":11,"funcky.util":3}],23:[function(_dereq_,module,exports){
+var $, Backbone, Facet, tpl, _,
   __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
@@ -1896,8 +1908,6 @@ Backbone = _dereq_('backbone');
 $ = _dereq_('jquery');
 
 _ = _dereq_('underscore');
-
-config = _dereq_('../../config');
 
 tpl = _dereq_('../../../jade/facets/main.jade');
 
@@ -1908,11 +1918,19 @@ Facet = (function(_super) {
     return Facet.__super__.constructor.apply(this, arguments);
   }
 
+  Facet.prototype.initialize = function(options) {
+    this.config = options.config;
+    if (this.config.get('facetTitleMap').hasOwnProperty(options.attrs.name)) {
+      return options.attrs.title = this.config.get('facetTitleMap')[options.attrs.name];
+    }
+  };
+
   Facet.prototype.render = function() {
-    if (config.templates.hasOwnProperty('facets.main')) {
-      tpl = config.templates['facets.main'];
+    if (this.config.get('templates').hasOwnProperty('facets.main')) {
+      tpl = this.config.get('templates')['facets.main'];
     }
     this.$el.html(tpl(this.model.attributes));
+    this.$el.attr('data-name', this.model.get('name'));
     return this;
   };
 
@@ -1978,16 +1996,14 @@ Facet = (function(_super) {
 module.exports = Facet;
 
 
-},{"../../../jade/facets/main.jade":31,"../../config":7}],24:[function(_dereq_,module,exports){
-var $, Models, RangeFacet, Views, bodyTpl, config, dragStopper, resizer, _,
+},{"../../../jade/facets/main.jade":31}],24:[function(_dereq_,module,exports){
+var $, Models, RangeFacet, Views, bodyTpl, dragStopper, resizer, _,
   __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
 $ = _dereq_('jquery');
 
 _ = _dereq_('underscore');
-
-config = _dereq_('../../config');
 
 Models = {
   Range: _dereq_('../../models/facets/range')
@@ -2013,6 +2029,8 @@ RangeFacet = (function(_super) {
   RangeFacet.prototype.className = 'facet range';
 
   RangeFacet.prototype.initialize = function(options) {
+    RangeFacet.__super__.initialize.apply(this, arguments);
+    this.config = options.config;
     this.draggingMin = false;
     this.draggingMax = false;
     this.model = new Models.Range(options.attrs, {
@@ -2034,8 +2052,8 @@ RangeFacet = (function(_super) {
   RangeFacet.prototype.render = function() {
     var rtpl;
     RangeFacet.__super__.render.apply(this, arguments);
-    if (config.templates.hasOwnProperty('range.body')) {
-      bodyTpl = config.templates['range.body'];
+    if (this.config.get('templates').hasOwnProperty('range.body')) {
+      bodyTpl = this.config.get('templates')['range.body'];
     }
     rtpl = bodyTpl(this.model.attributes);
     this.$('.body').html(rtpl);
@@ -2222,7 +2240,7 @@ RangeFacet = (function(_super) {
     }
     if (this.draggingBar != null) {
       this.draggingBar = null;
-      if (!config.autoSearch) {
+      if (!this.config.get('autoSearch')) {
         return this.triggerChange({
           silent: true
         });
@@ -2350,16 +2368,14 @@ RangeFacet = (function(_super) {
 module.exports = RangeFacet;
 
 
-},{"../../../jade/facets/range.body.jade":32,"../../config":7,"../../models/facets/range":14,"./main":23}],25:[function(_dereq_,module,exports){
-var Backbone, Models, TextSearch, config, tpl, _,
+},{"../../../jade/facets/range.body.jade":32,"../../models/facets/range":14,"./main":23}],25:[function(_dereq_,module,exports){
+var Backbone, Models, TextSearch, tpl, _,
   __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
 Backbone = _dereq_('backbone');
 
 _ = _dereq_('underscore');
-
-config = _dereq_('../config');
 
 Models = {
   Search: _dereq_('../models/search')
@@ -2377,6 +2393,7 @@ TextSearch = (function(_super) {
   TextSearch.prototype.className = 'text-search';
 
   TextSearch.prototype.initialize = function(options) {
+    this.config = options.config;
     return this.reset();
   };
 
@@ -2384,12 +2401,12 @@ TextSearch = (function(_super) {
     if (this.model != null) {
       this.stopListening(this.model);
     }
-    return this.model = new Models.Search(config.textSearchOptions);
+    return this.model = new Models.Search(this.config.get('textSearchOptions'));
   };
 
   TextSearch.prototype.render = function() {
-    if (config.templates.hasOwnProperty('text-search')) {
-      tpl = config.templates['text-search'];
+    if (this.config.get('templates').hasOwnProperty('text-search')) {
+      tpl = this.config.get('templates')['text-search'];
     }
     this.$el.html(tpl({
       model: this.model
@@ -2470,7 +2487,7 @@ TextSearch = (function(_super) {
 module.exports = TextSearch;
 
 
-},{"../../jade/text-search.jade":34,"../config":7,"../models/search":16}],26:[function(_dereq_,module,exports){
+},{"../../jade/text-search.jade":34,"../models/search":16}],26:[function(_dereq_,module,exports){
 var jade = _dereq_("jade/runtime");
 
 module.exports = function template(locals) {
@@ -2617,7 +2634,7 @@ var buf = [];
 var jade_mixins = {};
 var jade_interp;
 
-buf.push("<div class=\"overlay\"><div><i class=\"fa fa-spinner fa-spin fa-2x\"></i></div></div><div class=\"faceted-search\"><div class=\"text-search-placeholder\"></div><ul class=\"facets-menu\"><li class=\"reset\"><button><i class=\"fa fa-refresh\"></i><span>Reset search</span></button></li><li class=\"switch\"><button><i class=\"fa fa-angle-double-down\"></i><span>Switch to</span></button></li><li class=\"collapse-expand\"><button><i class=\"fa fa-compress\"></i><span>Collapse facets</span></button></li></ul><div class=\"facets\"><div class=\"loader\"><h4>Loading search...</h4><br/><i class=\"fa fa-spinner fa-spin fa-2x\"></i></div></div></div>");;return buf.join("");
+buf.push("<div class=\"overlay\"><div><i class=\"fa fa-spinner fa-spin fa-2x\"></i></div></div><div class=\"faceted-search\"><div class=\"text-search-placeholder\"></div><ul class=\"facets-menu\"><li class=\"reset\"><button><i class=\"fa fa-refresh\"></i><span>Reset search</span></button></li><li class=\"switch\"><button><i class=\"fa fa-angle-double-down\"></i><span>Switch to</span></button></li><li class=\"collapse-expand\"><button><i class=\"fa fa-compress\"></i><span>Collapse facets</span></button></li></ul><div class=\"facets-placeholder\"></div></div>");;return buf.join("");
 };
 },{"jade/runtime":4}],34:[function(_dereq_,module,exports){
 var jade = _dereq_("jade/runtime");

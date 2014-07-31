@@ -6,7 +6,7 @@ _ = require 'underscore'
 
 funcky = require 'funcky.el'
 
-config = require './config'
+Config = require './config'
 
 QueryOptions = require './models/query-options'
 SearchResults = require './collections/searchresults'
@@ -21,48 +21,52 @@ class MainView extends Backbone.View
 
   # ### Initialize
   initialize: (options={}) ->
+    # The facetViewMap cannot be part of the config, because of circular reference.
     # The facetViewMap is removed from the options, so it is not added to config.
-    # Do this before @extendConfig
+    # Do this before @extendConfig.
     if options.facetViewMap?
-      facetViewMap = _.clone options.facetViewMap
+      @facetViewMap = _.clone options.facetViewMap
       delete options.facetViewMap
 
     @extendConfig options
 
-    @instantiateQueryOptions()
+    @initQueryOptions()
 
-    @instantiateSearchResults()
-
-    # Instantiate the Facets view after instantiating the QueryOptions model
-    @instantiateFacets facetViewMap
+    @initSearchResults()
 
     @render()
 
-    if config.development
+    if @config.get 'development'
       @searchResults.add JSON.parse localStorage.getItem('faceted-search-dev-model')
       @searchResults.cachedModels['{"facetValues":[],"sortParameters":[]}'] = @searchResults.first()
       setTimeout (=> @$('.overlay').hide()), 100
 
   # ### Render
   render: ->
-    @$el.html tpl()
+    tpl = @config.get('templates').main if @config.get('templates').hasOwnProperty 'main'
 
-    if config.templates.hasOwnProperty 'main'
-      @$('.faceted-search').html config.templates.main()
+    @el.innerHTML = tpl()
 
-    @$('.faceted-search').addClass "search-type-#{config.textSearch}"
+    @$('.faceted-search').addClass "search-type-#{@config.get('textSearch')}"
+
+    # Instantiate the Facets view after instantiating the QueryOptions model and
+    # before rendering the textSearch. The textSearchPlaceholder can be located
+    # in the main and in the facets template. So we render the facets view to
+    # get (potentially) the div.text-search-placeholder and call renderFacets
+    # in @update, to actually render the separate facet views.
+    @initFacets @facetViewMap
 
     # See config for more about none, simple and advanced options.
-    if config.textSearch is 'simple' or config.textSearch is 'advanced'
+    if @config.get('textSearch') is 'simple' or @config.get('textSearch') is 'advanced'
       @renderTextSearch()
 
-    @$('.facets').html @facets.el
 
     @
 
   renderTextSearch: ->
-    @textSearch = new Views.TextSearch()
-    @$('.text-search-placeholder').html @textSearch.el
+    @textSearch = new Views.TextSearch config: @config
+    textSearchPlaceholder = @el.querySelector('.text-search-placeholder')
+    textSearchPlaceholder.parentNode.replaceChild @textSearch.el, textSearchPlaceholder
 
     @listenTo @textSearch, 'change', (queryOptions) =>
       @queryOptions.set queryOptions, silent: true
@@ -80,7 +84,8 @@ class MainView extends Backbone.View
   onSwitchType: (ev) ->
     ev.preventDefault()
 
-    config.textSearch = if config.textSearch is 'advanced' then 'simple' else 'advanced'
+    textSearch = if @config.get('textSearch') is 'advanced' then 'simple' else 'advanced'
+    @config.set textSearch: textSearch
 
     @$('.faceted-search').toggleClass 'search-type-simple'
     @$('.faceted-search').toggleClass 'search-type-advanced'
@@ -103,28 +108,31 @@ class MainView extends Backbone.View
     @remove()
 
   extendConfig: (options) ->
-    _.extend config.facetTitleMap, options.facetTitleMap
+
+    ftm = options.facetTitleMap
     delete options.facetTitleMap
 
-    _.extend config, options
+    @config = new Config options
+
+    @config.set facetTitleMap: _.extend @config.get('facetTitleMap'), ftm
 
     # Set the default of config type in case the user sends an unknown string.
-    config.textSearch = 'advanced' if ['none', 'simple', 'advanced'].indexOf(config.textSearch) is -1
+    @config.set textSearch: 'advanced' if ['none', 'simple', 'advanced'].indexOf(@config.get('textSearch')) is -1
 
-  instantiateQueryOptions: ->
-    attrs = _.extend config.queryOptions, config.textSearchOptions
+  initQueryOptions: ->
+    attrs = _.extend @config.get('queryOptions'), @config.get('textSearchOptions')
     @queryOptions = new QueryOptions attrs
 
-    if config.autoSearch
+    if @config.get 'autoSearch'
       @listenTo @queryOptions, 'change', => @search()
 
-  instantiateSearchResults: ->
-    @searchResults = new SearchResults()
+  initSearchResults: ->
+    @searchResults = new SearchResults config: @config
 
     # Listen to the change:results event and (re)render the facets everytime the result changes.
     @listenTo @searchResults, 'change:results', (responseModel) =>
       # Nothing needs updating if the facets aren't visible.
-      @update() if config.textSearch isnt 'simple'
+      @update() if @config.get('textSearch') isnt 'simple'
       @trigger 'change:results', responseModel
 
     # The cursor is changed when @next or @prev are called. They are rarely used, since pagination uses @page and thus change:page.
@@ -142,8 +150,15 @@ class MainView extends Backbone.View
     @listenTo @searchResults, 'unauthorized', => @trigger 'unauthorized'
     @listenTo @searchResults, 'request:failed', (res) => @trigger 'request:failed', res
 
-  instantiateFacets: (viewMap={}) ->
-    @facets = new Views.Facets viewMap: viewMap
+  initFacets: (viewMap={}) ->
+    @facets = new Views.Facets
+      viewMap: viewMap
+      config: @config
+
+    # Replace the facets placeholder with the 'real' DOM element (@facets.el).
+    facetsPlaceholder = @el.querySelector('.facets-placeholder')
+    facetsPlaceholder.parentNode.replaceChild @facets.el, facetsPlaceholder
+
     @listenTo @facets, 'change', (queryOptions, options) => @queryOptions.set queryOptions, options
 
   showLoader: ->
@@ -173,7 +188,7 @@ class MainView extends Backbone.View
 
     # If the size of the searchResults is 1 then it's the first time we render the facets
     if @searchResults.queryAmount is 1
-      @facets.render @el, facets
+      @facets.renderFacets facets
     # If the size is greater than 1, the facets are already rendered and we call their update methods.
     else if @searchResults.queryAmount > 1
       @facets.update facets

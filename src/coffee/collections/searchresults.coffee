@@ -5,13 +5,12 @@ SearchResult = require '../models/searchresult'
 
 funcky = require 'funcky.req'
 
-config = require '../config'
-
 class SearchResults extends Backbone.Collection
 
   model: SearchResult
 
-  initialize: ->
+  initialize: (options) ->
+    @config = options.config
 
     # Init cachedModels in the initialize function, because when defined in the class
     # as a property, it is defined on the prototype and thus not refreshed when we instantiate
@@ -66,8 +65,8 @@ class SearchResults extends Backbone.Collection
         @getResults url, (response) => @addModel response, url
 
   page: (pagenumber, database) ->
-    start = config.resultRows * (pagenumber - 1)
-    url = @postURL + "?rows=#{config.resultRows}&start=#{start}"
+    start = @config.get('resultRows') * (pagenumber - 1)
+    url = @postURL + "?rows=#{@config.get('resultRows')}&start=#{start}"
     url += "&database=#{database}" if database?
 
     @getResults url, (attrs) =>
@@ -81,14 +80,14 @@ class SearchResults extends Backbone.Collection
 
     # This is used for extra options to the ajax call,
     # such as setting custom headers (e.g., VRE_ID)
-    if config.hasOwnProperty 'requestOptions'
-      _.extend ajaxOptions, config.requestOptions
+    if @config.has 'requestOptions'
+      _.extend ajaxOptions, @config.get('requestOptions')
 
-    req = funcky.post config.baseUrl + config.searchPath, ajaxOptions
+    req = funcky.post @config.get('baseUrl') + @config.get('searchPath'), ajaxOptions
     req.done (res) =>
       if res.status is 201
         @postURL = res.getResponseHeader('Location')
-        url = if config.resultRows? then @postURL + '?rows=' + config.resultRows else @postURL
+        url = if @config.has('resultRows') then @postURL + '?rows=' + @config.get('resultRows') else @postURL
         done url
     req.fail (res) =>
       if res.status is 401

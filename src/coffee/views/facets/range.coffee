@@ -1,8 +1,6 @@
 $ = require 'jquery'
 _ = require 'underscore'
 
-config = require '../../config'
-
 Models =
   Range: require '../../models/facets/range'
 
@@ -20,6 +18,9 @@ class RangeFacet extends Views.Facet
 
   # ### INITIALIZE
   initialize: (options) ->
+    super
+
+    @config = options.config
 
     @draggingMin = false
     @draggingMax = false
@@ -39,7 +40,7 @@ class RangeFacet extends Views.Facet
   render: ->
     super
 
-    bodyTpl = config.templates['range.body'] if config.templates.hasOwnProperty 'range.body'
+    bodyTpl = @config.get('templates')['range.body'] if @config.get('templates').hasOwnProperty 'range.body'
 
     rtpl = bodyTpl @model.attributes
     @$('.body').html rtpl
@@ -220,7 +221,7 @@ class RangeFacet extends Views.Facet
       # search button. When the button is clicked, the queryModel is updated and
       # a new search is triggered. If we silently update the model beforehand,
       # the new search would not be triggered.
-      unless config.autoSearch
+      unless @config.get('autoSearch')
         @triggerChange silent: true
 
   # ### METHODS

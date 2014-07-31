@@ -1,8 +1,6 @@
 Backbone = require 'backbone'
 _ = require 'underscore'
 
-config = require '../config'
-
 Models =
   Search: require '../models/search'
 
@@ -14,16 +12,17 @@ class TextSearch extends Backbone.View
 
   # ### Initialize
   initialize: (options) ->
+    @config = options.config
     @reset()
 
   setModel: ->
     @stopListening @model if @model?
 
-    @model = new Models.Search config.textSearchOptions
+    @model = new Models.Search @config.get('textSearchOptions')
 
   # ### Render
   render: ->
-    tpl = config.templates['text-search'] if config.templates.hasOwnProperty 'text-search'
+    tpl = @config.get('templates')['text-search'] if @config.get('templates').hasOwnProperty 'text-search'
     @$el.html tpl model: @model
 
     @

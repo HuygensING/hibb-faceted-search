@@ -4,18 +4,19 @@
         <link rel="stylesheet" type="text/css" href="../static/main.css" />
         <script src="../static/libs.js"></script>
         <script src="../static/src.js"></script>
+        <script src="jade.js"></script>
         <style>
-            .faceted-search-placeholder, section.fs-results {
+            .faceted-search-placeholder, .faceted-search-templated-placeholder, section.fs-results {
                 display: inline-block;
                 vertical-align: top;
                 box-sizing: border-box;
             }
-            .faceted-search-placeholder {
-                width: 40%;
+            .faceted-search-placeholder, .faceted-search-templated-placeholder {
+                width: 19%;
             }
             section.fs-results {
-                margin-left: 5%;
-                width: 50%;
+                margin: 0 5%;
+                width: 9%;
             }
             section.fs-results h2 {
                 margin: 0;
@@ -24,7 +25,7 @@
         </style>
     </head>
     <body>
-        <h1>TESTOST Faceted Search Staging</h1>
+        <h1>TEST Faceted Search Staging</h1>
         <section class="faceted-search-placeholder"></section>
         <section class="fs-results">
             <h2></h2>
@@ -32,6 +33,7 @@
 
             </ul>
         </section>
+        <section class="faceted-search-templated-placeholder"></section>
         <script>
             var $ = require('jquery');
             var _ = require('underscore');
@@ -46,7 +48,10 @@
                 baseUrl: 'http://localhost:3001/api/',
 
                 searchPath: 'search',
-                resultRows: 12
+                resultRows: 12,
+                facetTitleMap: {
+                    'date_range': 'Year range'
+                }
             });
 
             fs.on('change:results', function(resultModel) {
@@ -59,6 +64,63 @@
             });
 
             fs.search();
+        </script>
+        <script>
+            var mainTpl, facetsTpl, textSearchTpl;
+
+            $.when(
+                $.get('templates/main.jade', function(data) {
+                    mainTpl = jade.compile(data);
+                }),
+                $.get('templates/facets.jade', function(data) {
+                    facetsTpl = jade.compile(data);
+                }),
+                $.get('templates/text-search.jade', function(data) {
+                    textSearchTpl = jade.compile(data);
+                })
+            ).done(function() {
+//                setTimeout(initFS, 4000)
+                initFS();
+            });
+
+            function initFS() {
+                var fs2 = new FacetedSearch({
+                    el: document.querySelector('.faceted-search-templated-placeholder'),
+
+                    // Remote, for 'real' results
+    //                baseUrl: 'http://demo7.huygens.knaw.nl/rembench-backend/',
+
+                    // Local, for testing and fast result rendering
+                    baseUrl: 'http://localhost:3001/api/',
+
+                    searchPath: 'search',
+                    resultRows: 12,
+                    facetTitleMap: {
+                        'date_range': 'Year range'
+                    },
+                    autoSearch: false,
+                    templates: {
+                        'main': mainTpl,
+                        'facets': facetsTpl,
+                        'text-search': textSearchTpl,
+    //                    'facets.main': facetsMainTpl,
+    //                    'list.menu': listMenuTpl,
+    //                    'list.body': listBodyTpl,
+    //                    'range.body': rangeBodyTpl
+                    }
+                });
+
+                fs2.on('change:results', function(resultModel) {
+                    $('section.fs-results h2').html('Remdoc: '+resultModel.get('numFound'));
+
+                    $('section.fs-results ul.results').html('');
+                    _.each(resultModel.get('results').remdoc.results, function(result) {
+                        $('section.fs-results ul.results').append($('<li />').html(result.id));
+                    })
+                });
+
+                fs2.search();
+            }
         </script>
     </body>
 </html>

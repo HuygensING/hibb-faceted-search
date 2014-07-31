@@ -4,8 +4,6 @@ _ = require 'underscore'
 
 funcky = require('funcky.util')
 
-config = require '../../config'
-
 Models =
   List: require '../../models/facets/list'
 
@@ -17,20 +15,23 @@ class ListFacetOptions extends Backbone.View
   className: 'container'
 
   # ### Initialize
-  initialize: (@options) ->
+  initialize: (options) ->
+    @config = options.config
+    @facetName = options.facetName
+
     @showingCursor = 0
     @showingIncrement = 50
 
     @listenTo @collection, 'sort', => @rerender()
 
-    optionTpl = config.templates['list.option'] if config.templates.hasOwnProperty 'list.option'
+    optionTpl = @config.get('templates')['list.option'] if @config.get('templates').hasOwnProperty 'list.option'
 
     @render()
 
   # ### Render
   render: ->
-    bodyTpl = config.templates['list.body'] if config.templates.hasOwnProperty 'list.body'
-    @$el.html bodyTpl facetName: @options.facetName
+    bodyTpl = @config.get('templates')['list.body'] if @config.get('templates').hasOwnProperty 'list.body'
+    @$el.html bodyTpl facetName: @facetName
 
     # Set the height of the <ul> dynamically, to prevent glitches
     # when the options are rendered on scrolling.
@@ -123,7 +124,7 @@ class ListFacetOptions extends Backbone.View
 
     @trigger 'change',
       facetValue:
-        name: @options.facetName
+        name: @facetName
         values: values
 
   # ### Methods

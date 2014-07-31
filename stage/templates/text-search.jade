@@ -1,0 +1,38 @@
+.placeholder
+  .body
+    .search-input
+      input(type="text", name="search")
+      i.fa.fa-search
+
+    .menu
+      i.fa.fa-times
+      .row-1
+        .cell-1
+          input#cb_casesensitive(type="checkbox", name="cb_casesensitive", data-attr="caseSensitive")
+          label(for="cb_casesensitive") Match case
+        .cell-2
+          input#cb_fuzzy(type="checkbox", name="cb_fuzzy", data-attr="fuzzy")
+          label(for="cb_fuzzy") Fuzzy
+
+      .row-2
+        if model.has('searchInAnnotations') || model.has('searchInTranscriptions')
+          .cell-1
+            h4 Search in:
+            ul.searchins
+              if model.has('searchInTranscriptions')
+                li.searchin
+                  input(id="cb_searchin_transcriptions", type="checkbox", data-attr="searchInTranscriptions", checked=model.get('searchInTranscriptions'))
+                  label(for!="cb_searchin_transcriptions") Transcriptions
+              if model.has('searchInAnnotations')
+                li.searchin
+                  input(id="cb_searchin_annotations", type="checkbox", data-attr="searchInAnnotations", checked=model.get('searchInAnnotations'))
+                  label(for!="cb_searchin_annotations") Annotations
+
+        if model.has('textLayers')
+          .cell-1
+            h4 Textlayers:
+            ul.textlayers
+              each textLayer in model.get('textLayers')
+                li.textlayer
+                  input(id='cb_textlayer'+textLayer, type="checkbox", data-attr-array="textLayers", data-value=textLayer, checked=true)
+                  label(for='cb_textlayer'+textLayer)= textLayer

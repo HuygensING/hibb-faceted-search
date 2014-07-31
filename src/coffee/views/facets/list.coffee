@@ -1,15 +1,13 @@
 $ = require 'jquery'
 _ = require 'underscore'
 
-config = require '../../config'
-
 Models =
   List: require '../../models/facets/list'
 
-Collections = 
+Collections =
   Options: require '../../collections/list.options'
 
-Views = 
+Views =
   Facet: require './main'
   Options: require './list.options'
 
@@ -19,11 +17,13 @@ class ListFacet extends Views.Facet
 
   className: 'facet list'
 
-  initialize: (@options) ->
+  initialize: (options) ->
     super
 
-    @model = new Models.List @options.attrs, parse: true
-    @collection = new Collections.Options @options.attrs.options, parse: true
+    @config = options.config
+
+    @model = new Models.List options.attrs, parse: true
+    @collection = new Collections.Options options.attrs.options, parse: true
 
     @render()
 
@@ -32,12 +32,13 @@ class ListFacet extends Views.Facet
     super
 
     if @$('header .options').length > 0
-      menuTpl = config.templates['list.menu'] if config.templates.hasOwnProperty 'list.menu'
+      menuTpl = @config.get('templates')['list.menu'] if @config.get('templates').hasOwnProperty 'list.menu'
       menu = menuTpl model: @model.attributes
       @$('header .options').html menu
     @optionsView = new Views.Options
       collection: @collection
       facetName: @model.get 'name'
+      config: @config
 
     @$('.body').html @optionsView.el
 
