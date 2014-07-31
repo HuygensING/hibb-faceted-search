@@ -195,7 +195,7 @@ class RangeFacet extends Views.Facet
     @inputMax.removeClass 'overlap'
 
   stopDragging: ->
-    if @draggingMin or @draggingMax
+    if @draggingMin or @draggingMax or @draggingBar?
       if @draggingMin
         if @model.get('currentMin') isnt +@inputMin.val()
           @model.set currentMin: +@inputMin.val()
@@ -210,6 +210,7 @@ class RangeFacet extends Views.Facet
 
       @draggingMin = false
       @draggingMax = false
+      @draggingBar = null
 
       # If autoSearch is off, a change event is triggerd to update the queryModel.
       # If autoSearch is on, the range facet doesn't autoSearch, but displays a
@@ -217,11 +218,7 @@ class RangeFacet extends Views.Facet
       # a new search is triggered. If we silently update the model beforehand,
       # the new search would not be triggered.
       unless @config.get('autoSearch')
-        console.log 'triggering'
         @triggerChange silent: true
-
-    if @draggingBar?
-      @draggingBar = null
 
   # ### METHODS
 
