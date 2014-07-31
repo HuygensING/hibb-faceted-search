@@ -12157,6 +12157,8 @@ module.exports=require('lkcZM4');
 },{}],2:[function(_dereq_,module,exports){
 (function(){var e={}.hasOwnProperty;module.exports={get:function(e,l){return null==l&&(l={}),this._sendRequest("GET",e,l)},post:function(e,l){return null==l&&(l={}),this._sendRequest("POST",e,l)},put:function(e,l){return null==l&&(l={}),this._sendRequest("PUT",e,l)},_promise:function(){return{done:function(e){return this.callDone=e},callDone:null,fail:function(e){return this.callFail=e},callFail:null,always:function(e){return this.callAlways=e},callAlways:null}},_sendRequest:function(l,n,t){var a,u,s,r,i;null==t&&(t={}),u=this._promise(),null==t.data&&(t.data={}),null==t.headers&&(t.headers={}),r=new XMLHttpRequest,r.onreadystatechange=function(){var e;if(r.readyState===XMLHttpRequest.DONE)if(null!=u.callAlways&&u.callAlways(r),200<=(e=r.status)&&206>=e){if(null!=u.callDone)return u.callDone(r)}else if(null!=u.callFail)return u.callFail(r)},r.open(l,n,!0),r.setRequestHeader("Content-type","application/json"),i=t.headers;for(a in i)e.call(i,a)&&(s=i[a],r.setRequestHeader(a,s));return r.send(t.data),u}}}).call(this);
 },{}],3:[function(_dereq_,module,exports){
+(function(){module.exports={generateID:function(t){var n,r;for(t=null!=t&&t>0?t-1:7,n="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789",r=n.charAt(Math.floor(52*Math.random()));t--;)r+=n.charAt(Math.floor(Math.random()*n.length));return r},setResetTimeout:function(){var t;return t=null,function(n,r,e){return null!=t&&(null!=e&&e(),clearTimeout(t)),t=setTimeout(function(){return t=null,r()},n)}}()}}).call(this);
+},{}],4:[function(_dereq_,module,exports){
 (function (global){
 !function(e){if("object"==typeof exports)module.exports=e();else if("function"==typeof define&&define.amd)define(e);else{var f;"undefined"!=typeof window?f=window:"undefined"!=typeof global?f=global:"undefined"!=typeof self&&(f=self),f.jade=e()}}(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof _dereq_=="function"&&_dereq_;if(!u&&a)return a(o,!0);if(i)return i(o,!0);throw new Error("Cannot find module '"+o+"'")}var f=n[o]={exports:{}};t[o][0].call(f.exports,function(e){var n=t[o][1][e];return s(n?n:e)},f,f.exports,e,t,n,r)}return n[o].exports}var i=typeof _dereq_=="function"&&_dereq_;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(_dereq_,module,exports){
 'use strict';
@@ -12369,7 +12371,7 @@ exports.rethrow = function rethrow(err, filename, lineno, str){
 (1)
 });
 }).call(this,typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],4:[function(_dereq_,module,exports){
+},{}],5:[function(_dereq_,module,exports){
 var Backbone, ListOptions, Models, _,
   __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
@@ -12480,8 +12482,8 @@ ListOptions = (function(_super) {
 module.exports = ListOptions;
 
 
-},{"../models/facets/list.option.coffee":11}],5:[function(_dereq_,module,exports){
-var Backbone, SearchResult, SearchResults, config, funcky, _,
+},{"../models/facets/list.option.coffee":12}],6:[function(_dereq_,module,exports){
+var Backbone, SearchResult, SearchResults, funcky, _,
   __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
@@ -12493,8 +12495,6 @@ SearchResult = _dereq_('../models/searchresult');
 
 funcky = _dereq_('funcky.req');
 
-config = _dereq_('../config');
-
 SearchResults = (function(_super) {
   __extends(SearchResults, _super);
 
@@ -12504,7 +12504,8 @@ SearchResults = (function(_super) {
 
   SearchResults.prototype.model = SearchResult;
 
-  SearchResults.prototype.initialize = function() {
+  SearchResults.prototype.initialize = function(options) {
+    this.config = options.config;
     this.cachedModels = {};
     this.queryAmount = 0;
     return this.on('add', this.setCurrent, this);
@@ -12571,8 +12572,8 @@ SearchResults = (function(_super) {
 
   SearchResults.prototype.page = function(pagenumber, database) {
     var start, url;
-    start = config.resultRows * (pagenumber - 1);
-    url = this.postURL + ("?rows=" + config.resultRows + "&start=" + start);
+    start = this.config.get('resultRows') * (pagenumber - 1);
+    url = this.postURL + ("?rows=" + (this.config.get('resultRows')) + "&start=" + start);
     if (database != null) {
       url += "&database=" + database;
     }
@@ -12589,16 +12590,16 @@ SearchResults = (function(_super) {
     ajaxOptions = {
       data: JSON.stringify(queryOptions)
     };
-    if (config.hasOwnProperty('requestOptions')) {
-      _.extend(ajaxOptions, config.requestOptions);
+    if (this.config.has('requestOptions')) {
+      _.extend(ajaxOptions, this.config.get('requestOptions'));
     }
-    req = funcky.post(config.baseUrl + config.searchPath, ajaxOptions);
+    req = funcky.post(this.config.get('baseUrl') + this.config.get('searchPath'), ajaxOptions);
     req.done((function(_this) {
       return function(res) {
         var url;
         if (res.status === 201) {
           _this.postURL = res.getResponseHeader('Location');
-          url = config.resultRows != null ? _this.postURL + '?rows=' + config.resultRows : _this.postURL;
+          url = _this.config.has('resultRows') ? _this.postURL + '?rows=' + _this.config.get('resultRows') : _this.postURL;
           return done(url);
         }
       };
@@ -12606,9 +12607,11 @@ SearchResults = (function(_super) {
     return req.fail((function(_this) {
       return function(res) {
         if (res.status === 401) {
-          _this.trigger('unauthorized');
+          return _this.trigger('unauthorized');
+        } else {
+          _this.trigger('request:failed', res);
+          throw new Error('Failed posting FacetedSearch queryOptions to the server!', res);
         }
-        return console.error('Failed posting FacetedSearch queryOptions to the server!', res);
       };
     })(this));
   };
@@ -12626,9 +12629,11 @@ SearchResults = (function(_super) {
     return req.fail((function(_this) {
       return function(res) {
         if (res.status === 401) {
-          _this.trigger('unauthorized');
+          return _this.trigger('unauthorized');
+        } else {
+          _this.trigger('request:failed', res);
+          throw new Error('Failed getting FacetedSearch results from the server!', res);
         }
-        return console.error('Failed getting FacetedSearch results from the server!', res);
       };
     })(this));
   };
@@ -12640,22 +12645,43 @@ SearchResults = (function(_super) {
 module.exports = SearchResults;
 
 
-},{"../config":6,"../models/searchresult":16,"funcky.req":2}],6:[function(_dereq_,module,exports){
-module.exports = {
-  resultRows: null,
-  baseUrl: '',
-  searchPath: '',
-  textSearch: 'advanced',
-  token: null,
-  queryOptions: {},
-  facetTitleMap: {},
-  templates: {},
-  autoSearch: true
-};
+},{"../models/searchresult":17,"funcky.req":2}],7:[function(_dereq_,module,exports){
+var Backbone, Config,
+  __hasProp = {}.hasOwnProperty,
+  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
+
+Backbone = _dereq_('backbone');
+
+Config = (function(_super) {
+  __extends(Config, _super);
+
+  function Config() {
+    return Config.__super__.constructor.apply(this, arguments);
+  }
+
+  Config.prototype.defaults = function() {
+    return {
+      resultRows: null,
+      baseUrl: '',
+      searchPath: '',
+      textSearch: 'advanced',
+      token: null,
+      queryOptions: {},
+      facetTitleMap: {},
+      templates: {},
+      autoSearch: true
+    };
+  };
+
+  return Config;
+
+})(Backbone.Model);
+
+module.exports = Config;
 
 
-},{}],7:[function(_dereq_,module,exports){
-var $, Backbone, MainView, QueryOptions, SearchResults, Views, config, funcky, tpl, _,
+},{}],8:[function(_dereq_,module,exports){
+var $, Backbone, Config, MainView, QueryOptions, SearchResults, Views, funcky, tpl, _,
   __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
@@ -12669,7 +12695,7 @@ _ = _dereq_('underscore');
 
 funcky = _dereq_('funcky.el');
 
-config = _dereq_('./config');
+Config = _dereq_('./config');
 
 QueryOptions = _dereq_('./models/query-options');
 
@@ -12690,20 +12716,18 @@ MainView = (function(_super) {
   }
 
   MainView.prototype.initialize = function(options) {
-    var facetViewMap;
     if (options == null) {
       options = {};
     }
     if (options.facetViewMap != null) {
-      facetViewMap = _.clone(options.facetViewMap);
+      this.facetViewMap = _.clone(options.facetViewMap);
       delete options.facetViewMap;
     }
     this.extendConfig(options);
-    this.instantiateQueryOptions();
-    this.instantiateSearchResults();
-    this.instantiateFacets(facetViewMap);
+    this.initQueryOptions();
+    this.initSearchResults();
     this.render();
-    if (config.development) {
+    if (this.config.get('development')) {
       this.searchResults.add(JSON.parse(localStorage.getItem('faceted-search-dev-model')));
       this.searchResults.cachedModels['{"facetValues":[],"sortParameters":[]}'] = this.searchResults.first();
       return setTimeout(((function(_this) {
@@ -12715,21 +12739,25 @@ MainView = (function(_super) {
   };
 
   MainView.prototype.render = function() {
-    this.$el.html(tpl());
-    if (config.templates.hasOwnProperty('main')) {
-      this.$('.faceted-search').html(config.templates.main());
+    if (this.config.get('templates').hasOwnProperty('main')) {
+      tpl = this.config.get('templates').main;
     }
-    this.$('.faceted-search').addClass("search-type-" + config.textSearch);
-    if (config.textSearch === 'simple' || config.textSearch === 'advanced') {
+    this.el.innerHTML = tpl();
+    this.$('.faceted-search').addClass("search-type-" + (this.config.get('textSearch')));
+    this.initFacets(this.facetViewMap);
+    if (this.config.get('textSearch') === 'simple' || this.config.get('textSearch') === 'advanced') {
       this.renderTextSearch();
     }
-    this.$('.facets').html(this.facets.el);
     return this;
   };
 
   MainView.prototype.renderTextSearch = function() {
-    this.textSearch = new Views.TextSearch();
-    this.$('.text-search-placeholder').html(this.textSearch.el);
+    var textSearchPlaceholder;
+    this.textSearch = new Views.TextSearch({
+      config: this.config
+    });
+    textSearchPlaceholder = this.el.querySelector('.text-search-placeholder');
+    textSearchPlaceholder.parentNode.replaceChild(this.textSearch.el, textSearchPlaceholder);
     this.listenTo(this.textSearch, 'change', (function(_this) {
       return function(queryOptions) {
         return _this.queryOptions.set(queryOptions, {
@@ -12755,8 +12783,12 @@ MainView = (function(_super) {
   };
 
   MainView.prototype.onSwitchType = function(ev) {
+    var textSearch;
     ev.preventDefault();
-    config.textSearch = config.textSearch === 'advanced' ? 'simple' : 'advanced';
+    textSearch = this.config.get('textSearch') === 'advanced' ? 'simple' : 'advanced';
+    this.config.set({
+      textSearch: textSearch
+    });
     this.$('.faceted-search').toggleClass('search-type-simple');
     this.$('.faceted-search').toggleClass('search-type-advanced');
     if (this.searchResults.queryAmount === 1) {
@@ -12782,19 +12814,25 @@ MainView = (function(_super) {
   };
 
   MainView.prototype.extendConfig = function(options) {
-    _.extend(config.facetTitleMap, options.facetTitleMap);
+    var ftm;
+    ftm = options.facetTitleMap;
     delete options.facetTitleMap;
-    _.extend(config, options);
-    if (['none', 'simple', 'advanced'].indexOf(config.textSearch) === -1) {
-      return config.textSearch = 'advanced';
+    this.config = new Config(options);
+    this.config.set({
+      facetTitleMap: _.extend(this.config.get('facetTitleMap'), ftm)
+    });
+    if (['none', 'simple', 'advanced'].indexOf(this.config.get('textSearch')) === -1) {
+      return this.config.set({
+        textSearch: 'advanced'
+      });
     }
   };
 
-  MainView.prototype.instantiateQueryOptions = function() {
+  MainView.prototype.initQueryOptions = function() {
     var attrs;
-    attrs = _.extend(config.queryOptions, config.textSearchOptions);
+    attrs = _.extend(this.config.get('queryOptions'), this.config.get('textSearchOptions'));
     this.queryOptions = new QueryOptions(attrs);
-    if (config.autoSearch) {
+    if (this.config.get('autoSearch')) {
       return this.listenTo(this.queryOptions, 'change', (function(_this) {
         return function() {
           return _this.search();
@@ -12803,11 +12841,13 @@ MainView = (function(_super) {
     }
   };
 
-  MainView.prototype.instantiateSearchResults = function() {
-    this.searchResults = new SearchResults();
+  MainView.prototype.initSearchResults = function() {
+    this.searchResults = new SearchResults({
+      config: this.config
+    });
     this.listenTo(this.searchResults, 'change:results', (function(_this) {
       return function(responseModel) {
-        if (config.textSearch !== 'simple') {
+        if (_this.config.get('textSearch') !== 'simple') {
           _this.update();
         }
         return _this.trigger('change:results', responseModel);
@@ -12833,20 +12873,29 @@ MainView = (function(_super) {
         return _this.hideLoader();
       };
     })(this));
-    return this.listenTo(this.searchResults, 'unauthorized', (function(_this) {
+    this.listenTo(this.searchResults, 'unauthorized', (function(_this) {
       return function() {
         return _this.trigger('unauthorized');
       };
     })(this));
+    return this.listenTo(this.searchResults, 'request:failed', (function(_this) {
+      return function(res) {
+        return _this.trigger('request:failed', res);
+      };
+    })(this));
   };
 
-  MainView.prototype.instantiateFacets = function(viewMap) {
+  MainView.prototype.initFacets = function(viewMap) {
+    var facetsPlaceholder;
     if (viewMap == null) {
       viewMap = {};
     }
     this.facets = new Views.Facets({
-      viewMap: viewMap
+      viewMap: viewMap,
+      config: this.config
     });
+    facetsPlaceholder = this.el.querySelector('.facets-placeholder');
+    facetsPlaceholder.parentNode.replaceChild(this.facets.el, facetsPlaceholder);
     return this.listenTo(this.facets, 'change', (function(_this) {
       return function(queryOptions, options) {
         return _this.queryOptions.set(queryOptions, options);
@@ -12883,7 +12932,7 @@ MainView = (function(_super) {
     var facets;
     facets = this.searchResults.current.get('facets');
     if (this.searchResults.queryAmount === 1) {
-      return this.facets.render(this.el, facets);
+      return this.facets.renderFacets(facets);
     } else if (this.searchResults.queryAmount > 1) {
       return this.facets.update(facets);
     }
@@ -12943,7 +12992,7 @@ MainView = (function(_super) {
 module.exports = MainView;
 
 
-},{"../jade/main.jade":32,"./collections/searchresults":5,"./config":6,"./models/query-options":14,"./views/facets":17,"./views/text-search":24,"funcky.el":1}],8:[function(_dereq_,module,exports){
+},{"../jade/main.jade":33,"./collections/searchresults":6,"./config":7,"./models/query-options":15,"./views/facets":18,"./views/text-search":25,"funcky.el":1}],9:[function(_dereq_,module,exports){
 var BooleanFacet, Models,
   __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
@@ -12987,39 +13036,11 @@ BooleanFacet = (function(_super) {
 module.exports = BooleanFacet;
 
 
-},{"./main":12}],9:[function(_dereq_,module,exports){
-var DateFacet, Models,
-  __hasProp = {}.hasOwnProperty,
-  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
-
-Models = {
-  Facet: _dereq_('./main')
-};
-
-DateFacet = (function(_super) {
-  __extends(DateFacet, _super);
-
-  function DateFacet() {
-    return DateFacet.__super__.constructor.apply(this, arguments);
-  }
-
-  DateFacet.prototype.parse = function(attrs) {
-    attrs.options = _.map(_.pluck(attrs.options, 'name'), function(option) {
-      return option.substr(0, 4);
-    });
-    attrs.options = _.unique(attrs.options);
-    attrs.options.sort();
-    return attrs;
-  };
-
-  return DateFacet;
-
-})(Models.Facet);
-
-module.exports = DateFacet;
+},{"./main":13}],10:[function(_dereq_,module,exports){
 
 
-},{"./main":12}],10:[function(_dereq_,module,exports){
+
+},{}],11:[function(_dereq_,module,exports){
 var List, Models,
   __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
@@ -13042,7 +13063,7 @@ List = (function(_super) {
 module.exports = List;
 
 
-},{"./main":12}],11:[function(_dereq_,module,exports){
+},{"./main":13}],12:[function(_dereq_,module,exports){
 var Backbone, ListOption,
   __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
@@ -13080,7 +13101,7 @@ ListOption = (function(_super) {
 module.exports = ListOption;
 
 
-},{}],12:[function(_dereq_,module,exports){
+},{}],13:[function(_dereq_,module,exports){
 var Backbone, Facet, config,
   __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
@@ -13107,15 +13128,6 @@ Facet = (function(_super) {
     };
   };
 
-  Facet.prototype.parse = function(attrs) {
-    if (config.facetTitleMap.hasOwnProperty(attrs.name)) {
-      attrs.title = config.facetTitleMap[attrs.name];
-    } else {
-      config.facetTitleMap[attrs.name] = attrs.title;
-    }
-    return attrs;
-  };
-
   return Facet;
 
 })(Backbone.Model);
@@ -13123,7 +13135,7 @@ Facet = (function(_super) {
 module.exports = Facet;
 
 
-},{"../../config":6}],13:[function(_dereq_,module,exports){
+},{"../../config":7}],14:[function(_dereq_,module,exports){
 var FacetModel, RangeFacet, _,
   __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
@@ -13141,9 +13153,33 @@ RangeFacet = (function(_super) {
 
   RangeFacet.prototype.defaults = function() {
     return _.extend({}, RangeFacet.__super__.defaults.apply(this, arguments), {
+      min: null,
+      max: null,
       currentMin: null,
       currentMax: null
     });
+  };
+
+  RangeFacet.prototype.set = function(attrs, options) {
+    if (attrs.hasOwnProperty('currentMin')) {
+      if (attrs.currentMin > this.get('currentMax')) {
+        attrs.currentMax = +attrs.currentMin;
+        attrs.currentMin = this.get('currentMax');
+      }
+    }
+    if (attrs.hasOwnProperty('currentMax')) {
+      if (attrs.currentMax < this.get('currentMin')) {
+        attrs.currentMin = +attrs.currentMax;
+        attrs.currentMax = this.get('currentMin');
+      }
+    }
+    if (attrs.hasOwnProperty('currentMin') && attrs.currentMin < this.get('min')) {
+      attrs.currentMin = this.get('min');
+    }
+    if (attrs.hasOwnProperty('currentMax') && attrs.currentMax > this.get('max')) {
+      attrs.currentMax = this.get('max');
+    }
+    return RangeFacet.__super__.set.apply(this, arguments);
   };
 
   RangeFacet.prototype.parse = function(attrs) {
@@ -13152,6 +13188,8 @@ RangeFacet = (function(_super) {
       lowerLimit: +((attrs.options[0].lowerLimit + '').substr(0, 4)),
       upperLimit: +((attrs.options[0].upperLimit + '').substr(0, 4))
     };
+    attrs.min = attrs.currentMin = attrs.options.lowerLimit;
+    attrs.max = attrs.currentMax = attrs.options.upperLimit;
     return attrs;
   };
 
@@ -13162,7 +13200,7 @@ RangeFacet = (function(_super) {
 module.exports = RangeFacet;
 
 
-},{"./main":12}],14:[function(_dereq_,module,exports){
+},{"./main":13}],15:[function(_dereq_,module,exports){
 var Backbone, QueryOptions, config, _,
   __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
@@ -13229,7 +13267,7 @@ QueryOptions = (function(_super) {
 module.exports = QueryOptions;
 
 
-},{"../config":6}],15:[function(_dereq_,module,exports){
+},{"../config":7}],16:[function(_dereq_,module,exports){
 var Backbone, Search, _,
   __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
@@ -13270,7 +13308,7 @@ Search = (function(_super) {
 module.exports = Search;
 
 
-},{}],16:[function(_dereq_,module,exports){
+},{}],17:[function(_dereq_,module,exports){
 var Backbone, SearchResult, config, _,
   __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
@@ -13310,8 +13348,8 @@ SearchResult = (function(_super) {
 module.exports = SearchResult;
 
 
-},{"../config":6}],17:[function(_dereq_,module,exports){
-var Backbone, Facets, config, _,
+},{"../config":7}],18:[function(_dereq_,module,exports){
+var Backbone, Facets, _,
   __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
   __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
@@ -13320,8 +13358,6 @@ Backbone = _dereq_('backbone');
 
 _ = _dereq_('underscore');
 
-config = _dereq_('../config');
-
 Facets = (function(_super) {
   __extends(Facets, _super);
 
@@ -13329,6 +13365,8 @@ Facets = (function(_super) {
     this.renderFacet = __bind(this.renderFacet, this);
     return Facets.__super__.constructor.apply(this, arguments);
   }
+
+  Facets.prototype.className = 'facets';
 
   Facets.prototype.viewMap = {
     BOOLEAN: _dereq_('./facets/boolean'),
@@ -13339,17 +13377,29 @@ Facets = (function(_super) {
 
   Facets.prototype.initialize = function(options) {
     _.extend(this.viewMap, options.viewMap);
-    return this.views = {};
+    this.config = options.config;
+    this.views = {};
+    return this.render();
   };
 
-  Facets.prototype.render = function(el, data) {
-    var facetData, fragment, index, _i, _len;
+  Facets.prototype.render = function() {
+    if (this.config.get('templates').hasOwnProperty('facets')) {
+      this.el.innerHTML = this.config.get('templates').facets();
+    }
+    return this;
+  };
+
+  Facets.prototype.renderFacets = function(data) {
+    var facetData, fragment, index, placeholder, _i, _len;
     this.destroyFacets();
-    if (config.templates.hasOwnProperty('main')) {
+    if (this.config.get('templates').hasOwnProperty('facets')) {
       for (index = _i = 0, _len = data.length; _i < _len; index = ++_i) {
         facetData = data[index];
         if (this.viewMap.hasOwnProperty(facetData.type)) {
-          el.querySelector("." + facetData.name + "-placeholder").appendChild(this.renderFacet(facetData).el);
+          placeholder = this.el.querySelector("." + facetData.name + "-placeholder");
+          if (placeholder != null) {
+            placeholder.parentNode.replaceChild(this.renderFacet(facetData).el, placeholder);
+          }
         }
       }
     } else {
@@ -13364,24 +13414,25 @@ Facets = (function(_super) {
           console.error('Unknown facetView', facetData.type);
         }
       }
-      el.querySelector('.facets').innerHTML = '';
-      el.querySelector('.facets').appendChild(fragment);
+      this.el.innerHTML = '';
+      this.el.appendChild(fragment);
     }
     return this;
   };
 
   Facets.prototype.renderFacet = function(facetData) {
-    var View, view;
+    var View;
     if (_.isString(facetData)) {
       facetData = _.findWhere(this.searchResults.first().get('facets'), {
         name: facetData
       });
     }
     View = this.viewMap[facetData.type];
-    view = this.views[facetData.name] = new View({
-      attrs: facetData
+    this.views[facetData.name] = new View({
+      attrs: facetData,
+      config: this.config
     });
-    this.listenTo(view, 'change', (function(_this) {
+    this.listenTo(this.views[facetData.name], 'change', (function(_this) {
       return function(queryOptions, options) {
         if (options == null) {
           options = {};
@@ -13389,7 +13440,7 @@ Facets = (function(_super) {
         return _this.trigger('change', queryOptions, options);
       };
     })(this));
-    return view;
+    return this.views[facetData.name];
   };
 
   Facets.prototype.update = function(facetData) {
@@ -13483,7 +13534,7 @@ Facets = (function(_super) {
 module.exports = Facets;
 
 
-},{"../config":6,"./facets/boolean":18,"./facets/date":19,"./facets/list":20,"./facets/range":23}],18:[function(_dereq_,module,exports){
+},{"./facets/boolean":19,"./facets/date":20,"./facets/list":21,"./facets/range":24}],19:[function(_dereq_,module,exports){
 var $, BooleanFacet, Models, Views, bodyTpl, _,
   __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
@@ -13578,7 +13629,7 @@ BooleanFacet = (function(_super) {
 module.exports = BooleanFacet;
 
 
-},{"../../../jade/facets/boolean.body.jade":25,"../../models/facets/boolean":8,"./main":22}],19:[function(_dereq_,module,exports){
+},{"../../../jade/facets/boolean.body.jade":26,"../../models/facets/boolean":9,"./main":23}],20:[function(_dereq_,module,exports){
 var DateFacet, Models, Views, tpl,
   __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
@@ -13634,16 +13685,14 @@ DateFacet = (function(_super) {
 module.exports = DateFacet;
 
 
-},{"../../../jade/facets/date.jade":26,"../../models/facets/date":9,"./main":22}],20:[function(_dereq_,module,exports){
-var $, Collections, ListFacet, Models, Views, config, menuTpl, _,
+},{"../../../jade/facets/date.jade":27,"../../models/facets/date":10,"./main":23}],21:[function(_dereq_,module,exports){
+var $, Collections, ListFacet, Models, Views, menuTpl, _,
   __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
 $ = _dereq_('jquery');
 
 _ = _dereq_('underscore');
-
-config = _dereq_('../../config');
 
 Models = {
   List: _dereq_('../../models/facets/list')
@@ -13670,12 +13719,12 @@ ListFacet = (function(_super) {
   ListFacet.prototype.className = 'facet list';
 
   ListFacet.prototype.initialize = function(options) {
-    this.options = options;
     ListFacet.__super__.initialize.apply(this, arguments);
-    this.model = new Models.List(this.options.attrs, {
+    this.config = options.config;
+    this.model = new Models.List(options.attrs, {
       parse: true
     });
-    this.collection = new Collections.Options(this.options.attrs.options, {
+    this.collection = new Collections.Options(options.attrs.options, {
       parse: true
     });
     return this.render();
@@ -13685,8 +13734,8 @@ ListFacet = (function(_super) {
     var menu;
     ListFacet.__super__.render.apply(this, arguments);
     if (this.$('header .options').length > 0) {
-      if (config.templates.hasOwnProperty('list.menu')) {
-        menuTpl = config.templates['list.menu'];
+      if (this.config.get('templates').hasOwnProperty('list.menu')) {
+        menuTpl = this.config.get('templates')['list.menu'];
       }
       menu = menuTpl({
         model: this.model.attributes
@@ -13695,7 +13744,8 @@ ListFacet = (function(_super) {
     }
     this.optionsView = new Views.Options({
       collection: this.collection,
-      facetName: this.model.get('name')
+      facetName: this.model.get('name'),
+      config: this.config
     });
     this.$('.body').html(this.optionsView.el);
     this.listenTo(this.optionsView, 'filter:finished', this.renderFilteredOptionCount);
@@ -13799,8 +13849,8 @@ ListFacet = (function(_super) {
 module.exports = ListFacet;
 
 
-},{"../../../jade/facets/list.menu.jade":28,"../../collections/list.options":4,"../../config":6,"../../models/facets/list":10,"./list.options":21,"./main":22}],21:[function(_dereq_,module,exports){
-var $, Backbone, ListFacetOptions, Models, bodyTpl, config, funcky, optionTpl, _,
+},{"../../../jade/facets/list.menu.jade":29,"../../collections/list.options":5,"../../models/facets/list":11,"./list.options":22,"./main":23}],22:[function(_dereq_,module,exports){
+var $, Backbone, ListFacetOptions, Models, bodyTpl, funcky, optionTpl, _,
   __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
   __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
@@ -13812,8 +13862,6 @@ $ = _dereq_('jquery');
 _ = _dereq_('underscore');
 
 funcky = _dereq_('funcky.util');
-
-config = _dereq_('../../config');
 
 Models = {
   List: _dereq_('../../models/facets/list')
@@ -13834,7 +13882,8 @@ ListFacetOptions = (function(_super) {
   ListFacetOptions.prototype.className = 'container';
 
   ListFacetOptions.prototype.initialize = function(options) {
-    this.options = options;
+    this.config = options.config;
+    this.facetName = options.facetName;
     this.showingCursor = 0;
     this.showingIncrement = 50;
     this.listenTo(this.collection, 'sort', (function(_this) {
@@ -13842,18 +13891,18 @@ ListFacetOptions = (function(_super) {
         return _this.rerender();
       };
     })(this));
-    if (config.templates.hasOwnProperty('list.option')) {
-      optionTpl = config.templates['list.option'];
+    if (this.config.get('templates').hasOwnProperty('list.option')) {
+      optionTpl = this.config.get('templates')['list.option'];
     }
     return this.render();
   };
 
   ListFacetOptions.prototype.render = function() {
-    if (config.templates.hasOwnProperty('list.body')) {
-      bodyTpl = config.templates['list.body'];
+    if (this.config.get('templates').hasOwnProperty('list.body')) {
+      bodyTpl = this.config.get('templates')['list.body'];
     }
     this.$el.html(bodyTpl({
-      facetName: this.options.facetName
+      facetName: this.facetName
     }));
     this.appendOptions();
     return this;
@@ -13956,7 +14005,7 @@ ListFacetOptions = (function(_super) {
     }
     return this.trigger('change', {
       facetValue: {
-        name: this.options.facetName,
+        name: this.facetName,
         values: values
       }
     });
@@ -14003,8 +14052,8 @@ ListFacetOptions = (function(_super) {
 module.exports = ListFacetOptions;
 
 
-},{"../../../jade/facets/list.body.jade":27,"../../../jade/facets/list.option.jade":29,"../../config":6,"../../models/facets/list":10,"funcky.util":34}],22:[function(_dereq_,module,exports){
-var $, Backbone, Facet, config, tpl, _,
+},{"../../../jade/facets/list.body.jade":28,"../../../jade/facets/list.option.jade":30,"../../models/facets/list":11,"funcky.util":3}],23:[function(_dereq_,module,exports){
+var $, Backbone, Facet, tpl, _,
   __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
@@ -14013,8 +14062,6 @@ Backbone = _dereq_('backbone');
 $ = _dereq_('jquery');
 
 _ = _dereq_('underscore');
-
-config = _dereq_('../../config');
 
 tpl = _dereq_('../../../jade/facets/main.jade');
 
@@ -14025,11 +14072,19 @@ Facet = (function(_super) {
     return Facet.__super__.constructor.apply(this, arguments);
   }
 
+  Facet.prototype.initialize = function(options) {
+    this.config = options.config;
+    if (this.config.get('facetTitleMap').hasOwnProperty(options.attrs.name)) {
+      return options.attrs.title = this.config.get('facetTitleMap')[options.attrs.name];
+    }
+  };
+
   Facet.prototype.render = function() {
-    if (config.templates.hasOwnProperty('facets.main')) {
-      tpl = config.templates['facets.main'];
+    if (this.config.get('templates').hasOwnProperty('facets.main')) {
+      tpl = this.config.get('templates')['facets.main'];
     }
     this.$el.html(tpl(this.model.attributes));
+    this.$el.attr('data-name', this.model.get('name'));
     return this;
   };
 
@@ -14095,16 +14150,14 @@ Facet = (function(_super) {
 module.exports = Facet;
 
 
-},{"../../../jade/facets/main.jade":30,"../../config":6}],23:[function(_dereq_,module,exports){
-var $, Models, RangeFacet, Views, bodyTpl, config, dragStopper, resizer, _,
+},{"../../../jade/facets/main.jade":31}],24:[function(_dereq_,module,exports){
+var $, Models, RangeFacet, Views, bodyTpl, dragStopper, resizer, _,
   __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
 $ = _dereq_('jquery');
 
 _ = _dereq_('underscore');
-
-config = _dereq_('../../config');
 
 Models = {
   Range: _dereq_('../../models/facets/range')
@@ -14130,22 +14183,31 @@ RangeFacet = (function(_super) {
   RangeFacet.prototype.className = 'facet range';
 
   RangeFacet.prototype.initialize = function(options) {
+    RangeFacet.__super__.initialize.apply(this, arguments);
+    this.config = options.config;
     this.draggingMin = false;
     this.draggingMax = false;
     this.model = new Models.Range(options.attrs, {
       parse: true
     });
     this.listenTo(this.model, 'change:options', this.render);
-    this.listenTo(this.model, 'change:currentMin', this.checkLabelOverlap);
-    this.listenTo(this.model, 'change:currentMax', this.checkLabelOverlap);
+    this.listenTo(this.model, 'change', (function(_this) {
+      return function(model) {
+        if (model.changed.hasOwnProperty('currentMin') || model.changed.hasOwnProperty('currentMax')) {
+          return _this.checkInputOverlap();
+        }
+      };
+    })(this));
+    this.listenTo(this.model, 'change:currentMin', this.updateMinHandle);
+    this.listenTo(this.model, 'change:currentMax', this.updateMaxHandle);
     return this.render();
   };
 
   RangeFacet.prototype.render = function() {
     var rtpl;
     RangeFacet.__super__.render.apply(this, arguments);
-    if (config.templates.hasOwnProperty('range.body')) {
-      bodyTpl = config.templates['range.body'];
+    if (this.config.get('templates').hasOwnProperty('range.body')) {
+      bodyTpl = this.config.get('templates')['range.body'];
     }
     rtpl = bodyTpl(this.model.attributes);
     this.$('.body').html(rtpl);
@@ -14171,20 +14233,38 @@ RangeFacet = (function(_super) {
     this.handleWidth = this.handleMin.width();
     this.handleMinLeft = this.handleMin.position().left;
     this.handleMaxLeft = this.handleMax.position().left;
-    this.labelMin = this.$('label.min');
-    this.labelMax = this.$('label.max');
+    this.inputMin = this.$('input.min');
+    this.inputMax = this.$('input.max');
     this.bar = this.$('.bar');
-    this.labelSingle = this.$('label.single');
     return this.button = this.el.querySelector('button');
   };
 
   RangeFacet.prototype.events = function() {
     return _.extend({}, RangeFacet.__super__.events.apply(this, arguments), {
       'mousedown .handle': 'startDragging',
+      'mousedown .bar': 'startDragging',
       'mouseup': 'stopDragging',
       'mousemove': 'drag',
+      'blur input': 'setYear',
+      'keyup input': 'setYear',
       'click button': 'doSearch'
     });
+  };
+
+  RangeFacet.prototype.setYear = function(ev) {
+    if (ev.type === 'focusout' || ev.type === 'blur' || (ev.type === 'keyup' && ev.keyCode === 13)) {
+      if (ev.currentTarget.className.indexOf('min') > -1) {
+        this.model.set({
+          currentMin: +ev.currentTarget.value
+        });
+        return this.disableInputEditable(this.inputMin);
+      } else if (ev.currentTarget.className.indexOf('max') > -1) {
+        this.model.set({
+          currentMax: +ev.currentTarget.value
+        });
+        return this.disableInputEditable(this.inputMax);
+      }
+    }
   };
 
   RangeFacet.prototype.doSearch = function(ev) {
@@ -14193,54 +14273,132 @@ RangeFacet = (function(_super) {
   };
 
   RangeFacet.prototype.startDragging = function(ev) {
-    var target;
+    var input, target;
     target = $(ev.currentTarget);
+    input = target.find('input');
+    if (input.length > 0) {
+      if (input.attr('disabled') == null) {
+        return;
+      }
+    }
     if (target.hasClass('handle-min')) {
       this.draggingMin = true;
       this.handleMax.css('z-index', 10);
+      return target.css('z-index', 11);
     } else if (target.hasClass('handle-max')) {
       this.draggingMax = true;
       this.handleMin.css('z-index', 10);
+      return target.css('z-index', 11);
+    } else if (target.hasClass('bar')) {
+      return this.draggingBar = {
+        offsetLeft: (ev.clientX - this.sliderLeft) - this.handleMinLeft,
+        barWidth: this.bar.width()
+      };
     }
-    return target.css('z-index', 11);
   };
 
   RangeFacet.prototype.drag = function(ev) {
-    var mousePosLeft;
+    var dragMax, dragMin, mousePosLeft;
     mousePosLeft = ev.clientX - this.sliderLeft;
-    if (this.draggingMin) {
-      this.handleMinLeft = mousePosLeft - (this.handleWidth / 2);
-      if ((-1 < mousePosLeft && mousePosLeft <= this.handleMaxLeft)) {
-        this.handleMin.css('left', this.handleMinLeft);
-        this.bar.css('left', mousePosLeft);
-        this.updateHandleLabel('min', mousePosLeft);
+    if (this.draggingMin || this.draggingMax) {
+      this.disableInputOverlap();
+    }
+    dragMin = (function(_this) {
+      return function(newPos) {
+        if ((-1 < newPos && newPos <= _this.handleMaxLeft)) {
+          _this.handleMinLeft = newPos;
+          _this.handleMin.css('left', newPos);
+          _this.bar.css('left', newPos);
+          _this.updateDash();
+          return _this.updateHandleLabel('min', newPos);
+        }
+      };
+    })(this);
+    dragMax = (function(_this) {
+      return function(newPos) {
+        if ((_this.handleMinLeft < newPos && newPos <= _this.sliderWidth)) {
+          _this.handleMaxLeft = newPos;
+          _this.handleMax.css('left', newPos);
+          _this.bar.css('right', _this.sliderWidth - newPos);
+          return _this.updateHandleLabel('max', newPos);
+        }
+      };
+    })(this);
+    if (this.draggingBar != null) {
+      if (this.handleMinLeft + this.draggingBar.barWidth <= this.sliderWidth) {
+        dragMin(mousePosLeft - this.draggingBar.offsetLeft);
+        dragMax(this.handleMinLeft + this.draggingBar.barWidth);
       }
+    }
+    if (this.draggingMin) {
+      dragMin(mousePosLeft - (this.handleWidth / 2));
     }
     if (this.draggingMax) {
-      this.handleMaxLeft = mousePosLeft - (this.handleWidth / 2);
-      if ((this.handleMinLeft < mousePosLeft && mousePosLeft <= this.sliderWidth)) {
-        this.handleMax.css('left', this.handleMaxLeft);
-        this.bar.css('right', this.sliderWidth - mousePosLeft);
-        return this.updateHandleLabel('max', mousePosLeft);
-      }
+      return dragMax(mousePosLeft - (this.handleWidth / 2));
     }
+  };
+
+  RangeFacet.prototype.enableInputEditable = function(input) {
+    input.attr('disabled', null);
+    return input.focus();
+  };
+
+  RangeFacet.prototype.disableInputEditable = function(input) {
+    return input.attr('disabled', true);
+  };
+
+  RangeFacet.prototype.enableInputOverlap = function(diff) {
+    this.inputMin.css('left', -20 - diff / 2);
+    this.inputMax.css('right', -20 - diff / 2);
+    this.updateDash();
+    this.$('.dash').show();
+    this.inputMin.addClass('overlap');
+    return this.inputMax.addClass('overlap');
+  };
+
+  RangeFacet.prototype.updateDash = function() {
+    return this.$('.dash').css('left', this.handleMinLeft + ((this.handleMaxLeft - this.handleMinLeft) / 2) + 3);
+  };
+
+  RangeFacet.prototype.disableInputOverlap = function() {
+    this.inputMin.css('left', -20);
+    this.inputMax.css('right', -20);
+    this.$('.dash').hide();
+    this.inputMin.removeClass('overlap');
+    return this.inputMax.removeClass('overlap');
   };
 
   RangeFacet.prototype.stopDragging = function() {
     if (this.draggingMin || this.draggingMax) {
+      if (this.draggingMin) {
+        if (this.model.get('currentMin') !== +this.inputMin.val()) {
+          this.model.set({
+            currentMin: +this.inputMin.val()
+          });
+        } else {
+          this.enableInputEditable(this.inputMin);
+        }
+      }
+      if (this.draggingMax) {
+        if (this.model.get('currentMax') !== +this.inputMax.val()) {
+          this.model.set({
+            currentMax: +this.inputMax.val()
+          });
+        } else {
+          this.enableInputEditable(this.inputMax);
+        }
+      }
       this.draggingMin = false;
       this.draggingMax = false;
-      this.model.set({
-        currentMin: +this.labelMin.html()
-      });
-      this.model.set({
-        currentMax: +this.labelMax.html()
-      });
-      if (!config.autoSearch) {
-        return this.triggerChange({
+      if (!this.config.get('autoSearch')) {
+        console.log('triggering');
+        this.triggerChange({
           silent: true
         });
       }
+    }
+    if (this.draggingBar != null) {
+      return this.draggingBar = null;
     }
   };
 
@@ -14271,44 +14429,28 @@ RangeFacet = (function(_super) {
       lowerLimit: this.model.get('currentMin'),
       upperLimit: this.model.get('currentMax')
     });
-    return this.checkLabelOverlap();
+    return this.checkInputOverlap();
   };
 
-  RangeFacet.prototype.checkLabelOverlap = function() {
-    var handlesCenter, left, maxRect, minRect;
-    minRect = this.labelMin[0].getBoundingClientRect();
-    maxRect = this.labelMax[0].getBoundingClientRect();
+  RangeFacet.prototype.checkInputOverlap = function() {
+    var diff, maxRect, minRect;
+    minRect = this.inputMin[0].getBoundingClientRect();
+    maxRect = this.inputMax[0].getBoundingClientRect();
     if (!(minRect.right < maxRect.left || minRect.left > maxRect.right || minRect.bottom < maxRect.top || minRect.top > maxRect.bottom)) {
-      this.labelMin.css('opacity', 0);
-      this.labelMax.css('opacity', 0);
-      this.labelSingle.show();
-      handlesCenter = this.handleMinLeft + ((this.handleMaxLeft - this.handleMinLeft) / 2);
-      left = handlesCenter - this.labelSingle.width() / 2 + 6;
-      if (this.sliderWidth - left < this.labelSingle.width()) {
-        left = this.sliderWidth - this.labelSingle.width() + 18;
-      }
-      return this.labelSingle.css('left', left);
+      diff = minRect.right - maxRect.left;
+      return this.enableInputOverlap(diff);
     } else {
-      this.labelMin.css('opacity', 1);
-      this.labelMax.css('opacity', 1);
-      return this.labelSingle.hide();
+      return this.disableInputOverlap();
     }
   };
 
   RangeFacet.prototype.updateHandleLabel = function(handle, leftPos) {
-    var singleValue, year;
-    if (this.button != null) {
+    var input;
+    if ((this.button != null) && this.config.get('autoSearch')) {
       this.button.style.display = 'block';
     }
-    year = this.getYearFromLeftPos(leftPos);
-    if (handle === 'min') {
-      this.labelMin.html(year);
-      singleValue = "" + year + " - " + (this.labelMax.html());
-    } else {
-      this.labelMax.html(year);
-      singleValue = "" + (this.labelMin.html()) + " - " + year;
-    }
-    return this.labelSingle.html(singleValue);
+    input = handle === 'min' ? this.inputMin : this.inputMax;
+    return input.val(this.getYearFromLeftPos(leftPos));
   };
 
   RangeFacet.prototype.getYearFromLeftPos = function(leftPos) {
@@ -14327,7 +14469,6 @@ RangeFacet = (function(_super) {
   };
 
   RangeFacet.prototype.update = function(newOptions) {
-    var leftMax, leftMin, yearMax, yearMin;
     if (_.isArray(newOptions)) {
       if (newOptions[0] != null) {
         newOptions = newOptions[0];
@@ -14338,25 +14479,33 @@ RangeFacet = (function(_super) {
         };
       }
     }
-    yearMin = +(newOptions.lowerLimit + '').substr(0, 4);
-    yearMax = +(newOptions.upperLimit + '').substr(0, 4);
-    this.labelMin.html(yearMin);
-    this.labelMax.html(yearMax);
-    leftMin = this.getLeftPosFromYear(yearMin);
-    leftMax = this.getLeftPosFromYear(yearMax);
-    this.handleMin.css('left', leftMin - (this.handleWidth / 2));
-    this.handleMax.css('left', leftMax - (this.handleWidth / 2));
-    this.bar.css('left', leftMin);
-    this.bar.css('right', this.sliderWidth - leftMax);
-    this.handleMinLeft = leftMin - (this.handleWidth / 2);
-    this.handleMaxLeft = leftMax - (this.handleWidth / 2);
     this.model.set({
-      currentMin: yearMin,
-      currentMax: yearMax
+      currentMin: +(newOptions.lowerLimit + '').substr(0, 4),
+      currentMax: +(newOptions.upperLimit + '').substr(0, 4)
     });
     if (this.button != null) {
       return this.button.style.display = 'none';
     }
+  };
+
+  RangeFacet.prototype.updateMaxHandle = function(model) {
+    var leftMax, year;
+    year = model.get('currentMax');
+    this.inputMax.val(year);
+    leftMax = this.getLeftPosFromYear(year);
+    this.handleMax.css('left', leftMax - (this.handleWidth / 2));
+    this.bar.css('right', this.sliderWidth - leftMax);
+    return this.handleMaxLeft = leftMax - (this.handleWidth / 2);
+  };
+
+  RangeFacet.prototype.updateMinHandle = function(model) {
+    var leftMin, year;
+    year = model.get('currentMin');
+    this.inputMin.val(year);
+    leftMin = this.getLeftPosFromYear(year);
+    this.handleMin.css('left', leftMin - (this.handleWidth / 2));
+    this.bar.css('left', leftMin);
+    return this.handleMinLeft = leftMin - (this.handleWidth / 2);
   };
 
   return RangeFacet;
@@ -14366,16 +14515,14 @@ RangeFacet = (function(_super) {
 module.exports = RangeFacet;
 
 
-},{"../../../jade/facets/range.body.jade":31,"../../config":6,"../../models/facets/range":13,"./main":22}],24:[function(_dereq_,module,exports){
-var Backbone, Models, TextSearch, config, tpl, _,
+},{"../../../jade/facets/range.body.jade":32,"../../models/facets/range":14,"./main":23}],25:[function(_dereq_,module,exports){
+var Backbone, Models, TextSearch, tpl, _,
   __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
 Backbone = _dereq_('backbone');
 
 _ = _dereq_('underscore');
-
-config = _dereq_('../config');
 
 Models = {
   Search: _dereq_('../models/search')
@@ -14393,6 +14540,7 @@ TextSearch = (function(_super) {
   TextSearch.prototype.className = 'text-search';
 
   TextSearch.prototype.initialize = function(options) {
+    this.config = options.config;
     return this.reset();
   };
 
@@ -14400,12 +14548,12 @@ TextSearch = (function(_super) {
     if (this.model != null) {
       this.stopListening(this.model);
     }
-    return this.model = new Models.Search(config.textSearchOptions);
+    return this.model = new Models.Search(this.config.get('textSearchOptions'));
   };
 
   TextSearch.prototype.render = function() {
-    if (config.templates.hasOwnProperty('text-search')) {
-      tpl = config.templates['text-search'];
+    if (this.config.get('templates').hasOwnProperty('text-search')) {
+      tpl = this.config.get('templates')['text-search'];
     }
     this.$el.html(tpl({
       model: this.model
@@ -14486,7 +14634,7 @@ TextSearch = (function(_super) {
 module.exports = TextSearch;
 
 
-},{"../../jade/text-search.jade":33,"../config":6,"../models/search":15}],25:[function(_dereq_,module,exports){
+},{"../../jade/text-search.jade":34,"../models/search":16}],26:[function(_dereq_,module,exports){
 var jade = _dereq_("jade/runtime");
 
 module.exports = function template(locals) {
@@ -14519,7 +14667,7 @@ buf.push("<li><div class=\"row span6\"><div class=\"cell span5\"><i" + (jade.att
 
 buf.push("</ul>");}("options" in locals_for_with?locals_for_with.options:typeof options!=="undefined"?options:undefined,"ucfirst" in locals_for_with?locals_for_with.ucfirst:typeof ucfirst!=="undefined"?ucfirst:undefined));;return buf.join("");
 };
-},{"jade/runtime":3}],26:[function(_dereq_,module,exports){
+},{"jade/runtime":4}],27:[function(_dereq_,module,exports){
 var jade = _dereq_("jade/runtime");
 
 module.exports = function template(locals) {
@@ -14575,7 +14723,7 @@ buf.push("<option>" + (jade.escape(null == (jade_interp = option) ? "" : jade_in
 
 buf.push("</select></div>");}("name" in locals_for_with?locals_for_with.name:typeof name!=="undefined"?name:undefined,"title" in locals_for_with?locals_for_with.title:typeof title!=="undefined"?title:undefined,"options" in locals_for_with?locals_for_with.options:typeof options!=="undefined"?options:undefined));;return buf.join("");
 };
-},{"jade/runtime":3}],27:[function(_dereq_,module,exports){
+},{"jade/runtime":4}],28:[function(_dereq_,module,exports){
 var jade = _dereq_("jade/runtime");
 
 module.exports = function template(locals) {
@@ -14585,7 +14733,7 @@ var jade_interp;
 
 buf.push("<ul></ul>");;return buf.join("");
 };
-},{"jade/runtime":3}],28:[function(_dereq_,module,exports){
+},{"jade/runtime":4}],29:[function(_dereq_,module,exports){
 var jade = _dereq_("jade/runtime");
 
 module.exports = function template(locals) {
@@ -14595,7 +14743,7 @@ var jade_interp;
 
 buf.push("<input type=\"checkbox\" name=\"all\"/><input type=\"text\" name=\"filter\"/><small class=\"optioncount\"></small>");;return buf.join("");
 };
-},{"jade/runtime":3}],29:[function(_dereq_,module,exports){
+},{"jade/runtime":4}],30:[function(_dereq_,module,exports){
 var jade = _dereq_("jade/runtime");
 
 module.exports = function template(locals) {
@@ -14605,7 +14753,7 @@ var jade_interp;
 ;var locals_for_with = (locals || {});(function (option) {
 buf.push("<li" + (jade.attr("data-count", option.get('count'), true, false)) + (jade.attr("data-value", option.id, true, false)) + "><i" + (jade.attr("data-value", option.id, true, false)) + (jade.cls(['unchecked','fa','fa-square-o',option.get('checked')?'hidden':'visible'], [null,null,null,true])) + "></i><i" + (jade.attr("data-value", option.id, true, false)) + (jade.cls(['checked','fa','fa-check-square-o',option.get('checked')?'visible':'hidden'], [null,null,null,true])) + "></i><label" + (jade.attr("data-value", option.id, true, false)) + ">" + (null == (jade_interp = option.id === ':empty' ? '<em>(empty)</em>' : option.id) ? "" : jade_interp) + "</label><div class=\"count\">" + (jade.escape(null == (jade_interp = option.get('count') === 0 ? option.get('total') : option.get('count')) ? "" : jade_interp)) + "</div></li>");}("option" in locals_for_with?locals_for_with.option:typeof option!=="undefined"?option:undefined));;return buf.join("");
 };
-},{"jade/runtime":3}],30:[function(_dereq_,module,exports){
+},{"jade/runtime":4}],31:[function(_dereq_,module,exports){
 var jade = _dereq_("jade/runtime");
 
 module.exports = function template(locals) {
@@ -14615,7 +14763,7 @@ var jade_interp;
 ;var locals_for_with = (locals || {});(function (name, title) {
 buf.push("<div class=\"placeholder\"><header><h3" + (jade.attr("data-name", name, true, false)) + ">" + (jade.escape(null == (jade_interp = title) ? "" : jade_interp)) + "</h3><div class=\"menu\"><i title=\"Filter options\" class=\"filter fa fa-filter\"></i><i title=\"Sort alphabetically\" class=\"alpha fa fa-sort-alpha-asc\"></i><i title=\"Sort numerically\" class=\"amount active fa fa-sort-amount-desc\"></i></div><div class=\"options\"></div></header><div class=\"body\"></div></div>");}("name" in locals_for_with?locals_for_with.name:typeof name!=="undefined"?name:undefined,"title" in locals_for_with?locals_for_with.title:typeof title!=="undefined"?title:undefined));;return buf.join("");
 };
-},{"jade/runtime":3}],31:[function(_dereq_,module,exports){
+},{"jade/runtime":4}],32:[function(_dereq_,module,exports){
 var jade = _dereq_("jade/runtime");
 
 module.exports = function template(locals) {
@@ -14623,9 +14771,9 @@ var buf = [];
 var jade_mixins = {};
 var jade_interp;
 ;var locals_for_with = (locals || {});(function (options) {
-buf.push("<div class=\"slider\"><div class=\"handle-min handle\"><label class=\"min\">" + (jade.escape(null == (jade_interp = options.lowerLimit) ? "" : jade_interp)) + "</label></div><div class=\"handle-max handle\"><label class=\"max\">" + (jade.escape(null == (jade_interp = options.upperLimit) ? "" : jade_interp)) + "</label></div><div class=\"bar\">&nbsp;</div><button>Search?</button><label class=\"single\"></label></div>");}("options" in locals_for_with?locals_for_with.options:typeof options!=="undefined"?options:undefined));;return buf.join("");
+buf.push("<div class=\"slider\"><span class=\"dash\">-</span><div class=\"handle-min handle\"><input" + (jade.attr("value", options.lowerLimit, true, false)) + " disabled=\"disabled\" class=\"min\"/></div><div class=\"handle-max handle\"><input" + (jade.attr("value", options.upperLimit, true, false)) + " disabled=\"disabled\" class=\"max\"/></div><div class=\"bar\">&nbsp;</div><button>Search?</button><label class=\"single\"></label></div>");}("options" in locals_for_with?locals_for_with.options:typeof options!=="undefined"?options:undefined));;return buf.join("");
 };
-},{"jade/runtime":3}],32:[function(_dereq_,module,exports){
+},{"jade/runtime":4}],33:[function(_dereq_,module,exports){
 var jade = _dereq_("jade/runtime");
 
 module.exports = function template(locals) {
@@ -14633,9 +14781,9 @@ var buf = [];
 var jade_mixins = {};
 var jade_interp;
 
-buf.push("<div class=\"overlay\"><div><i class=\"fa fa-spinner fa-spin fa-2x\"></i></div></div><div class=\"faceted-search\"><div class=\"text-search-placeholder\"></div><ul class=\"facets-menu\"><li class=\"reset\"><button><i class=\"fa fa-refresh\"></i><span>Reset search</span></button></li><li class=\"switch\"><button><i class=\"fa fa-angle-double-down\"></i><span>Switch to</span></button></li><li class=\"collapse-expand\"><button><i class=\"fa fa-compress\"></i><span>Collapse facets</span></button></li></ul><div class=\"facets\"><div class=\"loader\"><h4>Loading search...</h4><br/><i class=\"fa fa-spinner fa-spin fa-2x\"></i></div></div></div>");;return buf.join("");
+buf.push("<div class=\"overlay\"><div><i class=\"fa fa-spinner fa-spin fa-2x\"></i></div></div><div class=\"faceted-search\"><div class=\"text-search-placeholder\"></div><ul class=\"facets-menu\"><li class=\"reset\"><button><i class=\"fa fa-refresh\"></i><span>Reset search</span></button></li><li class=\"switch\"><button><i class=\"fa fa-angle-double-down\"></i><span>Switch to</span></button></li><li class=\"collapse-expand\"><button><i class=\"fa fa-compress\"></i><span>Collapse facets</span></button></li></ul><div class=\"facets-placeholder\"></div></div>");;return buf.join("");
 };
-},{"jade/runtime":3}],33:[function(_dereq_,module,exports){
+},{"jade/runtime":4}],34:[function(_dereq_,module,exports){
 var jade = _dereq_("jade/runtime");
 
 module.exports = function template(locals) {
@@ -14686,8 +14834,6 @@ buf.push("</ul></div>");
 }
 buf.push("</div></div></div></div>");}("model" in locals_for_with?locals_for_with.model:typeof model!=="undefined"?model:undefined));;return buf.join("");
 };
-},{"jade/runtime":3}],34:[function(_dereq_,module,exports){
-(function(){module.exports={generateID:function(t){var n,r;for(t=null!=t&&t>0?t-1:7,n="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789",r=n.charAt(Math.floor(52*Math.random()));t--;)r+=n.charAt(Math.floor(Math.random()*n.length));return r},setResetTimeout:function(){var t;return t=null,function(n,r,e){return null!=t&&(null!=e&&e(),clearTimeout(t)),t=setTimeout(function(){return t=null,r()},n)}}()}}).call(this);
-},{}]},{},[7])
-(7)
+},{"jade/runtime":4}]},{},[8])
+(8)
 });

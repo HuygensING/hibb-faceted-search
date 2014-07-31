@@ -3,8 +3,12 @@ Backbone based library
 
 ### Changelog
 
+#### v2.0.7
+- Range facet labels (years) are now editable.
+- Main and facets templates are now seperate templates (used to be one)
+
 #### v2.0.6
-- Trigger request:failed event when a request made from the FS fails
+- Trigger "request:failed" event when a request made from the FS fails
 
 #### v2.0.5
 - ListFacet reset would not reset the sorting strategy.
