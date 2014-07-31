@@ -53,7 +53,8 @@ class ListFacetOptions extends Backbone.View
       i = i + 1
       model = @collection.at(i)
       visible = if model? and model.get('visible') then true else false
-    @$('ul').html tpl
+
+    @el.querySelector('ul').innerHTML = tpl
 
   appendOptions: (all=false) ->
     # If true is passed as argument, all options are added.
@@ -69,9 +70,9 @@ class ListFacetOptions extends Backbone.View
 
     @$('ul').append tpl
 
-  # Unused, but could be handy in the future.
   renderAll: ->
-#    @appendOptions true
+    # When all models are set to visible, the collection is sorted and
+    # @rerender is called.
     @collection.setAllVisible()
 
   # ### Events
@@ -112,7 +113,7 @@ class ListFacetOptions extends Backbone.View
     # If there are no checked options or autoSearch is off (false), than triggerChange,
     # otherwise (autoSearch is true and there are options checked), set a 1s timeout to
     # give the user time to check another option before autoSearch kicks in.
-    if @$('i.checked').length is 0 or not config.autoSearch
+    if @$('i.checked').length is 0 or not @config.get('autoSearch')
       @triggerChange()
     else
       funcky.setResetTimeout 1000, => @triggerChange()

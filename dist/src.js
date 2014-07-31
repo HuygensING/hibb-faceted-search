@@ -1768,7 +1768,7 @@ ListFacetOptions = (function(_super) {
       model = this.collection.at(i);
       visible = (model != null) && model.get('visible') ? true : false;
     }
-    return this.$('ul').html(tpl);
+    return this.el.querySelector('ul').innerHTML = tpl;
   };
 
   ListFacetOptions.prototype.appendOptions = function(all) {
@@ -1828,7 +1828,7 @@ ListFacetOptions = (function(_super) {
       unchecked.hide();
     }
     this.collection.get(id).set('checked', $target.find("i.checked").is(':visible'));
-    if (this.$('i.checked').length === 0 || !config.autoSearch) {
+    if (this.$('i.checked').length === 0 || !this.config.get('autoSearch')) {
       return this.triggerChange();
     } else {
       return funcky.setResetTimeout(1000, (function(_this) {
