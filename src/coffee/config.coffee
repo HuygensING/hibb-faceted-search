@@ -16,7 +16,7 @@ class Config extends Backbone.Model
     # advanced: text search is shown, facets are shown, loader is shown
     textSearch: 'advanced'
 
-    token: null
+    authorizationHeaderToken: null
 
     queryOptions: {}
     # * resultRows

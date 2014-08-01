@@ -175,7 +175,7 @@
 .faceted-search-placeholder .faceted-search ul li {
   margin: 0;
 }
-.faceted-search-placeholder .faceted-search .facets .loader {
+.faceted-search-placeholder .faceted-search .facets-placeholder .loader {
   display: none;
   text-align: center;
   padding: 30px 0;

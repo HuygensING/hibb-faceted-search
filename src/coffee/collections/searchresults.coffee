@@ -78,6 +78,9 @@ class SearchResults extends Backbone.Collection
     ajaxOptions =
       data: JSON.stringify queryOptions
 
+    if @config.has 'authorizationHeaderToken'
+      ajaxOptions.headers = Authorization: @config.get('authorizationHeaderToken')
+
     # This is used for extra options to the ajax call,
     # such as setting custom headers (e.g., VRE_ID)
     if @config.has 'requestOptions'
@@ -99,7 +102,12 @@ class SearchResults extends Backbone.Collection
   getResults: (url, done) ->
     @trigger 'request'
 
-    req = funcky.get url
+    if @config.has 'authorizationHeaderToken'
+      options =
+        headers:
+          Authorization: @config.get('authorizationHeaderToken')
+
+    req = funcky.get url, options
 
     req.done (res) =>
         done JSON.parse res.responseText

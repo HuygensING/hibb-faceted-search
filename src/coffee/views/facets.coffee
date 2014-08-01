@@ -1,5 +1,8 @@
 Backbone = require 'backbone'
 _ = require 'underscore'
+$ = require 'jquery'
+
+tpl = require '../../jade/facets.jade'
 
 class Facets extends Backbone.View
 
@@ -25,7 +28,8 @@ class Facets extends Backbone.View
 
   # ### Render
   render: ->
-    @el.innerHTML = @config.get('templates').facets() if @config.get('templates').hasOwnProperty 'facets'
+    tpl = @config.get('templates').facets if @config.get('templates').hasOwnProperty 'facets'
+    @el.innerHTML = tpl()
 
     @
 
