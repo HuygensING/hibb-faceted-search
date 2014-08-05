@@ -158,6 +158,8 @@ class MainView extends Backbone.View
     facetsPlaceholder = @el.querySelector('.facets-placeholder')
     facetsPlaceholder.parentNode.replaceChild @facets.el, facetsPlaceholder
 
+    @listenTo @facets, 'change', (queryOptions, options) => @queryOptions.set queryOptions, options
+
   showLoader: ->
     overlay = @el.querySelector('.overlay')
     return false if overlay.style.display is 'block'
