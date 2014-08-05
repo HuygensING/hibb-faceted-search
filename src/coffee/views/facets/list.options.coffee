@@ -46,7 +46,7 @@ class ListFacetOptions extends Backbone.View
 
     i = 0
     model = @collection.at(i)
-    visible = model.get('visible')
+    visible = model?.get('visible') # Sometimes, collections are empty
 
     while visible
       tpl += optionTpl option: model
