@@ -28,7 +28,7 @@
                   input(id="cb_searchin_annotations", type="checkbox", data-attr="searchInAnnotations", checked=model.get('searchInAnnotations'))
                   label(for!="cb_searchin_annotations") Annotations
 
-        if model.has('textLayers')
+        if model.has('textLayers') && model.get('textLayers').length > 1
           .cell-1
             h4 Textlayers:
             ul.textlayers
