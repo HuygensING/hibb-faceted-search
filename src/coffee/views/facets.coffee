@@ -65,7 +65,7 @@ class Facets extends Backbone.View
     if @config.facetTitleMap?[facetData.name]?
       facetData.title = @config.facetTitleMap[facetData.name]
 
-    if @config.startCollapsed
+    if @config.get 'startCollapsed'
       facetData.collapsed = true
 
     View = @viewMap[facetData.type]

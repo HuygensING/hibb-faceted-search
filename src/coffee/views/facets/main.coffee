@@ -23,7 +23,7 @@ class Facet extends Backbone.View
 
     @$el.attr 'data-name', @model.get('name')
 
-    if @model.get('collapsed') and not @renderedBefore
+    if @config.get('startCollapsed') and not @renderedBefore
       @hideBody()
 
     @renderedBefore = true
