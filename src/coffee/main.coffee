@@ -158,8 +158,6 @@ class MainView extends Backbone.View
     facetsPlaceholder = @el.querySelector('.facets-placeholder')
     facetsPlaceholder.parentNode.replaceChild @facets.el, facetsPlaceholder
 
-    @listenTo @facets, 'change', (queryOptions, options) => @queryOptions.set queryOptions, options
-
   showLoader: ->
     overlay = @el.querySelector('.overlay')
     return false if overlay.style.display is 'block'
@@ -214,8 +212,8 @@ class MainView extends Backbone.View
 
   # Silently change @attributes and trigger a change event manually afterwards.
   # arguments.cache Boolean Tells searchResults if we want to fetch result from cache.
-  # 	In an app where data is dynamic, we usually don't want cache (get new result from server),
-  #	in an app where data is static, we can use cache to speed up the app.
+  # In an app where data is dynamic, we usually don't want cache (get new result from server),
+  # in an app where data is static, we can use cache to speed up the app.
   reset: (cache=false) ->
     @textSearch.reset() if @textSearch?
 

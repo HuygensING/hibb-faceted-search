@@ -78,7 +78,6 @@ class ListFacetOptions extends Backbone.View
   # ### Events
   events: ->
     'click li': 'checkChanged'
-    # 'click label': 'checkChanged'
     'scroll': 'onScroll'
 
   # When scolling lazy render the rest of the options. This speeds up page load.
@@ -92,28 +91,19 @@ class ListFacetOptions extends Backbone.View
         @appendOptions()
 
   checkChanged: (ev) ->
-    # $target = if ev.currentTarget.tagName is 'LABEL' then @$ 'i[data-value="'+ev.currentTarget.getAttribute('data-value')+'"]' else $ ev.currentTarget
     $target = $ ev.currentTarget
     id = $target.attr 'data-value'
 
-    checked = $target.find("i.checked")
-    unchecked = $target.find("i.unchecked")
+    isChecked = $target.attr('data-state') is 'checked'
+    $target.attr 'data-state', if isChecked then 'unchecked' else 'checked'
+    isChecked = $target.attr('data-state') is 'checked'
 
-    # Don't use $.toggle, because it will toggle the <i> set to display:none
-    # to display: inline, instead of inline-block.
-    if checked.is(':visible')
-      checked.hide()
-      unchecked.css 'display', 'inline-block'
-    else
-      checked.css 'display', 'inline-block'
-      unchecked.hide()
+    @collection.get(id).set 'checked', isChecked
 
-    @collection.get(id).set 'checked', $target.find("i.checked").is(':visible')
-
-    # If there are no checked options or autoSearch is off (false), than triggerChange,
+    # If there are no checked options or autoSearch is off (false), then triggerChange,
     # otherwise (autoSearch is true and there are options checked), set a 1s timeout to
     # give the user time to check another option before autoSearch kicks in.
-    if @$('i.checked').length is 0 or not @config.get('autoSearch')
+    if ($target.attr('data-state') is 'unchecked') or not @config.get('autoSearch')
       @triggerChange()
     else
       funcky.setResetTimeout 1000, => @triggerChange()

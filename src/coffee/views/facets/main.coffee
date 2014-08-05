@@ -5,8 +5,8 @@ _ = require 'underscore'
 tpl = require '../../../jade/facets/main.jade'
 
 class Facet extends Backbone.View
-	renderedBefore: false
-	# ### Initialize
+  renderedBefore: false
+  # ### Initialize
 
   # ### Initialize
   initialize: (options) ->
@@ -24,7 +24,7 @@ class Facet extends Backbone.View
     @$el.attr 'data-name', @model.get('name')
 
     if @model.get('collapsed') and not @renderedBefore
-	  @hideBody()
+      @hideBody()
 
     @renderedBefore = true
 
@@ -52,7 +52,7 @@ class Facet extends Backbone.View
     @hideMenu()
 
     @$('.body').one 'transitionend', ->
-    done() if done?
+      done() if done?
 
     @$el.addClass 'collapsed'
 
@@ -62,7 +62,7 @@ class Facet extends Backbone.View
       done() if done?
 
   destroy: -> @remove()
-	
+  
   # NOOP: Override in child
   update: (newOptions) -> # console.log newOptions
   reset: ->
