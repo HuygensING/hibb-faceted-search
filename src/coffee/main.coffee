@@ -65,7 +65,7 @@ class MainView extends Backbone.View
   renderTextSearch: ->
     @textSearch = new Views.TextSearch config: @config
     textSearchPlaceholder = @el.querySelector('.text-search-placeholder')
-    textSearchPlaceholder.parentNode.replaceChild @textSearch.el, textSearchPlaceholder
+    textSearchPlaceholder?.parentNode.replaceChild @textSearch.el, textSearchPlaceholder
 
     @listenTo @textSearch, 'change', (queryOptions) =>
       @queryOptions.set queryOptions, silent: true
