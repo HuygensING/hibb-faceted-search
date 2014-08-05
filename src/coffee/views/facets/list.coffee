@@ -97,6 +97,11 @@ class ListFacet extends Views.Facet
   # We use the class opposite instead of ascending/descending, because the options are ascending and
   # and the count is descending. With opposite we can use a generic name.
   changeOrder: (ev) ->
+    # When changing the order, all the items must be active (set to visible).
+    # Unless the filter menu is active, than we only change the order of the
+    # filtered items.
+    @optionsView.renderAll() unless @$('i.filter').hasClass 'active'
+
     $target = $(ev.currentTarget)
 
     if $target.hasClass 'active'
@@ -107,7 +112,10 @@ class ListFacet extends Views.Facet
         $target.toggleClass 'fa-sort-amount-desc'
         $target.toggleClass 'fa-sort-amount-asc'
     else
-      @$('.active').removeClass 'active'
+      # Use amount and alpha in selectors, because otherwise an active
+      # filter would also be removed
+      @$('i.amount.active').removeClass 'active'
+      @$('i.alpha.active').removeClass 'active'
       $target.addClass 'active'
 
     type = if $target.hasClass 'alpha' then 'alpha' else 'amount'
