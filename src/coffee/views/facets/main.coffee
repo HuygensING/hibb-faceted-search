@@ -8,11 +8,11 @@ class Facet extends Backbone.View
 	renderedBefore: false
 
 	# ### Initialize
- 	initialize: (options) ->
- 	   @config = options.config
+	initialize: (options) ->
+	   @config = options.config
 
-		# Override the facet title if the user has given an alternative title in the config.
-		options.attrs.title = @config.get('facetTitleMap')[options.attrs.name] if @config.get('facetTitleMap').hasOwnProperty options.attrs.name
+	# Override the facet title if the user has given an alternative title in the config.
+	options.attrs.title = @config.get('facetTitleMap')[options.attrs.name] if @config.get('facetTitleMap').hasOwnProperty options.attrs.name
 
 	# ### Render
 	render: ->
@@ -23,6 +23,7 @@ class Facet extends Backbone.View
 			@hideBody()
 
 		@renderedBefore = true
+		@$el.attr 'data-name', @model.get('name')
 
 		@
 
