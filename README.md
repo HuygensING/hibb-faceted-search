@@ -3,6 +3,12 @@ Backbone based library
 
 ### Changelog
 
+#### v2.0.8
+- Don't remove active class from filter when toggling sorting.
+- Add authorizationHeaderToken to config.
+- If only one text layer is present don't show it as an option in the full text.
+- Change reset logic in list facet, would not update correct.
+
 #### v2.0.7
 - Range facet labels (years) are now editable.
 - Main and facets templates are now seperate templates (used to be one)

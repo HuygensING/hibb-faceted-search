@@ -12153,7 +12153,99 @@ module.exports=require('lkcZM4');
 
 },{}]},{},["D1nrrK","j6c3vP","lkcZM4"])
 !function(e){if("object"==typeof exports)module.exports=e();else if("function"==typeof define&&define.amd)define(e);else{var f;"undefined"!=typeof window?f=window:"undefined"!=typeof global?f=global:"undefined"!=typeof self&&(f=self),f.FacetedSearch=e()}}(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);throw new Error("Cannot find module '"+o+"'")}var f=n[o]={exports:{}};t[o][0].call(f.exports,function(e){var n=t[o][1][e];return s(n?n:e)},f,f.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(_dereq_,module,exports){
-(function(){module.exports=function(t){return{closest:function(e){var n;for(n=t.matches||t.webkitMatchesSelector||t.mozMatchesSelector||t.msMatchesSelector;t;){if(n.bind(t)(e))return t;t=t.parentNode}},position:function(e){var n,r,o;for(null==e&&(e=document.body),n=0,o=0,r=t;null!=r&&r!==e&&!this.hasDescendant(e);)n+=r.offsetLeft,o+=r.offsetTop,r=r.offsetParent;return{left:n,top:o}},boundingBox:function(){var e;return e=this.position(),e.width=t.clientWidth,e.height=t.clientHeight,e.right=e.left+e.width,e.bottom=e.top+e.height,e},hasDescendant:function(e){var n;for(n=e.parentNode;null!=n;){if(n===t)return!0;n=n.parentNode}return!1},insertAfter:function(e){return e.parentNode.insertBefore(t,e.nextSibling)},hasScrollBar:function(t){return t.scrollHeight>t.clientHeight||t.scrollWidth>t.clientWidth},hasScrollBarX:function(t){return t.scrollWidth>t.clientWidth},hasScrollBarY:function(t){return t.scrollHeight>t.clientHeight}}}}).call(this);
+(function() {
+  module.exports = {
+    el: function(el) {
+      return {
+        closest: function(selector) {
+          var matchesSelector;
+          matchesSelector = el.matches || el.webkitMatchesSelector || el.mozMatchesSelector || el.msMatchesSelector;
+          while (el) {
+            if (matchesSelector.bind(el)(selector)) {
+              return el;
+            } else {
+              el = el.parentNode;
+            }
+          }
+        },
+
+        /*
+        		Native alternative to jQuery's $.offset()
+        
+        		http://www.quirksmode.org/js/findpos.html
+         */
+        position: function(parent) {
+          var left, loopEl, top;
+          if (parent == null) {
+            parent = document.body;
+          }
+          left = 0;
+          top = 0;
+          loopEl = el;
+          while ((loopEl != null) && loopEl !== parent) {
+            if (this.hasDescendant(parent)) {
+              break;
+            }
+            left += loopEl.offsetLeft;
+            top += loopEl.offsetTop;
+            loopEl = loopEl.offsetParent;
+          }
+          return {
+            left: left,
+            top: top
+          };
+        },
+        boundingBox: function() {
+          var box;
+          box = this.position();
+          box.width = el.clientWidth;
+          box.height = el.clientHeight;
+          box.right = box.left + box.width;
+          box.bottom = box.top + box.height;
+          return box;
+        },
+
+        /*
+        		Is child el a descendant of parent el?
+        
+        		http://stackoverflow.com/questions/2234979/how-to-check-in-javascript-if-one-element-is-a-child-of-another
+         */
+        hasDescendant: function(child) {
+          var node;
+          node = child.parentNode;
+          while (node != null) {
+            if (node === el) {
+              return true;
+            }
+            node = node.parentNode;
+          }
+          return false;
+        },
+        insertAfter: function(referenceElement) {
+          return referenceElement.parentNode.insertBefore(el, referenceElement.nextSibling);
+        },
+        hasScrollBar: function(el) {
+          return hasScrollBarX(el) || hasScrollBarY(el);
+        },
+        hasScrollBarX: function(el) {
+          return el.scrollWidth > el.clientWidth;
+        },
+        hasScrollBarY: function(el) {
+          return el.scrollHeight > el.clientHeight;
+        },
+        inViewport: function(parent) {
+          var doc, rect, win;
+          win = parent != null ? parent : window;
+          doc = parent != null ? parent : document.documentElement;
+          rect = el.getBoundingClientRect();
+          return rect.top >= 0 && rect.left >= 0 && rect.bottom <= (win.innerHeight || doc.clientHeight) && rect.right <= (win.innerWidth || doc.clientWidth);
+        }
+      };
+    }
+  };
+
+}).call(this);
+
 },{}],2:[function(_dereq_,module,exports){
 (function(){var e={}.hasOwnProperty;module.exports={get:function(e,l){return null==l&&(l={}),this._sendRequest("GET",e,l)},post:function(e,l){return null==l&&(l={}),this._sendRequest("POST",e,l)},put:function(e,l){return null==l&&(l={}),this._sendRequest("PUT",e,l)},_promise:function(){return{done:function(e){return this.callDone=e},callDone:null,fail:function(e){return this.callFail=e},callFail:null,always:function(e){return this.callAlways=e},callAlways:null}},_sendRequest:function(l,n,t){var a,u,s,r,i;null==t&&(t={}),u=this._promise(),null==t.data&&(t.data={}),null==t.headers&&(t.headers={}),r=new XMLHttpRequest,r.onreadystatechange=function(){var e;if(r.readyState===XMLHttpRequest.DONE)if(null!=u.callAlways&&u.callAlways(r),200<=(e=r.status)&&206>=e){if(null!=u.callDone)return u.callDone(r)}else if(null!=u.callFail)return u.callFail(r)},r.open(l,n,!0),r.setRequestHeader("Content-type","application/json"),i=t.headers;for(a in i)e.call(i,a)&&(s=i[a],r.setRequestHeader(a,s));return r.send(t.data),u}}}).call(this);
 },{}],3:[function(_dereq_,module,exports){
@@ -12463,9 +12555,14 @@ ListOptions = (function(_super) {
     }
   };
 
-  ListOptions.prototype.orderBy = function(strategy) {
+  ListOptions.prototype.orderBy = function(strategy, silent) {
+    if (silent == null) {
+      silent = false;
+    }
     this.comparator = this.strategies[strategy];
-    return this.sort();
+    return this.sort({
+      silent: silent
+    });
   };
 
   ListOptions.prototype.setAllVisible = function() {
@@ -12590,6 +12687,11 @@ SearchResults = (function(_super) {
     ajaxOptions = {
       data: JSON.stringify(queryOptions)
     };
+    if (this.config.has('authorizationHeaderToken')) {
+      ajaxOptions.headers = {
+        Authorization: this.config.get('authorizationHeaderToken')
+      };
+    }
     if (this.config.has('requestOptions')) {
       _.extend(ajaxOptions, this.config.get('requestOptions'));
     }
@@ -12617,9 +12719,16 @@ SearchResults = (function(_super) {
   };
 
   SearchResults.prototype.getResults = function(url, done) {
-    var req;
+    var options, req;
     this.trigger('request');
-    req = funcky.get(url);
+    if (this.config.has('authorizationHeaderToken')) {
+      options = {
+        headers: {
+          Authorization: this.config.get('authorizationHeaderToken')
+        }
+      };
+    }
+    req = funcky.get(url, options);
     req.done((function(_this) {
       return function(res) {
         done(JSON.parse(res.responseText));
@@ -12665,7 +12774,7 @@ Config = (function(_super) {
       baseUrl: '',
       searchPath: '',
       textSearch: 'advanced',
-      token: null,
+      authorizationHeaderToken: null,
       queryOptions: {},
       facetTitleMap: {},
       templates: {},
@@ -12693,7 +12802,7 @@ Backbone.$ = $;
 
 _ = _dereq_('underscore');
 
-funcky = _dereq_('funcky.el');
+funcky = _dereq_('funcky.el').el;
 
 Config = _dereq_('./config');
 
@@ -12904,24 +13013,30 @@ MainView = (function(_super) {
   };
 
   MainView.prototype.showLoader = function() {
-    var facetedSearch, fsBox, left, loader, overlay, top;
+    var calc, overlay;
     overlay = this.el.querySelector('.overlay');
     if (overlay.style.display === 'block') {
       return false;
     }
-    loader = overlay.children[0];
-    facetedSearch = this.el.querySelector('.faceted-search');
-    fsBox = funcky(facetedSearch).boundingBox();
-    overlay.style.width = fsBox.width + 'px';
-    overlay.style.height = fsBox.height + 'px';
-    overlay.style.display = 'block';
-    left = fsBox.left + fsBox.width / 2 - 12;
-    loader.style.left = left + 'px';
-    top = fsBox.top + fsBox.height / 2 - 12;
-    if (fsBox.height > window.innerHeight) {
-      top = '50vh';
-    }
-    return loader.style.top = top + 'px';
+    calc = (function(_this) {
+      return function() {
+        var facetedSearch, fsBox, left, loader, top;
+        facetedSearch = _this.el.querySelector('.faceted-search');
+        fsBox = funcky(facetedSearch).boundingBox();
+        left = (fsBox.left + fsBox.width / 2 - 12) + 'px';
+        top = (fsBox.top + fsBox.height / 2 - 12) + 'px';
+        if (fsBox.height > window.innerHeight) {
+          top = '50vh';
+        }
+        loader = overlay.children[0];
+        loader.style.left = left;
+        loader.style.top = top;
+        overlay.style.width = fsBox.width + 'px';
+        overlay.style.height = fsBox.height + 'px';
+        return overlay.style.display = 'block';
+      };
+    })(this);
+    return setTimeout(calc, 0);
   };
 
   MainView.prototype.hideLoader = function() {
@@ -13349,7 +13464,7 @@ module.exports = SearchResult;
 
 
 },{"../config":7}],18:[function(_dereq_,module,exports){
-var Backbone, Facets, _,
+var $, Backbone, Facets, _,
   __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
   __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
@@ -13357,6 +13472,8 @@ var Backbone, Facets, _,
 Backbone = _dereq_('backbone');
 
 _ = _dereq_('underscore');
+
+$ = _dereq_('jquery');
 
 Facets = (function(_super) {
   __extends(Facets, _super);
@@ -13383,8 +13500,10 @@ Facets = (function(_super) {
   };
 
   Facets.prototype.render = function() {
+    var tpl;
     if (this.config.get('templates').hasOwnProperty('facets')) {
-      this.el.innerHTML = this.config.get('templates').facets();
+      tpl = this.config.get('templates').facets;
+      this.el.innerHTML = tpl();
     }
     return this;
   };
@@ -13720,6 +13839,7 @@ ListFacet = (function(_super) {
 
   ListFacet.prototype.initialize = function(options) {
     ListFacet.__super__.initialize.apply(this, arguments);
+    this.resetActive = false;
     this.config = options.config;
     this.model = new Models.List(options.attrs, {
       parse: true
@@ -13816,6 +13936,9 @@ ListFacet = (function(_super) {
 
   ListFacet.prototype.changeOrder = function(ev) {
     var $target, order, type;
+    if (!this.$('i.filter').hasClass('active')) {
+      this.optionsView.renderAll();
+    }
     $target = $(ev.currentTarget);
     if ($target.hasClass('active')) {
       if ($target.hasClass('alpha')) {
@@ -13826,7 +13949,8 @@ ListFacet = (function(_super) {
         $target.toggleClass('fa-sort-amount-asc');
       }
     } else {
-      this.$('.active').removeClass('active');
+      this.$('i.amount.active').removeClass('active');
+      this.$('i.alpha.active').removeClass('active');
       $target.addClass('active');
     }
     type = $target.hasClass('alpha') ? 'alpha' : 'amount';
@@ -13835,11 +13959,22 @@ ListFacet = (function(_super) {
   };
 
   ListFacet.prototype.update = function(newOptions) {
-    return this.collection.updateOptions(newOptions);
+    console.log('update', this.resetActive);
+    if (this.resetActive) {
+      this.collection.reset(newOptions, {
+        parse: true
+      });
+      return this.resetActive = false;
+    } else {
+      return this.collection.updateOptions(newOptions);
+    }
   };
 
   ListFacet.prototype.reset = function() {
-    return this.collection.revert();
+    this.resetActive = true;
+    if (this.$('i.filter').hasClass('active')) {
+      return this.toggleFilterMenu();
+    }
   };
 
   return ListFacet;
@@ -13884,11 +14019,15 @@ ListFacetOptions = (function(_super) {
   ListFacetOptions.prototype.initialize = function(options) {
     this.config = options.config;
     this.facetName = options.facetName;
-    this.showingCursor = 0;
-    this.showingIncrement = 50;
     this.listenTo(this.collection, 'sort', (function(_this) {
       return function() {
         return _this.rerender();
+      };
+    })(this));
+    this.listenTo(this.collection, 'reset', (function(_this) {
+      return function() {
+        _this.collection.orderBy('amount_desc', true);
+        return _this.render();
       };
     })(this));
     if (this.config.get('templates').hasOwnProperty('list.option')) {
@@ -13898,6 +14037,8 @@ ListFacetOptions = (function(_super) {
   };
 
   ListFacetOptions.prototype.render = function() {
+    this.showingCursor = 0;
+    this.showingIncrement = 50;
     if (this.config.get('templates').hasOwnProperty('list.body')) {
       bodyTpl = this.config.get('templates')['list.body'];
     }
@@ -13922,7 +14063,7 @@ ListFacetOptions = (function(_super) {
       model = this.collection.at(i);
       visible = (model != null) && model.get('visible') ? true : false;
     }
-    return this.$('ul').html(tpl);
+    return this.el.querySelector('ul').innerHTML = tpl;
   };
 
   ListFacetOptions.prototype.appendOptions = function(all) {
@@ -13982,7 +14123,7 @@ ListFacetOptions = (function(_super) {
       unchecked.hide();
     }
     this.collection.get(id).set('checked', $target.find("i.checked").is(':visible'));
-    if (this.$('i.checked').length === 0 || !config.autoSearch) {
+    if (this.$('i.checked').length === 0 || !this.config.get('autoSearch')) {
       return this.triggerChange();
     } else {
       return funcky.setResetTimeout(1000, (function(_this) {
@@ -14013,7 +14154,7 @@ ListFacetOptions = (function(_super) {
 
 
   /*
-  Called by parent (ListFacet) when user types in the search input
+  	Called by parent (ListFacet) when user types in the search input
    */
 
   ListFacetOptions.prototype.filterOptions = function(value) {
@@ -14369,7 +14510,7 @@ RangeFacet = (function(_super) {
   };
 
   RangeFacet.prototype.stopDragging = function() {
-    if (this.draggingMin || this.draggingMax) {
+    if (this.draggingMin || this.draggingMax || (this.draggingBar != null)) {
       if (this.draggingMin) {
         if (this.model.get('currentMin') !== +this.inputMin.val()) {
           this.model.set({
@@ -14390,15 +14531,12 @@ RangeFacet = (function(_super) {
       }
       this.draggingMin = false;
       this.draggingMax = false;
+      this.draggingBar = null;
       if (!this.config.get('autoSearch')) {
-        console.log('triggering');
-        this.triggerChange({
+        return this.triggerChange({
           silent: true
         });
       }
-    }
-    if (this.draggingBar != null) {
-      return this.draggingBar = null;
     }
   };
 
@@ -14760,8 +14898,8 @@ module.exports = function template(locals) {
 var buf = [];
 var jade_mixins = {};
 var jade_interp;
-;var locals_for_with = (locals || {});(function (name, title) {
-buf.push("<div class=\"placeholder\"><header><h3" + (jade.attr("data-name", name, true, false)) + ">" + (jade.escape(null == (jade_interp = title) ? "" : jade_interp)) + "</h3><div class=\"menu\"><i title=\"Filter options\" class=\"filter fa fa-filter\"></i><i title=\"Sort alphabetically\" class=\"alpha fa fa-sort-alpha-asc\"></i><i title=\"Sort numerically\" class=\"amount active fa fa-sort-amount-desc\"></i></div><div class=\"options\"></div></header><div class=\"body\"></div></div>");}("name" in locals_for_with?locals_for_with.name:typeof name!=="undefined"?name:undefined,"title" in locals_for_with?locals_for_with.title:typeof title!=="undefined"?title:undefined));;return buf.join("");
+;var locals_for_with = (locals || {});(function (title) {
+buf.push("<div class=\"placeholder\"><header><h3>" + (jade.escape(null == (jade_interp = title) ? "" : jade_interp)) + "</h3><div class=\"menu\"><i title=\"Filter options\" class=\"filter fa fa-filter\"></i><i title=\"Sort alphabetically\" class=\"alpha fa fa-sort-alpha-asc\"></i><i title=\"Sort numerically\" class=\"amount active fa fa-sort-amount-desc\"></i></div><div class=\"options\"></div></header><div class=\"body\"></div></div>");}("title" in locals_for_with?locals_for_with.title:typeof title!=="undefined"?title:undefined));;return buf.join("");
 };
 },{"jade/runtime":4}],32:[function(_dereq_,module,exports){
 var jade = _dereq_("jade/runtime");
@@ -14771,7 +14909,7 @@ var buf = [];
 var jade_mixins = {};
 var jade_interp;
 ;var locals_for_with = (locals || {});(function (options) {
-buf.push("<div class=\"slider\"><span class=\"dash\">-</span><div class=\"handle-min handle\"><input" + (jade.attr("value", options.lowerLimit, true, false)) + " disabled=\"disabled\" class=\"min\"/></div><div class=\"handle-max handle\"><input" + (jade.attr("value", options.upperLimit, true, false)) + " disabled=\"disabled\" class=\"max\"/></div><div class=\"bar\">&nbsp;</div><button>Search?</button><label class=\"single\"></label></div>");}("options" in locals_for_with?locals_for_with.options:typeof options!=="undefined"?options:undefined));;return buf.join("");
+buf.push("<div class=\"slider\"><span class=\"dash\">-</span><div class=\"handle-min handle\"><input" + (jade.attr("value", options.lowerLimit, true, false)) + " disabled=\"disabled\" class=\"min\"/></div><div class=\"handle-max handle\"><input" + (jade.attr("value", options.upperLimit, true, false)) + " disabled=\"disabled\" class=\"max\"/></div><div class=\"bar\">&nbsp;</div><button>Search?</button></div>");}("options" in locals_for_with?locals_for_with.options:typeof options!=="undefined"?options:undefined));;return buf.join("");
 };
 },{"jade/runtime":4}],33:[function(_dereq_,module,exports){
 var jade = _dereq_("jade/runtime");
@@ -14805,7 +14943,7 @@ buf.push("<li class=\"searchin\"><input id=\"cb_searchin_annotations\" type=\"ch
 }
 buf.push("</ul></div>");
 }
-if ( model.has('textLayers'))
+if ( model.has('textLayers') && model.get('textLayers').length > 1)
 {
 buf.push("<div class=\"cell-1\"><h4>Textlayers:</h4><ul class=\"textlayers\">");
 // iterate model.get('textLayers')
