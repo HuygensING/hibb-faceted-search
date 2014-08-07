@@ -2,129 +2,142 @@ $ = require 'jquery'
 _ = require 'underscore'
 
 Models =
-  List: require '../../models/facets/list'
+	List: require '../../models/facets/list'
 
 Collections =
-  Options: require '../../collections/list.options'
+	Options: require '../../collections/list.options'
 
 Views =
-  Facet: require './main'
-  Options: require './list.options'
+	Facet: require './main'
+	Options: require './list.options'
 
 menuTpl = require '../../../jade/facets/list.menu.jade'
 
 class ListFacet extends Views.Facet
 
-  className: 'facet list'
+	className: 'facet list'
 
-  initialize: (options) ->
-    super
+	initialize: (options) ->
+		super
 
-    @config = options.config
+		@resetActive = false
 
-    @model = new Models.List options.attrs, parse: true
-    @collection = new Collections.Options options.attrs.options, parse: true
+		@config = options.config
 
-    @render()
+		@model = new Models.List options.attrs, parse: true
+		@collection = new Collections.Options options.attrs.options, parse: true
 
-  # ### Render
-  render: ->
-    super
+		@render()
 
-    if @$('header .options').length > 0
-      menuTpl = @config.get('templates')['list.menu'] if @config.get('templates').hasOwnProperty 'list.menu'
-      menu = menuTpl model: @model.attributes
-      @$('header .options').html menu
-    @optionsView = new Views.Options
-      collection: @collection
-      facetName: @model.get 'name'
-      config: @config
+	# ### Render
+	render: ->
+		super
 
-    @$('.body').html @optionsView.el
+		if @$('header .options').length > 0
+			menuTpl = @config.get('templates')['list.menu'] if @config.get('templates').hasOwnProperty 'list.menu'
+			menu = menuTpl model: @model.attributes
+			@$('header .options').html menu
 
-    @listenTo @optionsView, 'filter:finished', @renderFilteredOptionCount
-    # Pass through the change event
-    @listenTo @optionsView, 'change', (data) => @trigger 'change', data
+		@optionsView = new Views.Options
+			collection: @collection
+			facetName: @model.get 'name'
+			config: @config
 
-    @$('header i.openclose').hide() if @collection.length <= 3
+		@$('.body').html @optionsView.el
 
-    @
+		@listenTo @optionsView, 'filter:finished', @renderFilteredOptionCount
+		# Pass through the change event
+		@listenTo @optionsView, 'change', (data) => @trigger 'change', data
 
-  # Renders the count of the filtered options (ie: "3 of 8") next to the filter <input>
-  renderFilteredOptionCount: ->
-    # filteredLength = @optionsView.filtered_items.length
-    # collectionLength = @optionsView.collection.length
-    visibleModels = @collection.filter (model) -> model.get('visible')
-    value = if 0 < visibleModels.length < 21 then 'visible' else 'hidden'
-    @$('input[type="checkbox"][name="all"]').css 'visibility', value
+		@$('header i.openclose').hide() if @collection.length <= 3
 
-    filteredModels = @collection.filter (model) -> model.get('visible')
+		@
 
-    if filteredModels.length is 0 or filteredModels.length is @collection.length
-      @$('header .options input[name="filter"]').addClass 'nonefound'
-      # @$('header small.optioncount').html ''
-    else
-      @$('header .options input[name="filter"]').removeClass 'nonefound'
+	# Renders the count of the filtered options (ie: "3 of 8") next to the filter <input>
+	renderFilteredOptionCount: ->
+		# filteredLength = @optionsView.filtered_items.length
+		# collectionLength = @optionsView.collection.length
+		visibleModels = @collection.filter (model) -> model.get('visible')
+		value = if 0 < visibleModels.length < 21 then 'visible' else 'hidden'
+		@$('input[type="checkbox"][name="all"]').css 'visibility', value
 
-    @$('header small.optioncount').html filteredModels.length + ' of ' + @collection.length
+		filteredModels = @collection.filter (model) -> model.get('visible')
 
-    @
+		if filteredModels.length is 0 or filteredModels.length is @collection.length
+			@$('header .options input[name="filter"]').addClass 'nonefound'
+			# @$('header small.optioncount').html ''
+		else
+			@$('header .options input[name="filter"]').removeClass 'nonefound'
 
-  # ### Events
-  events: -> _.extend {}, super,
-    'keyup input[name="filter"]': (ev) -> @optionsView.filterOptions ev.currentTarget.value
-    'change header .options input[type="checkbox"][name="all"]': (ev) -> @optionsView.setCheckboxes ev
-    'click header .menu i.filter': 'toggleFilterMenu'
-    'click header .menu i.alpha': 'changeOrder'
-    'click header .menu i.amount': 'changeOrder'
+		@$('header small.optioncount').html filteredModels.length + ' of ' + @collection.length
 
-  toggleFilterMenu: ->
-    optionsDiv = @$('header .options')
-    filterIcon = @$('i.filter')
-    filterIcon.toggleClass 'active'
+		@
 
-    optionsDiv.slideToggle 150, =>
-      input = optionsDiv.find('input[name="filter"]')
+	# ### Events
+	events: -> _.extend {}, super,
+		'keyup input[name="filter"]': (ev) -> @optionsView.filterOptions ev.currentTarget.value
+		'change header .options input[type="checkbox"][name="all"]': (ev) -> @optionsView.setCheckboxes ev
+		'click header .menu i.filter': 'toggleFilterMenu'
+		'click header .menu i.alpha': 'changeOrder'
+		'click header .menu i.amount': 'changeOrder'
 
-      if filterIcon.hasClass 'active'
-        input.focus()
-        @optionsView.appendOptions true
-        @renderFilteredOptionCount()
-      else
-        input.val('')
-        @collection.setAllVisible()
+	toggleFilterMenu: ->
+		optionsDiv = @$('header .options')
+		filterIcon = @$('i.filter')
+		filterIcon.toggleClass 'active'
 
-  # We use the class opposite instead of ascending/descending, because the options are ascending and
-  # and the count is descending. With opposite we can use a generic name.
-  changeOrder: (ev) ->
-    # When changing the order, all the items must be active (set to visible).
-    # Unless the filter menu is active, than we only change the order of the
-    # filtered items.
-    @optionsView.renderAll() unless @$('i.filter').hasClass 'active'
+		optionsDiv.slideToggle 150, =>
+			input = optionsDiv.find('input[name="filter"]')
 
-    $target = $(ev.currentTarget)
+			if filterIcon.hasClass 'active'
+				input.focus()
+				@optionsView.appendOptions true
+				@renderFilteredOptionCount()
+			else
+				input.val('')
+				@collection.setAllVisible()
 
-    if $target.hasClass 'active'
-      if $target.hasClass 'alpha'
-        $target.toggleClass 'fa-sort-alpha-desc'
-        $target.toggleClass 'fa-sort-alpha-asc'
-      else if $target.hasClass 'amount'
-        $target.toggleClass 'fa-sort-amount-desc'
-        $target.toggleClass 'fa-sort-amount-asc'
-    else
-      # Use amount and alpha in selectors, because otherwise an active
-      # filter would also be removed
-      @$('i.amount.active').removeClass 'active'
-      @$('i.alpha.active').removeClass 'active'
-      $target.addClass 'active'
+	# We use the class opposite instead of ascending/descending, because the options are ascending and
+	# and the count is descending. With opposite we can use a generic name.
+	changeOrder: (ev) ->
+		# When changing the order, all the items must be active (set to visible).
+		# Unless the filter menu is active, than we only change the order of the
+		# filtered items.
+		@optionsView.renderAll() unless @$('i.filter').hasClass 'active'
 
-    type = if $target.hasClass 'alpha' then 'alpha' else 'amount'
-    order = if $target.hasClass 'fa-sort-'+type+'-desc' then 'desc' else 'asc'
+		$target = $(ev.currentTarget)
 
-    @collection.orderBy type+'_'+order
+		if $target.hasClass 'active'
+			if $target.hasClass 'alpha'
+				$target.toggleClass 'fa-sort-alpha-desc'
+				$target.toggleClass 'fa-sort-alpha-asc'
+			else if $target.hasClass 'amount'
+				$target.toggleClass 'fa-sort-amount-desc'
+				$target.toggleClass 'fa-sort-amount-asc'
+		else
+			# Use amount and alpha in selectors, because otherwise an active
+			# filter would also be removed
+			@$('i.amount.active').removeClass 'active'
+			@$('i.alpha.active').removeClass 'active'
+			$target.addClass 'active'
 
-  update: (newOptions) -> @collection.updateOptions(newOptions)
+		type = if $target.hasClass 'alpha' then 'alpha' else 'amount'
+		order = if $target.hasClass 'fa-sort-'+type+'-desc' then 'desc' else 'asc'
 
-  reset: -> @collection.revert()
+		@collection.orderBy type+'_'+order
+
+	update: (newOptions) ->
+		console.log 'update', @resetActive
+		if @resetActive
+			@collection.reset newOptions, parse: true
+			@resetActive = false
+		else
+			@collection.updateOptions(newOptions)
+
+	reset: ->
+		@resetActive = true
+
+
+		@toggleFilterMenu() if @$('i.filter').hasClass 'active'
 
 module.exports = ListFacet

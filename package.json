@@ -31,7 +31,7 @@
     "coffeeify": "^0.6.0",
     "connect-modrewrite": "^0.7.6",
     "funcky.arr": "git+https://github.com/Gijsjan/funcky.arr.git",
-    "funcky.el": "git+https://github.com/Gijsjan/funcky.el.git",
+    "funcky.el": "git+https://github.com/Gijsjan/funcky.el.git#v0.1.0",
     "funcky.req": "git+https://github.com/Gijsjan/funcky.req.git",
     "funcky.util": "git+https://github.com/Gijsjan/funcky.util.git",
     "gulp": "~3.5.2",

@@ -1,5 +1,97 @@
 !function(e){if("object"==typeof exports&&"undefined"!=typeof module)module.exports=e();else if("function"==typeof define&&define.amd)define([],e);else{var f;"undefined"!=typeof window?f=window:"undefined"!=typeof global?f=global:"undefined"!=typeof self&&(f=self),f.FacetedSearch=e()}}(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);throw new Error("Cannot find module '"+o+"'")}var f=n[o]={exports:{}};t[o][0].call(f.exports,function(e){var n=t[o][1][e];return s(n?n:e)},f,f.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(_dereq_,module,exports){
-(function(){module.exports=function(t){return{closest:function(e){var n;for(n=t.matches||t.webkitMatchesSelector||t.mozMatchesSelector||t.msMatchesSelector;t;){if(n.bind(t)(e))return t;t=t.parentNode}},position:function(e){var n,r,o;for(null==e&&(e=document.body),n=0,o=0,r=t;null!=r&&r!==e&&!this.hasDescendant(e);)n+=r.offsetLeft,o+=r.offsetTop,r=r.offsetParent;return{left:n,top:o}},boundingBox:function(){var e;return e=this.position(),e.width=t.clientWidth,e.height=t.clientHeight,e.right=e.left+e.width,e.bottom=e.top+e.height,e},hasDescendant:function(e){var n;for(n=e.parentNode;null!=n;){if(n===t)return!0;n=n.parentNode}return!1},insertAfter:function(e){return e.parentNode.insertBefore(t,e.nextSibling)},hasScrollBar:function(t){return t.scrollHeight>t.clientHeight||t.scrollWidth>t.clientWidth},hasScrollBarX:function(t){return t.scrollWidth>t.clientWidth},hasScrollBarY:function(t){return t.scrollHeight>t.clientHeight}}}}).call(this);
+(function() {
+  module.exports = {
+    el: function(el) {
+      return {
+        closest: function(selector) {
+          var matchesSelector;
+          matchesSelector = el.matches || el.webkitMatchesSelector || el.mozMatchesSelector || el.msMatchesSelector;
+          while (el) {
+            if (matchesSelector.bind(el)(selector)) {
+              return el;
+            } else {
+              el = el.parentNode;
+            }
+          }
+        },
+
+        /*
+        		Native alternative to jQuery's $.offset()
+        
+        		http://www.quirksmode.org/js/findpos.html
+         */
+        position: function(parent) {
+          var left, loopEl, top;
+          if (parent == null) {
+            parent = document.body;
+          }
+          left = 0;
+          top = 0;
+          loopEl = el;
+          while ((loopEl != null) && loopEl !== parent) {
+            if (this.hasDescendant(parent)) {
+              break;
+            }
+            left += loopEl.offsetLeft;
+            top += loopEl.offsetTop;
+            loopEl = loopEl.offsetParent;
+          }
+          return {
+            left: left,
+            top: top
+          };
+        },
+        boundingBox: function() {
+          var box;
+          box = this.position();
+          box.width = el.clientWidth;
+          box.height = el.clientHeight;
+          box.right = box.left + box.width;
+          box.bottom = box.top + box.height;
+          return box;
+        },
+
+        /*
+        		Is child el a descendant of parent el?
+        
+        		http://stackoverflow.com/questions/2234979/how-to-check-in-javascript-if-one-element-is-a-child-of-another
+         */
+        hasDescendant: function(child) {
+          var node;
+          node = child.parentNode;
+          while (node != null) {
+            if (node === el) {
+              return true;
+            }
+            node = node.parentNode;
+          }
+          return false;
+        },
+        insertAfter: function(referenceElement) {
+          return referenceElement.parentNode.insertBefore(el, referenceElement.nextSibling);
+        },
+        hasScrollBar: function(el) {
+          return hasScrollBarX(el) || hasScrollBarY(el);
+        },
+        hasScrollBarX: function(el) {
+          return el.scrollWidth > el.clientWidth;
+        },
+        hasScrollBarY: function(el) {
+          return el.scrollHeight > el.clientHeight;
+        },
+        inViewport: function(parent) {
+          var doc, rect, win;
+          win = parent != null ? parent : window;
+          doc = parent != null ? parent : document.documentElement;
+          rect = el.getBoundingClientRect();
+          return rect.top >= 0 && rect.left >= 0 && rect.bottom <= (win.innerHeight || doc.clientHeight) && rect.right <= (win.innerWidth || doc.clientWidth);
+        }
+      };
+    }
+  };
+
+}).call(this);
+
 },{}],2:[function(_dereq_,module,exports){
 (function(){var e={}.hasOwnProperty;module.exports={get:function(e,l){return null==l&&(l={}),this._sendRequest("GET",e,l)},post:function(e,l){return null==l&&(l={}),this._sendRequest("POST",e,l)},put:function(e,l){return null==l&&(l={}),this._sendRequest("PUT",e,l)},_promise:function(){return{done:function(e){return this.callDone=e},callDone:null,fail:function(e){return this.callFail=e},callFail:null,always:function(e){return this.callAlways=e},callAlways:null}},_sendRequest:function(l,n,t){var a,u,s,r,i;null==t&&(t={}),u=this._promise(),null==t.data&&(t.data={}),null==t.headers&&(t.headers={}),r=new XMLHttpRequest,r.onreadystatechange=function(){var e;if(r.readyState===XMLHttpRequest.DONE)if(null!=u.callAlways&&u.callAlways(r),200<=(e=r.status)&&206>=e){if(null!=u.callDone)return u.callDone(r)}else if(null!=u.callFail)return u.callFail(r)},r.open(l,n,!0),r.setRequestHeader("Content-type","application/json"),i=t.headers;for(a in i)e.call(i,a)&&(s=i[a],r.setRequestHeader(a,s));return r.send(t.data),u}}}).call(this);
 },{}],3:[function(_dereq_,module,exports){
@@ -309,9 +401,14 @@ ListOptions = (function(_super) {
     }
   };
 
-  ListOptions.prototype.orderBy = function(strategy) {
+  ListOptions.prototype.orderBy = function(strategy, silent) {
+    if (silent == null) {
+      silent = false;
+    }
     this.comparator = this.strategies[strategy];
-    return this.sort();
+    return this.sort({
+      silent: silent
+    });
   };
 
   ListOptions.prototype.setAllVisible = function() {
@@ -551,7 +648,7 @@ Backbone.$ = $;
 
 _ = _dereq_('underscore');
 
-funcky = _dereq_('funcky.el');
+funcky = _dereq_('funcky.el').el;
 
 Config = _dereq_('./config');
 
@@ -762,24 +859,30 @@ MainView = (function(_super) {
   };
 
   MainView.prototype.showLoader = function() {
-    var facetedSearch, fsBox, left, loader, overlay, top;
+    var calc, overlay;
     overlay = this.el.querySelector('.overlay');
     if (overlay.style.display === 'block') {
       return false;
     }
-    loader = overlay.children[0];
-    facetedSearch = this.el.querySelector('.faceted-search');
-    fsBox = funcky(facetedSearch).boundingBox();
-    overlay.style.width = fsBox.width + 'px';
-    overlay.style.height = fsBox.height + 'px';
-    overlay.style.display = 'block';
-    left = fsBox.left + fsBox.width / 2 - 12;
-    loader.style.left = left + 'px';
-    top = fsBox.top + fsBox.height / 2 - 12;
-    if (fsBox.height > window.innerHeight) {
-      top = '50vh';
-    }
-    return loader.style.top = top + 'px';
+    calc = (function(_this) {
+      return function() {
+        var facetedSearch, fsBox, left, loader, top;
+        facetedSearch = _this.el.querySelector('.faceted-search');
+        fsBox = funcky(facetedSearch).boundingBox();
+        left = (fsBox.left + fsBox.width / 2 - 12) + 'px';
+        top = (fsBox.top + fsBox.height / 2 - 12) + 'px';
+        if (fsBox.height > window.innerHeight) {
+          top = '50vh';
+        }
+        loader = overlay.children[0];
+        loader.style.left = left;
+        loader.style.top = top;
+        overlay.style.width = fsBox.width + 'px';
+        overlay.style.height = fsBox.height + 'px';
+        return overlay.style.display = 'block';
+      };
+    })(this);
+    return setTimeout(calc, 0);
   };
 
   MainView.prototype.hideLoader = function() {
@@ -850,7 +953,7 @@ MainView = (function(_super) {
 module.exports = MainView;
 
 
-},{"../jade/main.jade":34,"./collections/searchresults":6,"./config":7,"./models/query-options":15,"./views/facets":18,"./views/text-search":25,"funcky.el":1}],9:[function(_dereq_,module,exports){
+},{"../jade/main.jade":33,"./collections/searchresults":6,"./config":7,"./models/query-options":15,"./views/facets":18,"./views/text-search":25,"funcky.el":1}],9:[function(_dereq_,module,exports){
 var BooleanFacet, Models,
   __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
@@ -1207,7 +1310,7 @@ module.exports = SearchResult;
 
 
 },{"../config":7}],18:[function(_dereq_,module,exports){
-var $, Backbone, Facets, tpl, _,
+var $, Backbone, Facets, _,
   __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
   __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
@@ -1217,8 +1320,6 @@ Backbone = _dereq_('backbone');
 _ = _dereq_('underscore');
 
 $ = _dereq_('jquery');
-
-tpl = _dereq_('../../jade/facets.jade');
 
 Facets = (function(_super) {
   __extends(Facets, _super);
@@ -1245,10 +1346,11 @@ Facets = (function(_super) {
   };
 
   Facets.prototype.render = function() {
+    var tpl;
     if (this.config.get('templates').hasOwnProperty('facets')) {
       tpl = this.config.get('templates').facets;
+      this.el.innerHTML = tpl();
     }
-    this.el.innerHTML = tpl();
     return this;
   };
 
@@ -1397,7 +1499,7 @@ Facets = (function(_super) {
 module.exports = Facets;
 
 
-},{"../../jade/facets.jade":26,"./facets/boolean":19,"./facets/date":20,"./facets/list":21,"./facets/range":24}],19:[function(_dereq_,module,exports){
+},{"./facets/boolean":19,"./facets/date":20,"./facets/list":21,"./facets/range":24}],19:[function(_dereq_,module,exports){
 var $, BooleanFacet, Models, Views, bodyTpl, _,
   __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
@@ -1492,7 +1594,7 @@ BooleanFacet = (function(_super) {
 module.exports = BooleanFacet;
 
 
-},{"../../../jade/facets/boolean.body.jade":27,"../../models/facets/boolean":9,"./main":23}],20:[function(_dereq_,module,exports){
+},{"../../../jade/facets/boolean.body.jade":26,"../../models/facets/boolean":9,"./main":23}],20:[function(_dereq_,module,exports){
 var DateFacet, Models, Views, tpl,
   __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
@@ -1548,7 +1650,7 @@ DateFacet = (function(_super) {
 module.exports = DateFacet;
 
 
-},{"../../../jade/facets/date.jade":28,"../../models/facets/date":10,"./main":23}],21:[function(_dereq_,module,exports){
+},{"../../../jade/facets/date.jade":27,"../../models/facets/date":10,"./main":23}],21:[function(_dereq_,module,exports){
 var $, Collections, ListFacet, Models, Views, menuTpl, _,
   __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
@@ -1583,6 +1685,7 @@ ListFacet = (function(_super) {
 
   ListFacet.prototype.initialize = function(options) {
     ListFacet.__super__.initialize.apply(this, arguments);
+    this.resetActive = false;
     this.config = options.config;
     this.model = new Models.List(options.attrs, {
       parse: true
@@ -1679,6 +1782,9 @@ ListFacet = (function(_super) {
 
   ListFacet.prototype.changeOrder = function(ev) {
     var $target, order, type;
+    if (!this.$('i.filter').hasClass('active')) {
+      this.optionsView.renderAll();
+    }
     $target = $(ev.currentTarget);
     if ($target.hasClass('active')) {
       if ($target.hasClass('alpha')) {
@@ -1689,7 +1795,8 @@ ListFacet = (function(_super) {
         $target.toggleClass('fa-sort-amount-asc');
       }
     } else {
-      this.$('.active').removeClass('active');
+      this.$('i.amount.active').removeClass('active');
+      this.$('i.alpha.active').removeClass('active');
       $target.addClass('active');
     }
     type = $target.hasClass('alpha') ? 'alpha' : 'amount';
@@ -1698,11 +1805,22 @@ ListFacet = (function(_super) {
   };
 
   ListFacet.prototype.update = function(newOptions) {
-    return this.collection.updateOptions(newOptions);
+    console.log('update', this.resetActive);
+    if (this.resetActive) {
+      this.collection.reset(newOptions, {
+        parse: true
+      });
+      return this.resetActive = false;
+    } else {
+      return this.collection.updateOptions(newOptions);
+    }
   };
 
   ListFacet.prototype.reset = function() {
-    return this.collection.revert();
+    this.resetActive = true;
+    if (this.$('i.filter').hasClass('active')) {
+      return this.toggleFilterMenu();
+    }
   };
 
   return ListFacet;
@@ -1712,7 +1830,7 @@ ListFacet = (function(_super) {
 module.exports = ListFacet;
 
 
-},{"../../../jade/facets/list.menu.jade":30,"../../collections/list.options":5,"../../models/facets/list":11,"./list.options":22,"./main":23}],22:[function(_dereq_,module,exports){
+},{"../../../jade/facets/list.menu.jade":29,"../../collections/list.options":5,"../../models/facets/list":11,"./list.options":22,"./main":23}],22:[function(_dereq_,module,exports){
 var $, Backbone, ListFacetOptions, Models, bodyTpl, funcky, optionTpl, _,
   __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
   __hasProp = {}.hasOwnProperty,
@@ -1747,11 +1865,15 @@ ListFacetOptions = (function(_super) {
   ListFacetOptions.prototype.initialize = function(options) {
     this.config = options.config;
     this.facetName = options.facetName;
-    this.showingCursor = 0;
-    this.showingIncrement = 50;
     this.listenTo(this.collection, 'sort', (function(_this) {
       return function() {
         return _this.rerender();
+      };
+    })(this));
+    this.listenTo(this.collection, 'reset', (function(_this) {
+      return function() {
+        _this.collection.orderBy('amount_desc', true);
+        return _this.render();
       };
     })(this));
     if (this.config.get('templates').hasOwnProperty('list.option')) {
@@ -1761,6 +1883,8 @@ ListFacetOptions = (function(_super) {
   };
 
   ListFacetOptions.prototype.render = function() {
+    this.showingCursor = 0;
+    this.showingIncrement = 50;
     if (this.config.get('templates').hasOwnProperty('list.body')) {
       bodyTpl = this.config.get('templates')['list.body'];
     }
@@ -1876,7 +2000,7 @@ ListFacetOptions = (function(_super) {
 
 
   /*
-  Called by parent (ListFacet) when user types in the search input
+  	Called by parent (ListFacet) when user types in the search input
    */
 
   ListFacetOptions.prototype.filterOptions = function(value) {
@@ -1915,7 +2039,7 @@ ListFacetOptions = (function(_super) {
 module.exports = ListFacetOptions;
 
 
-},{"../../../jade/facets/list.body.jade":29,"../../../jade/facets/list.option.jade":31,"../../models/facets/list":11,"funcky.util":3}],23:[function(_dereq_,module,exports){
+},{"../../../jade/facets/list.body.jade":28,"../../../jade/facets/list.option.jade":30,"../../models/facets/list":11,"funcky.util":3}],23:[function(_dereq_,module,exports){
 var $, Backbone, Facet, tpl, _,
   __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
@@ -2013,7 +2137,7 @@ Facet = (function(_super) {
 module.exports = Facet;
 
 
-},{"../../../jade/facets/main.jade":32}],24:[function(_dereq_,module,exports){
+},{"../../../jade/facets/main.jade":31}],24:[function(_dereq_,module,exports){
 var $, Models, RangeFacet, Views, bodyTpl, dragStopper, resizer, _,
   __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
@@ -2375,7 +2499,7 @@ RangeFacet = (function(_super) {
 module.exports = RangeFacet;
 
 
-},{"../../../jade/facets/range.body.jade":33,"../../models/facets/range":14,"./main":23}],25:[function(_dereq_,module,exports){
+},{"../../../jade/facets/range.body.jade":32,"../../models/facets/range":14,"./main":23}],25:[function(_dereq_,module,exports){
 var Backbone, Models, TextSearch, tpl, _,
   __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
@@ -2494,17 +2618,7 @@ TextSearch = (function(_super) {
 module.exports = TextSearch;
 
 
-},{"../../jade/text-search.jade":35,"../models/search":16}],26:[function(_dereq_,module,exports){
-var jade = _dereq_("jade/runtime");
-
-module.exports = function template(locals) {
-var buf = [];
-var jade_mixins = {};
-var jade_interp;
-
-buf.push("<div class=\"loader\"><h4>Loading filters...</h4><i class=\"fa fa-spinner fa-spin fa-2x\"></i></div>");;return buf.join("");
-};
-},{"jade/runtime":4}],27:[function(_dereq_,module,exports){
+},{"../../jade/text-search.jade":34,"../models/search":16}],26:[function(_dereq_,module,exports){
 var jade = _dereq_("jade/runtime");
 
 module.exports = function template(locals) {
@@ -2537,7 +2651,7 @@ buf.push("<li><div class=\"row span6\"><div class=\"cell span5\"><i" + (jade.att
 
 buf.push("</ul>");}("options" in locals_for_with?locals_for_with.options:typeof options!=="undefined"?options:undefined,"ucfirst" in locals_for_with?locals_for_with.ucfirst:typeof ucfirst!=="undefined"?ucfirst:undefined));;return buf.join("");
 };
-},{"jade/runtime":4}],28:[function(_dereq_,module,exports){
+},{"jade/runtime":4}],27:[function(_dereq_,module,exports){
 var jade = _dereq_("jade/runtime");
 
 module.exports = function template(locals) {
@@ -2593,7 +2707,7 @@ buf.push("<option>" + (jade.escape(null == (jade_interp = option) ? "" : jade_in
 
 buf.push("</select></div>");}("name" in locals_for_with?locals_for_with.name:typeof name!=="undefined"?name:undefined,"title" in locals_for_with?locals_for_with.title:typeof title!=="undefined"?title:undefined,"options" in locals_for_with?locals_for_with.options:typeof options!=="undefined"?options:undefined));;return buf.join("");
 };
-},{"jade/runtime":4}],29:[function(_dereq_,module,exports){
+},{"jade/runtime":4}],28:[function(_dereq_,module,exports){
 var jade = _dereq_("jade/runtime");
 
 module.exports = function template(locals) {
@@ -2603,7 +2717,7 @@ var jade_interp;
 
 buf.push("<ul></ul>");;return buf.join("");
 };
-},{"jade/runtime":4}],30:[function(_dereq_,module,exports){
+},{"jade/runtime":4}],29:[function(_dereq_,module,exports){
 var jade = _dereq_("jade/runtime");
 
 module.exports = function template(locals) {
@@ -2613,7 +2727,7 @@ var jade_interp;
 
 buf.push("<input type=\"checkbox\" name=\"all\"/><input type=\"text\" name=\"filter\"/><small class=\"optioncount\"></small>");;return buf.join("");
 };
-},{"jade/runtime":4}],31:[function(_dereq_,module,exports){
+},{"jade/runtime":4}],30:[function(_dereq_,module,exports){
 var jade = _dereq_("jade/runtime");
 
 module.exports = function template(locals) {
@@ -2623,7 +2737,7 @@ var jade_interp;
 ;var locals_for_with = (locals || {});(function (option) {
 buf.push("<li" + (jade.attr("data-count", option.get('count'), true, false)) + (jade.attr("data-value", option.id, true, false)) + "><i" + (jade.attr("data-value", option.id, true, false)) + (jade.cls(['unchecked','fa','fa-square-o',option.get('checked')?'hidden':'visible'], [null,null,null,true])) + "></i><i" + (jade.attr("data-value", option.id, true, false)) + (jade.cls(['checked','fa','fa-check-square-o',option.get('checked')?'visible':'hidden'], [null,null,null,true])) + "></i><label" + (jade.attr("data-value", option.id, true, false)) + ">" + (null == (jade_interp = option.id === ':empty' ? '<em>(empty)</em>' : option.id) ? "" : jade_interp) + "</label><div class=\"count\">" + (jade.escape(null == (jade_interp = option.get('count') === 0 ? option.get('total') : option.get('count')) ? "" : jade_interp)) + "</div></li>");}("option" in locals_for_with?locals_for_with.option:typeof option!=="undefined"?option:undefined));;return buf.join("");
 };
-},{"jade/runtime":4}],32:[function(_dereq_,module,exports){
+},{"jade/runtime":4}],31:[function(_dereq_,module,exports){
 var jade = _dereq_("jade/runtime");
 
 module.exports = function template(locals) {
@@ -2633,7 +2747,7 @@ var jade_interp;
 ;var locals_for_with = (locals || {});(function (title) {
 buf.push("<div class=\"placeholder\"><header><h3>" + (jade.escape(null == (jade_interp = title) ? "" : jade_interp)) + "</h3><div class=\"menu\"><i title=\"Filter options\" class=\"filter fa fa-filter\"></i><i title=\"Sort alphabetically\" class=\"alpha fa fa-sort-alpha-asc\"></i><i title=\"Sort numerically\" class=\"amount active fa fa-sort-amount-desc\"></i></div><div class=\"options\"></div></header><div class=\"body\"></div></div>");}("title" in locals_for_with?locals_for_with.title:typeof title!=="undefined"?title:undefined));;return buf.join("");
 };
-},{"jade/runtime":4}],33:[function(_dereq_,module,exports){
+},{"jade/runtime":4}],32:[function(_dereq_,module,exports){
 var jade = _dereq_("jade/runtime");
 
 module.exports = function template(locals) {
@@ -2643,7 +2757,7 @@ var jade_interp;
 ;var locals_for_with = (locals || {});(function (options) {
 buf.push("<div class=\"slider\"><span class=\"dash\">-</span><div class=\"handle-min handle\"><input" + (jade.attr("value", options.lowerLimit, true, false)) + " disabled=\"disabled\" class=\"min\"/></div><div class=\"handle-max handle\"><input" + (jade.attr("value", options.upperLimit, true, false)) + " disabled=\"disabled\" class=\"max\"/></div><div class=\"bar\">&nbsp;</div><button>Search?</button></div>");}("options" in locals_for_with?locals_for_with.options:typeof options!=="undefined"?options:undefined));;return buf.join("");
 };
-},{"jade/runtime":4}],34:[function(_dereq_,module,exports){
+},{"jade/runtime":4}],33:[function(_dereq_,module,exports){
 var jade = _dereq_("jade/runtime");
 
 module.exports = function template(locals) {
@@ -2653,7 +2767,7 @@ var jade_interp;
 
 buf.push("<div class=\"overlay\"><div><i class=\"fa fa-spinner fa-spin fa-2x\"></i></div></div><div class=\"faceted-search\"><div class=\"text-search-placeholder\"></div><ul class=\"facets-menu\"><li class=\"reset\"><button><i class=\"fa fa-refresh\"></i><span>Reset search</span></button></li><li class=\"switch\"><button><i class=\"fa fa-angle-double-down\"></i><span>Switch to</span></button></li><li class=\"collapse-expand\"><button><i class=\"fa fa-compress\"></i><span>Collapse facets</span></button></li></ul><div class=\"facets-placeholder\"></div></div>");;return buf.join("");
 };
-},{"jade/runtime":4}],35:[function(_dereq_,module,exports){
+},{"jade/runtime":4}],34:[function(_dereq_,module,exports){
 var jade = _dereq_("jade/runtime");
 
 module.exports = function template(locals) {
@@ -2675,7 +2789,7 @@ buf.push("<li class=\"searchin\"><input id=\"cb_searchin_annotations\" type=\"ch
 }
 buf.push("</ul></div>");
 }
-if ( model.has('textLayers'))
+if ( model.has('textLayers') && model.get('textLayers').length > 1)
 {
 buf.push("<div class=\"cell-1\"><h4>Textlayers:</h4><ul class=\"textlayers\">");
 // iterate model.get('textLayers')
