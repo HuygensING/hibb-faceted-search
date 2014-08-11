@@ -9,10 +9,10 @@ class Facet extends Backbone.View
 
 	# ### Initialize
 	initialize: (options) ->
-	   @config = options.config
+		@config = options.config
 
-	# Override the facet title if the user has given an alternative title in the config.
-	options.attrs.title = @config.get('facetTitleMap')[options.attrs.name] if @config.get('facetTitleMap').hasOwnProperty options.attrs.name
+		# Override the facet title if the user has given an alternative title in the config.
+		options.attrs.title = @config.get('facetTitleMap')[options.attrs.name] if @config.get('facetTitleMap').hasOwnProperty options.attrs.name
 
 	# ### Render
 	render: ->
