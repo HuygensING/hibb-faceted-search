@@ -37,7 +37,8 @@ class Facets extends Backbone.View
     if @config.get('templates').hasOwnProperty 'facets'
       for facetData, index in data
         if @viewMap.hasOwnProperty facetData.type
-          placeholder = @el.querySelector(".#{facetData.name}-placeholder")
+          placeholder  = @el.querySelector(".#{facetData.name}-placeholder")
+          placeholder ?= @el.querySelector("[data-name=#{facetData.name}]")
 
           if placeholder?
             placeholder.parentNode.replaceChild @renderFacet(facetData).el, placeholder
@@ -98,6 +99,8 @@ class Facets extends Backbone.View
     for own viewName, view of @views
       view.destroy()
       delete @views[viewName]
+
+    @render()
 
   destroy: ->
     @destroyFacets()
