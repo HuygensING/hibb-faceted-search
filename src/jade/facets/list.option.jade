@@ -1,4 +1,4 @@
-li(data-count=option.get('count'), data-value=option.id)
+li(data-count=option.get('count'), data-value=option.id, data-state=option.get('checked') ? 'checked' : 'unchecked')
 	//- input(id=randomId, name=randomId, type="checkbox", data-value=option.id, checked=option.get('checked')?true:false)
 	i.unchecked.fa.fa-square-o(data-value=option.id, class=option.get('checked')?'hidden':'visible')
 	i.checked.fa.fa-check-square-o(data-value=option.id, class=option.get('checked')?'visible':'hidden')
