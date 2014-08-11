@@ -122,6 +122,8 @@ class MainView extends Backbone.View
     attrs = _.extend @config.get('queryOptions'), @config.get('textSearchOptions')
     @queryOptions = new QueryOptions attrs
 
+    @listenTo @queryOptions, 'change', => @trigger 'change:queryoptions', @queryOptions
+
     if @config.get 'autoSearch'
       @listenTo @queryOptions, 'change', => @search()
 
