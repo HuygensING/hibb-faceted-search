@@ -229,6 +229,9 @@ class MainView extends Backbone.View
 
     @search cache: cache
 
+  getSearchResultURL: ->
+    @searchResults.postURL
+
   # A refresh of the Faceted Search means (re)sending the current @attributes (queryOptions) again.
   # We set the cache flag to false, otherwise the searchResults collection will return the cached
   # model, instead of fetching a new one from the server.
