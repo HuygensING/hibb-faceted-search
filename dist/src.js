@@ -1,4 +1,4 @@
-!function(e){if("object"==typeof exports)module.exports=e();else if("function"==typeof define&&define.amd)define(e);else{var f;"undefined"!=typeof window?f=window:"undefined"!=typeof global?f=global:"undefined"!=typeof self&&(f=self),f.FacetedSearch=e()}}(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);throw new Error("Cannot find module '"+o+"'")}var f=n[o]={exports:{}};t[o][0].call(f.exports,function(e){var n=t[o][1][e];return s(n?n:e)},f,f.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(_dereq_,module,exports){
+!function(e){if("object"==typeof exports&&"undefined"!=typeof module)module.exports=e();else if("function"==typeof define&&define.amd)define([],e);else{var f;"undefined"!=typeof window?f=window:"undefined"!=typeof global?f=global:"undefined"!=typeof self&&(f=self),f.FacetedSearch=e()}}(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);throw new Error("Cannot find module '"+o+"'")}var f=n[o]={exports:{}};t[o][0].call(f.exports,function(e){var n=t[o][1][e];return s(n?n:e)},f,f.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(_dereq_,module,exports){
 (function() {
   module.exports = {
     el: function(el) {
@@ -698,8 +698,8 @@ MainView = (function(_super) {
       tpl = this.config.get('templates').main;
     }
     this.el.innerHTML = tpl();
-    this.$('.faceted-search').addClass("search-type-" + (this.config.get('textSearch')));
     this.initFacets(this.facetViewMap);
+    this.$('.faceted-search').addClass("search-type-" + (this.config.get('textSearch')));
     if (this.config.get('textSearch') === 'simple' || this.config.get('textSearch') === 'advanced') {
       this.renderTextSearch();
     }
@@ -919,9 +919,10 @@ MainView = (function(_super) {
     return this.searchResults.current.has('_prev');
   };
 
-  MainView.prototype.sortResultsBy = function(field) {
+  MainView.prototype.sortResultsBy = function(sortParameters) {
     return this.queryOptions.set({
-      sort: field
+      sortParameters: sortParameters,
+      resultFields: _.pluck(sortParameters, 'fieldname')
     });
   };
 
@@ -1186,8 +1187,9 @@ QueryOptions = (function(_super) {
     };
   };
 
-  QueryOptions.prototype.initialize = function(initialAttributes, options) {
-    this.initialAttributes = initialAttributes;
+  QueryOptions.prototype.initialize = function(options) {
+    this.options = options;
+    return this.initialAttributes = this.options;
   };
 
   QueryOptions.prototype.set = function(attrs, options) {

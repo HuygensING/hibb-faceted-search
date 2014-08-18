@@ -47,14 +47,14 @@ class MainView extends Backbone.View
 
 		@el.innerHTML = tpl()
 
-		@$('.faceted-search').addClass "search-type-#{@config.get('textSearch')}"
-
 		# Instantiate the Facets view after instantiating the QueryOptions model and
 		# before rendering the textSearch. The textSearchPlaceholder can be located
 		# in the main and in the facets template. So we render the facets view to
 		# get (potentially) the div.text-search-placeholder and call renderFacets
 		# in @update, to actually render the separate facet views.
 		@initFacets @facetViewMap
+
+		@$('.faceted-search').addClass "search-type-#{@config.get('textSearch')}"
 
 		# See config for more about none, simple and advanced options.
 		if @config.get('textSearch') is 'simple' or @config.get('textSearch') is 'advanced'
@@ -225,8 +225,17 @@ class MainView extends Backbone.View
 	hasPrev: ->
 		@searchResults.current.has '_prev'
 
-	sortResultsBy: (field) ->
-		@queryOptions.set sort: field
+	# Sort the results by the parameters given. The parameters are an array of
+	# objects, containing 'fieldName' and 'direction': [{fieldName: "name", direction: "desc"}]
+	# When the queryOptions are set, a change event is triggered and send to the server.
+	sortResultsBy: (sortParameters) ->
+		@queryOptions.set
+			sortParameters: sortParameters
+			# The resultFields are changed when the sortParameters are changed,
+			# because the server only returns the given fields. If we do this in
+			# the model on change, the change event would be triggered twice.
+			# An alternative is creating a method for it.
+			resultFields: _.pluck(sortParameters, 'fieldname')
 
 	# Silently change @attributes and trigger a change event manually afterwards.
 	# arguments.cache Boolean Tells searchResults if we want to fetch result from cache.

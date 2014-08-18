@@ -137,7 +137,6 @@ class ListFacet extends Views.Facet
 	reset: ->
 		@resetActive = true
 
-
 		@toggleFilterMenu() if @$('i.filter').hasClass 'active'
 
 module.exports = ListFacet

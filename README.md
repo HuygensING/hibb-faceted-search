@@ -3,6 +3,10 @@ Backbone based library
 
 ### Changelog
 
+
+#### v2.0.9
+- [bug] sortResultsBy still worked using sort instead of sortParameters.
+
 #### v2.0.8
 - Don't remove active class from filter when toggling sorting.
 - Add authorizationHeaderToken to config.
