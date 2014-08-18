@@ -5,7 +5,6 @@ class Search extends Backbone.Model
 
 	defaults: ->
 		term: '*'
-		caseSensitive: false
 		fuzzy: false
 		title: 'Text Search'
 		name: 'text_search'
