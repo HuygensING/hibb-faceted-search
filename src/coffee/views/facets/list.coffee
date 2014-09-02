@@ -127,7 +127,6 @@ class ListFacet extends Views.Facet
 		@collection.orderBy type+'_'+order
 
 	update: (newOptions) ->
-		console.log 'update', @resetActive
 		if @resetActive
 			@collection.reset newOptions, parse: true
 			@resetActive = false

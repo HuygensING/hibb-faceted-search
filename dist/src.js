@@ -1879,7 +1879,6 @@ ListFacet = (function(_super) {
   };
 
   ListFacet.prototype.update = function(newOptions) {
-    console.log('update', this.resetActive);
     if (this.resetActive) {
       this.collection.reset(newOptions, {
         parse: true
