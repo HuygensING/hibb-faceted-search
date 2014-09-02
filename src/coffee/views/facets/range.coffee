@@ -29,10 +29,20 @@ class RangeFacet extends Views.Facet
 		@listenTo @model, 'change:options', @render
 		@listenTo @model, 'change', (model) =>
 			if model.changed.hasOwnProperty('currentMin') or model.changed.hasOwnProperty('currentMax')
-				@checkInputOverlap()
+				@button.style.display = 'block' if @button? and @config.get('autoSearch')
+		@listenTo @model, 'change:handleMinLeft', (model, value) =>
+			@handleMin.css 'left', value
+			@bar.css 'left', value
 
-		@listenTo @model, 'change:currentMin', @updateMinHandle
-		@listenTo @model, 'change:currentMax', @updateMaxHandle
+		@listenTo @model, 'change:handleMaxLeft', (model, value) =>
+			@handleMax.css 'left', value
+			@bar.css 'right', model.get('sliderWidth') - value
+
+		@listenTo @model, 'change:currentMin', (model, value) =>
+			@inputMin.val Math.ceil value
+
+		@listenTo @model, 'change:currentMax', (model, value) =>
+			@inputMax.val Math.ceil value
 
 		@render()
 
@@ -58,22 +68,10 @@ class RangeFacet extends Views.Facet
 		@
 
 	postRender: ->
-		# The root element of the range facet.
-		@slider = @$ '.slider'
-		@sliderWidth = @slider.width()
-		@sliderLeft = @slider.offset().left
-
 		# The handles that indicate the position of min and max on the range.
 		# Can be dragged
 		@handleMin = @$ '.handle-min'
 		@handleMax = @$ '.handle-max'
-
-		# The assumption is made that the minHandle and maxHandle have an equal width
-		@handleWidth = @handleMin.width()
-
-		# The relative left position of the min and max handle.
-		@handleMinLeft = @handleMin.position().left
-		@handleMaxLeft = @handleMax.position().left
 
 		# The labels holding the min and max value.
 		@inputMin = @$ 'input.min'
@@ -83,6 +81,18 @@ class RangeFacet extends Views.Facet
 		@bar = @$ '.bar'
 
 		@button = @el.querySelector('button')
+
+		# The root element of the range facet.
+		slider = @$ '.slider'
+
+		@model.set
+			sliderWidth: slider.width()
+			sliderLeft: slider.offset().left
+			# The relative left position of the min and max handle.
+			handleMinLeft: @handleMin.position().left
+			handleMaxLeft: @handleMax.position().left
+			# The assumption is made that the minHandle and maxHandle have an equal width
+			handleWidth: @handleMin.width()
 
 	# ### EVENTS
 	events: -> _.extend {}, super,
@@ -129,43 +139,32 @@ class RangeFacet extends Views.Facet
 			# Set @draggingBar hash with offsetLeft and barWidth, which are
 			# needed while dragging.
 			@draggingBar =
-				offsetLeft: (ev.clientX - @sliderLeft) - @handleMinLeft
+				offsetLeft: (ev.clientX - @model.get('sliderLeft')) - @model.get('handleMinLeft')
 				barWidth: @bar.width()
 
 	# Called on every scroll event! Keep optimized!
 	drag: (ev) ->
-		mousePosLeft = ev.clientX - @sliderLeft
+		mousePosLeft = ev.clientX - @model.get('sliderLeft')
 
 		if @draggingMin or @draggingMax
 			@disableInputOverlap()
-
-		dragMin = (newPos) =>
-			if -1 < newPos <= @handleMaxLeft
-				@handleMinLeft = newPos
-				@handleMin.css 'left', newPos
-				@bar.css 'left', newPos
-				@updateDash()
-				@updateHandleLabel 'min', newPos
-
-		dragMax = (newPos) =>
-			if @handleMinLeft < newPos <= @sliderWidth
-				@handleMaxLeft = newPos
-				@handleMax.css 'left', newPos
-				@bar.css 'right', @sliderWidth - newPos
-				@updateHandleLabel 'max', newPos
+			@checkInputOverlap()
 
 		if @draggingBar?
+			@updateDash()
+
 			left = mousePosLeft - @draggingBar.offsetLeft
 			right = left + @draggingBar.barWidth
 
-			dragMin left
-			dragMax right
+			if -1 < left and right <= @model.get('sliderWidth')
+				@model.dragMin left
+				@model.dragMax right
 
 		if @draggingMin
-			dragMin mousePosLeft - (@handleWidth/2)
+			@model.dragMin mousePosLeft - (@model.get('handleWidth')/2)
 
 		if @draggingMax
-			dragMax mousePosLeft - (@handleWidth/2)
+			@model.dragMax mousePosLeft - (@model.get('handleWidth')/2)
 
 	enableInputEditable: (input) ->
 		input.attr 'disabled', null
@@ -173,28 +172,6 @@ class RangeFacet extends Views.Facet
 
 	disableInputEditable: (input) ->
 		input.attr 'disabled', true
-
-	enableInputOverlap: (diff) ->
-		@inputMin.css 'left', -20 - diff/2
-		@inputMax.css 'right', -20 - diff/2
-
-		@updateDash()
-		@$('.dash').show()
-
-		@inputMin.addClass 'overlap'
-		@inputMax.addClass 'overlap'
-
-	updateDash: ->
-		@$('.dash').css 'left', @handleMinLeft + ((@handleMaxLeft - @handleMinLeft)/2) + 3
-
-	disableInputOverlap: ->
-		@inputMin.css 'left', -20
-		@inputMax.css 'right', -20
-
-		@$('.dash').hide()
-
-		@inputMin.removeClass 'overlap'
-		@inputMax.removeClass 'overlap'
 
 	stopDragging: ->
 		if @draggingMin or @draggingMax or @draggingBar?
@@ -261,28 +238,35 @@ class RangeFacet extends Views.Facet
 		else
 			@disableInputOverlap()
 
+	enableInputOverlap: (diff) ->
+		@inputMin.css 'left', -20 - diff/2
+		@inputMax.css 'right', -20 - diff/2
+
+		@updateDash()
+		@$('.dash').show()
+
+		@inputMin.addClass 'overlap'
+		@inputMax.addClass 'overlap'
+
+	disableInputOverlap: ->
+		@inputMin.css 'left', -20
+		@inputMax.css 'right', -20
+
+		@$('.dash').hide()
+
+		@inputMin.removeClass 'overlap'
+		@inputMax.removeClass 'overlap'
+
+	updateDash: ->
+		@$('.dash').css 'left', @model.get('handleMinLeft') + ((@model.get('handleMaxLeft') - @model.get('handleMinLeft'))/2) + 3
+
 	# Update the labels value.
 	# Called on every scroll event! Keep optimized!
-	updateHandleLabel: (handle, leftPos) ->
-		@button.style.display = 'block' if @button? and @config.get('autoSearch')
-
-		input = if handle is 'min' then @inputMin else @inputMax
-		input.val @getYearFromLeftPos(leftPos)
-
-	# Given a left position in px, return the corresponding year.
-	# Called on every scroll event! Keep optimized!
-	getYearFromLeftPos: (leftPos) ->
-		ll = @model.get('options').lowerLimit
-		ul = @model.get('options').upperLimit
-
-		Math.floor ll + leftPos/@sliderWidth * (ul - ll)
-
-	# Given a year, return the left position in px.
-	getLeftPosFromYear: (year) ->
-		ll = @model.get('options').lowerLimit
-		ul = @model.get('options').upperLimit
-		left = ((year - ll) / (ul - ll)) * @sliderWidth
-		Math.floor left
+#	updateHandleLabel: (handle, leftPos) ->
+#		@button.style.display = 'block' if @button? and @config.get('autoSearch')
+#
+#		input = if handle is 'min' then @inputMin else @inputMax
+#		input.val @model.getYearFromLeftPos(leftPos)
 
 	update: (newOptions) ->
 		if _.isArray(newOptions)
@@ -301,29 +285,6 @@ class RangeFacet extends Views.Facet
 
 		@button.style.display = 'none' if @button?
 
-	updateMaxHandle: (model) ->
-		year = model.get 'currentMax'
-		# Update the labels.
-		@inputMax.val year
 
-		# Get the position of the updated years
-		leftMax = @getLeftPosFromYear year
-
-		# Set the handle position.
-		@handleMax.css 'left', leftMax - (@handleWidth/2)
-
-		# Update the bar.
-		@bar.css 'right', @sliderWidth - leftMax
-
-		# Position the handles.
-		@handleMaxLeft = leftMax - (@handleWidth/2)
-
-	updateMinHandle: (model) ->
-		year = model.get 'currentMin'
-		@inputMin.val year
-		leftMin = @getLeftPosFromYear year
-		@handleMin.css 'left', leftMin - (@handleWidth/2)
-		@bar.css 'left', leftMin
-		@handleMinLeft = leftMin - (@handleWidth/2)
 
 module.exports = RangeFacet

@@ -549,6 +549,7 @@
   right: 0;
   position: absolute;
   z-index: 1;
+  cursor: pointer;
 }
 .facet.range .body .slider .handle {
   position: absolute;

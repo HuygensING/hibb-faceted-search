@@ -1099,6 +1099,7 @@ module.exports = Facet;
 
 },{"../../config":7}],14:[function(_dereq_,module,exports){
 var FacetModel, RangeFacet, _,
+  __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
   __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
@@ -1110,6 +1111,8 @@ RangeFacet = (function(_super) {
   __extends(RangeFacet, _super);
 
   function RangeFacet() {
+    this.dragMax = __bind(this.dragMax, this);
+    this.dragMin = __bind(this.dragMin, this);
     return RangeFacet.__super__.constructor.apply(this, arguments);
   }
 
@@ -1118,8 +1121,43 @@ RangeFacet = (function(_super) {
       min: null,
       max: null,
       currentMin: null,
-      currentMax: null
+      currentMax: null,
+      handleMinLeft: null,
+      handleMaxLeft: null,
+      sliderWidth: null,
+      options: {}
     });
+  };
+
+  RangeFacet.prototype.initialize = function() {
+    this.on('change:currentMin', (function(_this) {
+      return function(model, value) {
+        return _this.set({
+          handleMinLeft: _this.getLeftFromYear(value)
+        });
+      };
+    })(this));
+    this.on('change:currentMax', (function(_this) {
+      return function(model, value) {
+        return _this.set({
+          handleMaxLeft: _this.getLeftFromYear(value)
+        });
+      };
+    })(this));
+    this.on('change:handleMinLeft', (function(_this) {
+      return function(model, value) {
+        return _this.set({
+          currentMin: _this.getYearFromLeft(value)
+        });
+      };
+    })(this));
+    return this.on('change:handleMaxLeft', (function(_this) {
+      return function(model, value) {
+        return _this.set({
+          currentMax: _this.getYearFromLeft(value)
+        });
+      };
+    })(this));
   };
 
   RangeFacet.prototype.set = function(attrs, options) {
@@ -1153,6 +1191,40 @@ RangeFacet = (function(_super) {
     attrs.min = attrs.currentMin = attrs.options.lowerLimit;
     attrs.max = attrs.currentMax = attrs.options.upperLimit;
     return attrs;
+  };
+
+  RangeFacet.prototype.getLeftFromYear = function(year) {
+    var hhw, ll, sw, ul;
+    ll = this.get('options').lowerLimit;
+    ul = this.get('options').upperLimit;
+    sw = this.get('sliderWidth');
+    hhw = this.get('handleWidth') / 2;
+    return (((year - ll) / (ul - ll)) * sw) - hhw;
+  };
+
+  RangeFacet.prototype.getYearFromLeft = function(left) {
+    var hhw, ll, sw, ul;
+    ll = this.get('options').lowerLimit;
+    ul = this.get('options').upperLimit;
+    hhw = this.get('handleWidth') / 2;
+    sw = this.get('sliderWidth');
+    return (((left + hhw) / sw) * (ul - ll)) + ll;
+  };
+
+  RangeFacet.prototype.dragMin = function(pos) {
+    if ((-1 < pos && pos <= this.get('handleMaxLeft'))) {
+      return this.set({
+        handleMinLeft: pos
+      });
+    }
+  };
+
+  RangeFacet.prototype.dragMax = function(pos) {
+    if ((this.get('handleMinLeft') < pos && pos <= this.get('sliderWidth'))) {
+      return this.set({
+        handleMaxLeft: pos
+      });
+    }
   };
 
   return RangeFacet;
@@ -2183,12 +2255,34 @@ RangeFacet = (function(_super) {
     this.listenTo(this.model, 'change', (function(_this) {
       return function(model) {
         if (model.changed.hasOwnProperty('currentMin') || model.changed.hasOwnProperty('currentMax')) {
-          return _this.checkInputOverlap();
+          if ((_this.button != null) && _this.config.get('autoSearch')) {
+            return _this.button.style.display = 'block';
+          }
         }
       };
     })(this));
-    this.listenTo(this.model, 'change:currentMin', this.updateMinHandle);
-    this.listenTo(this.model, 'change:currentMax', this.updateMaxHandle);
+    this.listenTo(this.model, 'change:handleMinLeft', (function(_this) {
+      return function(model, value) {
+        _this.handleMin.css('left', value);
+        return _this.bar.css('left', value);
+      };
+    })(this));
+    this.listenTo(this.model, 'change:handleMaxLeft', (function(_this) {
+      return function(model, value) {
+        _this.handleMax.css('left', value);
+        return _this.bar.css('right', model.get('sliderWidth') - value);
+      };
+    })(this));
+    this.listenTo(this.model, 'change:currentMin', (function(_this) {
+      return function(model, value) {
+        return _this.inputMin.val(Math.ceil(value));
+      };
+    })(this));
+    this.listenTo(this.model, 'change:currentMax', (function(_this) {
+      return function(model, value) {
+        return _this.inputMax.val(Math.ceil(value));
+      };
+    })(this));
     return this.render();
   };
 
@@ -2214,18 +2308,21 @@ RangeFacet = (function(_super) {
   };
 
   RangeFacet.prototype.postRender = function() {
-    this.slider = this.$('.slider');
-    this.sliderWidth = this.slider.width();
-    this.sliderLeft = this.slider.offset().left;
+    var slider;
     this.handleMin = this.$('.handle-min');
     this.handleMax = this.$('.handle-max');
-    this.handleWidth = this.handleMin.width();
-    this.handleMinLeft = this.handleMin.position().left;
-    this.handleMaxLeft = this.handleMax.position().left;
     this.inputMin = this.$('input.min');
     this.inputMax = this.$('input.max');
     this.bar = this.$('.bar');
-    return this.button = this.el.querySelector('button');
+    this.button = this.el.querySelector('button');
+    slider = this.$('.slider');
+    return this.model.set({
+      sliderWidth: slider.width(),
+      sliderLeft: slider.offset().left,
+      handleMinLeft: this.handleMin.position().left,
+      handleMaxLeft: this.handleMax.position().left,
+      handleWidth: this.handleMin.width()
+    });
   };
 
   RangeFacet.prototype.events = function() {
@@ -2280,50 +2377,33 @@ RangeFacet = (function(_super) {
       return target.css('z-index', 11);
     } else if (target.hasClass('bar')) {
       return this.draggingBar = {
-        offsetLeft: (ev.clientX - this.sliderLeft) - this.handleMinLeft,
+        offsetLeft: (ev.clientX - this.model.get('sliderLeft')) - this.model.get('handleMinLeft'),
         barWidth: this.bar.width()
       };
     }
   };
 
   RangeFacet.prototype.drag = function(ev) {
-    var dragMax, dragMin, mousePosLeft;
-    mousePosLeft = ev.clientX - this.sliderLeft;
+    var left, mousePosLeft, right;
+    mousePosLeft = ev.clientX - this.model.get('sliderLeft');
     if (this.draggingMin || this.draggingMax) {
       this.disableInputOverlap();
+      this.checkInputOverlap();
     }
-    dragMin = (function(_this) {
-      return function(newPos) {
-        if ((-1 < newPos && newPos <= _this.handleMaxLeft)) {
-          _this.handleMinLeft = newPos;
-          _this.handleMin.css('left', newPos);
-          _this.bar.css('left', newPos);
-          _this.updateDash();
-          return _this.updateHandleLabel('min', newPos);
-        }
-      };
-    })(this);
-    dragMax = (function(_this) {
-      return function(newPos) {
-        if ((_this.handleMinLeft < newPos && newPos <= _this.sliderWidth)) {
-          _this.handleMaxLeft = newPos;
-          _this.handleMax.css('left', newPos);
-          _this.bar.css('right', _this.sliderWidth - newPos);
-          return _this.updateHandleLabel('max', newPos);
-        }
-      };
-    })(this);
     if (this.draggingBar != null) {
-      if (this.handleMinLeft + this.draggingBar.barWidth <= this.sliderWidth) {
-        dragMin(mousePosLeft - this.draggingBar.offsetLeft);
-        dragMax(this.handleMinLeft + this.draggingBar.barWidth);
+      this.updateDash();
+      left = mousePosLeft - this.draggingBar.offsetLeft;
+      right = left + this.draggingBar.barWidth;
+      if (-1 < left && right <= this.model.get('sliderWidth')) {
+        this.model.dragMin(left);
+        this.model.dragMax(right);
       }
     }
     if (this.draggingMin) {
-      dragMin(mousePosLeft - (this.handleWidth / 2));
+      this.model.dragMin(mousePosLeft - (this.model.get('handleWidth') / 2));
     }
     if (this.draggingMax) {
-      return dragMax(mousePosLeft - (this.handleWidth / 2));
+      return this.model.dragMax(mousePosLeft - (this.model.get('handleWidth') / 2));
     }
   };
 
@@ -2334,27 +2414,6 @@ RangeFacet = (function(_super) {
 
   RangeFacet.prototype.disableInputEditable = function(input) {
     return input.attr('disabled', true);
-  };
-
-  RangeFacet.prototype.enableInputOverlap = function(diff) {
-    this.inputMin.css('left', -20 - diff / 2);
-    this.inputMax.css('right', -20 - diff / 2);
-    this.updateDash();
-    this.$('.dash').show();
-    this.inputMin.addClass('overlap');
-    return this.inputMax.addClass('overlap');
-  };
-
-  RangeFacet.prototype.updateDash = function() {
-    return this.$('.dash').css('left', this.handleMinLeft + ((this.handleMaxLeft - this.handleMinLeft) / 2) + 3);
-  };
-
-  RangeFacet.prototype.disableInputOverlap = function() {
-    this.inputMin.css('left', -20);
-    this.inputMax.css('right', -20);
-    this.$('.dash').hide();
-    this.inputMin.removeClass('overlap');
-    return this.inputMax.removeClass('overlap');
   };
 
   RangeFacet.prototype.stopDragging = function() {
@@ -2430,28 +2489,25 @@ RangeFacet = (function(_super) {
     }
   };
 
-  RangeFacet.prototype.updateHandleLabel = function(handle, leftPos) {
-    var input;
-    if ((this.button != null) && this.config.get('autoSearch')) {
-      this.button.style.display = 'block';
-    }
-    input = handle === 'min' ? this.inputMin : this.inputMax;
-    return input.val(this.getYearFromLeftPos(leftPos));
+  RangeFacet.prototype.enableInputOverlap = function(diff) {
+    this.inputMin.css('left', -20 - diff / 2);
+    this.inputMax.css('right', -20 - diff / 2);
+    this.updateDash();
+    this.$('.dash').show();
+    this.inputMin.addClass('overlap');
+    return this.inputMax.addClass('overlap');
   };
 
-  RangeFacet.prototype.getYearFromLeftPos = function(leftPos) {
-    var ll, ul;
-    ll = this.model.get('options').lowerLimit;
-    ul = this.model.get('options').upperLimit;
-    return Math.floor(ll + leftPos / this.sliderWidth * (ul - ll));
+  RangeFacet.prototype.disableInputOverlap = function() {
+    this.inputMin.css('left', -20);
+    this.inputMax.css('right', -20);
+    this.$('.dash').hide();
+    this.inputMin.removeClass('overlap');
+    return this.inputMax.removeClass('overlap');
   };
 
-  RangeFacet.prototype.getLeftPosFromYear = function(year) {
-    var left, ll, ul;
-    ll = this.model.get('options').lowerLimit;
-    ul = this.model.get('options').upperLimit;
-    left = ((year - ll) / (ul - ll)) * this.sliderWidth;
-    return Math.floor(left);
+  RangeFacet.prototype.updateDash = function() {
+    return this.$('.dash').css('left', this.model.get('handleMinLeft') + ((this.model.get('handleMaxLeft') - this.model.get('handleMinLeft')) / 2) + 3);
   };
 
   RangeFacet.prototype.update = function(newOptions) {
@@ -2472,26 +2528,6 @@ RangeFacet = (function(_super) {
     if (this.button != null) {
       return this.button.style.display = 'none';
     }
-  };
-
-  RangeFacet.prototype.updateMaxHandle = function(model) {
-    var leftMax, year;
-    year = model.get('currentMax');
-    this.inputMax.val(year);
-    leftMax = this.getLeftPosFromYear(year);
-    this.handleMax.css('left', leftMax - (this.handleWidth / 2));
-    this.bar.css('right', this.sliderWidth - leftMax);
-    return this.handleMaxLeft = leftMax - (this.handleWidth / 2);
-  };
-
-  RangeFacet.prototype.updateMinHandle = function(model) {
-    var leftMin, year;
-    year = model.get('currentMin');
-    this.inputMin.val(year);
-    leftMin = this.getLeftPosFromYear(year);
-    this.handleMin.css('left', leftMin - (this.handleWidth / 2));
-    this.bar.css('left', leftMin);
-    return this.handleMinLeft = leftMin - (this.handleWidth / 2);
   };
 
   return RangeFacet;
