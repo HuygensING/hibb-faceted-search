@@ -3,6 +3,8 @@ Backbone based library
 
 ### Changelog
 
+#### v2.0.10
+- [perf] Move range logic from view to model.
 
 #### v2.0.9
 - [bug] sortResultsBy still worked using sort instead of sortParameters.
