@@ -8,7 +8,7 @@ responses = do ->
   'select-content-type': require './stage/responses/select-content-type.json'
 
 app.post '/search', (req, res) ->
-  resultId = 'init'
+  resultId = 'ebnm_init'
   reqBody = JSON.stringify(req.body)
   console.log reqBody
   if reqBody is '{"facetValues":[{"name":"content_type","values":["works of art","books/e-books"]}],"sortParameters":[]}'
