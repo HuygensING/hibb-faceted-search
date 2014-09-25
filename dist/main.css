@@ -442,6 +442,9 @@
 .faceted-search.search-type-simple .facets {
   display: none;
 }
+.faceted-search.search-type-none ul.facets-menu li.switch {
+  display: none;
+}
 
 .faceted-search .text-search .search-input input {
   box-sizing: border-box;
