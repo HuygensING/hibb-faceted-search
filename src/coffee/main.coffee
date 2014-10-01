@@ -212,7 +212,10 @@ class MainView extends Backbone.View
     @searchResults.current.has '_prev'
 
   sortResultsBy: (field) ->
-    @queryOptions.set sort: field
+    @queryOptions.set sortParameters: [
+      fieldname: field
+      direction: 'asc'
+    ]
 
   # Silently change @attributes and trigger a change event manually afterwards.
   # arguments.cache Boolean Tells searchResults if we want to fetch result from cache.
