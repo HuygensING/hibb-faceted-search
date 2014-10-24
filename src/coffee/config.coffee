@@ -41,4 +41,8 @@ class Config extends Backbone.Model
     # When set to true, a search is performed whenever the mainModel (queryOptions) change.
     autoSearch: true
 
+    # This is used for extra options to the POST query call,
+    # such as setting custom headers (e.g., VRE_ID)
+    requestOptions: {}
+
 module.exports = Config

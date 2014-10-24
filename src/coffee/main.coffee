@@ -27,7 +27,7 @@ class MainView extends Backbone.View
 		if options.facetViewMap?
 			@facetViewMap = _.clone options.facetViewMap
 			delete options.facetViewMap
-
+		
 		@extendConfig options
 
 		@initQueryOptions()

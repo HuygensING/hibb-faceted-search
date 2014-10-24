@@ -50,7 +50,6 @@ class Facets extends Backbone.View
 		# all facets to it and attach it to the DOM.
 		else
 			fragment = document.createDocumentFragment()
-
 			for own index, facetData of data
 				if @viewMap.hasOwnProperty facetData.type
 					fragment.appendChild @renderFacet(facetData).el

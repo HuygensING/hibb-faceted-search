@@ -4,10 +4,16 @@
     el: function(el) {
       return {
         closest: function(selector) {
-          var matchesSelector;
-          matchesSelector = el.matches || el.webkitMatchesSelector || el.mozMatchesSelector || el.msMatchesSelector;
+          var getMatchesSelector, matchesSelector;
+          getMatchesSelector = function(el) {
+            return el.matches || el.webkitMatchesSelector || el.mozMatchesSelector || el.msMatchesSelector;
+          };
+          matchesSelector = getMatchesSelector(el);
           while (el) {
-            if (matchesSelector.bind(el)(selector)) {
+            if (matchesSelector == null) {
+              matchesSelector = getMatchesSelector(el);
+            }
+            if ((matchesSelector != null) && (matchesSelector.bind(el)(selector))) {
               return el;
             } else {
               el = el.parentNode;
@@ -624,7 +630,8 @@ Config = (function(_super) {
       queryOptions: {},
       facetTitleMap: {},
       templates: {},
-      autoSearch: true
+      autoSearch: true,
+      requestOptions: {}
     };
   };
 
@@ -1372,7 +1379,8 @@ SearchResult = (function(_super) {
       solrquery: '',
       sortableFields: [],
       start: null,
-      term: ''
+      term: '',
+      facets: []
     };
   };
 
