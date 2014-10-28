@@ -1,39 +1,43 @@
 Backbone = require 'backbone'
 _ = require 'underscore'
 
+escapeTerm = (term) ->
+	# Important to keep the slash first, to prevent re-escaping
+	special = '\\ + - & | ! ( ) { } [ ] ^ " ~ * ? :'.split /\s+/
+	escaped = term
+
+	for char in special when char
+		regex = '\\' + char
+		console.log "Replacing #{char}", ///#{regex}///g
+		# This seems superfluous, but it isn't.
+		escaped = escaped.replace ///#{regex}///g, '\\' + char
+	
+	console.log escaped
+
+	escaped
+
 class Search extends Backbone.Model
 
+	# queryData will be an array of dictionaries,
+	# one for each full text search field
+	#
+	# Example:
+	# "fullTextSearchParameters": [
+  #     {
+  #         "name": "dynamic_t_name",
+  #         "term": "Reigersberch" 
+  #     }
+  # ]
 	defaults: ->
-		term: '*'
-		fuzzy: false
-		title: 'Text Search'
-		name: 'text_search'
+		{}
 
 	queryData: ->
 		attrs = _.extend {}, @attributes
 
-		delete attrs.name
-		delete attrs.title
+		data = for key, value of attrs
+			name: key
+			term: "*#{escapeTerm value}*"
 
-		attrs
+		return fullTextSearchParameters: data
 
 module.exports = Search
-
-# EXAMPLE QUERY:
-# {
-#   "term": "bla bloe z*",
-#   "facetValues": [
-#     {
-#       "name": "metadata_folio_number",
-#       "values": [ "191", "192" ],
-#     }
-#   ],
-#   "sort": "score",
-#   "sortDir": "asc",
-#   "fuzzy": false,
-#   "caseSensitive": false,
-#   "textLayers": [
-#     "Diplomatic"
-#   ],
-#   "searchInAnnotations": false
-# }

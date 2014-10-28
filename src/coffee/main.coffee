@@ -56,14 +56,20 @@ class MainView extends Backbone.View
     # in @update, to actually render the separate facet views.
     @initFacets @facetViewMap
 
+    # TODO: Remove this. Because we now get searchable fields from the server,
+    # we don't render the text search area until @searchResults is changed
+    # -----------------------------------------------------------------------
     # See config for more about none, simple and advanced options.
-    if @config.get('textSearch') is 'simple' or @config.get('textSearch') is 'advanced'
-      @renderTextSearch()
+    # if @config.get('textSearch') is 'simple' or @config.get('textSearch') is 'advanced'
+    #   @renderTextSearch()
 
     @
 
   renderTextSearch: ->
-    @textSearch = new Views.TextSearch config: @config
+    @textSearch = new Views.TextSearch
+      config: @config
+      fields: @searchResults.current.get 'fullTextSearchFields'
+
     textSearchPlaceholder = @el.querySelector('.text-search-placeholder')
     textSearchPlaceholder?.parentNode.replaceChild @textSearch.el, textSearchPlaceholder
 
@@ -189,6 +195,7 @@ class MainView extends Backbone.View
 
     # If the size of the searchResults is 1 then it's the first time we render the facets
     if @searchResults.queryAmount is 1
+      @renderTextSearch()
       @facets.renderFacets facets
     # If the size is greater than 1, the facets are already rendered and we call their update methods.
     else if @searchResults.queryAmount > 1
@@ -234,6 +241,13 @@ class MainView extends Backbone.View
 
   getSearchResultURL: ->
     @searchResults.postURL
+
+  xlsUrl: ->
+    @getSearchResultURL() + "/xls"
+
+  csvUrl: ->
+    @getSearchResultURL() + "/csv"
+
 
   # A refresh of the Faceted Search means (re)sending the current @attributes (queryOptions) again.
   # We set the cache flag to false, otherwise the searchResults collection will return the cached

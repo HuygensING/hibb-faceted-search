@@ -13,6 +13,8 @@ class TextSearch extends Backbone.View
   # ### Initialize
   initialize: (options) ->
     @config = options.config
+    @fields = options.fields
+
     @reset()
 
   setModel: ->
@@ -22,8 +24,13 @@ class TextSearch extends Backbone.View
 
   # ### Render
   render: ->
-    tpl = @config.get('templates')['text-search'] if @config.get('templates').hasOwnProperty 'text-search'
-    @$el.html tpl model: @model, textSearchTitle: @config.get 'textSearchTitle'
+    if @config.has('templates').hasOwnProperty 'text-search'
+      tpl = @config.get('templates')['text-search']
+
+    @$el.html tpl
+      model: @model
+      fields: @fields
+      textSearchTitles: @config.get('textSearchTitleMap') or {}
 
     @
 
@@ -43,23 +50,14 @@ class TextSearch extends Backbone.View
     # Update the mainModel (queryOptions) silently. We want to set the term
     # to the mainModel. When autoSearch is off and the user wants to
     # perform a search, the term is known to the queryModel.
-    if @model.get('term') isnt ev.currentTarget.value
-      @model.set term: ev.currentTarget.value
+    field = ev.currentTarget.getAttribute 'data-field'
+
+    changed = @model.get(field) isnt ev.currentTarget.value
+    if changed
+        @model.set field, ev.currentTarget.value
       @updateQueryModel()
 
-
-  checkboxChanged: (ev) ->
-    if attr = ev.currentTarget.getAttribute('data-attr')
-      if attr is 'searchInTranscriptions'
-        @$('ul.textlayers').toggle ev.currentTarget.checked
-      @model.set attr, ev.currentTarget.checked
-    else if attr = ev.currentTarget.getAttribute('data-attr-array')
-      checkedArray = []
-      for cb in @el.querySelectorAll '[data-attr-array="'+attr+'"]' when cb.checked
-        checkedArray.push cb.getAttribute('data-value')
-      @model.set attr, checkedArray
-
-    @updateQueryModel()
+    @$('button.search').toggleClass 'changed', changed
 
   search: (ev) ->
     ev.preventDefault()
