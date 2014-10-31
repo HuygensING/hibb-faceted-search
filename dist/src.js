@@ -1,5 +1,103 @@
-!function(e){if("object"==typeof exports&&"undefined"!=typeof module)module.exports=e();else if("function"==typeof define&&define.amd)define([],e);else{var f;"undefined"!=typeof window?f=window:"undefined"!=typeof global?f=global:"undefined"!=typeof self&&(f=self),f.FacetedSearch=e()}}(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);throw new Error("Cannot find module '"+o+"'")}var f=n[o]={exports:{}};t[o][0].call(f.exports,function(e){var n=t[o][1][e];return s(n?n:e)},f,f.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(_dereq_,module,exports){
-(function(){module.exports=function(t){return{closest:function(e){var n;for(n=t.matches||t.webkitMatchesSelector||t.mozMatchesSelector||t.msMatchesSelector;t;){if(n.bind(t)(e))return t;t=t.parentNode}},position:function(e){var n,r,o;for(null==e&&(e=document.body),n=0,o=0,r=t;null!=r&&r!==e&&!this.hasDescendant(e);)n+=r.offsetLeft,o+=r.offsetTop,r=r.offsetParent;return{left:n,top:o}},boundingBox:function(){var e;return e=this.position(),e.width=t.clientWidth,e.height=t.clientHeight,e.right=e.left+e.width,e.bottom=e.top+e.height,e},hasDescendant:function(e){var n;for(n=e.parentNode;null!=n;){if(n===t)return!0;n=n.parentNode}return!1},insertAfter:function(e){return e.parentNode.insertBefore(t,e.nextSibling)},hasScrollBar:function(t){return t.scrollHeight>t.clientHeight||t.scrollWidth>t.clientWidth},hasScrollBarX:function(t){return t.scrollWidth>t.clientWidth},hasScrollBarY:function(t){return t.scrollHeight>t.clientHeight}}}}).call(this);
+!function(e){if("object"==typeof exports)module.exports=e();else if("function"==typeof define&&define.amd)define(e);else{var f;"undefined"!=typeof window?f=window:"undefined"!=typeof global?f=global:"undefined"!=typeof self&&(f=self),f.FacetedSearch=e()}}(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);throw new Error("Cannot find module '"+o+"'")}var f=n[o]={exports:{}};t[o][0].call(f.exports,function(e){var n=t[o][1][e];return s(n?n:e)},f,f.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(_dereq_,module,exports){
+(function() {
+  module.exports = {
+    el: function(el) {
+      return {
+        closest: function(selector) {
+          var getMatchesSelector, matchesSelector;
+          getMatchesSelector = function(el) {
+            return el.matches || el.webkitMatchesSelector || el.mozMatchesSelector || el.msMatchesSelector;
+          };
+          matchesSelector = getMatchesSelector(el);
+          while (el) {
+            if (matchesSelector == null) {
+              matchesSelector = getMatchesSelector(el);
+            }
+            if ((matchesSelector != null) && (matchesSelector.bind(el)(selector))) {
+              return el;
+            } else {
+              el = el.parentNode;
+            }
+          }
+        },
+
+        /*
+        		Native alternative to jQuery's $.offset()
+        
+        		http://www.quirksmode.org/js/findpos.html
+         */
+        position: function(parent) {
+          var left, loopEl, top;
+          if (parent == null) {
+            parent = document.body;
+          }
+          left = 0;
+          top = 0;
+          loopEl = el;
+          while ((loopEl != null) && loopEl !== parent) {
+            if (this.hasDescendant(parent)) {
+              break;
+            }
+            left += loopEl.offsetLeft;
+            top += loopEl.offsetTop;
+            loopEl = loopEl.offsetParent;
+          }
+          return {
+            left: left,
+            top: top
+          };
+        },
+        boundingBox: function() {
+          var box;
+          box = this.position();
+          box.width = el.clientWidth;
+          box.height = el.clientHeight;
+          box.right = box.left + box.width;
+          box.bottom = box.top + box.height;
+          return box;
+        },
+
+        /*
+        		Is child el a descendant of parent el?
+        
+        		http://stackoverflow.com/questions/2234979/how-to-check-in-javascript-if-one-element-is-a-child-of-another
+         */
+        hasDescendant: function(child) {
+          var node;
+          node = child.parentNode;
+          while (node != null) {
+            if (node === el) {
+              return true;
+            }
+            node = node.parentNode;
+          }
+          return false;
+        },
+        insertAfter: function(referenceElement) {
+          return referenceElement.parentNode.insertBefore(el, referenceElement.nextSibling);
+        },
+        hasScrollBar: function(el) {
+          return hasScrollBarX(el) || hasScrollBarY(el);
+        },
+        hasScrollBarX: function(el) {
+          return el.scrollWidth > el.clientWidth;
+        },
+        hasScrollBarY: function(el) {
+          return el.scrollHeight > el.clientHeight;
+        },
+        inViewport: function(parent) {
+          var doc, rect, win;
+          win = parent != null ? parent : window;
+          doc = parent != null ? parent : document.documentElement;
+          rect = el.getBoundingClientRect();
+          return rect.top >= 0 && rect.left >= 0 && rect.bottom <= (win.innerHeight || doc.clientHeight) && rect.right <= (win.innerWidth || doc.clientWidth);
+        }
+      };
+    }
+  };
+
+}).call(this);
+
 },{}],2:[function(_dereq_,module,exports){
 (function(){var e={}.hasOwnProperty;module.exports={get:function(e,l){return null==l&&(l={}),this._sendRequest("GET",e,l)},post:function(e,l){return null==l&&(l={}),this._sendRequest("POST",e,l)},put:function(e,l){return null==l&&(l={}),this._sendRequest("PUT",e,l)},_promise:function(){return{done:function(e){return this.callDone=e},callDone:null,fail:function(e){return this.callFail=e},callFail:null,always:function(e){return this.callAlways=e},callAlways:null}},_sendRequest:function(l,n,t){var a,u,s,r,i;null==t&&(t={}),u=this._promise(),null==t.data&&(t.data={}),null==t.headers&&(t.headers={}),r=new XMLHttpRequest,r.onreadystatechange=function(){var e;if(r.readyState===XMLHttpRequest.DONE)if(null!=u.callAlways&&u.callAlways(r),200<=(e=r.status)&&206>=e){if(null!=u.callDone)return u.callDone(r)}else if(null!=u.callFail)return u.callFail(r)},r.open(l,n,!0),r.setRequestHeader("Content-type","application/json"),i=t.headers;for(a in i)e.call(i,a)&&(s=i[a],r.setRequestHeader(a,s));return r.send(t.data),u}}}).call(this);
 },{}],3:[function(_dereq_,module,exports){
@@ -328,6 +426,7 @@ ListOptions = (function(_super) {
 module.exports = ListOptions;
 
 
+
 },{"../models/facets/list.option.coffee":12}],6:[function(_dereq_,module,exports){
 var Backbone, SearchResult, SearchResults, funcky, _,
   __hasProp = {}.hasOwnProperty,
@@ -491,6 +590,7 @@ SearchResults = (function(_super) {
 module.exports = SearchResults;
 
 
+
 },{"../models/searchresult":17,"funcky.req":2}],7:[function(_dereq_,module,exports){
 var Backbone, Config,
   __hasProp = {}.hasOwnProperty,
@@ -526,6 +626,7 @@ Config = (function(_super) {
 module.exports = Config;
 
 
+
 },{}],8:[function(_dereq_,module,exports){
 var $, Backbone, Config, MainView, QueryOptions, SearchResults, Views, funcky, tpl, _,
   __hasProp = {}.hasOwnProperty,
@@ -539,7 +640,7 @@ Backbone.$ = $;
 
 _ = _dereq_('underscore');
 
-funcky = _dereq_('funcky.el');
+funcky = _dereq_('funcky.el').el;
 
 Config = _dereq_('./config');
 
@@ -591,19 +692,19 @@ MainView = (function(_super) {
     this.el.innerHTML = tpl();
     this.$('.faceted-search').addClass("search-type-" + (this.config.get('textSearch')));
     this.initFacets(this.facetViewMap);
-    if (this.config.get('textSearch') === 'simple' || this.config.get('textSearch') === 'advanced') {
-      this.renderTextSearch();
-    }
     return this;
   };
 
   MainView.prototype.renderTextSearch = function() {
     var textSearchPlaceholder;
     this.textSearch = new Views.TextSearch({
-      config: this.config
+      config: this.config,
+      fields: this.searchResults.current.get('fullTextSearchFields')
     });
     textSearchPlaceholder = this.el.querySelector('.text-search-placeholder');
-    textSearchPlaceholder.parentNode.replaceChild(this.textSearch.el, textSearchPlaceholder);
+    if (textSearchPlaceholder != null) {
+      textSearchPlaceholder.parentNode.replaceChild(this.textSearch.el, textSearchPlaceholder);
+    }
     this.listenTo(this.textSearch, 'change', (function(_this) {
       return function(queryOptions) {
         return _this.queryOptions.set(queryOptions, {
@@ -678,6 +779,11 @@ MainView = (function(_super) {
     var attrs;
     attrs = _.extend(this.config.get('queryOptions'), this.config.get('textSearchOptions'));
     this.queryOptions = new QueryOptions(attrs);
+    this.listenTo(this.queryOptions, 'change', (function(_this) {
+      return function() {
+        return _this.trigger('change:queryoptions', _this.queryOptions);
+      };
+    })(this));
     if (this.config.get('autoSearch')) {
       return this.listenTo(this.queryOptions, 'change', (function(_this) {
         return function() {
@@ -778,6 +884,7 @@ MainView = (function(_super) {
     var facets;
     facets = this.searchResults.current.get('facets');
     if (this.searchResults.queryAmount === 1) {
+      this.renderTextSearch();
       return this.facets.renderFacets(facets);
     } else if (this.searchResults.queryAmount > 1) {
       return this.facets.update(facets);
@@ -806,7 +913,12 @@ MainView = (function(_super) {
 
   MainView.prototype.sortResultsBy = function(field) {
     return this.queryOptions.set({
-      sort: field
+      sortParameters: [
+        {
+          fieldname: field,
+          direction: 'asc'
+        }
+      ]
     });
   };
 
@@ -827,6 +939,18 @@ MainView = (function(_super) {
     });
   };
 
+  MainView.prototype.getSearchResultURL = function() {
+    return this.searchResults.postURL;
+  };
+
+  MainView.prototype.xlsUrl = function() {
+    return this.getSearchResultURL() + "/xls";
+  };
+
+  MainView.prototype.csvUrl = function() {
+    return this.getSearchResultURL() + "/csv";
+  };
+
   MainView.prototype.search = function() {
     return this.searchResults.runQuery(this.queryOptions.attributes);
   };
@@ -836,6 +960,7 @@ MainView = (function(_super) {
 })(Backbone.View);
 
 module.exports = MainView;
+
 
 
 },{"../jade/main.jade":33,"./collections/searchresults":6,"./config":7,"./models/query-options":15,"./views/facets":18,"./views/text-search":25,"funcky.el":1}],9:[function(_dereq_,module,exports){
@@ -882,7 +1007,9 @@ BooleanFacet = (function(_super) {
 module.exports = BooleanFacet;
 
 
+
 },{"./main":13}],10:[function(_dereq_,module,exports){
+
 
 
 
@@ -907,6 +1034,7 @@ List = (function(_super) {
 })(Models.Facet);
 
 module.exports = List;
+
 
 
 },{"./main":13}],12:[function(_dereq_,module,exports){
@@ -947,6 +1075,7 @@ ListOption = (function(_super) {
 module.exports = ListOption;
 
 
+
 },{}],13:[function(_dereq_,module,exports){
 var Backbone, Facet, config,
   __hasProp = {}.hasOwnProperty,
@@ -979,6 +1108,7 @@ Facet = (function(_super) {
 })(Backbone.Model);
 
 module.exports = Facet;
+
 
 
 },{"../../config":7}],14:[function(_dereq_,module,exports){
@@ -1044,6 +1174,7 @@ RangeFacet = (function(_super) {
 })(FacetModel);
 
 module.exports = RangeFacet;
+
 
 
 },{"./main":13}],15:[function(_dereq_,module,exports){
@@ -1113,14 +1244,32 @@ QueryOptions = (function(_super) {
 module.exports = QueryOptions;
 
 
+
 },{"../config":7}],16:[function(_dereq_,module,exports){
-var Backbone, Search, _,
+var Backbone, Search, escapeTerm, _,
   __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
 Backbone = _dereq_('backbone');
 
 _ = _dereq_('underscore');
+
+escapeTerm = function(term) {
+  var char, escaped, regex, special, _i, _len;
+  special = '\\ + - & | ! ( ) { } [ ] ^ " ~ * ? :'.split(/\s+/);
+  escaped = term;
+  for (_i = 0, _len = special.length; _i < _len; _i++) {
+    char = special[_i];
+    if (!(char)) {
+      continue;
+    }
+    regex = '\\' + char;
+    console.log("Replacing " + char, RegExp("" + regex, "g"));
+    escaped = escaped.replace(RegExp("" + regex, "g"), '\\' + char);
+  }
+  console.log(escaped);
+  return escaped;
+};
 
 Search = (function(_super) {
   __extends(Search, _super);
@@ -1130,21 +1279,27 @@ Search = (function(_super) {
   }
 
   Search.prototype.defaults = function() {
-    return {
-      term: '*',
-      caseSensitive: false,
-      fuzzy: false,
-      title: 'Text Search',
-      name: 'text_search'
-    };
+    return {};
   };
 
   Search.prototype.queryData = function() {
-    var attrs;
+    var attrs, data, key, value;
     attrs = _.extend({}, this.attributes);
-    delete attrs.name;
-    delete attrs.title;
-    return attrs;
+    data = (function() {
+      var _results;
+      _results = [];
+      for (key in attrs) {
+        value = attrs[key];
+        _results.push({
+          name: key,
+          term: "*" + (escapeTerm(value)) + "*"
+        });
+      }
+      return _results;
+    })();
+    return {
+      fullTextSearchParameters: data
+    };
   };
 
   return Search;
@@ -1152,6 +1307,7 @@ Search = (function(_super) {
 })(Backbone.Model);
 
 module.exports = Search;
+
 
 
 },{}],17:[function(_dereq_,module,exports){
@@ -1192,6 +1348,7 @@ SearchResult = (function(_super) {
 })(Backbone.Model);
 
 module.exports = SearchResult;
+
 
 
 },{"../config":7}],18:[function(_dereq_,module,exports){
@@ -1243,6 +1400,9 @@ Facets = (function(_super) {
         facetData = data[index];
         if (this.viewMap.hasOwnProperty(facetData.type)) {
           placeholder = this.el.querySelector("." + facetData.name + "-placeholder");
+          if (placeholder == null) {
+            placeholder = this.el.querySelector("[data-name=" + facetData.name + "]");
+          }
           if (placeholder != null) {
             placeholder.parentNode.replaceChild(this.renderFacet(facetData).el, placeholder);
           }
@@ -1267,11 +1427,17 @@ Facets = (function(_super) {
   };
 
   Facets.prototype.renderFacet = function(facetData) {
-    var View;
+    var View, _ref;
     if (_.isString(facetData)) {
       facetData = _.findWhere(this.searchResults.first().get('facets'), {
         name: facetData
       });
+    }
+    if (((_ref = this.config.facetTitleMap) != null ? _ref[facetData.name] : void 0) != null) {
+      facetData.title = this.config.facetTitleMap[facetData.name];
+    }
+    if (this.config.get('startCollapsed')) {
+      facetData.collapsed = true;
     }
     View = this.viewMap[facetData.type];
     this.views[facetData.name] = new View({
@@ -1322,17 +1488,16 @@ Facets = (function(_super) {
   };
 
   Facets.prototype.destroyFacets = function() {
-    var view, viewName, _ref, _results;
+    var view, viewName, _ref;
     this.stopListening();
     _ref = this.views;
-    _results = [];
     for (viewName in _ref) {
       if (!__hasProp.call(_ref, viewName)) continue;
       view = _ref[viewName];
       view.destroy();
-      _results.push(delete this.views[viewName]);
+      delete this.views[viewName];
     }
-    return _results;
+    return this.render();
   };
 
   Facets.prototype.destroy = function() {
@@ -1341,8 +1506,9 @@ Facets = (function(_super) {
   };
 
   Facets.prototype.toggle = function(ev) {
-    var facetNames, icon, index, open, slideFacet, span, text;
+    var $, facetNames, icon, index, open, slideFacet, span, text, _ref;
     ev.preventDefault();
+    $ = Backbone.$;
     icon = $(ev.currentTarget).find('i.fa');
     span = $(ev.currentTarget).find('span');
     open = icon.hasClass('fa-expand');
@@ -1350,7 +1516,7 @@ Facets = (function(_super) {
     icon.toggleClass('fa-expand');
     text = open ? 'Collapse' : 'Expand';
     span.text("" + text + " facets");
-    facetNames = _.keys(this.views);
+    facetNames = (_ref = this.config.facets) != null ? _ref : _.keys(this.views);
     index = 0;
     slideFacet = (function(_this) {
       return function() {
@@ -1378,6 +1544,7 @@ Facets = (function(_super) {
 })(Backbone.View);
 
 module.exports = Facets;
+
 
 
 },{"./facets/boolean":19,"./facets/date":20,"./facets/list":21,"./facets/range":24}],19:[function(_dereq_,module,exports){
@@ -1475,6 +1642,7 @@ BooleanFacet = (function(_super) {
 module.exports = BooleanFacet;
 
 
+
 },{"../../../jade/facets/boolean.body.jade":26,"../../models/facets/boolean":9,"./main":23}],20:[function(_dereq_,module,exports){
 var DateFacet, Models, Views, tpl,
   __hasProp = {}.hasOwnProperty,
@@ -1529,6 +1697,7 @@ DateFacet = (function(_super) {
 })(Views.Facet);
 
 module.exports = DateFacet;
+
 
 
 },{"../../../jade/facets/date.jade":27,"../../models/facets/date":10,"./main":23}],21:[function(_dereq_,module,exports){
@@ -1662,7 +1831,7 @@ ListFacet = (function(_super) {
 
   ListFacet.prototype.changeOrder = function(ev) {
     var $target, order, type;
-    $target = $(ev.currentTarget);
+    $target = Backbone.$(ev.currentTarget);
     if ($target.hasClass('active')) {
       if ($target.hasClass('alpha')) {
         $target.toggleClass('fa-sort-alpha-desc');
@@ -1693,6 +1862,7 @@ ListFacet = (function(_super) {
 })(Views.Facet);
 
 module.exports = ListFacet;
+
 
 
 },{"../../../jade/facets/list.menu.jade":29,"../../collections/list.options":5,"../../models/facets/list":11,"./list.options":22,"./main":23}],22:[function(_dereq_,module,exports){
@@ -1759,7 +1929,7 @@ ListFacetOptions = (function(_super) {
     tpl = '';
     i = 0;
     model = this.collection.at(i);
-    visible = model.get('visible');
+    visible = model != null ? model.get('visible') : void 0;
     while (visible) {
       tpl += optionTpl({
         option: model
@@ -1815,20 +1985,14 @@ ListFacetOptions = (function(_super) {
   };
 
   ListFacetOptions.prototype.checkChanged = function(ev) {
-    var $target, checked, id, unchecked;
+    var $target, id, isChecked;
     $target = $(ev.currentTarget);
     id = $target.attr('data-value');
-    checked = $target.find("i.checked");
-    unchecked = $target.find("i.unchecked");
-    if (checked.is(':visible')) {
-      checked.hide();
-      unchecked.css('display', 'inline-block');
-    } else {
-      checked.css('display', 'inline-block');
-      unchecked.hide();
-    }
-    this.collection.get(id).set('checked', $target.find("i.checked").is(':visible'));
-    if (this.$('i.checked').length === 0 || !this.config.get('autoSearch')) {
+    isChecked = $target.attr('data-state') === 'checked';
+    $target.attr('data-state', isChecked ? 'unchecked' : 'checked');
+    isChecked = $target.attr('data-state') === 'checked';
+    this.collection.get(id).set('checked', isChecked);
+    if (($target.attr('data-state') === 'unchecked') || !this.config.get('autoSearch')) {
       return this.triggerChange();
     } else {
       return funcky.setResetTimeout(1000, (function(_this) {
@@ -1898,6 +2062,7 @@ ListFacetOptions = (function(_super) {
 module.exports = ListFacetOptions;
 
 
+
 },{"../../../jade/facets/list.body.jade":28,"../../../jade/facets/list.option.jade":30,"../../models/facets/list":11,"funcky.util":3}],23:[function(_dereq_,module,exports){
 var $, Backbone, Facet, tpl, _,
   __hasProp = {}.hasOwnProperty,
@@ -1918,6 +2083,8 @@ Facet = (function(_super) {
     return Facet.__super__.constructor.apply(this, arguments);
   }
 
+  Facet.prototype.renderedBefore = false;
+
   Facet.prototype.initialize = function(options) {
     this.config = options.config;
     if (this.config.get('facetTitleMap').hasOwnProperty(options.attrs.name)) {
@@ -1930,6 +2097,10 @@ Facet = (function(_super) {
       tpl = this.config.get('templates')['facets.main'];
     }
     this.$el.html(tpl(this.model.attributes));
+    if (this.model.get('collapsed') && !this.renderedBefore) {
+      this.hideBody();
+    }
+    this.renderedBefore = true;
     this.$el.attr('data-name', this.model.get('name'));
     return this;
   };
@@ -1942,7 +2113,7 @@ Facet = (function(_super) {
 
   Facet.prototype.toggleBody = function(ev) {
     var func;
-    func = this.$('.body').is(':visible') ? this.hideBody : this.showBody;
+    func = this.$el.hasClass('collapsed') ? this.showBody : this.hideBody;
     if (_.isFunction(ev)) {
       return func.call(this, ev);
     } else {
@@ -1960,25 +2131,21 @@ Facet = (function(_super) {
 
   Facet.prototype.hideBody = function(done) {
     this.hideMenu();
-    return this.$('.body').slideUp(100, (function(_this) {
-      return function() {
-        if (done != null) {
-          done();
-        }
-        return _this.$('header i.fa').fadeOut(100);
-      };
-    })(this));
+    this.$('.body').one('transitionend', function() {
+      if (done != null) {
+        return done();
+      }
+    });
+    return this.$el.addClass('collapsed');
   };
 
   Facet.prototype.showBody = function(done) {
-    return this.$('.body').slideDown(100, (function(_this) {
-      return function() {
-        if (done != null) {
-          done();
-        }
-        return _this.$('header i.fa').fadeIn(100);
-      };
-    })(this));
+    this.$el.removeClass('collapsed');
+    return this.$('.body').one('transitionend', function() {
+      if (done != null) {
+        return done();
+      }
+    });
   };
 
   Facet.prototype.destroy = function() {
@@ -1994,6 +2161,7 @@ Facet = (function(_super) {
 })(Backbone.View);
 
 module.exports = Facet;
+
 
 
 },{"../../../jade/facets/main.jade":31}],24:[function(_dereq_,module,exports){
@@ -2358,6 +2526,7 @@ RangeFacet = (function(_super) {
 module.exports = RangeFacet;
 
 
+
 },{"../../../jade/facets/range.body.jade":32,"../../models/facets/range":14,"./main":23}],25:[function(_dereq_,module,exports){
 var Backbone, Models, TextSearch, tpl, _,
   __hasProp = {}.hasOwnProperty,
@@ -2384,6 +2553,7 @@ TextSearch = (function(_super) {
 
   TextSearch.prototype.initialize = function(options) {
     this.config = options.config;
+    this.fields = options.fields;
     return this.reset();
   };
 
@@ -2395,11 +2565,13 @@ TextSearch = (function(_super) {
   };
 
   TextSearch.prototype.render = function() {
-    if (this.config.get('templates').hasOwnProperty('text-search')) {
+    if (this.config.has('templates').hasOwnProperty('text-search')) {
       tpl = this.config.get('templates')['text-search'];
     }
     this.$el.html(tpl({
-      model: this.model
+      model: this.model,
+      fields: this.fields,
+      textSearchTitles: this.config.get('textSearchTitleMap') || {}
     }));
     return this;
   };
@@ -2419,37 +2591,18 @@ TextSearch = (function(_super) {
   };
 
   TextSearch.prototype.onKeyUp = function(ev) {
+    var changed, field;
     if (ev.keyCode === 13) {
       ev.preventDefault();
       return this.search(ev);
     }
-    if (this.model.get('term') !== ev.currentTarget.value) {
-      this.model.set({
-        term: ev.currentTarget.value
-      });
-      return this.updateQueryModel();
+    field = ev.currentTarget.getAttribute('data-field');
+    changed = this.model.get(field) !== ev.currentTarget.value;
+    if (changed) {
+      this.model.set(field, ev.currentTarget.value);
     }
-  };
-
-  TextSearch.prototype.checkboxChanged = function(ev) {
-    var attr, cb, checkedArray, _i, _len, _ref;
-    if (attr = ev.currentTarget.getAttribute('data-attr')) {
-      if (attr === 'searchInTranscriptions') {
-        this.$('ul.textlayers').toggle(ev.currentTarget.checked);
-      }
-      this.model.set(attr, ev.currentTarget.checked);
-    } else if (attr = ev.currentTarget.getAttribute('data-attr-array')) {
-      checkedArray = [];
-      _ref = this.el.querySelectorAll('[data-attr-array="' + attr + '"]');
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        cb = _ref[_i];
-        if (cb.checked) {
-          checkedArray.push(cb.getAttribute('data-value'));
-        }
-      }
-      this.model.set(attr, checkedArray);
-    }
-    return this.updateQueryModel();
+    this.updateQueryModel();
+    return this.$('button.search').toggleClass('changed', changed);
   };
 
   TextSearch.prototype.search = function(ev) {
@@ -2475,6 +2628,7 @@ TextSearch = (function(_super) {
 })(Backbone.View);
 
 module.exports = TextSearch;
+
 
 
 },{"../../jade/text-search.jade":34,"../models/search":16}],26:[function(_dereq_,module,exports){
@@ -2584,7 +2738,7 @@ var buf = [];
 var jade_mixins = {};
 var jade_interp;
 
-buf.push("<input type=\"checkbox\" name=\"all\"/><input type=\"text\" name=\"filter\"/><small class=\"optioncount\"></small>");;return buf.join("");
+buf.push("<input type=\"checkbox\" name=\"all\"/><input type=\"text\" name=\"filter\" placeholder=\"Filter options...\"/><small class=\"optioncount\"></small>");;return buf.join("");
 };
 },{"jade/runtime":4}],30:[function(_dereq_,module,exports){
 var jade = _dereq_("jade/runtime");
@@ -2594,7 +2748,7 @@ var buf = [];
 var jade_mixins = {};
 var jade_interp;
 ;var locals_for_with = (locals || {});(function (option) {
-buf.push("<li" + (jade.attr("data-count", option.get('count'), true, false)) + (jade.attr("data-value", option.id, true, false)) + "><i" + (jade.attr("data-value", option.id, true, false)) + (jade.cls(['unchecked','fa','fa-square-o',option.get('checked')?'hidden':'visible'], [null,null,null,true])) + "></i><i" + (jade.attr("data-value", option.id, true, false)) + (jade.cls(['checked','fa','fa-check-square-o',option.get('checked')?'visible':'hidden'], [null,null,null,true])) + "></i><label" + (jade.attr("data-value", option.id, true, false)) + ">" + (null == (jade_interp = option.id === ':empty' ? '<em>(empty)</em>' : option.id) ? "" : jade_interp) + "</label><div class=\"count\">" + (jade.escape(null == (jade_interp = option.get('count') === 0 ? option.get('total') : option.get('count')) ? "" : jade_interp)) + "</div></li>");}("option" in locals_for_with?locals_for_with.option:typeof option!=="undefined"?option:undefined));;return buf.join("");
+buf.push("<li" + (jade.attr("data-count", option.get('count'), true, false)) + (jade.attr("data-value", option.id, true, false)) + (jade.attr("data-state", option.get('checked') ? 'checked' : 'unchecked', true, false)) + "><i" + (jade.attr("data-value", option.id, true, false)) + (jade.cls(['unchecked','fa','fa-square-o',option.get('checked')?'hidden':'visible'], [null,null,null,true])) + "></i><i" + (jade.attr("data-value", option.id, true, false)) + (jade.cls(['checked','fa','fa-check-square-o',option.get('checked')?'visible':'hidden'], [null,null,null,true])) + "></i><label" + (jade.attr("data-value", option.id, true, false)) + ">" + (null == (jade_interp = option.id === ':empty' ? '<em>(empty)</em>' : option.id) ? "" : jade_interp) + "</label><div class=\"count\">" + (jade.escape(null == (jade_interp = option.get('count') === 0 ? option.get('total') : option.get('count')) ? "" : jade_interp)) + "</div></li>");}("option" in locals_for_with?locals_for_with.option:typeof option!=="undefined"?option:undefined));;return buf.join("");
 };
 },{"jade/runtime":4}],31:[function(_dereq_,module,exports){
 var jade = _dereq_("jade/runtime");
@@ -2604,7 +2758,7 @@ var buf = [];
 var jade_mixins = {};
 var jade_interp;
 ;var locals_for_with = (locals || {});(function (title) {
-buf.push("<div class=\"placeholder\"><header><h3>" + (jade.escape(null == (jade_interp = title) ? "" : jade_interp)) + "</h3><div class=\"menu\"><i title=\"Filter options\" class=\"filter fa fa-filter\"></i><i title=\"Sort alphabetically\" class=\"alpha fa fa-sort-alpha-asc\"></i><i title=\"Sort numerically\" class=\"amount active fa fa-sort-amount-desc\"></i></div><div class=\"options\"></div></header><div class=\"body\"></div></div>");}("title" in locals_for_with?locals_for_with.title:typeof title!=="undefined"?title:undefined));;return buf.join("");
+buf.push("<header><h3>" + (jade.escape(null == (jade_interp = title) ? "" : jade_interp)) + "</h3><div class=\"menu\"><i title=\"Filter options\" class=\"filter fa fa-filter\"></i><i title=\"Sort alphabetically\" class=\"alpha fa fa-sort-alpha-asc\"></i><i title=\"Sort numerically\" class=\"amount active fa fa-sort-amount-desc\"></i></div><div class=\"options\"></div></header><div class=\"body\"></div>");}("title" in locals_for_with?locals_for_with.title:typeof title!=="undefined"?title:undefined));;return buf.join("");
 };
 },{"jade/runtime":4}],32:[function(_dereq_,module,exports){
 var jade = _dereq_("jade/runtime");
@@ -2633,49 +2787,31 @@ module.exports = function template(locals) {
 var buf = [];
 var jade_mixins = {};
 var jade_interp;
-;var locals_for_with = (locals || {});(function (model) {
-buf.push("<div class=\"placeholder\"><div class=\"body\"><div class=\"search-input\"><input type=\"text\" name=\"search\"/><i class=\"fa fa-search\"></i></div><div class=\"menu\"><i class=\"fa fa-times\"></i><div class=\"row-1\"><div class=\"cell-1\"><input id=\"cb_casesensitive\" type=\"checkbox\" name=\"cb_casesensitive\" data-attr=\"caseSensitive\"/><label for=\"cb_casesensitive\">Match case</label></div><div class=\"cell-2\"><input id=\"cb_fuzzy\" type=\"checkbox\" name=\"cb_fuzzy\" data-attr=\"fuzzy\"/><label for=\"cb_fuzzy\">Fuzzy</label></div></div><div class=\"row-2\">");
-if ( model.has('searchInAnnotations') || model.has('searchInTranscriptions'))
-{
-buf.push("<div class=\"cell-1\"><h4>Search in:</h4><ul class=\"searchins\">");
-if ( model.has('searchInTranscriptions'))
-{
-buf.push("<li class=\"searchin\"><input id=\"cb_searchin_transcriptions\" type=\"checkbox\" data-attr=\"searchInTranscriptions\"" + (jade.attr("checked", model.get('searchInTranscriptions'), true, false)) + "/><label for=\"cb_searchin_transcriptions\">Transcriptions</label></li>");
-}
-if ( model.has('searchInAnnotations'))
-{
-buf.push("<li class=\"searchin\"><input id=\"cb_searchin_annotations\" type=\"checkbox\" data-attr=\"searchInAnnotations\"" + (jade.attr("checked", model.get('searchInAnnotations'), true, false)) + "/><label for=\"cb_searchin_annotations\">Annotations</label></li>");
-}
-buf.push("</ul></div>");
-}
-if ( model.has('textLayers'))
-{
-buf.push("<div class=\"cell-1\"><h4>Textlayers:</h4><ul class=\"textlayers\">");
-// iterate model.get('textLayers')
+;var locals_for_with = (locals || {});(function (fields, textSearchTitles) {
+buf.push("<div class=\"placeholder\"><header><h3>Text search</h3><button class=\"search\"><i class=\"fa fa-search\"></i></button></header>");
+// iterate fields
 ;(function(){
-  var $$obj = model.get('textLayers');
+  var $$obj = fields;
   if ('number' == typeof $$obj.length) {
 
     for (var $index = 0, $$l = $$obj.length; $index < $$l; $index++) {
-      var textLayer = $$obj[$index];
+      var field = $$obj[$index];
 
-buf.push("<li class=\"textlayer\"><input" + (jade.attr("id", 'cb_textlayer'+textLayer, true, false)) + " type=\"checkbox\" data-attr-array=\"textLayers\"" + (jade.attr("data-value", textLayer, true, false)) + " checked=\"checked\"/><label" + (jade.attr("for", 'cb_textlayer'+textLayer, true, false)) + ">" + (jade.escape(null == (jade_interp = textLayer) ? "" : jade_interp)) + "</label></li>");
+buf.push("<div" + (jade.attr("data-name", field, true, false)) + " class=\"search-input\"><h4>" + (jade.escape(null == (jade_interp = textSearchTitles[field]) ? "" : jade_interp)) + "</h4><input type=\"text\" name=\"search\"" + (jade.attr("data-field", field, true, false)) + "/></div>");
     }
 
   } else {
     var $$l = 0;
     for (var $index in $$obj) {
-      $$l++;      var textLayer = $$obj[$index];
+      $$l++;      var field = $$obj[$index];
 
-buf.push("<li class=\"textlayer\"><input" + (jade.attr("id", 'cb_textlayer'+textLayer, true, false)) + " type=\"checkbox\" data-attr-array=\"textLayers\"" + (jade.attr("data-value", textLayer, true, false)) + " checked=\"checked\"/><label" + (jade.attr("for", 'cb_textlayer'+textLayer, true, false)) + ">" + (jade.escape(null == (jade_interp = textLayer) ? "" : jade_interp)) + "</label></li>");
+buf.push("<div" + (jade.attr("data-name", field, true, false)) + " class=\"search-input\"><h4>" + (jade.escape(null == (jade_interp = textSearchTitles[field]) ? "" : jade_interp)) + "</h4><input type=\"text\" name=\"search\"" + (jade.attr("data-field", field, true, false)) + "/></div>");
     }
 
   }
 }).call(this);
 
-buf.push("</ul></div>");
-}
-buf.push("</div></div></div></div>");}("model" in locals_for_with?locals_for_with.model:typeof model!=="undefined"?model:undefined));;return buf.join("");
+buf.push("</div>");}("fields" in locals_for_with?locals_for_with.fields:typeof fields!=="undefined"?fields:undefined,"textSearchTitles" in locals_for_with?locals_for_with.textSearchTitles:typeof textSearchTitles!=="undefined"?textSearchTitles:undefined));;return buf.join("");
 };
 },{"jade/runtime":4}]},{},[8])
 (8)

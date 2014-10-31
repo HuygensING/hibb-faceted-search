@@ -4,7 +4,7 @@ Backbone.$ = $
 
 _ = require 'underscore'
 
-funcky = require 'funcky.el'
+funcky = require('funcky.el').el
 
 Config = require './config'
 
