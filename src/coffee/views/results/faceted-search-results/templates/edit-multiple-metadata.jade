@@ -1,0 +1,39 @@
+//- The entrymetadatafields are split over two <div class="cell">s
+//- The left .cell renders everything smaller than length/2, the rest is
+//- rendered in the right .cell.
+//- The tabindexes are calculated using the same logic, the tabs run vertically and
+//- at the last input in the left .cell, the tab jumps to first in the right .cell.
+//- The input[type="submit"] button gets the highest tabindex.
+h3= 'Edit metadata of multiple ' + config.get('entryTermPlural')
+.row.span2
+	.cell.span1
+		form
+			ul
+				li
+					label Publishable
+					i.fa.fa-square-o(data-name="Publishable")
+					//- input.empty(type="checkbox", tabindex=entrymetadatafields.length * 2 + 3, data-name="Publishable")
+					input(style="margin-right: 137px", type="checkbox", name="Publishable", tabindex=entrymetadatafields.length * 2 + 4)
+
+				each field, key in entrymetadatafields
+					if key < entrymetadatafields.length/2
+						li 
+							label= field
+							i.fa.fa-square-o(data-name=field)
+							//- input.include(type="checkbox", tabindex=key * 2 + 1, data-name=field)
+							input(type="text", name=field, tabindex=key * 2 + 2)
+	.cell.span1
+		form
+			ul
+				each field, key in entrymetadatafields
+					if key >= entrymetadatafields.length/2
+						li 
+							label= field
+							i.fa.fa-square-o(data-name=field)
+							//- input.include(type="checkbox", tabindex=key * 2 + 1, data-name=field)
+							input(type="text", name=field, tabindex=key * 2 + 2)
+
+footer
+	button(name="cancel", tabindex=entrymetadatafields.length * 2 + 5) Cancel
+	span or
+	button.simple.inactive(name="savemetadata", tabindex=entrymetadatafields.length * 2 + 6) Save metadata

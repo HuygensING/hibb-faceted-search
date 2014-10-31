@@ -1,0 +1,9 @@
+{
+	"local-modules": [
+		"funcky.el", 
+		"funcky.arr", 
+		"funcky.req", 
+		"funcky.util",
+		"huygens-backbone-pagination"
+	]
+}

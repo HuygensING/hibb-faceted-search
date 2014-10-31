@@ -1,0 +1,22 @@
+- data.metadata = typeof data.metadata !== 'undefined' ? data.metadata : [];
+
+.title= data.name
+
+.metadata
+	ul
+		each value, key in data.metadata
+			li
+				span.key= key+': '
+				span.value= value
+
+if fulltext
+	.found= found
+	.keywords
+		ul
+			if data._kwic != null
+				each kwic, textLayer in data._kwic
+					li(data-textlayer=textLayer)
+						label= textLayer
+						ul.kwic
+							each row in kwic
+								li!= row						

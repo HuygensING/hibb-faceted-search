@@ -1,0 +1,56 @@
+li.sort-levels
+	button
+		position relative
+		z-index 3
+
+		i.fa
+			margin-left 4px
+
+	button, select
+		background white
+		border 1px solid rgb(224, 224, 224)
+		outline none
+
+	div.levels
+		display none
+		position absolute
+		padding 0 40px 40px 40px
+		z-index 2
+		margin -4px 0 0 -39px
+
+		ul
+			margin-top -23px
+			margin-left -18px
+			border 1px solid #EEE
+			margin 1px
+			list-style none
+			border-bottom-left-radius 4px
+			border-bottom-right-radius 4px
+			border-top-right-radius 4px
+			padding 20px
+			background #FFF
+
+		&.show-save-button
+			li.search
+				display block
+
+		li
+			margin-bottom 10px
+
+			&.search
+				display none
+
+				button
+					float right
+					width 100px
+
+			label, i.fa
+				color gray
+				line-height 18px
+			
+			i.fa:hover
+				color black
+			
+			select, i.fa
+				margin-left 6px
+				height 18px

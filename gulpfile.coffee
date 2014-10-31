@@ -5,13 +5,14 @@ connect = require 'gulp-connect'
 concat = require 'gulp-concat'
 coffee = require 'gulp-coffee'
 minifyCss = require 'gulp-minify-css'
-browserify = require 'browserify'
-watchify = require 'watchify'
-source = require 'vinyl-source-stream'
 uglify = require 'gulp-uglify'
 streamify = require 'gulp-streamify'
 rename = require 'gulp-rename'
 clean = require 'gulp-clean'
+
+browserify = require 'browserify'
+watchify = require 'watchify'
+source = require 'vinyl-source-stream'
 bodyParser = require 'body-parser'
 browserSync = require 'browser-sync'
 modRewrite = require 'connect-modrewrite'
@@ -19,12 +20,45 @@ proxy = require('proxy-middleware')
 exec = require('child_process').exec
 nib = require 'nib'
 url = require('url')
+async = require 'async'
+rimraf = require 'rimraf'
+extend = require 'extend'
 
 connectRewrite = require './connect-rewrite'
 pkg = require './package.json'
+cfg = require './config.json'
 
+cssFiles = [
+	'./dist/main.css'
+	'./node_modules/huygens-backbone-pagination/dist/main.css'
+]
 
-gulp.task 'server', ['stylus', 'watch', 'watchify'], ->
+gulp.task 'link', (done) ->
+	removeModules = (cb) ->
+		modulePaths = cfg['local-modules'].map (module) -> "./node_modules/#{module}"
+		async.each modulePaths , rimraf, (err) -> cb()
+
+	linkModules = (cb) ->
+		moduleCommands = cfg['local-modules'].map (module) -> "npm link #{module}"
+		async.each moduleCommands, exec, (err) -> cb()
+
+	async.series [removeModules, linkModules], (err) ->
+		return gutil.log err if err?
+		done()
+
+gulp.task 'unlink', (done) ->
+	unlinkModules = (cb) ->
+		moduleCommands = cfg['local-modules'].map (module) -> "npm unlink #{module}"
+		async.each moduleCommands, exec, (err) -> cb()
+
+	installModules = (cb) ->
+		exec 'npm i', cb
+
+	async.series [unlinkModules, installModules], (err) ->
+		return gutil.log err if err?
+		done()
+
+gulp.task 'server', ['concat-css', 'watch', 'watchify'], ->
 	proxyOptions = url.parse('http://localhost:3000')
 	proxyOptions.route = '/api'
 
@@ -34,17 +68,23 @@ gulp.task 'server', ['stylus', 'watch', 'watchify'], ->
 			middleware: [proxy(proxyOptions)]
 
 gulp.task 'stylus', ->
-	gulp.src(['./src/**/*.styl'])
+	gulp.src('./src/stylus/main.styl')
 		.pipe(stylus(
 			use: [nib()]
 			errors: true
 		))
+		.pipe(gulp.dest('./dist'))
+		.pipe(minifyCss())
+		.pipe(rename(extname:'.min.css'))
+		.pipe(gulp.dest('./dist'))
+
+gulp.task 'concat-css', ['stylus'], ->
+	gulp.src(cssFiles)
 		.pipe(concat('main.css'))
 		.pipe(gulp.dest('./dist'))
 		.pipe(minifyCss())
 		.pipe(rename(extname:'.min.css'))
 		.pipe(gulp.dest('./dist'))
-#    .pipe(browserSync.reload(stream: true))
 
 gulp.task 'prepare-coverage', ['coffee'], ->
 	#  Copy .jade files to compiled so tests can find .jade files.
@@ -58,7 +98,8 @@ gulp.task 'coffee', ->
 		.pipe(gulp.dest('./compiled/coffee'))
 
 gulp.task 'watch', ->
-	gulp.watch ['./src/**/*.styl'], ['stylus']
+	gulp.watch ['./src/**/*.styl'], ['concat-css']
+	gulp.watch [cssFiles[1]], ['concat-css']
 	gulp.watch ['./stage/index.html', './stage/*/*.css'], -> browserSync.reload()
 
 gulp.task 'default', ['watch', 'watchify']
@@ -67,6 +108,8 @@ createBundle = (watch=false) ->
 	args =
 		entries: './src/coffee/main.coffee'
 		extensions: ['.coffee', '.jade']
+
+	args = extend args, watchify.args if watch
 
 	bundle = ->
 		gutil.log('Browserify: bundling')
@@ -79,15 +122,17 @@ createBundle = (watch=false) ->
 			.pipe(gulp.dest("./dist"))
 			.pipe(browserSync.reload(stream: true, once: true))
 
+	bundler = browserify args
 	if watch
-		bundler = watchify args
+		bundler = watchify(bundler)
 		bundler.on 'update', bundle
-	else
-		bundler = browserify args
 
 	bundler.exclude 'jquery'
 	bundler.exclude 'backbone'
 	bundler.exclude 'underscore'
+
+	bundler.transform 'coffeeify'
+	bundler.transform 'jadeify'
 
 	bundle()
 
@@ -127,6 +172,6 @@ gulp.task 'browserify', ['browserify-src', 'browserify-libs'], ->
 
 #gulp.task 'clean-latest', -> gulp.src('./dist/latest', read: false).pipe(clean())
 
-gulp.task 'build', ['browserify', 'stylus']
+gulp.task 'build', ['browserify', 'concat-css']
 
 gulp.task 'default', ['server']

@@ -2,7 +2,9 @@ Backbone = require 'backbone'
 
 class Config extends Backbone.Model
   defaults: ->
-    resultRows: null
+    # Number of results per query/page. The backend returns resultRows
+    # of results and the results page displays this amount as well.
+    resultRows: 10
 
     # TODO: Merge baseUrl & searchPath into searchUrl, elaborate uses baseUrl + searchPath, publication collection uses
     # searchPath only. If elaborate uses baseUrl & searchPath, concat them by hand before sending to FS.
@@ -41,8 +43,15 @@ class Config extends Backbone.Model
     # When set to true, a search is performed whenever the mainModel (queryOptions) change.
     autoSearch: true
 
-    # This is used for extra options to the POST query call,
-    # such as setting custom headers (e.g., VRE_ID)
+    # The requestOptions object is used for extra options to the POST query call,
+    # such as setting custom headers (e.g., VRE_ID).
     requestOptions: {}
 
+    results: false
+
+    entryTermSingular: 'entry'
+    entryTermPlural: 'entries'
+
+# Config is not a singleton, because it must be possible to have
+# multiple faceted searches which don't share a config.
 module.exports = Config

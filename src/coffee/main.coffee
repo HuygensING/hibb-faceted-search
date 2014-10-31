@@ -14,6 +14,7 @@ SearchResults = require './collections/searchresults'
 Views =
 	TextSearch: require './views/text-search'
 	Facets: require './views/facets'
+	Results: require './views/results'
 
 tpl = require '../jade/main.jade'
 
@@ -60,6 +61,8 @@ class MainView extends Backbone.View
 		if @config.get('textSearch') is 'simple' or @config.get('textSearch') is 'advanced'
 			@renderTextSearch()
 
+		if @config.get 'results'
+			@renderResults()
 
 		@
 
@@ -73,6 +76,17 @@ class MainView extends Backbone.View
 
 		@listenTo @textSearch, 'search', =>
 			@search()
+
+	renderResults: ->
+		@$el.addClass 'with-results'
+
+		@results = new Views.Results
+			el: @$('.results')
+			config: @config
+			searchResults: @searchResults
+
+		@listenTo @results, 'result:click', (data) ->
+			@trigger 'result:click', data
 
 	# ### Events
 	events: ->
@@ -104,6 +118,7 @@ class MainView extends Backbone.View
 	destroy: ->
 		@facets.destroy() if @facets?
 		@textSearch.destroy() if @textSearch?
+		@results.destroy() if @results?
 
 		@remove()
 
@@ -133,6 +148,7 @@ class MainView extends Backbone.View
 		@listenTo @searchResults, 'change:results', (responseModel) =>
 			# Nothing needs updating if the facets aren't visible.
 			@update() if @config.get('textSearch') isnt 'simple'
+
 			@trigger 'change:results', responseModel
 
 		# The cursor is changed when @next or @prev are called. They are rarely used, since pagination uses @page and thus change:page.

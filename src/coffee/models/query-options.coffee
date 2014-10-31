@@ -2,18 +2,21 @@ Backbone = require 'backbone'
 _ = require 'underscore'
 config = require '../config'
 
-class QueryOptions extends Backbone.Model
 
+class QueryOptions extends Backbone.Model
+	###
+	@prop {array} facetValues=[] - Array of objects containing a facet name and values: {name: 'facet_s_writers', values: ['pietje', 'pukje']}
+	@prop {array} sortParameters=[] - Array of objects containing fieldname and direction: {fieldname: 'language', direction: 'desc'}
+	###
 	defaults: ->
-		# an array of objects containing a facet name and values: {name: 'facet_s_writers', values: ['pietje', 'pukje']}
 		facetValues: []
-		# an array of objects containing fieldname and direction: {fieldname: 'language', direction: 'desc'}
 		sortParameters: []
 
-	# initialize: (@initialAttributes) -> is concise, but not very explicit.
-	initialize: (@options) ->
-		# Store the initial attributes, they are (re)set to the model on reset.
-		@initialAttributes = @options
+	###
+	@constructs
+	@param {object} this.initialAttributes - The initial attributes are stored and not mutated, because on reset the original data is needed.
+ 	###
+	initialize: (@initialAttributes) ->
 
 	# ### Overrides
 	set: (attrs, options) ->

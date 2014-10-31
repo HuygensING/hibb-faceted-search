@@ -1,0 +1,28 @@
+- randomID = generateID();
+- entryData.metadata = typeof entryData.metadata !== 'undefined' ? entryData.metadata : [];
+
+//- TODO Remove .edit-mode and default-mode and use a class to toggle input[type='checkbox']
+.edit-mode
+	input(type="checkbox", data-id=entryData.id)
+	label.main= entryData.name
+.default-mode
+	label.main= entryData.name
+
+.metadata
+	ul
+		each value, key in entryData.metadata
+			li
+				span.key= key+': '
+				span.value= value
+
+if fulltext
+	.found= found
+	.keywords
+		ul
+			if entryData._kwic != null
+				each kwic, textLayer in entryData._kwic
+					li(data-textlayer=textLayer)
+						label= textLayer
+						ul.kwic
+							each row in kwic
+								li!= row						

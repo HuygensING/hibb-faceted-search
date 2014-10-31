@@ -1,0 +1,18 @@
+button.toggle Levels
+	i.fa.fa-caret-down
+.levels
+	ul
+		//- A loop for level1, level2 and level3
+		each i in [1, 2, 3]
+			li(name='level'+i)
+				label= 'Level '+i
+				select(name='level'+i)
+					//- A loop for the entry metadata fields. If the metadata field is equal to the project settings
+					//- level1, level2 or level3: select it.
+					option
+					each field in entryMetadataFields
+						option(value=field, selected=field==levels[i-1])= field
+				i.fa.fa-sort-alpha-asc
+
+		li.search &nbsp;
+			button Change levels

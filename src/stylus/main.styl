@@ -1,26 +1,16 @@
-@keyframes shrink
-	0%
-		transform scale(1, 1)	
-	25%
-		transform scale(0.7, 0.7)	
-	50%
-		transform scale(1, 1)	
-	75%
-		transform scale(0.7, 0.7)	
-	100%
-		transform scale(1, 1)
+@import './import/functions.styl'
+@import './import/keyframes.styl'
+@import './import/variables.styl'
 
-@keyframes grow
-	0%
-		transform scale(1, 1)	
-	25%
-		transform scale(1.2, 1.2)	
-	50%
-		transform scale(1, 1)	
-	75%
-		transform scale(1.2, 1.2)	
-	100%
-		transform scale(1, 1)	
+@import './facets/main.styl'
+@import './facets/list.styl'
+@import './facets/range.styl'
+
+@import './search-type.styl'
+@import './text-search.styl'
+
+@import './with-results.styl'
+@import './sort-levels.styl'
 
 .faceted-search-placeholder
 	.overlay

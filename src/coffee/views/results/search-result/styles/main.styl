@@ -1,0 +1,55 @@
+@import 'nib'
+
+.resultview
+	position absolute
+	left 370px
+	top 0
+	bottom 0
+	right 0
+
+	ul
+		list-style none
+		padding 0
+		margin 0
+
+	div.entries
+		absolute top 80px right 0 bottom 0 left 0
+		overflow-y auto
+
+	header
+		background white
+		// padding 0 18px 12px 0
+		border-bottom 1px solid #DDD
+		padding-bottom 12px
+
+		h3, nav
+			display inline-block
+
+		h3
+			margin-top 0	
+
+		nav
+			color spotcolor
+			margin-left 20px
+
+			& > ul
+				*
+					vertical-align middle
+
+				& > li
+					margin-left 6px
+					cursor pointer
+					display inline-block
+
+					&.display-keywords
+						display none
+
+						input
+							margin-right 2px
+
+					&.select-all
+						display none
+
+					label
+						color black
+						cursor default

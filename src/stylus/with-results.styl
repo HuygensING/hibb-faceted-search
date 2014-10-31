@@ -1,0 +1,55 @@
+.faceted-search-placeholder.with-results
+	width 100%
+
+	.faceted-search, .results
+		inline-block()
+		padding 20px
+
+	.faceted-search
+		width 30%
+
+	.results
+		width 70%
+
+		header
+			background white
+			// padding 0 18px 12px 0
+			border-bottom 1px solid #DDD
+			padding-bottom 12px
+
+			h3, nav
+				display inline-block
+
+			h3
+				margin-top 0	
+
+			nav
+				color spotcolor
+				margin-left 20px
+
+				& > ul
+					*
+						vertical-align middle
+
+					& > li
+						margin-left 6px
+						cursor pointer
+						display inline-block
+
+						&.display-keywords
+							display none
+
+							input
+								margin-right 2px
+
+						&.select-all
+							display none
+
+						label
+							color black
+							cursor default
+							
+		.pages
+			ul.page
+				li.result
+					cursor pointer

@@ -6,7 +6,7 @@
         <script src="../static/src.js"></script>
         <script src="jade.js"></script>
         <style>
-            .faceted-search-placeholder, .faceted-search-templated-placeholder, section.fs-results {
+/*            .faceted-search-placeholder, .faceted-search-templated-placeholder, section.fs-results {
                 display: inline-block;
                 vertical-align: top;
                 box-sizing: border-box;
@@ -21,7 +21,7 @@
             section.fs-results h2 {
                 margin: 0;
                 padding: 0;
-            }
+            }*/
         </style>
     </head>
     <body>
@@ -51,76 +51,73 @@
                 resultRows: 12,
                 facetTitleMap: {
                     'date_range': 'Year range'
-                }
+                },
+                results: true
             });
 
-            fs.on('change:results', function(resultModel) {
-                $('section.fs-results h2').html('Remdoc: '+resultModel.get('numFound'));
+            // fs.on('change:results', function(resultModel) {
+            //     $('section.fs-results h2').html('Remdoc: '+resultModel.get('numFound'));
 
-                $('section.fs-results ul.results').html('');
-                _.each(resultModel.get('results').remdoc.results, function(result) {
-                    $('section.fs-results ul.results').append($('<li />').html(result.id));
-                })
-            });
+            //     $('section.fs-results ul.results').html('');
+            //     _.each(resultModel.get('results').remdoc.results, function(result) {
+            //         $('section.fs-results ul.results').append($('<li />').html(result.id));
+            //     })
+            // });
 
             fs.search();
         </script>
-        <script>
-            var mainTpl, facetsTpl, textSearchTpl;
+//         <script>
+//             var mainTpl, facetsTpl, textSearchTpl;
 
-            $.when(
-                $.get('templates/main.jade', function(data) {
-                    mainTpl = jade.compile(data);
-                }),
-                $.get('templates/facets.jade', function(data) {
-                    facetsTpl = jade.compile(data);
-                }),
-                $.get('templates/text-search.jade', function(data) {
-                    textSearchTpl = jade.compile(data);
-                })
-            ).done(function() {
-//                setTimeout(initFS, 4000)
-                initFS();
-            });
+//             $.when(
+//                 $.get('templates/main.jade', function(data) {
+//                     mainTpl = jade.compile(data);
+//                 }),
+//                 $.get('templates/facets.jade', function(data) {
+//                     facetsTpl = jade.compile(data);
+//                 }),
+//                 $.get('templates/text-search.jade', function(data) {
+//                     textSearchTpl = jade.compile(data);
+//                 })
+//             ).done(function() {
+// //                setTimeout(initFS, 4000)
+//                 initFS();
+//             });
 
-            function initFS() {
-                var fs2 = new FacetedSearch({
-                    el: document.querySelector('.faceted-search-templated-placeholder'),
+//             function initFS() {
+//                 var fs2 = new FacetedSearch({
+//                     el: document.querySelector('.faceted-search-templated-placeholder'),
 
-                    // Remote, for 'real' results
-    //                baseUrl: 'http://demo7.huygens.knaw.nl/rembench-backend/',
+//                     // Remote, for 'real' results
+//     //                baseUrl: 'http://demo7.huygens.knaw.nl/rembench-backend/',
 
-                    // Local, for testing and fast result rendering
-                    baseUrl: 'http://localhost:3001/api/',
+//                     // Local, for testing and fast result rendering
+//                     baseUrl: 'http://localhost:3001/api/',
 
-                    searchPath: 'search',
-                    resultRows: 12,
-                    facetTitleMap: {
-                        'date_range': 'Year range'
-                    },
-                    autoSearch: false,
-                    templates: {
-                        'main': mainTpl,
-                        'facets': facetsTpl,
-                        'text-search': textSearchTpl,
-    //                    'facets.main': facetsMainTpl,
-    //                    'list.menu': listMenuTpl,
-    //                    'list.body': listBodyTpl,
-    //                    'range.body': rangeBodyTpl
-                    }
-                });
+//                     searchPath: 'search',
+//                     resultRows: 12,
+//                     facetTitleMap: {
+//                         'date_range': 'Year range'
+//                     },
+//                     autoSearch: false,
+//                     templates: {
+//                         'main': mainTpl,
+//                         'facets': facetsTpl,
+//                         'text-search': textSearchTpl,
+//                     }
+//                 });
 
-                fs2.on('change:results', function(resultModel) {
-                    $('section.fs-results h2').html('Remdoc: '+resultModel.get('numFound'));
+//                 fs2.on('change:results', function(resultModel) {
+//                     $('section.fs-results h2').html('Remdoc: '+resultModel.get('numFound'));
 
-                    $('section.fs-results ul.results').html('');
-                    _.each(resultModel.get('results').remdoc.results, function(result) {
-                        $('section.fs-results ul.results').append($('<li />').html(result.id));
-                    })
-                });
+//                     $('section.fs-results ul.results').html('');
+//                     _.each(resultModel.get('results').remdoc.results, function(result) {
+//                         $('section.fs-results ul.results').append($('<li />').html(result.id));
+//                     })
+//                 });
 
-                fs2.search();
-            }
-        </script>
+//                 fs2.search();
+//             }
+//         </script>
     </body>
 </html>
