@@ -273,12 +273,13 @@ class MainView extends Backbone.View
 	# model, instead of fetching a new one from the server.
 	# The newQueryOptions are optional. The can be used to add or update one or more queryOptions
 	# before sending the same (or now altered) queryOptions to the server again.
-#  refresh: (newQueryOptions={}) ->
-#    if Object.keys(newQueryOptions).length > 0
-#      @set newQueryOptions, silent: true
-#    @search cache: false
+	refresh: (newQueryOptions={}) ->
+		if Object.keys(newQueryOptions).length > 0
+			@set newQueryOptions, silent: true
+			
+		@search cache: false
 
-	search: ->
-		@searchResults.runQuery @queryOptions.attributes
+	search: (options) ->
+		@searchResults.runQuery @queryOptions.attributes, options
 
 module.exports = MainView
