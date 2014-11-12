@@ -3,6 +3,9 @@ Backbone based library
 
 ### Changelog
 
+#### v2.1.0
+- [feat] Add a view for the results
+
 #### v2.0.10
 - [perf] Move range logic from view to model.
 
