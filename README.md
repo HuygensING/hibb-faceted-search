@@ -3,6 +3,9 @@ Backbone based library
 
 ### Changelog
 
+### v2.1.1
+- Little refactoring and code clean up.
+
 #### v2.1.0
 - [feat] Add a view for the results
 
