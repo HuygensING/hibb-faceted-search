@@ -52,6 +52,16 @@ class Config extends Backbone.Model
     entryTermSingular: 'entry'
     entryTermPlural: 'entries'
 
+    # A list of all the entries metadata fields. This list corresponds
+    # to the facets and is used to populate the sortLevels in the 
+    # result view.
+    entryMetadataFields: []
+
+    # An array of max three strings. Determine the three levels
+    # of sorting the results. The three levels are entry metadata
+    # fields and are also present in the entryMetadataFields array.
+    levels: []
+
 # Config is not a singleton, because it must be possible to have
 # multiple faceted searches which don't share a config.
 module.exports = Config

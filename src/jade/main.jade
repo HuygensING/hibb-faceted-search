@@ -7,17 +7,19 @@
 		li.reset
 			button
 				i.fa.fa-refresh
-				span Reset search
+				span New search
 		li.switch
 			button
+				i.fa.fa-angle-double-up
 				i.fa.fa-angle-double-down
 				//- The rest of the sentence is finished by CSS, depending on
 				//- config.textSearch as className.
 				//- ie: "advanced search" or "simple search"
-				span Switch to
+				span.simple Simple search
+				span.advanced Advanced search
 		li.collapse-expand
 			button
 				i.fa.fa-compress
-				span Collapse facets
+				span Collapse filters
 	.facets-placeholder
 .results

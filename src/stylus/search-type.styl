@@ -53,19 +53,17 @@
 			&.collapse-expand
 				display block
 
-			&.switch
-				span:after
-					content ' simple'
+			span.advanced, i.fa.fa-angle-double-down
+				display none
 
 .faceted-search.search-type-simple
 	ul.facets-menu
 		li
 			&.collapse-expand
 				display none
-
-			&.switch
-				span:after
-					content ' advanced'
+				
+			span.simple, i.fa.fa-angle-double-up
+				display none
 
 	.facets
 		display none

@@ -4,20 +4,19 @@
     el: function(el) {
       return {
         closest: function(selector) {
-          var getMatchesSelector, matchesSelector;
-          getMatchesSelector = function(el) {
+          var getMatcher, isMatch, matcher;
+          getMatcher = function(el) {
             return el.matches || el.webkitMatchesSelector || el.mozMatchesSelector || el.msMatchesSelector;
           };
-          matchesSelector = getMatchesSelector(el);
           while (el) {
-            if (matchesSelector == null) {
-              matchesSelector = getMatchesSelector(el);
+            matcher = getMatcher(el);
+            if (matcher != null) {
+              isMatch = matcher.bind(el)(selector);
+              if (isMatch) {
+                return el;
+              }
             }
-            if ((matchesSelector != null) && (matchesSelector.bind(el)(selector))) {
-              return el;
-            } else {
-              el = el.parentNode;
-            }
+            el = el.parentNode;
           }
         },
 
@@ -1071,7 +1070,9 @@ Config = (function(_super) {
       requestOptions: {},
       results: false,
       entryTermSingular: 'entry',
-      entryTermPlural: 'entries'
+      entryTermPlural: 'entries',
+      entryMetadataFields: [],
+      levels: []
     };
   };
 
@@ -1186,8 +1187,14 @@ MainView = (function(_super) {
       config: this.config,
       searchResults: this.searchResults
     });
-    return this.listenTo(this.results, 'result:click', function(data) {
+    this.listenTo(this.results, 'result:click', function(data) {
       return this.trigger('result:click', data);
+    });
+    this.listenTo(this.results, 'result:layer-click', function(layer, data) {
+      return this.trigger('result:layer-click', layer, data);
+    });
+    return this.listenTo(this.results, 'change:sort-levels', function(sortParameters) {
+      return this.sortResultsBy(sortParameters);
     });
   };
 
@@ -1400,6 +1407,9 @@ MainView = (function(_super) {
     if (this.textSearch != null) {
       this.textSearch.reset();
     }
+    if (this.results != null) {
+      this.results.reset();
+    }
     this.facets.reset();
     this.queryOptions.reset();
     if (!cache) {
@@ -1410,8 +1420,22 @@ MainView = (function(_super) {
     });
   };
 
-  MainView.prototype.search = function() {
-    return this.searchResults.runQuery(this.queryOptions.attributes);
+  MainView.prototype.refresh = function(newQueryOptions) {
+    if (newQueryOptions == null) {
+      newQueryOptions = {};
+    }
+    if (Object.keys(newQueryOptions).length > 0) {
+      this.set(newQueryOptions, {
+        silent: true
+      });
+    }
+    return this.search({
+      cache: false
+    });
+  };
+
+  MainView.prototype.search = function(options) {
+    return this.searchResults.runQuery(this.queryOptions.attributes, options);
   };
 
   return MainView;
@@ -1422,7 +1446,7 @@ module.exports = MainView;
 
 
 
-},{"../jade/main.jade":38,"./collections/searchresults":7,"./config":8,"./models/query-options":16,"./views/facets":19,"./views/results":26,"./views/text-search":30,"funcky.el":1}],10:[function(_dereq_,module,exports){
+},{"../jade/main.jade":40,"./collections/searchresults":7,"./config":8,"./models/query-options":16,"./views/facets":19,"./views/results":26,"./views/text-search":32,"funcky.el":1}],10:[function(_dereq_,module,exports){
 var BooleanFacet, Models,
   __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
@@ -2031,7 +2055,7 @@ Facets = (function(_super) {
     icon.toggleClass('fa-compress');
     icon.toggleClass('fa-expand');
     text = open ? 'Collapse' : 'Expand';
-    span.text("" + text + " facets");
+    span.text("" + text + " filters");
     facetNames = _.keys(this.views);
     index = 0;
     slideFacet = (function(_this) {
@@ -2159,7 +2183,7 @@ module.exports = BooleanFacet;
 
 
 
-},{"../../../jade/facets/boolean.body.jade":31,"../../models/facets/boolean":10,"./main":24}],21:[function(_dereq_,module,exports){
+},{"../../../jade/facets/boolean.body.jade":33,"../../models/facets/boolean":10,"./main":24}],21:[function(_dereq_,module,exports){
 var DateFacet, Models, Views, tpl,
   __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
@@ -2216,7 +2240,7 @@ module.exports = DateFacet;
 
 
 
-},{"../../../jade/facets/date.jade":32,"../../models/facets/date":11,"./main":24}],22:[function(_dereq_,module,exports){
+},{"../../../jade/facets/date.jade":34,"../../models/facets/date":11,"./main":24}],22:[function(_dereq_,module,exports){
 var $, Collections, ListFacet, Models, Views, menuTpl, _,
   __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
@@ -2396,7 +2420,7 @@ module.exports = ListFacet;
 
 
 
-},{"../../../jade/facets/list.menu.jade":34,"../../collections/list.options":6,"../../models/facets/list":12,"./list.options":23,"./main":24}],23:[function(_dereq_,module,exports){
+},{"../../../jade/facets/list.menu.jade":36,"../../collections/list.options":6,"../../models/facets/list":12,"./list.options":23,"./main":24}],23:[function(_dereq_,module,exports){
 var $, Backbone, ListFacetOptions, Models, bodyTpl, funcky, optionTpl, _,
   __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
   __hasProp = {}.hasOwnProperty,
@@ -2606,7 +2630,7 @@ module.exports = ListFacetOptions;
 
 
 
-},{"../../../jade/facets/list.body.jade":33,"../../../jade/facets/list.option.jade":35,"../../models/facets/list":12,"funcky.util":3}],24:[function(_dereq_,module,exports){
+},{"../../../jade/facets/list.body.jade":35,"../../../jade/facets/list.option.jade":37,"../../models/facets/list":12,"funcky.util":3}],24:[function(_dereq_,module,exports){
 var $, Backbone, Facet, tpl, _,
   __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
@@ -2705,7 +2729,7 @@ module.exports = Facet;
 
 
 
-},{"../../../jade/facets/main.jade":36}],25:[function(_dereq_,module,exports){
+},{"../../../jade/facets/main.jade":38}],25:[function(_dereq_,module,exports){
 var $, Models, RangeFacet, Views, bodyTpl, dragStopper, resizer, _,
   __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
@@ -3032,7 +3056,7 @@ module.exports = RangeFacet;
 
 
 
-},{"../../../jade/facets/range.body.jade":37,"../../models/facets/range":15,"./main":24}],26:[function(_dereq_,module,exports){
+},{"../../../jade/facets/range.body.jade":39,"../../models/facets/range":15,"./main":24}],26:[function(_dereq_,module,exports){
 var $, Backbone, Results, Views, listItems, tpl, _,
   __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
@@ -3049,7 +3073,7 @@ Views = {
   Pagination: _dereq_('huygens-backbone-pagination')
 };
 
-tpl = _dereq_('../../../jade/results/main.jade');
+tpl = _dereq_('./index.jade');
 
 listItems = [];
 
@@ -3065,20 +3089,11 @@ Results = (function(_super) {
   	@constructs
   	@param {object} this.options={}
   	@prop {object} options.config
-  	@prop {array} options.levels
-  	@prop {array} options.entryMetadataFields
   	@prop {Backbone.Collection} options.searchResults
    */
 
   Results.prototype.initialize = function(options) {
-    var _base, _base1;
     this.options = options != null ? options : {};
-    if ((_base = this.options).levels == null) {
-      _base.levels = [];
-    }
-    if ((_base1 = this.options).entryMetadataFields == null) {
-      _base1.entryMetadataFields = [];
-    }
 
     /*
     		@prop resultItems
@@ -3110,9 +3125,12 @@ Results = (function(_super) {
   };
 
   Results.prototype.renderLevels = function() {
+    if (this.subviews.sortLevels != null) {
+      this.subviews.sortLevels.destroy();
+    }
     this.subviews.sortLevels = new Views.SortLevels({
-      levels: this.options.levels,
-      entryMetadataFields: this.options.entryMetadataFields
+      levels: this.options.config.get('levels'),
+      entryMetadataFields: this.options.config.get('entryMetadataFields')
     });
     this.$('header nav ul').prepend(this.subviews.sortLevels.$el);
     return this.listenTo(this.subviews.sortLevels, 'change', (function(_this) {
@@ -3130,23 +3148,19 @@ Results = (function(_super) {
    */
 
   Results.prototype.renderResultsPage = function(responseModel, removeCache) {
-    var frag, fulltext, item, pageNumber, result, ul, _i, _j, _len, _len1, _ref, _ref1;
+    var frag, fulltext, pageNumber, result, ul, _i, _len, _ref;
     if (removeCache == null) {
       removeCache = false;
     }
     if (removeCache) {
-      _ref = this.resultItems;
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        item = _ref[_i];
-        item.destroy();
-      }
+      this.destroyResultItems();
       this.$("div.pages").html('');
     }
     fulltext = responseModel.has('term') && responseModel.get('term').indexOf('*:*') === -1 && responseModel.get('term').indexOf('*') === -1;
     frag = document.createDocumentFragment();
-    _ref1 = responseModel.get('results');
-    for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
-      result = _ref1[_j];
+    _ref = responseModel.get('results');
+    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+      result = _ref[_i];
       result = new Views.Result({
         data: result,
         fulltext: fulltext,
@@ -3155,6 +3169,9 @@ Results = (function(_super) {
       this.resultItems.push(result);
       this.listenTo(result, 'click', function(resultData) {
         return this.trigger('result:click', resultData);
+      });
+      this.listenTo(result, 'layer:click', function(layer, resultData) {
+        return this.trigger('result:layer-click', layer, resultData);
       });
       frag.appendChild(result.el);
     }
@@ -3200,6 +3217,26 @@ Results = (function(_super) {
     return this.$('.metadata').toggle(ev.currentTarget.checked);
   };
 
+  Results.prototype.reset = function() {
+    return this.renderLevels();
+  };
+
+  Results.prototype.destroy = function() {
+    this.destroyResultItems();
+    return this.subviews.sortLevels.destroy();
+  };
+
+  Results.prototype.destroyResultItems = function() {
+    var item, _i, _len, _ref, _results;
+    _ref = this.resultItems;
+    _results = [];
+    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+      item = _ref[_i];
+      _results.push(item.destroy());
+    }
+    return _results;
+  };
+
   return Results;
 
 })(Backbone.View);
@@ -3208,14 +3245,24 @@ module.exports = Results;
 
 
 
-},{"../../../jade/results/main.jade":39,"./result":27,"./sort-levels":28,"huygens-backbone-pagination":4}],27:[function(_dereq_,module,exports){
+},{"./index.jade":27,"./result":28,"./sort-levels":30,"huygens-backbone-pagination":4}],27:[function(_dereq_,module,exports){
+var jade = _dereq_("jade/runtime");
+
+module.exports = function template(locals) {
+var buf = [];
+var jade_mixins = {};
+var jade_interp;
+
+buf.push("<header><h3 class=\"numfound\"></h3><nav><ul><li class=\"display-keywords\"><input id=\"a9f7fg6\" type=\"checkbox\"/><label for=\"a9f7fg6\">Display keywords</label></li><li class=\"select-all\"><input id=\"i9d8sdf\" type=\"checkbox\"/><label for=\"i9d8sdf\">Select all</label></li><li class=\"show-metadata\"><input id=\"o45hes3\" type=\"checkbox\" checked=\"checked\"/><label for=\"o45hes3\">Show metadata</label></li></ul></nav><div class=\"pagination\"></div></header><div class=\"pages\"></div>");;return buf.join("");
+};
+},{"jade/runtime":5}],28:[function(_dereq_,module,exports){
 var Backbone, Result, tpl,
   __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
 Backbone = _dereq_('backbone');
 
-tpl = _dereq_('../../../jade/results/result.jade');
+tpl = _dereq_('./result.jade');
 
 
 /*
@@ -3279,12 +3326,20 @@ Result = (function(_super) {
 
   Result.prototype.events = function() {
     return {
-      'click': '_handleClick'
+      'click': '_handleClick',
+      'click li[data-layer]': '_handleLayerClick'
     };
   };
 
   Result.prototype._handleClick = function(ev) {
     return this.trigger('click', this.options.data);
+  };
+
+  Result.prototype._handleLayerClick = function(ev) {
+    var layer;
+    ev.stopPropagation();
+    layer = ev.currentTarget.getAttribute('data-layer');
+    return this.trigger('layer:click', layer, this.options.data);
   };
 
   Result.prototype.destroy = function() {
@@ -3339,7 +3394,117 @@ class Result extends Backbone.View
 
 
 
-},{"../../../jade/results/result.jade":40}],28:[function(_dereq_,module,exports){
+},{"./result.jade":29}],29:[function(_dereq_,module,exports){
+var jade = _dereq_("jade/runtime");
+
+module.exports = function template(locals) {
+var buf = [];
+var jade_mixins = {};
+var jade_interp;
+;var locals_for_with = (locals || {});(function (data, fulltext, found) {
+data.metadata = typeof data.metadata !== 'undefined' ? data.metadata : [];
+buf.push("<div class=\"title\">" + (jade.escape(null == (jade_interp = data.name) ? "" : jade_interp)) + "</div><div class=\"metadata\"><ul>");
+// iterate data.metadata
+;(function(){
+  var $$obj = data.metadata;
+  if ('number' == typeof $$obj.length) {
+
+    for (var key = 0, $$l = $$obj.length; key < $$l; key++) {
+      var value = $$obj[key];
+
+buf.push("<li><span class=\"key\">" + (jade.escape(null == (jade_interp = key+': ') ? "" : jade_interp)) + "</span><span class=\"value\">" + (jade.escape(null == (jade_interp = value) ? "" : jade_interp)) + "</span></li>");
+    }
+
+  } else {
+    var $$l = 0;
+    for (var key in $$obj) {
+      $$l++;      var value = $$obj[key];
+
+buf.push("<li><span class=\"key\">" + (jade.escape(null == (jade_interp = key+': ') ? "" : jade_interp)) + "</span><span class=\"value\">" + (jade.escape(null == (jade_interp = value) ? "" : jade_interp)) + "</span></li>");
+    }
+
+  }
+}).call(this);
+
+buf.push("</ul></div>");
+if ( fulltext)
+{
+buf.push("<div class=\"found\">" + (jade.escape(null == (jade_interp = found) ? "" : jade_interp)) + "</div><div class=\"keywords\"><ul>");
+if ( data._kwic != null)
+{
+// iterate data._kwic
+;(function(){
+  var $$obj = data._kwic;
+  if ('number' == typeof $$obj.length) {
+
+    for (var layer = 0, $$l = $$obj.length; layer < $$l; layer++) {
+      var kwic = $$obj[layer];
+
+buf.push("<li" + (jade.attr("data-layer", layer, true, false)) + "><label>" + (jade.escape(null == (jade_interp = layer) ? "" : jade_interp)) + "</label><ul class=\"kwic\">");
+// iterate kwic
+;(function(){
+  var $$obj = kwic;
+  if ('number' == typeof $$obj.length) {
+
+    for (var $index = 0, $$l = $$obj.length; $index < $$l; $index++) {
+      var row = $$obj[$index];
+
+buf.push("<li>" + (null == (jade_interp = row						) ? "" : jade_interp) + "</li>");
+    }
+
+  } else {
+    var $$l = 0;
+    for (var $index in $$obj) {
+      $$l++;      var row = $$obj[$index];
+
+buf.push("<li>" + (null == (jade_interp = row						) ? "" : jade_interp) + "</li>");
+    }
+
+  }
+}).call(this);
+
+buf.push("</ul></li>");
+    }
+
+  } else {
+    var $$l = 0;
+    for (var layer in $$obj) {
+      $$l++;      var kwic = $$obj[layer];
+
+buf.push("<li" + (jade.attr("data-layer", layer, true, false)) + "><label>" + (jade.escape(null == (jade_interp = layer) ? "" : jade_interp)) + "</label><ul class=\"kwic\">");
+// iterate kwic
+;(function(){
+  var $$obj = kwic;
+  if ('number' == typeof $$obj.length) {
+
+    for (var $index = 0, $$l = $$obj.length; $index < $$l; $index++) {
+      var row = $$obj[$index];
+
+buf.push("<li>" + (null == (jade_interp = row						) ? "" : jade_interp) + "</li>");
+    }
+
+  } else {
+    var $$l = 0;
+    for (var $index in $$obj) {
+      $$l++;      var row = $$obj[$index];
+
+buf.push("<li>" + (null == (jade_interp = row						) ? "" : jade_interp) + "</li>");
+    }
+
+  }
+}).call(this);
+
+buf.push("</ul></li>");
+    }
+
+  }
+}).call(this);
+
+}
+buf.push("</ul></div>");
+}}("data" in locals_for_with?locals_for_with.data:typeof data!=="undefined"?data:undefined,"fulltext" in locals_for_with?locals_for_with.fulltext:typeof fulltext!=="undefined"?fulltext:undefined,"found" in locals_for_with?locals_for_with.found:typeof found!=="undefined"?found:undefined));;return buf.join("");
+};
+},{"jade/runtime":5}],30:[function(_dereq_,module,exports){
 var $, Backbone, SortLevels, el, tpl,
   __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
@@ -3369,7 +3534,7 @@ SortLevels = (function(_super) {
   };
 
   SortLevels.prototype.render = function() {
-    var levels, rtpl;
+    var leave, levels, rtpl;
     rtpl = tpl({
       levels: this.options.levels,
       entryMetadataFields: this.options.entryMetadataFields
@@ -3398,13 +3563,13 @@ SortLevels = (function(_super) {
       };
     })(this));
     levels = this.$('div.levels');
-    return levels.mouseleave((function(_this) {
-      return function(ev) {
-        if (!(el(levels[0]).hasDescendant(ev.target) || levels[0] === ev.target)) {
-          return levels.hide();
-        }
-      };
-    })(this));
+    leave = function(ev) {
+      if (!(el(levels[0]).hasDescendant(ev.target) || levels[0] === ev.target)) {
+        return levels.hide();
+      }
+    };
+    this.onMouseleave = leave.bind(this);
+    return levels.on('mouseleave', this.onMouseleave);
   };
 
   SortLevels.prototype.events = function() {
@@ -3470,6 +3635,11 @@ SortLevels = (function(_super) {
     return this.trigger('change', sortParameters);
   };
 
+  SortLevels.prototype.destroy = function() {
+    this.$('div.levels').off('mouseleave', this.onMouseleave);
+    return this.remove();
+  };
+
   return SortLevels;
 
 })(Backbone.View);
@@ -3478,7 +3648,7 @@ module.exports = SortLevels;
 
 
 
-},{"./templates/main.jade":29,"funcky.el":1}],29:[function(_dereq_,module,exports){
+},{"./templates/main.jade":31,"funcky.el":1}],31:[function(_dereq_,module,exports){
 var jade = _dereq_("jade/runtime");
 
 module.exports = function template(locals) {
@@ -3486,7 +3656,7 @@ var buf = [];
 var jade_mixins = {};
 var jade_interp;
 ;var locals_for_with = (locals || {});(function (entryMetadataFields, levels) {
-buf.push("<button class=\"toggle\">Levels<i class=\"fa fa-caret-down\"></i></button><div class=\"levels\"><ul>");
+buf.push("<button class=\"toggle\">Sort<i class=\"fa fa-caret-down\"></i></button><div class=\"levels\"><ul>");
 // iterate [1, 2, 3]
 ;(function(){
   var $$obj = [1, 2, 3];
@@ -3557,7 +3727,7 @@ buf.push("</select><i class=\"fa fa-sort-alpha-asc\"></i></li>");
 
 buf.push("<li class=\"search\">&nbsp;<button>Change levels</button></li></ul></div>");}("entryMetadataFields" in locals_for_with?locals_for_with.entryMetadataFields:typeof entryMetadataFields!=="undefined"?entryMetadataFields:undefined,"levels" in locals_for_with?locals_for_with.levels:typeof levels!=="undefined"?levels:undefined));;return buf.join("");
 };
-},{"jade/runtime":5}],30:[function(_dereq_,module,exports){
+},{"jade/runtime":5}],32:[function(_dereq_,module,exports){
 var Backbone, Models, TextSearch, tpl, _,
   __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
@@ -3677,7 +3847,7 @@ module.exports = TextSearch;
 
 
 
-},{"../../jade/text-search.jade":41,"../models/search":17}],31:[function(_dereq_,module,exports){
+},{"../../jade/text-search.jade":41,"../models/search":17}],33:[function(_dereq_,module,exports){
 var jade = _dereq_("jade/runtime");
 
 module.exports = function template(locals) {
@@ -3710,7 +3880,7 @@ buf.push("<li><div class=\"row span6\"><div class=\"cell span5\"><i" + (jade.att
 
 buf.push("</ul>");}("options" in locals_for_with?locals_for_with.options:typeof options!=="undefined"?options:undefined,"ucfirst" in locals_for_with?locals_for_with.ucfirst:typeof ucfirst!=="undefined"?ucfirst:undefined));;return buf.join("");
 };
-},{"jade/runtime":5}],32:[function(_dereq_,module,exports){
+},{"jade/runtime":5}],34:[function(_dereq_,module,exports){
 var jade = _dereq_("jade/runtime");
 
 module.exports = function template(locals) {
@@ -3766,7 +3936,7 @@ buf.push("<option>" + (jade.escape(null == (jade_interp = option) ? "" : jade_in
 
 buf.push("</select></div>");}("name" in locals_for_with?locals_for_with.name:typeof name!=="undefined"?name:undefined,"title" in locals_for_with?locals_for_with.title:typeof title!=="undefined"?title:undefined,"options" in locals_for_with?locals_for_with.options:typeof options!=="undefined"?options:undefined));;return buf.join("");
 };
-},{"jade/runtime":5}],33:[function(_dereq_,module,exports){
+},{"jade/runtime":5}],35:[function(_dereq_,module,exports){
 var jade = _dereq_("jade/runtime");
 
 module.exports = function template(locals) {
@@ -3776,7 +3946,7 @@ var jade_interp;
 
 buf.push("<ul></ul>");;return buf.join("");
 };
-},{"jade/runtime":5}],34:[function(_dereq_,module,exports){
+},{"jade/runtime":5}],36:[function(_dereq_,module,exports){
 var jade = _dereq_("jade/runtime");
 
 module.exports = function template(locals) {
@@ -3786,7 +3956,7 @@ var jade_interp;
 
 buf.push("<input type=\"checkbox\" name=\"all\"/><input type=\"text\" name=\"filter\"/><small class=\"optioncount\"></small>");;return buf.join("");
 };
-},{"jade/runtime":5}],35:[function(_dereq_,module,exports){
+},{"jade/runtime":5}],37:[function(_dereq_,module,exports){
 var jade = _dereq_("jade/runtime");
 
 module.exports = function template(locals) {
@@ -3796,7 +3966,7 @@ var jade_interp;
 ;var locals_for_with = (locals || {});(function (option) {
 buf.push("<li" + (jade.attr("data-count", option.get('count'), true, false)) + (jade.attr("data-value", option.id, true, false)) + "><i" + (jade.attr("data-value", option.id, true, false)) + (jade.cls(['unchecked','fa','fa-square-o',option.get('checked')?'hidden':'visible'], [null,null,null,true])) + "></i><i" + (jade.attr("data-value", option.id, true, false)) + (jade.cls(['checked','fa','fa-check-square-o',option.get('checked')?'visible':'hidden'], [null,null,null,true])) + "></i><label" + (jade.attr("data-value", option.id, true, false)) + ">" + (null == (jade_interp = option.id === ':empty' ? '<em>(empty)</em>' : option.id) ? "" : jade_interp) + "</label><div class=\"count\">" + (jade.escape(null == (jade_interp = option.get('count') === 0 ? option.get('total') : option.get('count')) ? "" : jade_interp)) + "</div></li>");}("option" in locals_for_with?locals_for_with.option:typeof option!=="undefined"?option:undefined));;return buf.join("");
 };
-},{"jade/runtime":5}],36:[function(_dereq_,module,exports){
+},{"jade/runtime":5}],38:[function(_dereq_,module,exports){
 var jade = _dereq_("jade/runtime");
 
 module.exports = function template(locals) {
@@ -3806,7 +3976,7 @@ var jade_interp;
 ;var locals_for_with = (locals || {});(function (title) {
 buf.push("<div class=\"placeholder\"><header><h3>" + (jade.escape(null == (jade_interp = title) ? "" : jade_interp)) + "</h3><div class=\"menu\"><i title=\"Filter options\" class=\"filter fa fa-filter\"></i><i title=\"Sort alphabetically\" class=\"alpha fa fa-sort-alpha-asc\"></i><i title=\"Sort numerically\" class=\"amount active fa fa-sort-amount-desc\"></i></div><div class=\"options\"></div></header><div class=\"body\"></div></div>");}("title" in locals_for_with?locals_for_with.title:typeof title!=="undefined"?title:undefined));;return buf.join("");
 };
-},{"jade/runtime":5}],37:[function(_dereq_,module,exports){
+},{"jade/runtime":5}],39:[function(_dereq_,module,exports){
 var jade = _dereq_("jade/runtime");
 
 module.exports = function template(locals) {
@@ -3816,26 +3986,6 @@ var jade_interp;
 ;var locals_for_with = (locals || {});(function (options) {
 buf.push("<div class=\"slider\"><span class=\"dash\">-</span><div class=\"handle-min handle\"><input" + (jade.attr("value", options.lowerLimit, true, false)) + " disabled=\"disabled\" class=\"min\"/></div><div class=\"handle-max handle\"><input" + (jade.attr("value", options.upperLimit, true, false)) + " disabled=\"disabled\" class=\"max\"/></div><div class=\"bar\">&nbsp;</div><button>Search?</button></div>");}("options" in locals_for_with?locals_for_with.options:typeof options!=="undefined"?options:undefined));;return buf.join("");
 };
-},{"jade/runtime":5}],38:[function(_dereq_,module,exports){
-var jade = _dereq_("jade/runtime");
-
-module.exports = function template(locals) {
-var buf = [];
-var jade_mixins = {};
-var jade_interp;
-
-buf.push("<div class=\"overlay\"><div><i class=\"fa fa-spinner fa-spin fa-2x\"></i></div></div><div class=\"faceted-search\"><div class=\"text-search-placeholder\"></div><ul class=\"facets-menu\"><li class=\"reset\"><button><i class=\"fa fa-refresh\"></i><span>Reset search</span></button></li><li class=\"switch\"><button><i class=\"fa fa-angle-double-down\"></i><span>Switch to</span></button></li><li class=\"collapse-expand\"><button><i class=\"fa fa-compress\"></i><span>Collapse facets</span></button></li></ul><div class=\"facets-placeholder\"></div></div><div class=\"results\"></div>");;return buf.join("");
-};
-},{"jade/runtime":5}],39:[function(_dereq_,module,exports){
-var jade = _dereq_("jade/runtime");
-
-module.exports = function template(locals) {
-var buf = [];
-var jade_mixins = {};
-var jade_interp;
-
-buf.push("<header><h3 class=\"numfound\"></h3><nav><ul><li class=\"display-keywords\"><input id=\"a9f7fg6\" type=\"checkbox\"/><label for=\"a9f7fg6\">Display keywords</label></li><li class=\"select-all\"><input id=\"i9d8sdf\" type=\"checkbox\"/><label for=\"i9d8sdf\">Select all</label></li><li class=\"show-metadata\"><input id=\"o45hes3\" type=\"checkbox\" checked=\"checked\"/><label for=\"o45hes3\">Show metadata</label></li></ul></nav><div class=\"pagination\"></div></header><div class=\"pages\"></div>");;return buf.join("");
-};
 },{"jade/runtime":5}],40:[function(_dereq_,module,exports){
 var jade = _dereq_("jade/runtime");
 
@@ -3843,108 +3993,8 @@ module.exports = function template(locals) {
 var buf = [];
 var jade_mixins = {};
 var jade_interp;
-;var locals_for_with = (locals || {});(function (data, fulltext, found) {
-data.metadata = typeof data.metadata !== 'undefined' ? data.metadata : [];
-buf.push("<div class=\"title\">" + (jade.escape(null == (jade_interp = data.name) ? "" : jade_interp)) + "</div><div class=\"metadata\"><ul>");
-// iterate data.metadata
-;(function(){
-  var $$obj = data.metadata;
-  if ('number' == typeof $$obj.length) {
 
-    for (var key = 0, $$l = $$obj.length; key < $$l; key++) {
-      var value = $$obj[key];
-
-buf.push("<li><span class=\"key\">" + (jade.escape(null == (jade_interp = key+': ') ? "" : jade_interp)) + "</span><span class=\"value\">" + (jade.escape(null == (jade_interp = value) ? "" : jade_interp)) + "</span></li>");
-    }
-
-  } else {
-    var $$l = 0;
-    for (var key in $$obj) {
-      $$l++;      var value = $$obj[key];
-
-buf.push("<li><span class=\"key\">" + (jade.escape(null == (jade_interp = key+': ') ? "" : jade_interp)) + "</span><span class=\"value\">" + (jade.escape(null == (jade_interp = value) ? "" : jade_interp)) + "</span></li>");
-    }
-
-  }
-}).call(this);
-
-buf.push("</ul></div>");
-if ( fulltext)
-{
-buf.push("<div class=\"found\">" + (jade.escape(null == (jade_interp = found) ? "" : jade_interp)) + "</div><div class=\"keywords\"><ul>");
-if ( data._kwic != null)
-{
-// iterate data._kwic
-;(function(){
-  var $$obj = data._kwic;
-  if ('number' == typeof $$obj.length) {
-
-    for (var textLayer = 0, $$l = $$obj.length; textLayer < $$l; textLayer++) {
-      var kwic = $$obj[textLayer];
-
-buf.push("<li" + (jade.attr("data-textlayer", textLayer, true, false)) + "><label>" + (jade.escape(null == (jade_interp = textLayer) ? "" : jade_interp)) + "</label><ul class=\"kwic\">");
-// iterate kwic
-;(function(){
-  var $$obj = kwic;
-  if ('number' == typeof $$obj.length) {
-
-    for (var $index = 0, $$l = $$obj.length; $index < $$l; $index++) {
-      var row = $$obj[$index];
-
-buf.push("<li>" + (null == (jade_interp = row						) ? "" : jade_interp) + "</li>");
-    }
-
-  } else {
-    var $$l = 0;
-    for (var $index in $$obj) {
-      $$l++;      var row = $$obj[$index];
-
-buf.push("<li>" + (null == (jade_interp = row						) ? "" : jade_interp) + "</li>");
-    }
-
-  }
-}).call(this);
-
-buf.push("</ul></li>");
-    }
-
-  } else {
-    var $$l = 0;
-    for (var textLayer in $$obj) {
-      $$l++;      var kwic = $$obj[textLayer];
-
-buf.push("<li" + (jade.attr("data-textlayer", textLayer, true, false)) + "><label>" + (jade.escape(null == (jade_interp = textLayer) ? "" : jade_interp)) + "</label><ul class=\"kwic\">");
-// iterate kwic
-;(function(){
-  var $$obj = kwic;
-  if ('number' == typeof $$obj.length) {
-
-    for (var $index = 0, $$l = $$obj.length; $index < $$l; $index++) {
-      var row = $$obj[$index];
-
-buf.push("<li>" + (null == (jade_interp = row						) ? "" : jade_interp) + "</li>");
-    }
-
-  } else {
-    var $$l = 0;
-    for (var $index in $$obj) {
-      $$l++;      var row = $$obj[$index];
-
-buf.push("<li>" + (null == (jade_interp = row						) ? "" : jade_interp) + "</li>");
-    }
-
-  }
-}).call(this);
-
-buf.push("</ul></li>");
-    }
-
-  }
-}).call(this);
-
-}
-buf.push("</ul></div>");
-}}("data" in locals_for_with?locals_for_with.data:typeof data!=="undefined"?data:undefined,"fulltext" in locals_for_with?locals_for_with.fulltext:typeof fulltext!=="undefined"?fulltext:undefined,"found" in locals_for_with?locals_for_with.found:typeof found!=="undefined"?found:undefined));;return buf.join("");
+buf.push("<div class=\"overlay\"><div><i class=\"fa fa-spinner fa-spin fa-2x\"></i></div></div><div class=\"faceted-search\"><div class=\"text-search-placeholder\"></div><ul class=\"facets-menu\"><li class=\"reset\"><button><i class=\"fa fa-refresh\"></i><span>New search</span></button></li><li class=\"switch\"><button><i class=\"fa fa-angle-double-up\"></i><i class=\"fa fa-angle-double-down\"></i><span class=\"simple\">Simple search</span><span class=\"advanced\">Advanced search</span></button></li><li class=\"collapse-expand\"><button><i class=\"fa fa-compress\"></i><span>Collapse filters</span></button></li></ul><div class=\"facets-placeholder\"></div></div><div class=\"results\"></div>");;return buf.join("");
 };
 },{"jade/runtime":5}],41:[function(_dereq_,module,exports){
 var jade = _dereq_("jade/runtime");

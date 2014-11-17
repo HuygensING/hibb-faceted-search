@@ -1,6 +1,6 @@
 Backbone = require 'backbone'
 
-tpl = require '../../../jade/results/result.jade'
+tpl = require './result.jade'
 
 ###
 @class Result
@@ -42,9 +42,16 @@ class Result extends Backbone.View
 
 	events: ->
 		'click': '_handleClick'
+		'click li[data-layer]': '_handleLayerClick'
 
 	_handleClick: (ev) ->
 		@trigger 'click', @options.data
+
+	_handleLayerClick: (ev) ->
+		ev.stopPropagation()
+		layer = ev.currentTarget.getAttribute 'data-layer'
+		
+		@trigger 'layer:click', layer, @options.data
 
 	destroy: ->
 		@remove()

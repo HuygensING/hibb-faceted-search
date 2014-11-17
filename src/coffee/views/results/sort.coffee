@@ -3,7 +3,7 @@ $ = require 'jquery'
 
 el = require('funcky.el').el
 
-tpl = require './templates/main.jade'
+tpl = require './sort.jade'
 
 # @options
 # 	project	Backbone.Model The current project
@@ -38,12 +38,13 @@ class SortLevels extends Backbone.View
 			@options.entryMetadataFields = fields
 			@render()
 
-		# TODO turn off on destroy
 		levels = @$('div.levels')
-		levels.mouseleave (ev) =>
+		leave = (ev) ->
 			# The leave event is triggered when the user clicks the <select>,
 			# so we check if the target isn't part of div.levels
 			levels.hide() unless el(levels[0]).hasDescendant(ev.target) or levels[0] is ev.target
+		@onMouseleave = leave.bind(@)
+		levels.on 'mouseleave', @onMouseleave
 
 	# ### Events
 	events: ->
@@ -96,5 +97,9 @@ class SortLevels extends Backbone.View
 		@hideLevels()
 
 		@trigger 'change', sortParameters
+
+	destroy: ->
+		@$('div.levels').off 'mouseleave', @onMouseleave
+		@remove()
 
 module.exports = SortLevels

@@ -480,14 +480,16 @@
 .faceted-search.search-type-advanced ul.facets-menu li.collapse-expand {
   display: block;
 }
-.faceted-search.search-type-advanced ul.facets-menu li.switch span:after {
-  content: ' simple';
+.faceted-search.search-type-advanced ul.facets-menu li span.advanced,
+.faceted-search.search-type-advanced ul.facets-menu li i.fa.fa-angle-double-down {
+  display: none;
 }
 .faceted-search.search-type-simple ul.facets-menu li.collapse-expand {
   display: none;
 }
-.faceted-search.search-type-simple ul.facets-menu li.switch span:after {
-  content: ' advanced';
+.faceted-search.search-type-simple ul.facets-menu li span.simple,
+.faceted-search.search-type-simple ul.facets-menu li i.fa.fa-angle-double-up {
+  display: none;
 }
 .faceted-search.search-type-simple .facets {
   display: none;

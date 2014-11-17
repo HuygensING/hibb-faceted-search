@@ -14,9 +14,9 @@ if fulltext
 	.keywords
 		ul
 			if data._kwic != null
-				each kwic, textLayer in data._kwic
-					li(data-textlayer=textLayer)
-						label= textLayer
+				each kwic, layer in data._kwic
+					li(data-layer=layer)
+						label= layer
 						ul.kwic
 							each row in kwic
 								li!= row						

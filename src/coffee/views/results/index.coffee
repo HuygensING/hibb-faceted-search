@@ -4,10 +4,10 @@ _ = require 'underscore'
 
 Views =
 	Result: require './result'
-	SortLevels: require './sort-levels'
+	SortLevels: require './sort'
 	Pagination: require 'huygens-backbone-pagination'
 
-tpl = require '../../../jade/results/main.jade'
+tpl = require './index.jade'
 
 listItems = []
 
@@ -18,14 +18,9 @@ class Results extends Backbone.View
 	@constructs
 	@param {object} this.options={}
 	@prop {object} options.config
-	@prop {array} options.levels
-	@prop {array} options.entryMetadataFields
 	@prop {Backbone.Collection} options.searchResults
 	###
 	initialize: (@options={}) ->
-		@options.levels ?= []
-		@options.entryMetadataFields ?= []
-
 		###
 		@prop resultItems
 		###
@@ -58,12 +53,14 @@ class Results extends Backbone.View
 		@
 
 	renderLevels: ->
+		@subviews.sortLevels.destroy() if @subviews.sortLevels?
 		@subviews.sortLevels = new Views.SortLevels
-			levels: @options.levels
-			entryMetadataFields: @options.entryMetadataFields
+			levels: @options.config.get 'levels'
+			entryMetadataFields: @options.config.get 'entryMetadataFields'
 		@$('header nav ul').prepend @subviews.sortLevels.$el
 
-		@listenTo @subviews.sortLevels, 'change', (sortParameters) => @trigger 'change:sort-levels', sortParameters
+		@listenTo @subviews.sortLevels, 'change', (sortParameters) =>
+			@trigger 'change:sort-levels', sortParameters
 
 	###
 	@method renderResultsPage
@@ -72,7 +69,7 @@ class Results extends Backbone.View
 	###
 	renderResultsPage: (responseModel, removeCache=false) ->
 		if removeCache
-			item.destroy() for item in @resultItems
+			@destroyResultItems()
 			@$("div.pages").html('')
 
 		# eLaborate uses "*:*" when no searchterm was entered, Timbuctoo uses "*".
@@ -95,6 +92,9 @@ class Results extends Backbone.View
 			# it to the parent view and trigger the router to navigate to the entry.
 			@listenTo result, 'click', (resultData) ->
 				@trigger 'result:click', resultData
+
+			@listenTo result, 'layer:click', (layer, resultData) ->
+				@trigger 'result:layer-click', layer, resultData
 
 			# Add the list item to the frag.
 			frag.appendChild result.el
@@ -134,5 +134,15 @@ class Results extends Backbone.View
 		'change li.show-metadata input': 'showMetadata'
 
 	showMetadata: (ev) -> @$('.metadata').toggle ev.currentTarget.checked
+
+	reset: ->
+		@renderLevels()
+
+	destroy: ->
+		@destroyResultItems()
+		@subviews.sortLevels.destroy()
+
+	destroyResultItems: ->
+		item.destroy() for item in @resultItems
 
 module.exports = Results

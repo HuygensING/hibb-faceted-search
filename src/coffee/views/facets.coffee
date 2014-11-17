@@ -114,7 +114,7 @@ class Facets extends Backbone.View
 		icon.toggleClass 'fa-expand'
 
 		text = if open then 'Collapse' else 'Expand'
-		span.text "#{text} facets"
+		span.text "#{text} filters"
 
 		facetNames = _.keys @views
 		index = 0

@@ -87,6 +87,12 @@ class MainView extends Backbone.View
 
 		@listenTo @results, 'result:click', (data) ->
 			@trigger 'result:click', data
+			
+		@listenTo @results, 'result:layer-click', (layer, data) ->
+			@trigger 'result:layer-click', layer, data
+
+		@listenTo @results, 'change:sort-levels', (sortParameters) ->
+			@sortResultsBy sortParameters
 
 	# ### Events
 	events: ->
@@ -259,6 +265,7 @@ class MainView extends Backbone.View
 	#	in an app where data is static, we can use cache to speed up the app.
 	reset: (cache=false) ->
 		@textSearch.reset() if @textSearch?
+		@results.reset() if @results?
 
 		@facets.reset()
 
