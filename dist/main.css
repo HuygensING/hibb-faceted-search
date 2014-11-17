@@ -560,12 +560,6 @@
   cursor: pointer;
   display: inline-block;
 }
-.faceted-search-placeholder.with-results .results header nav > ul > li.display-keywords {
-  display: none;
-}
-.faceted-search-placeholder.with-results .results header nav > ul > li.display-keywords input {
-  margin-right: 2px;
-}
 .faceted-search-placeholder.with-results .results header nav > ul > li.select-all {
   display: none;
 }

@@ -3255,7 +3255,7 @@ var buf = [];
 var jade_mixins = {};
 var jade_interp;
 
-buf.push("<header><h3 class=\"numfound\"></h3><nav><ul><li class=\"display-keywords\"><input id=\"a9f7fg6\" type=\"checkbox\"/><label for=\"a9f7fg6\">Display keywords</label></li><li class=\"select-all\"><input id=\"i9d8sdf\" type=\"checkbox\"/><label for=\"i9d8sdf\">Select all</label></li><li class=\"show-metadata\"><input id=\"o45hes3\" type=\"checkbox\" checked=\"checked\"/><label for=\"o45hes3\">Show metadata</label></li></ul></nav><div class=\"pagination\"></div></header><div class=\"pages\"></div>");;return buf.join("");
+buf.push("<header><h3 class=\"numfound\"></h3><nav><ul><li class=\"select-all\"><input id=\"i9d8sdf\" type=\"checkbox\"/><label for=\"i9d8sdf\">Select all</label></li><li class=\"show-metadata\"><input id=\"o45hes3\" type=\"checkbox\" checked=\"checked\"/><label for=\"o45hes3\">Show metadata</label></li></ul></nav><div class=\"pagination\"></div></header><div class=\"pages\"></div>");;return buf.join("");
 };
 },{"jade/runtime":5}],28:[function(_dereq_,module,exports){
 var Backbone, Result, tpl,
