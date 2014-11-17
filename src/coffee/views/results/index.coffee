@@ -26,6 +26,8 @@ class Results extends Backbone.View
 		###
 		@resultItems = []
 
+		@isMetadataVisible = true
+
 		@listenTo @options.searchResults, 'change:page', @renderResultsPage
 
 
@@ -133,7 +135,9 @@ class Results extends Backbone.View
 	events: ->
 		'change li.show-metadata input': 'showMetadata'
 
-	showMetadata: (ev) -> @$('.metadata').toggle ev.currentTarget.checked
+	showMetadata: (ev) ->
+		@isMetadataVisible = ev.currentTarget.checked
+		@$('.metadata').toggle @isMetadataVisible
 
 	reset: ->
 		@renderLevels()

@@ -3069,7 +3069,7 @@ _ = _dereq_('underscore');
 
 Views = {
   Result: _dereq_('./result'),
-  SortLevels: _dereq_('./sort-levels'),
+  SortLevels: _dereq_('./sort'),
   Pagination: _dereq_('huygens-backbone-pagination')
 };
 
@@ -3099,6 +3099,7 @@ Results = (function(_super) {
     		@prop resultItems
      */
     this.resultItems = [];
+    this.isMetadataVisible = true;
     this.listenTo(this.options.searchResults, 'change:page', this.renderResultsPage);
     this.listenTo(this.options.searchResults, 'change:results', (function(_this) {
       return function(responseModel) {
@@ -3214,7 +3215,8 @@ Results = (function(_super) {
   };
 
   Results.prototype.showMetadata = function(ev) {
-    return this.$('.metadata').toggle(ev.currentTarget.checked);
+    this.isMetadataVisible = ev.currentTarget.checked;
+    return this.$('.metadata').toggle(this.isMetadataVisible);
   };
 
   Results.prototype.reset = function() {
@@ -3245,7 +3247,7 @@ module.exports = Results;
 
 
 
-},{"./index.jade":27,"./result":28,"./sort-levels":30,"huygens-backbone-pagination":4}],27:[function(_dereq_,module,exports){
+},{"./index.jade":27,"./result":28,"./sort":30,"huygens-backbone-pagination":4}],27:[function(_dereq_,module,exports){
 var jade = _dereq_("jade/runtime");
 
 module.exports = function template(locals) {
@@ -3515,7 +3517,7 @@ $ = _dereq_('jquery');
 
 el = _dereq_('funcky.el').el;
 
-tpl = _dereq_('./templates/main.jade');
+tpl = _dereq_('./sort.jade');
 
 SortLevels = (function(_super) {
   __extends(SortLevels, _super);
@@ -3648,7 +3650,7 @@ module.exports = SortLevels;
 
 
 
-},{"./templates/main.jade":31,"funcky.el":1}],31:[function(_dereq_,module,exports){
+},{"./sort.jade":31,"funcky.el":1}],31:[function(_dereq_,module,exports){
 var jade = _dereq_("jade/runtime");
 
 module.exports = function template(locals) {
