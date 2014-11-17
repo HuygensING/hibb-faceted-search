@@ -3,7 +3,7 @@ Backbone based library
 
 ### Changelog
 
-### Dev
+### v2.2.0
 
 - [fix] Store result model on change page
 - [feat] Add isMetadataVisible prop to results view
