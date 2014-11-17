@@ -140,6 +140,9 @@ class MainView extends Backbone.View
 		# Set the default of config type in case the user sends an unknown string.
 		@config.set textSearch: 'advanced' if ['none', 'simple', 'advanced'].indexOf(@config.get('textSearch')) is -1
 
+		@listenTo @config, 'change:resultRows', =>
+			@refresh()
+
 	initQueryOptions: ->
 		attrs = _.extend @config.get('queryOptions'), @config.get('textSearchOptions')
 		@queryOptions = new QueryOptions attrs

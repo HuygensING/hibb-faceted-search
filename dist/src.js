@@ -907,7 +907,7 @@ SearchResults = (function(_super) {
   };
 
   SearchResults.prototype.runQuery = function(queryOptions, options) {
-    var queryOptionsString, resultRows;
+    var queryOptionsString;
     if (options == null) {
       options = {};
     }
@@ -915,10 +915,6 @@ SearchResults = (function(_super) {
       options.cache = true;
     }
     this.queryAmount = this.queryAmount + 1;
-    if (queryOptions.hasOwnProperty('resultRows')) {
-      resultRows = queryOptions.resultRows;
-      delete queryOptions.resultRows;
-    }
     queryOptionsString = JSON.stringify(queryOptions);
     if (options.cache && this.cachedModels.hasOwnProperty(queryOptionsString)) {
       return this.setCurrent(this.cachedModels[queryOptionsString]);
@@ -1251,10 +1247,15 @@ MainView = (function(_super) {
       facetTitleMap: _.extend(this.config.get('facetTitleMap'), ftm)
     });
     if (['none', 'simple', 'advanced'].indexOf(this.config.get('textSearch')) === -1) {
-      return this.config.set({
+      this.config.set({
         textSearch: 'advanced'
       });
     }
+    return this.listenTo(this.config, 'change:resultRows', (function(_this) {
+      return function() {
+        return _this.refresh();
+      };
+    })(this));
   };
 
   MainView.prototype.initQueryOptions = function() {
@@ -3210,8 +3211,15 @@ Results = (function(_super) {
 
   Results.prototype.events = function() {
     return {
-      'change li.show-metadata input': 'showMetadata'
+      'change li.show-metadata input': 'showMetadata',
+      'change li.results-per-page select': 'onChangeResultsPerPage'
     };
+  };
+
+  Results.prototype.onChangeResultsPerPage = function(ev) {
+    var t;
+    t = ev.currentTarget;
+    return this.options.config.set('resultRows', t.options[t.selectedIndex].value);
   };
 
   Results.prototype.showMetadata = function(ev) {
@@ -3255,7 +3263,7 @@ var buf = [];
 var jade_mixins = {};
 var jade_interp;
 
-buf.push("<header><h3 class=\"numfound\"></h3><nav><ul><li class=\"select-all\"><input id=\"i9d8sdf\" type=\"checkbox\"/><label for=\"i9d8sdf\">Select all</label></li><li class=\"show-metadata\"><input id=\"o45hes3\" type=\"checkbox\" checked=\"checked\"/><label for=\"o45hes3\">Show metadata</label></li></ul></nav><div class=\"pagination\"></div></header><div class=\"pages\"></div>");;return buf.join("");
+buf.push("<header><h3 class=\"numfound\"></h3><nav><ul><li class=\"results-per-page\"><select><option value=\"10\">10 results</option><option value=\"25\">25 results</option><option value=\"50\">50 results</option><option value=\"100\">100 results</option><option value=\"250\">250 results</option><option value=\"500\">500 results</option><option value=\"1000\">1000 results</option></select></li><li class=\"select-all\"><input id=\"i9d8sdf\" type=\"checkbox\"/><label for=\"i9d8sdf\">Select all</label></li><li class=\"show-metadata\"><input id=\"o45hes3\" type=\"checkbox\" checked=\"checked\"/><label for=\"o45hes3\">Show metadata</label></li></ul></nav><div class=\"pagination\"></div></header><div class=\"pages\"></div>");;return buf.join("");
 };
 },{"jade/runtime":5}],28:[function(_dereq_,module,exports){
 var Backbone, Result, tpl,

@@ -134,6 +134,11 @@ class Results extends Backbone.View
 	# ### Events
 	events: ->
 		'change li.show-metadata input': 'showMetadata'
+		'change li.results-per-page select': 'onChangeResultsPerPage'
+
+	onChangeResultsPerPage: (ev) ->
+		t = ev.currentTarget
+		@options.config.set 'resultRows', t.options[t.selectedIndex].value
 
 	showMetadata: (ev) ->
 		@isMetadataVisible = ev.currentTarget.checked

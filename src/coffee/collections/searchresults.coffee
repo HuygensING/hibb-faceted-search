@@ -37,9 +37,10 @@ class SearchResults extends Backbone.Collection
 
     @queryAmount = @queryAmount + 1
 
-    if queryOptions.hasOwnProperty 'resultRows'
-      resultRows = queryOptions.resultRows
-      delete queryOptions.resultRows
+    # Artifact?
+    # if queryOptions.hasOwnProperty 'resultRows'
+    #   resultRows = queryOptions.resultRows
+    #   delete queryOptions.resultRows
 
     queryOptionsString = JSON.stringify queryOptions
 
