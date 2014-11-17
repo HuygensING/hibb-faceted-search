@@ -958,8 +958,9 @@ SearchResults = (function(_super) {
       url += "&database=" + database;
     }
     return this.getResults(url, (function(_this) {
-      return function(attrs) {
-        return _this.trigger('change:page', new _this.model(attrs), database);
+      return function(response) {
+        _this.addModel(response, url);
+        return _this.trigger('change:page', new _this.model(response), database);
       };
     })(this));
   };
@@ -3114,7 +3115,9 @@ Results = (function(_super) {
   };
 
   Results.prototype.render = function() {
-    this.$el.html(tpl());
+    this.$el.html(tpl({
+      resultsPerPage: this.options.config.get('resultRows')
+    }));
     this.renderLevels();
     $(window).resize((function(_this) {
       return function() {
@@ -3262,8 +3265,31 @@ module.exports = function template(locals) {
 var buf = [];
 var jade_mixins = {};
 var jade_interp;
+;var locals_for_with = (locals || {});(function (resultsPerPage) {
+buf.push("<header><h3 class=\"numfound\"></h3><nav><ul><li class=\"results-per-page\"><select name=\"results-per-page\">");
+// iterate [10, 25, 50, 100, 250, 500, 1000]
+;(function(){
+  var $$obj = [10, 25, 50, 100, 250, 500, 1000];
+  if ('number' == typeof $$obj.length) {
 
-buf.push("<header><h3 class=\"numfound\"></h3><nav><ul><li class=\"results-per-page\"><select><option value=\"10\">10 results</option><option value=\"25\">25 results</option><option value=\"50\">50 results</option><option value=\"100\">100 results</option><option value=\"250\">250 results</option><option value=\"500\">500 results</option><option value=\"1000\">1000 results</option></select></li><li class=\"select-all\"><input id=\"i9d8sdf\" type=\"checkbox\"/><label for=\"i9d8sdf\">Select all</label></li><li class=\"show-metadata\"><input id=\"o45hes3\" type=\"checkbox\" checked=\"checked\"/><label for=\"o45hes3\">Show metadata</label></li></ul></nav><div class=\"pagination\"></div></header><div class=\"pages\"></div>");;return buf.join("");
+    for (var $index = 0, $$l = $$obj.length; $index < $$l; $index++) {
+      var count = $$obj[$index];
+
+buf.push("<option" + (jade.attr("value", count, true, false)) + (jade.attr("selected", count===resultsPerPage, true, false)) + ">" + (jade.escape(null == (jade_interp = count + " results") ? "" : jade_interp)) + "</option>");
+    }
+
+  } else {
+    var $$l = 0;
+    for (var $index in $$obj) {
+      $$l++;      var count = $$obj[$index];
+
+buf.push("<option" + (jade.attr("value", count, true, false)) + (jade.attr("selected", count===resultsPerPage, true, false)) + ">" + (jade.escape(null == (jade_interp = count + " results") ? "" : jade_interp)) + "</option>");
+    }
+
+  }
+}).call(this);
+
+buf.push("</select></li><li class=\"select-all\"><input id=\"i9d8sdf\" type=\"checkbox\"/><label for=\"i9d8sdf\">Select all</label></li><li class=\"show-metadata\"><input id=\"o45hes3\" type=\"checkbox\" checked=\"checked\"/><label for=\"o45hes3\">Show metadata</label></li></ul></nav><div class=\"pagination\"></div></header><div class=\"pages\"></div>");}("resultsPerPage" in locals_for_with?locals_for_with.resultsPerPage:typeof resultsPerPage!=="undefined"?resultsPerPage:undefined));;return buf.join("");
 };
 },{"jade/runtime":5}],28:[function(_dereq_,module,exports){
 var Backbone, Result, tpl,

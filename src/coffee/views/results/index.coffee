@@ -44,7 +44,8 @@ class Results extends Backbone.View
 
 	# ### Render
 	render: ->
-		@$el.html tpl()
+		@$el.html tpl
+			resultsPerPage: @options.config.get 'resultRows'
 
 		@renderLevels()
 

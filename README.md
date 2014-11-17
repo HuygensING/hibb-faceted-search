@@ -3,6 +3,12 @@ Backbone based library
 
 ### Changelog
 
+### Dev
+
+- [fix] Store result model on change page
+- [feat] Add isMetadataVisible prop to results view
+- [feat] Add result-per-page option to results view
+
 ### v2.1.1
 - Little refactoring and code clean up.
 
