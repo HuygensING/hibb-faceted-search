@@ -78,11 +78,14 @@ sliderHeight = 6px
 
 						&[disabled]
 							background white
-							user-select none
+							select_none()
 
 					&.min
 						left -20px
 						transition left 150ms
+						
+					&.max
+						right -20px
 
 			.dash
 				display none

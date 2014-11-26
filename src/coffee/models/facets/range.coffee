@@ -50,12 +50,21 @@ class RangeFacet extends FacetModel
 	parse: (attrs) ->
 		super
 
-		attrs.options =
-			lowerLimit: +((attrs.options[0].lowerLimit+'').substr(0, 4))
-			upperLimit: +((attrs.options[0].upperLimit+'').substr(0, 4))
+		getYear = (str) ->
+			if str.length is 8
+				str = str.substr 0, 4
+			else if str.length is 7
+				str = str.substr 0, 3
+			else
+				throw new Error "RangeFacet: lower or upper limit string is not 7 or 8 chars!"
 
-		attrs.min = attrs.currentMin = attrs.options.lowerLimit
-		attrs.max = attrs.currentMax = attrs.options.upperLimit
+			+str
+
+		ll = attrs.options[0].lowerLimit + ''
+		ul = attrs.options[0].upperLimit + ''
+
+		attrs.min = attrs.currentMin = attrs.options.lowerLimit = getYear(ll)
+		attrs.max = attrs.currentMax = attrs.options.upperLimit = getYear(ul)
 
 		attrs
 

@@ -1682,13 +1682,22 @@ RangeFacet = (function(_super) {
   };
 
   RangeFacet.prototype.parse = function(attrs) {
+    var getYear, ll, ul;
     RangeFacet.__super__.parse.apply(this, arguments);
-    attrs.options = {
-      lowerLimit: +((attrs.options[0].lowerLimit + '').substr(0, 4)),
-      upperLimit: +((attrs.options[0].upperLimit + '').substr(0, 4))
+    getYear = function(str) {
+      if (str.length === 8) {
+        str = str.substr(0, 4);
+      } else if (str.length === 7) {
+        str = str.substr(0, 3);
+      } else {
+        throw new Error("RangeFacet: lower or upper limit string is not 7 or 8 chars!");
+      }
+      return +str;
     };
-    attrs.min = attrs.currentMin = attrs.options.lowerLimit;
-    attrs.max = attrs.currentMax = attrs.options.upperLimit;
+    ll = attrs.options[0].lowerLimit + '';
+    ul = attrs.options[0].upperLimit + '';
+    attrs.min = attrs.currentMin = attrs.options.lowerLimit = getYear(ll);
+    attrs.max = attrs.currentMax = attrs.options.upperLimit = getYear(ul);
     return attrs;
   };
 
@@ -2853,7 +2862,13 @@ RangeFacet = (function(_super) {
       'mousemove': 'drag',
       'blur input': 'setYear',
       'keyup input': 'setYear',
-      'click button': 'doSearch'
+      'click button': 'doSearch',
+      'dblclick input.min': function(ev) {
+        return this.enableInputEditable(this.inputMin);
+      },
+      'dblclick input.max': function(ev) {
+        return this.enableInputEditable(this.inputMax);
+      }
     });
   };
 
@@ -2927,15 +2942,6 @@ RangeFacet = (function(_super) {
     }
   };
 
-  RangeFacet.prototype.enableInputEditable = function(input) {
-    input.attr('disabled', null);
-    return input.focus();
-  };
-
-  RangeFacet.prototype.disableInputEditable = function(input) {
-    return input.attr('disabled', true);
-  };
-
   RangeFacet.prototype.stopDragging = function() {
     if (this.draggingMin || this.draggingMax || (this.draggingBar != null)) {
       if (this.draggingMin) {
@@ -2943,8 +2949,6 @@ RangeFacet = (function(_super) {
           this.model.set({
             currentMin: +this.inputMin.val()
           });
-        } else {
-          this.enableInputEditable(this.inputMin);
         }
       }
       if (this.draggingMax) {
@@ -2952,8 +2956,6 @@ RangeFacet = (function(_super) {
           this.model.set({
             currentMax: +this.inputMax.val()
           });
-        } else {
-          this.enableInputEditable(this.inputMax);
         }
       }
       this.draggingMin = false;
@@ -2965,6 +2967,15 @@ RangeFacet = (function(_super) {
         });
       }
     }
+  };
+
+  RangeFacet.prototype.enableInputEditable = function(input) {
+    input.attr('disabled', null);
+    return input.focus();
+  };
+
+  RangeFacet.prototype.disableInputEditable = function(input) {
+    return input.attr('disabled', true);
   };
 
   RangeFacet.prototype.destroy = function() {

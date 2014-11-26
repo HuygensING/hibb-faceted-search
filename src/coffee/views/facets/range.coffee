@@ -103,6 +103,10 @@ class RangeFacet extends Views.Facet
 		'blur input': 'setYear'
 		'keyup input': 'setYear'
 		'click button': 'doSearch'
+		'dblclick input.min': (ev) -> 
+			@enableInputEditable @inputMin
+		'dblclick input.max': (ev) ->
+			@enableInputEditable @inputMax
 
 	setYear: (ev) ->
 		if ev.type is 'focusout' or ev.type is 'blur' or (ev.type is 'keyup' and ev.keyCode is 13)
@@ -166,26 +170,19 @@ class RangeFacet extends Views.Facet
 		if @draggingMax
 			@model.dragMax mousePosLeft - (@model.get('handleWidth')/2)
 
-	enableInputEditable: (input) ->
-		input.attr 'disabled', null
-		input.focus()
-
-	disableInputEditable: (input) ->
-		input.attr 'disabled', true
-
 	stopDragging: ->
 		if @draggingMin or @draggingMax or @draggingBar?
 			if @draggingMin
 				if @model.get('currentMin') isnt +@inputMin.val()
 					@model.set currentMin: +@inputMin.val()
-				else
-					@enableInputEditable @inputMin
+				# else
+				# 	@enableInputEditable @inputMin
 
 			if @draggingMax
 				if @model.get('currentMax') isnt +@inputMax.val()
 					@model.set currentMax: +@inputMax.val()
-				else
-					@enableInputEditable @inputMax
+				# else
+				# 	@enableInputEditable @inputMax
 
 			@draggingMin = false
 			@draggingMax = false
@@ -198,6 +195,13 @@ class RangeFacet extends Views.Facet
 			# the new search would not be triggered.
 			unless @config.get('autoSearch')
 				@triggerChange silent: true
+
+	enableInputEditable: (input) ->
+		input.attr 'disabled', null
+		input.focus()
+
+	disableInputEditable: (input) ->
+		input.attr 'disabled', true
 
 	# ### METHODS
 
