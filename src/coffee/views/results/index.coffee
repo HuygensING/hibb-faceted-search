@@ -36,7 +36,7 @@ class Results extends Backbone.View
 			
 			@renderPagination responseModel
 
-			@renderResultsPage responseModel, true
+			@renderResultsPage responseModel
 
 		@subviews = {}
 
@@ -68,12 +68,12 @@ class Results extends Backbone.View
 	###
 	@method renderResultsPage
 	@param {object} responseModel - The model returned by the server.
-	@param {boolean} [removeCache=false] - Remove the rendered pages? This occurs when the results change, but not when the page changes.
 	###
-	renderResultsPage: (responseModel, removeCache=false) ->
-		if removeCache
-			@destroyResultItems()
-			@$("div.pages").html('')
+	renderResultsPage: (responseModel) ->
+		# Search results are cached by @options.searchresults, so on render
+		# all results are properly destroyed and re-rendered.
+		@destroyResultItems()
+		@$("div.pages").html('')
 
 		# eLaborate uses "*:*" when no searchterm was entered, Timbuctoo uses "*".
 		fulltext = responseModel.has('term') and responseModel.get('term').indexOf('*:*') is -1 and responseModel.get('term').indexOf('*') is -1

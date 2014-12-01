@@ -5,11 +5,17 @@ SearchResult = require '../models/searchresult'
 
 funcky = require 'funcky.req'
 
+###
+@class
+###
 class SearchResults extends Backbone.Collection
 
 	model: SearchResult
 
-	initialize: (options) ->
+	###
+	@constructs
+	###
+	initialize: (models, options) ->
 		@config = options.config
 
 		# Init cachedModels in the initialize function, because when defined in the class
@@ -19,23 +25,44 @@ class SearchResults extends Backbone.Collection
 
 		# Hold a count of the number of run queries. We can't use @length, because
 		# if the second query is fetched from cache, the length stays at length one.
-		@queryAmount = 0
+		# @queryAmount = 0
 
-		@on 'add', @setCurrent, @
+		# @on 'add', @_setCurrent, @
 
 	clearCache: -> @cachedModels = {}
 
-	setCurrent: (@current) ->
-		changeMessage = if @current.options?.url? then 'change:cursor' else 'change:results'
-		@trigger changeMessage, @current
+	getCurrent: ->
+		@_current
 
-	# options.cache Boolean
-	# 	Determines if the result can be fetched from the cachedModels (searchResult models).
-	# 	In case of a reset or a refresh, options.cache is set to false.
+	_setCurrent: (@_current, changeMessage) ->
+		@trigger changeMessage, @_current
+
+	###
+	@method
+	@param {string} url - Base location of the resultModel. Is used to fetch parts of the result which are not prev or next but at a different place (for example: row 100 - 110) in the result set.
+	@param {object} attrs - The properties/attributes of the resultModel.
+	@param {string} cacheId - The ID to file the props/attrs under for caching.
+	@param {string} changeMessage - The event message to trigger.
+	###
+	_addModel: (url, attrs, cacheId, changeMessage) ->
+		attrs.location = url
+		@cachedModels[cacheId] = new @model attrs
+		@add @cachedModels[cacheId]
+		@_setCurrent @cachedModels[cacheId], changeMessage
+		# @trigger changeMessage, @cachedModels[cacheId]
+
+
+	###
+	@method
+	@param {object} queryOptions
+	@param {object} [options={}]
+	@param {boolean} options.cache - Determines if the result can be fetched from the cachedModels (searchResult models). In case of a reset or a refresh, options.cache is set to false.
+	###
 	runQuery: (queryOptions, options={}) ->
 		options.cache ?= true
 
-		@queryAmount = @queryAmount + 1
+		changeMessage = 'change:results'
+		# @queryAmount = @queryAmount + 1
 
 		# Artifact?
 		# if queryOptions.hasOwnProperty 'resultRows'
@@ -44,37 +71,44 @@ class SearchResults extends Backbone.Collection
 
 		queryOptionsString = JSON.stringify queryOptions
 
+		console.log 'runQuery', queryOptionsString
 		# The search results are cached by the query options string,
 		# so we check if there is such a string to find the cached result.
 		if options.cache and @cachedModels.hasOwnProperty queryOptionsString
-			@setCurrent @cachedModels[queryOptionsString]
+			@_setCurrent @cachedModels[queryOptionsString], changeMessage
 		else
 			@postQuery queryOptions, (url) =>
-				@getResults url, (response) =>
-					@addModel response, queryOptionsString
+				getUrl = "#{url}?rows=#{@config.get('resultRows')}"
 
-	addModel: (attrs, cacheId) ->
-		@cachedModels[cacheId] = new @model attrs
-		@add @cachedModels[cacheId]
+				@getResults getUrl, (response) =>
+					@_addModel url, response, queryOptionsString, changeMessage
 
 	moveCursor: (direction) ->
-		url = if direction is '_prev' or direction is '_next' then @current.get direction else direction
+		url = if direction is '_prev' or direction is '_next' then @_current.get direction else direction
+		changeMessage = 'change:cursor'
 
+		console.log 'moveCursor', url
 		if url?
 			if @cachedModels.hasOwnProperty url
-				@setCurrent @cachedModels[url]
+				@_setCurrent @cachedModels[url], changeMessage
 			else
 				@getResults url, (response) =>
-					@addModel response, url
+					@_addModel @_current.get('location'), response, url, changeMessage
 
+	# TODO breaking for Rembench, database isn't send back. Add to result model.
 	page: (pagenumber, database) ->
+		changeMessage = 'change:page'
+
 		start = @config.get('resultRows') * (pagenumber - 1)
-		url = @postURL + "?rows=#{@config.get('resultRows')}&start=#{start}"
+		url = @_current.get('location') + "?rows=#{@config.get('resultRows')}&start=#{start}"
 		url += "&database=#{database}" if database?
 
-		@getResults url, (response) =>
-			@addModel response, url
-			@trigger 'change:page', new @model(response), database
+		console.log 'page', url, @_current.get('location'), @_current
+		if @cachedModels.hasOwnProperty url
+			@_setCurrent @cachedModels[url], changeMessage
+		else
+			@getResults url, (response) =>
+				@_addModel @_current.get('location'), response, url, changeMessage
 
 	postQuery: (queryOptions, done) ->
 		@trigger 'request'
@@ -93,9 +127,10 @@ class SearchResults extends Backbone.Collection
 		req = funcky.post @config.get('baseUrl') + @config.get('searchPath'), ajaxOptions
 		req.done (res) =>
 			if res.status is 201
-				@postURL = res.getResponseHeader('Location')
-				url = if @config.has('resultRows') then @postURL + '?rows=' + @config.get('resultRows') else @postURL
-				done url
+				# @postURL = res.getResponseHeader('Location')
+				# url = if @config.has('resultRows') then @postURL + '?rows=' + @config.get('resultRows') else @postURL
+				# Add number of results to fetch.
+				done res.getResponseHeader('Location')
 		req.fail (res) =>
 			if res.status is 401
 				@trigger 'unauthorized'
@@ -111,11 +146,13 @@ class SearchResults extends Backbone.Collection
 				headers:
 					Authorization: @config.get('authorizationHeaderToken')
 
+		# Fire GET request.
 		req = funcky.get url, options
 
 		req.done (res) =>
-				done JSON.parse res.responseText
-				@trigger 'sync'
+			done JSON.parse res.responseText
+
+			@trigger 'sync'
 
 		req.fail (res) =>
 			if res.status is 401

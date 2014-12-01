@@ -879,6 +879,11 @@ SearchResult = _dereq_('../models/searchresult');
 
 funcky = _dereq_('funcky.req');
 
+
+/*
+@class
+ */
+
 SearchResults = (function(_super) {
   __extends(SearchResults, _super);
 
@@ -888,62 +893,91 @@ SearchResults = (function(_super) {
 
   SearchResults.prototype.model = SearchResult;
 
-  SearchResults.prototype.initialize = function(options) {
+
+  /*
+  	@constructs
+   */
+
+  SearchResults.prototype.initialize = function(models, options) {
     this.config = options.config;
-    this.cachedModels = {};
-    this.queryAmount = 0;
-    return this.on('add', this.setCurrent, this);
+    return this.cachedModels = {};
   };
 
   SearchResults.prototype.clearCache = function() {
     return this.cachedModels = {};
   };
 
-  SearchResults.prototype.setCurrent = function(current) {
-    var changeMessage, _ref;
-    this.current = current;
-    changeMessage = ((_ref = this.current.options) != null ? _ref.url : void 0) != null ? 'change:cursor' : 'change:results';
-    return this.trigger(changeMessage, this.current);
+  SearchResults.prototype.getCurrent = function() {
+    return this._current;
   };
 
+  SearchResults.prototype._setCurrent = function(_current, changeMessage) {
+    this._current = _current;
+    return this.trigger(changeMessage, this._current);
+  };
+
+
+  /*
+  	@method
+  	@param {string} url - Base location of the resultModel. Is used to fetch parts of the result which are not prev or next but at a different place (for example: row 100 - 110) in the result set.
+  	@param {object} attrs - The properties/attributes of the resultModel.
+  	@param {string} cacheId - The ID to file the props/attrs under for caching.
+  	@param {string} changeMessage - The event message to trigger.
+   */
+
+  SearchResults.prototype._addModel = function(url, attrs, cacheId, changeMessage) {
+    attrs.location = url;
+    this.cachedModels[cacheId] = new this.model(attrs);
+    this.add(this.cachedModels[cacheId]);
+    return this._setCurrent(this.cachedModels[cacheId], changeMessage);
+  };
+
+
+  /*
+  	@method
+  	@param {object} queryOptions
+  	@param {object} [options={}]
+  	@param {boolean} options.cache - Determines if the result can be fetched from the cachedModels (searchResult models). In case of a reset or a refresh, options.cache is set to false.
+   */
+
   SearchResults.prototype.runQuery = function(queryOptions, options) {
-    var queryOptionsString;
+    var changeMessage, queryOptionsString;
     if (options == null) {
       options = {};
     }
     if (options.cache == null) {
       options.cache = true;
     }
-    this.queryAmount = this.queryAmount + 1;
+    changeMessage = 'change:results';
     queryOptionsString = JSON.stringify(queryOptions);
+    console.log('runQuery', queryOptionsString);
     if (options.cache && this.cachedModels.hasOwnProperty(queryOptionsString)) {
-      return this.setCurrent(this.cachedModels[queryOptionsString]);
+      return this._setCurrent(this.cachedModels[queryOptionsString], changeMessage);
     } else {
       return this.postQuery(queryOptions, (function(_this) {
         return function(url) {
-          return _this.getResults(url, function(response) {
-            return _this.addModel(response, queryOptionsString);
+          var getUrl;
+          getUrl = "" + url + "?rows=" + (_this.config.get('resultRows'));
+          return _this.getResults(getUrl, function(response) {
+            return _this._addModel(url, response, queryOptionsString, changeMessage);
           });
         };
       })(this));
     }
   };
 
-  SearchResults.prototype.addModel = function(attrs, cacheId) {
-    this.cachedModels[cacheId] = new this.model(attrs);
-    return this.add(this.cachedModels[cacheId]);
-  };
-
   SearchResults.prototype.moveCursor = function(direction) {
-    var url;
-    url = direction === '_prev' || direction === '_next' ? this.current.get(direction) : direction;
+    var changeMessage, url;
+    url = direction === '_prev' || direction === '_next' ? this._current.get(direction) : direction;
+    changeMessage = 'change:cursor';
+    console.log('moveCursor', url);
     if (url != null) {
       if (this.cachedModels.hasOwnProperty(url)) {
-        return this.setCurrent(this.cachedModels[url]);
+        return this._setCurrent(this.cachedModels[url], changeMessage);
       } else {
         return this.getResults(url, (function(_this) {
           return function(response) {
-            return _this.addModel(response, url);
+            return _this._addModel(_this._current.get('location'), response, url, changeMessage);
           };
         })(this));
       }
@@ -951,18 +985,23 @@ SearchResults = (function(_super) {
   };
 
   SearchResults.prototype.page = function(pagenumber, database) {
-    var start, url;
+    var changeMessage, start, url;
+    changeMessage = 'change:page';
     start = this.config.get('resultRows') * (pagenumber - 1);
-    url = this.postURL + ("?rows=" + (this.config.get('resultRows')) + "&start=" + start);
+    url = this._current.get('location') + ("?rows=" + (this.config.get('resultRows')) + "&start=" + start);
     if (database != null) {
       url += "&database=" + database;
     }
-    return this.getResults(url, (function(_this) {
-      return function(response) {
-        _this.addModel(response, url);
-        return _this.trigger('change:page', new _this.model(response), database);
-      };
-    })(this));
+    console.log('page', url, this._current.get('location'), this._current);
+    if (this.cachedModels.hasOwnProperty(url)) {
+      return this._setCurrent(this.cachedModels[url], changeMessage);
+    } else {
+      return this.getResults(url, (function(_this) {
+        return function(response) {
+          return _this._addModel(_this._current.get('location'), response, url, changeMessage);
+        };
+      })(this));
+    }
   };
 
   SearchResults.prototype.postQuery = function(queryOptions, done) {
@@ -982,11 +1021,8 @@ SearchResults = (function(_super) {
     req = funcky.post(this.config.get('baseUrl') + this.config.get('searchPath'), ajaxOptions);
     req.done((function(_this) {
       return function(res) {
-        var url;
         if (res.status === 201) {
-          _this.postURL = res.getResponseHeader('Location');
-          url = _this.config.has('resultRows') ? _this.postURL + '?rows=' + _this.config.get('resultRows') : _this.postURL;
-          return done(url);
+          return done(res.getResponseHeader('Location'));
         }
       };
     })(this));
@@ -1214,9 +1250,9 @@ MainView = (function(_super) {
     });
     this.$('.faceted-search').toggleClass('search-type-simple');
     this.$('.faceted-search').toggleClass('search-type-advanced');
-    if (this.searchResults.queryAmount === 1) {
+    if (this.searchResults.length === 1) {
       return this.search();
-    } else if (this.searchResults.queryAmount > 1) {
+    } else if (this.searchResults.length > 1) {
       return this.update();
     }
   };
@@ -1273,7 +1309,7 @@ MainView = (function(_super) {
   };
 
   MainView.prototype.initSearchResults = function() {
-    this.searchResults = new SearchResults({
+    this.searchResults = new SearchResults(null, {
       config: this.config
     });
     this.listenTo(this.searchResults, 'change:results', (function(_this) {
@@ -1367,10 +1403,10 @@ MainView = (function(_super) {
 
   MainView.prototype.update = function() {
     var facets;
-    facets = this.searchResults.current.get('facets');
-    if (this.searchResults.queryAmount === 1) {
+    facets = this.searchResults.getCurrent().get('facets');
+    if (this.searchResults.length === 1) {
       return this.facets.renderFacets(facets);
-    } else if (this.searchResults.queryAmount > 1) {
+    } else if (this.searchResults.length > 1) {
       return this.facets.update(facets);
     }
   };
@@ -1388,11 +1424,11 @@ MainView = (function(_super) {
   };
 
   MainView.prototype.hasNext = function() {
-    return this.searchResults.current.has('_next');
+    return this.searchResults.getCurrent().has('_next');
   };
 
   MainView.prototype.hasPrev = function() {
-    return this.searchResults.current.has('_prev');
+    return this.searchResults.getCurrent().has('_prev');
   };
 
   MainView.prototype.sortResultsBy = function(sortParameters) {
@@ -3118,7 +3154,7 @@ Results = (function(_super) {
       return function(responseModel) {
         _this.$('header h3.numfound').html("Found " + (responseModel.get('numFound')) + " " + (_this.options.config.get('entryTermPlural')));
         _this.renderPagination(responseModel);
-        return _this.renderResultsPage(responseModel, true);
+        return _this.renderResultsPage(responseModel);
       };
     })(this));
     this.subviews = {};
@@ -3160,18 +3196,12 @@ Results = (function(_super) {
   /*
   	@method renderResultsPage
   	@param {object} responseModel - The model returned by the server.
-  	@param {boolean} [removeCache=false] - Remove the rendered pages? This occurs when the results change, but not when the page changes.
    */
 
-  Results.prototype.renderResultsPage = function(responseModel, removeCache) {
+  Results.prototype.renderResultsPage = function(responseModel) {
     var frag, fulltext, pageNumber, result, ul, _i, _len, _ref;
-    if (removeCache == null) {
-      removeCache = false;
-    }
-    if (removeCache) {
-      this.destroyResultItems();
-      this.$("div.pages").html('');
-    }
+    this.destroyResultItems();
+    this.$("div.pages").html('');
     fulltext = responseModel.has('term') && responseModel.get('term').indexOf('*:*') === -1 && responseModel.get('term').indexOf('*') === -1;
     frag = document.createDocumentFragment();
     _ref = responseModel.get('results');

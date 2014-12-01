@@ -110,9 +110,9 @@ class MainView extends Backbone.View
 		@$('.faceted-search').toggleClass 'search-type-simple'
 		@$('.faceted-search').toggleClass 'search-type-advanced'
 
-		if @searchResults.queryAmount is 1
+		if @searchResults.length is 1
 			@search()
-		else if @searchResults.queryAmount > 1
+		else if @searchResults.length > 1
 			@update()
 
 	onReset: (ev) ->
@@ -151,7 +151,7 @@ class MainView extends Backbone.View
 			@listenTo @queryOptions, 'change', => @search()
 
 	initSearchResults: ->
-		@searchResults = new SearchResults config: @config
+		@searchResults = new SearchResults null, config: @config
 
 		# Listen to the change:results event and (re)render the facets everytime the result changes.
 		@listenTo @searchResults, 'change:results', (responseModel) =>
@@ -224,13 +224,13 @@ class MainView extends Backbone.View
 		@el.querySelector('.overlay').style.display = 'none'
 
 	update: ->
-		facets = @searchResults.current.get('facets')
-
+		facets = @searchResults.getCurrent().get('facets')
+		# console.log @searchResults.queryAmount, @searchResults.length
 		# If the size of the searchResults is 1 then it's the first time we render the facets
-		if @searchResults.queryAmount is 1
+		if @searchResults.length is 1
 			@facets.renderFacets facets
 		# If the size is greater than 1, the facets are already rendered and we call their update methods.
-		else if @searchResults.queryAmount > 1
+		else if @searchResults.length > 1
 			@facets.update facets
 
 	# ### Interface
@@ -245,10 +245,10 @@ class MainView extends Backbone.View
 		@searchResults.moveCursor '_prev'
 
 	hasNext: ->
-		@searchResults.current.has '_next'
+		@searchResults.getCurrent().has '_next'
 
 	hasPrev: ->
-		@searchResults.current.has '_prev'
+		@searchResults.getCurrent().has '_prev'
 
 	# Sort the results by the parameters given. The parameters are an array of
 	# objects, containing 'fieldName' and 'direction': [{fieldName: "name", direction: "desc"}]
