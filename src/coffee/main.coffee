@@ -176,6 +176,10 @@ class MainView extends Backbone.View
     facetedSearch = @el.querySelector('.faceted-search')
 
     fsBox = funcky(facetedSearch).boundingBox()
+
+    fsBox.width = 300 if fsBox.width is 0
+    fsBox.height = 100 if fsBox.height is 0
+
     overlay.style.width = fsBox.width + 'px'
     overlay.style.height = fsBox.height + 'px'
     overlay.style.display = 'block'

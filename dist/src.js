@@ -4,20 +4,19 @@
     el: function(el) {
       return {
         closest: function(selector) {
-          var getMatchesSelector, matchesSelector;
-          getMatchesSelector = function(el) {
+          var getMatcher, isMatch, matcher;
+          getMatcher = function(el) {
             return el.matches || el.webkitMatchesSelector || el.mozMatchesSelector || el.msMatchesSelector;
           };
-          matchesSelector = getMatchesSelector(el);
           while (el) {
-            if (matchesSelector == null) {
-              matchesSelector = getMatchesSelector(el);
+            matcher = getMatcher(el);
+            if (matcher != null) {
+              isMatch = matcher.bind(el)(selector);
+              if (isMatch) {
+                return el;
+              }
             }
-            if ((matchesSelector != null) && (matchesSelector.bind(el)(selector))) {
-              return el;
-            } else {
-              el = el.parentNode;
-            }
+            el = el.parentNode;
           }
         },
 
@@ -864,6 +863,12 @@ MainView = (function(_super) {
     loader = overlay.children[0];
     facetedSearch = this.el.querySelector('.faceted-search');
     fsBox = funcky(facetedSearch).boundingBox();
+    if (fsBox.width === 0) {
+      fsBox.width = 300;
+    }
+    if (fsBox.height === 0) {
+      fsBox.height = 100;
+    }
     overlay.style.width = fsBox.width + 'px';
     overlay.style.height = fsBox.height + 'px';
     overlay.style.display = 'block';
