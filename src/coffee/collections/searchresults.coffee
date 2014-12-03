@@ -71,7 +71,6 @@ class SearchResults extends Backbone.Collection
 
 		queryOptionsString = JSON.stringify queryOptions
 
-		console.log 'runQuery', queryOptionsString
 		# The search results are cached by the query options string,
 		# so we check if there is such a string to find the cached result.
 		if options.cache and @cachedModels.hasOwnProperty queryOptionsString
@@ -87,7 +86,6 @@ class SearchResults extends Backbone.Collection
 		url = if direction is '_prev' or direction is '_next' then @_current.get direction else direction
 		changeMessage = 'change:cursor'
 
-		console.log 'moveCursor', url
 		if url?
 			if @cachedModels.hasOwnProperty url
 				@_setCurrent @cachedModels[url], changeMessage
@@ -103,7 +101,6 @@ class SearchResults extends Backbone.Collection
 		url = @_current.get('location') + "?rows=#{@config.get('resultRows')}&start=#{start}"
 		url += "&database=#{database}" if database?
 
-		console.log 'page', url, @_current.get('location'), @_current
 		if @cachedModels.hasOwnProperty url
 			@_setCurrent @cachedModels[url], changeMessage
 		else

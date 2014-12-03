@@ -98,7 +98,86 @@
 }).call(this);
 
 },{}],2:[function(_dereq_,module,exports){
-(function(){var e={}.hasOwnProperty;module.exports={get:function(e,l){return null==l&&(l={}),this._sendRequest("GET",e,l)},post:function(e,l){return null==l&&(l={}),this._sendRequest("POST",e,l)},put:function(e,l){return null==l&&(l={}),this._sendRequest("PUT",e,l)},_promise:function(){return{done:function(e){return this.callDone=e},callDone:null,fail:function(e){return this.callFail=e},callFail:null,always:function(e){return this.callAlways=e},callAlways:null}},_sendRequest:function(l,n,t){var a,u,s,r,i;null==t&&(t={}),u=this._promise(),null==t.data&&(t.data={}),null==t.headers&&(t.headers={}),r=new XMLHttpRequest,r.onreadystatechange=function(){var e;if(r.readyState===XMLHttpRequest.DONE)if(null!=u.callAlways&&u.callAlways(r),200<=(e=r.status)&&206>=e){if(null!=u.callDone)return u.callDone(r)}else if(null!=u.callFail)return u.callFail(r)},r.open(l,n,!0),r.setRequestHeader("Content-type","application/json"),i=t.headers;for(a in i)e.call(i,a)&&(s=i[a],r.setRequestHeader(a,s));return r.send(t.data),u}}}).call(this);
+(function() {
+  var __hasProp = {}.hasOwnProperty;
+
+  module.exports = {
+    get: function(url, options) {
+      if (options == null) {
+        options = {};
+      }
+      return this._sendRequest('GET', url, options);
+    },
+    post: function(url, options) {
+      if (options == null) {
+        options = {};
+      }
+      return this._sendRequest('POST', url, options);
+    },
+    put: function(url, options) {
+      if (options == null) {
+        options = {};
+      }
+      return this._sendRequest('PUT', url, options);
+    },
+    _promise: function() {
+      return {
+        done: function(fn) {
+          return this.callDone = fn;
+        },
+        callDone: null,
+        fail: function(fn) {
+          return this.callFail = fn;
+        },
+        callFail: null,
+        always: function(fn) {
+          return this.callAlways = fn;
+        },
+        callAlways: null
+      };
+    },
+    _sendRequest: function(method, url, options) {
+      var header, promise, value, xhr, _ref;
+      if (options == null) {
+        options = {};
+      }
+      promise = this._promise();
+      if (options.headers == null) {
+        options.headers = {};
+      }
+      xhr = new XMLHttpRequest();
+      xhr.onreadystatechange = function() {
+        var _ref;
+        if (xhr.readyState === XMLHttpRequest.DONE) {
+          if (promise.callAlways != null) {
+            promise.callAlways(xhr);
+          }
+          if ((200 <= (_ref = xhr.status) && _ref <= 206)) {
+            if (promise.callDone != null) {
+              return promise.callDone(xhr);
+            }
+          } else {
+            if (promise.callFail != null) {
+              return promise.callFail(xhr);
+            }
+          }
+        }
+      };
+      xhr.open(method, url, true);
+      xhr.setRequestHeader("Content-type", "application/json");
+      _ref = options.headers;
+      for (header in _ref) {
+        if (!__hasProp.call(_ref, header)) continue;
+        value = _ref[header];
+        xhr.setRequestHeader(header, value);
+      }
+      xhr.send(options.data);
+      return promise;
+    }
+  };
+
+}).call(this);
+
 },{}],3:[function(_dereq_,module,exports){
 (function(){module.exports={generateID:function(t){var n,r;for(t=null!=t&&t>0?t-1:7,n="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789",r=n.charAt(Math.floor(52*Math.random()));t--;)r+=n.charAt(Math.floor(Math.random()*n.length));return r},setResetTimeout:function(){var t;return t=null,function(n,r,e){return null!=t&&(null!=e&&e(),clearTimeout(t)),t=setTimeout(function(){return t=null,r()},n)}}()}}).call(this);
 },{}],4:[function(_dereq_,module,exports){
@@ -950,7 +1029,6 @@ SearchResults = (function(_super) {
     }
     changeMessage = 'change:results';
     queryOptionsString = JSON.stringify(queryOptions);
-    console.log('runQuery', queryOptionsString);
     if (options.cache && this.cachedModels.hasOwnProperty(queryOptionsString)) {
       return this._setCurrent(this.cachedModels[queryOptionsString], changeMessage);
     } else {
@@ -970,7 +1048,6 @@ SearchResults = (function(_super) {
     var changeMessage, url;
     url = direction === '_prev' || direction === '_next' ? this._current.get(direction) : direction;
     changeMessage = 'change:cursor';
-    console.log('moveCursor', url);
     if (url != null) {
       if (this.cachedModels.hasOwnProperty(url)) {
         return this._setCurrent(this.cachedModels[url], changeMessage);
@@ -992,7 +1069,6 @@ SearchResults = (function(_super) {
     if (database != null) {
       url += "&database=" + database;
     }
-    console.log('page', url, this._current.get('location'), this._current);
     if (this.cachedModels.hasOwnProperty(url)) {
       return this._setCurrent(this.cachedModels[url], changeMessage);
     } else {
