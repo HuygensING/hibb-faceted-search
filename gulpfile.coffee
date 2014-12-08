@@ -28,10 +28,10 @@ connectRewrite = require './connect-rewrite'
 pkg = require './package.json'
 cfg = require './config.json'
 
-cssFiles = [
-	'./dist/main.css'
-	'./node_modules/huygens-backbone-pagination/dist/main.css'
-]
+# cssFiles = [
+# 	'./dist/main.css'
+# 	'./node_modules/huygens-backbone-pagination/dist/main.css'
+# ]
 
 gulp.task 'link', (done) ->
 	removeModules = (cb) ->
@@ -79,6 +79,11 @@ gulp.task 'stylus', ->
 		.pipe(gulp.dest('./dist'))
 
 gulp.task 'concat-css', ['stylus'], ->
+	cssFiles = ['./dist/main.css']
+	
+	for cssFile in cfg['css-files']
+		cssFiles.push cssFile
+	
 	gulp.src(cssFiles)
 		.pipe(concat('main.css'))
 		.pipe(gulp.dest('./dist'))
@@ -99,7 +104,7 @@ gulp.task 'coffee', ->
 
 gulp.task 'watch', ->
 	gulp.watch ['./src/**/*.styl'], ['concat-css']
-	gulp.watch [cssFiles[1]], ['concat-css']
+	gulp.watch cfg['css-files'], ['concat-css']
 	gulp.watch ['./stage/index.html', './stage/*/*.css'], -> browserSync.reload()
 
 gulp.task 'default', ['watch', 'watchify']

@@ -4,6 +4,9 @@
 		"funcky.arr", 
 		"funcky.req", 
 		"funcky.util",
-		"huygens-backbone-pagination"
+		"hibb-pagination"
+	],
+	"css-files": [
+		"./node_modules/hibb-pagination/dist/main.css"
 	]
 }

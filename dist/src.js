@@ -426,7 +426,7 @@ Pagination = (function(_super) {
 
   Pagination.prototype.tagName = 'ul';
 
-  Pagination.prototype.className = 'pagination';
+  Pagination.prototype.className = 'hibb-pagination';
 
 
   /*
@@ -3195,7 +3195,7 @@ _ = _dereq_('underscore');
 Views = {
   Result: _dereq_('./result'),
   SortLevels: _dereq_('./sort'),
-  Pagination: _dereq_('huygens-backbone-pagination')
+  Pagination: _dereq_('hibb-pagination')
 };
 
 tpl = _dereq_('./index.jade');
@@ -3375,7 +3375,7 @@ module.exports = Results;
 
 
 
-},{"./index.jade":27,"./result":28,"./sort":30,"huygens-backbone-pagination":4}],27:[function(_dereq_,module,exports){
+},{"./index.jade":27,"./result":28,"./sort":30,"hibb-pagination":4}],27:[function(_dereq_,module,exports){
 var jade = _dereq_("jade/runtime");
 
 module.exports = function template(locals) {

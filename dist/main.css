@@ -951,7 +951,7 @@ li.sort-levels div.levels li select {
   cursor: pointer;
 }
 
-ul.pagination {
+ul.hibb-pagination {
   -webkit-touch-callout: none;
   -webkit-user-select: none;
   -khtml-user-select: none;
@@ -965,36 +965,36 @@ ul.pagination {
   padding: 0;
   margin: 0;
 }
-ul.pagination li {
+ul.hibb-pagination li {
   display: inline-block;
   padding: 0 4px;
 }
-ul.pagination li.prev10,
-ul.pagination li.prev,
-ul.pagination li.next,
-ul.pagination li.next10 {
+ul.hibb-pagination li.prev10,
+ul.hibb-pagination li.prev,
+ul.hibb-pagination li.next,
+ul.hibb-pagination li.next10 {
   color: #ccc;
   pointer: default;
 }
-ul.pagination li.prev10.active,
-ul.pagination li.prev.active,
-ul.pagination li.next.active,
-ul.pagination li.next10.active {
+ul.hibb-pagination li.prev10.active,
+ul.hibb-pagination li.prev.active,
+ul.hibb-pagination li.next.active,
+ul.hibb-pagination li.next10.active {
   color: #000;
   cursor: pointer;
 }
-ul.pagination li.current.active span {
+ul.hibb-pagination li.current.active span {
   display: none;
 }
-ul.pagination li.current.active input {
+ul.hibb-pagination li.current.active input {
   border: 1px solid #ddd;
   -webkit-border-radius: 3px;
   border-radius: 3px;
 }
-ul.pagination li.current span {
+ul.hibb-pagination li.current span {
   cursor: pointer;
 }
-ul.pagination li.current input {
+ul.hibb-pagination li.current input {
   font-family: inherit;
   font-size: inherit;
   width: 0;
@@ -1002,6 +1002,6 @@ ul.pagination li.current input {
   background: #eee;
   text-align: center;
 }
-ul.pagination li.text {
+ul.hibb-pagination li.text {
   color: #808080;
 }

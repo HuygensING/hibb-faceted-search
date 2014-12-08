@@ -5,7 +5,7 @@ _ = require 'underscore'
 Views =
 	Result: require './result'
 	SortLevels: require './sort'
-	Pagination: require 'huygens-backbone-pagination'
+	Pagination: require 'hibb-pagination'
 
 tpl = require './index.jade'
 
