@@ -99,24 +99,25 @@ class ListFacetOptions extends Backbone.View
 		$target = $ ev.currentTarget
 		id = $target.attr 'data-value'
 
-		checked = $target.find("i.checked")
-		unchecked = $target.find("i.unchecked")
+		$target.toggleClass 'checked'
+		# checked = $target.find("i.checked")
+		# unchecked = $target.find("i.unchecked")
 
-		# Don't use $.toggle, because it will toggle the <i> set to display:none
-		# to display: inline, instead of inline-block.
-		if checked.is(':visible')
-			checked.hide()
-			unchecked.css 'display', 'inline-block'
-		else
-			checked.css 'display', 'inline-block'
-			unchecked.hide()
+		# # Don't use $.toggle, because it will toggle the <i> set to display:none
+		# # to display: inline, instead of inline-block.
+		# if checked.is(':visible')
+		# 	checked.hide()
+		# 	unchecked.css 'display', 'inline-block'
+		# else
+		# 	checked.css 'display', 'inline-block'
+		# 	unchecked.hide()
 
-		@collection.get(id).set 'checked', $target.find("i.checked").is(':visible')
+		@collection.get(id).set 'checked', $target.hasClass 'checked'
 
 		# If there are no checked options or autoSearch is off (false), than triggerChange,
 		# otherwise (autoSearch is true and there are options checked), set a 1s timeout to
 		# give the user time to check another option before autoSearch kicks in.
-		if @$('i.checked').length is 0 or not @config.get('autoSearch')
+		if @$('li.checked').length is 0 or not @config.get('autoSearch')
 			@triggerChange()
 		else
 			funcky.setResetTimeout 1000, => @triggerChange()

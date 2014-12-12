@@ -97,8 +97,6 @@ class ListFacet extends Views.Facet
 				input.val('')
 				@collection.setAllVisible()
 
-	# We use the class opposite instead of ascending/descending, because the options are ascending and
-	# and the count is descending. With opposite we can use a generic name.
 	changeOrder: (ev) ->
 		# When changing the order, all the items must be active (set to visible).
 		# Unless the filter menu is active, than we only change the order of the
@@ -137,5 +135,18 @@ class ListFacet extends Views.Facet
 		@resetActive = true
 
 		@toggleFilterMenu() if @$('i.filter').hasClass 'active'
+
+	###
+	Alias for reset, but used for different implementation. This should be the base
+	of the original reset, but no time for proper refactor. Current project (ebnm)
+	doesn't have a reset button, so harder to test.
+
+	TODO refactor @reset.
+	###
+	revert: ->
+		@toggleFilterMenu() if @$('i.filter').hasClass 'active'
+		
+		@collection.revert()
+		@collection.sort()
 
 module.exports = ListFacet

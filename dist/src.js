@@ -997,6 +997,8 @@ SearchResults = (function(_super) {
 
 
   /*
+  	Add the latest search result model to a collection for caching.
+  
   	@method
   	@param {string} url - Base location of the resultModel. Is used to fetch parts of the result which are not prev or next but at a different place (for example: row 100 - 110) in the result set.
   	@param {object} attrs - The properties/attributes of the resultModel.
@@ -1217,7 +1219,8 @@ SearchResults = _dereq_('./collections/searchresults');
 Views = {
   TextSearch: _dereq_('./views/text-search'),
   Facets: _dereq_('./views/facets'),
-  Results: _dereq_('./views/results')
+  Results: _dereq_('./views/results'),
+  ListFacet: _dereq_('./views/facets/list')
 };
 
 tpl = _dereq_('../jade/main.jade');
@@ -1534,12 +1537,21 @@ MainView = (function(_super) {
     });
   };
 
+
+  /*
+  	A refresh of the Faceted Search means (re)sending the current @attributes (queryOptions) again.
+  	We set the cache flag to false, otherwise the searchResults collection will return the cached
+  	model, instead of fetching a new one from the server.
+  	The newQueryOptions are optional. The can be used to add or update one or more queryOptions
+  	before sending the same (or now altered) queryOptions to the server again.
+   */
+
   MainView.prototype.refresh = function(newQueryOptions) {
     if (newQueryOptions == null) {
       newQueryOptions = {};
     }
     if (Object.keys(newQueryOptions).length > 0) {
-      this.set(newQueryOptions, {
+      this.queryOptions.set(newQueryOptions, {
         silent: true
       });
     }
@@ -1552,6 +1564,32 @@ MainView = (function(_super) {
     return this.searchResults.runQuery(this.queryOptions.attributes, options);
   };
 
+
+  /*
+  	Search for a single value. Programmatic version of a user
+  	checking (clicking the checkbox) one value right after init.
+  
+  	TODO: this is a dirty implementation. Better would be to reset the
+  	views, reset and update the queryOptions and run @search.
+  
+  	@param {string} facetName - Name of the facet.
+  	@param {string} value - Value of option to be selected.
+  	@param {object} options - Options to pass to @search
+   */
+
+  MainView.prototype.searchValue = function(facetName, value, options) {
+    var name, view, _ref;
+    this.queryOptions.reset();
+    _ref = this.facets.views;
+    for (name in _ref) {
+      view = _ref[name];
+      if (view instanceof Views.ListFacet) {
+        view.revert();
+      }
+    }
+    return this.$(".facet[data-name=\"" + facetName + "\"] li[data-value=\"" + value + "\"]").click();
+  };
+
   return MainView;
 
 })(Backbone.View);
@@ -1560,7 +1598,7 @@ module.exports = MainView;
 
 
 
-},{"../jade/main.jade":40,"./collections/searchresults":7,"./config":8,"./models/query-options":16,"./views/facets":19,"./views/results":26,"./views/text-search":32,"funcky.el":1}],10:[function(_dereq_,module,exports){
+},{"../jade/main.jade":40,"./collections/searchresults":7,"./config":8,"./models/query-options":16,"./views/facets":19,"./views/facets/list":22,"./views/results":26,"./views/text-search":32,"funcky.el":1}],10:[function(_dereq_,module,exports){
 var BooleanFacet, Models,
   __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
@@ -2535,6 +2573,23 @@ ListFacet = (function(_super) {
     }
   };
 
+
+  /*
+  	Alias for reset, but used for different implementation. This should be the base
+  	of the original reset, but no time for proper refactor. Current project (ebnm)
+  	doesn't have a reset button, so harder to test.
+  
+  	TODO refactor @reset.
+   */
+
+  ListFacet.prototype.revert = function() {
+    if (this.$('i.filter').hasClass('active')) {
+      this.toggleFilterMenu();
+    }
+    this.collection.revert();
+    return this.collection.sort();
+  };
+
   return ListFacet;
 
 })(Views.Facet);
@@ -2669,20 +2724,12 @@ ListFacetOptions = (function(_super) {
   };
 
   ListFacetOptions.prototype.checkChanged = function(ev) {
-    var $target, checked, id, unchecked;
+    var $target, id;
     $target = $(ev.currentTarget);
     id = $target.attr('data-value');
-    checked = $target.find("i.checked");
-    unchecked = $target.find("i.unchecked");
-    if (checked.is(':visible')) {
-      checked.hide();
-      unchecked.css('display', 'inline-block');
-    } else {
-      checked.css('display', 'inline-block');
-      unchecked.hide();
-    }
-    this.collection.get(id).set('checked', $target.find("i.checked").is(':visible'));
-    if (this.$('i.checked').length === 0 || !this.config.get('autoSearch')) {
+    $target.toggleClass('checked');
+    this.collection.get(id).set('checked', $target.hasClass('checked'));
+    if (this.$('li.checked').length === 0 || !this.config.get('autoSearch')) {
       return this.triggerChange();
     } else {
       return funcky.setResetTimeout(1000, (function(_this) {
@@ -4117,7 +4164,7 @@ var buf = [];
 var jade_mixins = {};
 var jade_interp;
 ;var locals_for_with = (locals || {});(function (option) {
-buf.push("<li" + (jade.attr("data-count", option.get('count'), true, false)) + (jade.attr("data-value", option.id, true, false)) + "><i" + (jade.attr("data-value", option.id, true, false)) + (jade.cls(['unchecked','fa','fa-square-o',option.get('checked')?'hidden':'visible'], [null,null,null,true])) + "></i><i" + (jade.attr("data-value", option.id, true, false)) + (jade.cls(['checked','fa','fa-check-square-o',option.get('checked')?'visible':'hidden'], [null,null,null,true])) + "></i><label" + (jade.attr("data-value", option.id, true, false)) + ">" + (null == (jade_interp = option.id === ':empty' ? '<em>(empty)</em>' : option.id) ? "" : jade_interp) + "</label><div class=\"count\">" + (jade.escape(null == (jade_interp = option.get('count') === 0 ? option.get('total') : option.get('count')) ? "" : jade_interp)) + "</div></li>");}("option" in locals_for_with?locals_for_with.option:typeof option!=="undefined"?option:undefined));;return buf.join("");
+buf.push("<li" + (jade.attr("data-count", option.get('count'), true, false)) + (jade.attr("data-value", option.id, true, false)) + (jade.cls([option.get('checked')?'checked':null], [true])) + "><i" + (jade.attr("data-value", option.id, true, false)) + " class=\"unchecked fa fa-square-o\"></i><i" + (jade.attr("data-value", option.id, true, false)) + " class=\"checked fa fa-check-square-o\"></i><label" + (jade.attr("data-value", option.id, true, false)) + ">" + (null == (jade_interp = option.id === ':empty' ? '<em>(empty)</em>' : option.id) ? "" : jade_interp) + "</label><div class=\"count\">" + (jade.escape(null == (jade_interp = option.get('count') === 0 ? option.get('total') : option.get('count')) ? "" : jade_interp)) + "</div></li>");}("option" in locals_for_with?locals_for_with.option:typeof option!=="undefined"?option:undefined));;return buf.join("");
 };
 },{"jade/runtime":5}],38:[function(_dereq_,module,exports){
 var jade = _dereq_("jade/runtime");

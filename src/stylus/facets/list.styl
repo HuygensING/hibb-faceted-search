@@ -35,11 +35,20 @@
 			overflow-x hidden
 
 			li
-				i.unchecked
-					padding-right 3px
-
-				i.hidden
+				&.checked
+					i.checked
+						inline-block()
+						
+					i.unchecked
+						display none
+						
+				i.checked
 					display none
+					
+				i.unchecked
+					inline-block()
+					padding-right 3px
+					
 
 
 

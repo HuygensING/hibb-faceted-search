@@ -15,6 +15,7 @@ Views =
 	TextSearch: require './views/text-search'
 	Facets: require './views/facets'
 	Results: require './views/results'
+	ListFacet: require './views/facets/list'
 
 tpl = require '../jade/main.jade'
 
@@ -278,18 +279,41 @@ class MainView extends Backbone.View
 
 		@search cache: cache
 
-	# A refresh of the Faceted Search means (re)sending the current @attributes (queryOptions) again.
-	# We set the cache flag to false, otherwise the searchResults collection will return the cached
-	# model, instead of fetching a new one from the server.
-	# The newQueryOptions are optional. The can be used to add or update one or more queryOptions
-	# before sending the same (or now altered) queryOptions to the server again.
+	###
+	A refresh of the Faceted Search means (re)sending the current @attributes (queryOptions) again.
+	We set the cache flag to false, otherwise the searchResults collection will return the cached
+	model, instead of fetching a new one from the server.
+	The newQueryOptions are optional. The can be used to add or update one or more queryOptions
+	before sending the same (or now altered) queryOptions to the server again.
+	###
 	refresh: (newQueryOptions={}) ->
 		if Object.keys(newQueryOptions).length > 0
-			@set newQueryOptions, silent: true
+			@queryOptions.set newQueryOptions, silent: true
 			
 		@search cache: false
 
 	search: (options) ->
 		@searchResults.runQuery @queryOptions.attributes, options
+
+	###
+	Search for a single value. Programmatic version of a user
+	checking (clicking the checkbox) one value right after init.
+
+	TODO: this is a dirty implementation. Better would be to reset the
+	views, reset and update the queryOptions and run @search.
+
+	@param {string} facetName - Name of the facet.
+	@param {string} value - Value of option to be selected.
+	@param {object} options - Options to pass to @search
+	###
+	searchValue: (facetName, value, options) ->
+		@queryOptions.reset()
+
+		for name, view of @facets.views
+			if view instanceof Views.ListFacet
+				view.revert()
+
+		@$(".facet[data-name=\"#{facetName}\"] li[data-value=\"#{value}\"]").click()
+
 
 module.exports = MainView

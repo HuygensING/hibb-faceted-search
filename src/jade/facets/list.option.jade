@@ -1,6 +1,5 @@
-li(data-count=option.get('count'), data-value=option.id)
-	//- input(id=randomId, name=randomId, type="checkbox", data-value=option.id, checked=option.get('checked')?true:false)
-	i.unchecked.fa.fa-square-o(data-value=option.id, class=option.get('checked')?'hidden':'visible')
-	i.checked.fa.fa-check-square-o(data-value=option.id, class=option.get('checked')?'visible':'hidden')
+li(data-count=option.get('count'), data-value=option.id, class=option.get('checked')?'checked':null)
+	i.unchecked.fa.fa-square-o(data-value=option.id)
+	i.checked.fa.fa-check-square-o(data-value=option.id)
 	label(data-value=option.id)!= option.id === ':empty' ? '<em>(empty)</em>' : option.id
 	.count= option.get('count') === 0 ? option.get('total') : option.get('count')

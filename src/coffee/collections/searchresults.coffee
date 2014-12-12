@@ -29,7 +29,8 @@ class SearchResults extends Backbone.Collection
 
 		# @on 'add', @_setCurrent, @
 
-	clearCache: -> @cachedModels = {}
+	clearCache: ->
+		@cachedModels = {}
 
 	getCurrent: ->
 		@_current
@@ -38,6 +39,8 @@ class SearchResults extends Backbone.Collection
 		@trigger changeMessage, @_current
 
 	###
+	Add the latest search result model to a collection for caching.
+
 	@method
 	@param {string} url - Base location of the resultModel. Is used to fetch parts of the result which are not prev or next but at a different place (for example: row 100 - 110) in the result set.
 	@param {object} attrs - The properties/attributes of the resultModel.
