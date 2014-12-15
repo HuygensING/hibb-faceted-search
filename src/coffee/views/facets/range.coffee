@@ -214,8 +214,8 @@ class RangeFacet extends Views.Facet
 		queryOptions =
 			facetValue:
 				name: @model.get 'name'
-				lowerLimit: @model.get('currentMin')+'0101'
-				upperLimit: @model.get('currentMax')+'1231'
+				lowerLimit: @model.getLowerLimit()
+				upperLimit: @model.getUpperLimit()
 
 		@trigger 'change', queryOptions, options
 
@@ -224,9 +224,10 @@ class RangeFacet extends Views.Facet
 		@postRender()
 
 		# Calculate the new handle positions.
-		@update
+		@update [
 			lowerLimit: @model.get('currentMin')
 			upperLimit: @model.get('currentMax')
+		]
 
 		# The labels could be overlapping after resize.
 		@checkInputOverlap()
@@ -276,16 +277,31 @@ class RangeFacet extends Views.Facet
 		if _.isArray(newOptions)
 			if newOptions[0]?
 				newOptions = newOptions[0]
-			else
-				newOptions =
-					lowerLimit: @model.get('options').lowerLimit
-					upperLimit: @model.get('options').upperLimit
 
-		# Set the current attributes in the range model.
-		# Only use the years from the newOptions lower and upper limits.
-		@model.set
-			currentMin: +(newOptions.lowerLimit+'').substr(0, 4)
-			currentMax: +(newOptions.upperLimit+'').substr(0, 4)
+				if _.isNumber(newOptions.lowerLimit)
+					ll = newOptions.lowerLimit
+					ul = newOptions.upperLimit
+				else
+					ll = @model.convertLimit2Year newOptions.lowerLimit
+					ul = @model.convertLimit2Year newOptions.upperLimit
+
+				@model.set
+					currentMin: ll
+					currentMax: ul
+
+		else
+			@model.reset()
+				# newOptions =
+				# 	lowerLimit: @model.get('options').lowerLimit
+				# 	upperLimit: @model.get('options').upperLimit
+
+		# console.log newOptions
+
+		# # Set the current attributes in the range model.
+		# # Only use the years from the newOptions lower and upper limits.
+		# @model.set
+		# 	currentMin: +(newOptions.lowerLimit+'').substr(0, 4)
+		# 	currentMax: +(newOptions.upperLimit+'').substr(0, 4)
 
 		@button.style.display = 'none' if @button?
 
