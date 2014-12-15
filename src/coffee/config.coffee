@@ -27,6 +27,8 @@ class Config extends Backbone.Model
     # an unwanted name or no name, so the user is given the option to pass their own.
     facetTitleMap: {}
 
+    facetOrder: []
+
     # The templates config is a hash of templates. The templates should be
     # functions which take a hash as argument to render vars.
     #
