@@ -17,7 +17,7 @@ class Results extends Backbone.View
 	### options
 	@constructs
 	@param {object} this.options={}
-	@prop {object} options.config
+	@prop {Backbone.Model} options.config
 	@prop {Backbone.Collection} options.searchResults
 	###
 	initialize: (@options={}) ->
@@ -58,8 +58,9 @@ class Results extends Backbone.View
 	renderLevels: ->
 		@subviews.sortLevels.destroy() if @subviews.sortLevels?
 		@subviews.sortLevels = new Views.SortLevels
+			config: @options.config
 			levels: @options.config.get 'levels'
-			entryMetadataFields: @options.config.get 'entryMetadataFields'
+			entryMetadataFields: @options.config.get 'sortableFields'
 		@$('header nav ul').prepend @subviews.sortLevels.$el
 
 		@listenTo @subviews.sortLevels, 'change', (sortParameters) =>

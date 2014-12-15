@@ -5,8 +5,9 @@ config = require '../config'
 
 class QueryOptions extends Backbone.Model
 	###
-	@prop {array} facetValues=[] - Array of objects containing a facet name and values: {name: 'facet_s_writers', values: ['pietje', 'pukje']}
-	@prop {array} sortParameters=[] - Array of objects containing fieldname and direction: {fieldname: 'language', direction: 'desc'}
+	@prop {object[]} facetValues=[] - Array of objects containing a facet name and values: {name: 'facet_s_writers', values: ['pietje', 'pukje']}
+	@prop {object[]} sortParameters=[] - Array of objects containing fieldname and direction: {fieldname: 'language', direction: 'desc'}
+	@prop {string[]} [resultFields] - List of metadata fields to be returned by the server for every result.
 	###
 	defaults: ->
 		facetValues: []

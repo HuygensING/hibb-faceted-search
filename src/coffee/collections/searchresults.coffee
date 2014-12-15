@@ -14,6 +14,9 @@ class SearchResults extends Backbone.Collection
 
 	###
 	@constructs
+	@param {object[]} models
+	@param {object} options
+	@param {Backbone.Model} options.config
 	###
 	initialize: (models, options) ->
 		@config = options.config

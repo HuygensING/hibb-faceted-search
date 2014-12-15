@@ -2024,6 +2024,9 @@ SearchResults = (function(_super) {
 
   /*
   	@constructs
+  	@param {object[]} models
+  	@param {object} options
+  	@param {Backbone.Model} options.config
    */
 
   SearchResults.prototype.initialize = function(models, options) {
@@ -2216,6 +2219,15 @@ Config = (function(_super) {
     return Config.__super__.constructor.apply(this, arguments);
   }
 
+
+  /*
+  	@prop {object} [facetTitleMap={}] - Map of facet names, mapping to facet titles. Use this map to give user friendly display names to facets in case the server doesn't give them.
+  	@prop {string[]} [facetOrder=[]] - Define the rendering order of the facets. If undefined, the facets are rendered in the order returned by the backend.
+  	@prop {boolean} [results=false] - Render the results. When kept to false, the showing of the results has to be taken care of in the application.
+  	@prop {string} [entryTermSingular="entry"] - Name of one result, for example: book, woman, country, alumnus, etc.
+  	@prop {string} [entryTermPlural="entries"] - Name of multiple results, for example: books, women, countries, alunmi, etc.
+   */
+
   Config.prototype.defaults = function() {
     return {
       resultRows: 10,
@@ -2233,7 +2245,8 @@ Config = (function(_super) {
       entryTermSingular: 'entry',
       entryTermPlural: 'entries',
       entryMetadataFields: [],
-      levels: []
+      levels: [],
+      sortableFields: []
     };
   };
 
@@ -2441,6 +2454,13 @@ MainView = (function(_super) {
     this.searchResults = new SearchResults(null, {
       config: this.config
     });
+    this.listenToOnce(this.searchResults, 'change:results', (function(_this) {
+      return function(responseModel) {
+        return _this.config.set({
+          sortableFields: responseModel.get('sortableFields')
+        });
+      };
+    })(this));
     this.listenTo(this.searchResults, 'change:results', (function(_this) {
       return function(responseModel) {
         if (_this.config.get('textSearch') !== 'simple') {
@@ -2823,43 +2843,39 @@ RangeFacet = (function(_super) {
       currentMax: null,
       handleMinLeft: null,
       handleMaxLeft: null,
-      sliderWidth: null,
-      options: {}
+      sliderWidth: null
     });
   };
 
   RangeFacet.prototype.initialize = function() {
-    this.on('change:currentMin', (function(_this) {
-      return function(model, value) {
-        return _this.set({
-          handleMinLeft: _this.getLeftFromYear(value)
+    return this.once('change', (function(_this) {
+      return function() {
+        _this.on('change:currentMin', function(model, value) {
+          return _this.set({
+            handleMinLeft: _this.getLeftFromYear(value)
+          });
         });
-      };
-    })(this));
-    this.on('change:currentMax', (function(_this) {
-      return function(model, value) {
-        return _this.set({
-          handleMaxLeft: _this.getLeftFromYear(value)
+        _this.on('change:currentMax', function(model, value) {
+          return _this.set({
+            handleMaxLeft: _this.getLeftFromYear(value)
+          });
         });
-      };
-    })(this));
-    this.on('change:handleMinLeft', (function(_this) {
-      return function(model, value) {
-        return _this.set({
-          currentMin: _this.getYearFromLeft(value)
+        _this.on('change:handleMinLeft', function(model, value) {
+          return _this.set({
+            currentMin: _this.getYearFromLeft(value)
+          });
         });
-      };
-    })(this));
-    return this.on('change:handleMaxLeft', (function(_this) {
-      return function(model, value) {
-        return _this.set({
-          currentMax: _this.getYearFromLeft(value)
+        return _this.on('change:handleMaxLeft', function(model, value) {
+          return _this.set({
+            currentMax: _this.getYearFromLeft(value)
+          });
         });
       };
     })(this));
   };
 
   RangeFacet.prototype.set = function(attrs, options) {
+    console.log('set', attrs);
     if (attrs.hasOwnProperty('currentMin')) {
       if (attrs.currentMin > this.get('currentMax')) {
         attrs.currentMax = +attrs.currentMin;
@@ -2872,39 +2888,88 @@ RangeFacet = (function(_super) {
         attrs.currentMax = this.get('currentMin');
       }
     }
-    if (attrs.hasOwnProperty('currentMin') && attrs.currentMin < this.get('min')) {
+    if (attrs.hasOwnProperty('currentMin') && this.has('min') && attrs.currentMin < this.get('min')) {
       attrs.currentMin = this.get('min');
     }
-    if (attrs.hasOwnProperty('currentMax') && attrs.currentMax > this.get('max')) {
+    if (attrs.hasOwnProperty('currentMax') && this.has('max') && attrs.currentMax > this.get('max')) {
       attrs.currentMax = this.get('max');
     }
     return RangeFacet.__super__.set.apply(this, arguments);
   };
 
   RangeFacet.prototype.parse = function(attrs) {
-    var getYear, ll, ul;
     RangeFacet.__super__.parse.apply(this, arguments);
-    getYear = function(str) {
-      if (str.length === 8) {
-        str = str.substr(0, 4);
-      } else if (str.length === 7) {
-        str = str.substr(0, 3);
-      } else {
-        throw new Error("RangeFacet: lower or upper limit string is not 7 or 8 chars!");
-      }
-      return +str;
-    };
-    ll = attrs.options[0].lowerLimit + '';
-    ul = attrs.options[0].upperLimit + '';
-    attrs.min = attrs.currentMin = attrs.options.lowerLimit = getYear(ll);
-    attrs.max = attrs.currentMax = attrs.options.upperLimit = getYear(ul);
+    attrs.min = attrs.currentMin = this.convertLimit2Year(attrs.options[0].lowerLimit);
+    attrs.max = attrs.currentMax = this.convertLimit2Year(attrs.options[0].upperLimit);
+    delete attrs.options;
     return attrs;
+  };
+
+
+  /*
+  	Convert the lower and upper limit string to a year.
+  	For example "20141213" returns 2014; "8000101" returns 800.
+  
+  	@method convertLimit2Year
+  	@param {number} limit - Lower or upper limit, for example: 20141213
+  	@returns {number} A year, for example: 2014
+   */
+
+  RangeFacet.prototype.convertLimit2Year = function(limit) {
+    var year;
+    year = limit + '';
+    if (year.length === 8) {
+      year = year.substr(0, 4);
+    } else if (year.length === 7) {
+      year = year.substr(0, 3);
+    } else {
+      throw new Error("RangeFacet: lower or upper limit is not 7 or 8 chars!");
+    }
+    return +year;
+  };
+
+
+  /*
+  	Convert a year to a lower or upper limit string
+  	For example: 2014 returns "20141231"; 800 returns "8000101".
+  
+  	@method convertLimit2Year
+  	@param {number} year - A year
+  	@param {boolean} from - If from is true, the limit start at januari 1st, else it ends at december 31st
+  	@returns {number} A limit, for example: 20140101
+   */
+
+  RangeFacet.prototype._convertYear2Limit = function(year, from) {
+    var limit;
+    if (from == null) {
+      from = true;
+    }
+    limit = year + '';
+    limit += from ? "0101" : "1231";
+    return +limit;
+  };
+
+  RangeFacet.prototype.getLowerLimit = function() {
+    return this._convertYear2Limit(this.get('currentMin'));
+  };
+
+  RangeFacet.prototype.getUpperLimit = function() {
+    return this._convertYear2Limit(this.get('currentMax'), false);
+  };
+
+  RangeFacet.prototype.reset = function() {
+    return this.set({
+      currentMin: this.get('min'),
+      currentMax: this.get('max'),
+      lowerLimit: this.get('min'),
+      upperLimit: this.get('max')
+    });
   };
 
   RangeFacet.prototype.getLeftFromYear = function(year) {
     var hhw, ll, sw, ul;
-    ll = this.get('options').lowerLimit;
-    ul = this.get('options').upperLimit;
+    ll = this.get('min');
+    ul = this.get('max');
     sw = this.get('sliderWidth');
     hhw = this.get('handleWidth') / 2;
     return (((year - ll) / (ul - ll)) * sw) - hhw;
@@ -2912,15 +2977,15 @@ RangeFacet = (function(_super) {
 
   RangeFacet.prototype.getYearFromLeft = function(left) {
     var hhw, ll, sw, ul;
-    ll = this.get('options').lowerLimit;
-    ul = this.get('options').upperLimit;
+    ll = this.get('min');
+    ul = this.get('max');
     hhw = this.get('handleWidth') / 2;
     sw = this.get('sliderWidth');
-    return (((left + hhw) / sw) * (ul - ll)) + ll;
+    return Math.round((((left + hhw) / sw) * (ul - ll)) + ll);
   };
 
   RangeFacet.prototype.dragMin = function(pos) {
-    if ((-1 < pos && pos <= this.get('handleMaxLeft'))) {
+    if ((0 <= pos && pos <= this.get('handleMaxLeft'))) {
       return this.set({
         handleMinLeft: pos
       });
@@ -2963,8 +3028,9 @@ QueryOptions = (function(_super) {
 
 
   /*
-  	@prop {array} facetValues=[] - Array of objects containing a facet name and values: {name: 'facet_s_writers', values: ['pietje', 'pukje']}
-  	@prop {array} sortParameters=[] - Array of objects containing fieldname and direction: {fieldname: 'language', direction: 'desc'}
+  	@prop {object[]} facetValues=[] - Array of objects containing a facet name and values: {name: 'facet_s_writers', values: ['pietje', 'pukje']}
+  	@prop {object[]} sortParameters=[] - Array of objects containing fieldname and direction: {fieldname: 'language', direction: 'desc'}
+  	@prop {string[]} [resultFields] - List of metadata fields to be returned by the server for every result.
    */
 
   QueryOptions.prototype.defaults = function() {
@@ -4223,8 +4289,8 @@ RangeFacet = (function(_super) {
     queryOptions = {
       facetValue: {
         name: this.model.get('name'),
-        lowerLimit: this.model.get('currentMin') + '0101',
-        upperLimit: this.model.get('currentMax') + '1231'
+        lowerLimit: this.model.getLowerLimit(),
+        upperLimit: this.model.getUpperLimit()
       }
     };
     return this.trigger('change', queryOptions, options);
@@ -4232,10 +4298,12 @@ RangeFacet = (function(_super) {
 
   RangeFacet.prototype.onResize = function() {
     this.postRender();
-    this.update({
-      lowerLimit: this.model.get('currentMin'),
-      upperLimit: this.model.get('currentMax')
-    });
+    this.update([
+      {
+        lowerLimit: this.model.get('currentMin'),
+        upperLimit: this.model.get('currentMax')
+      }
+    ]);
     return this.checkInputOverlap();
   };
 
@@ -4273,20 +4341,25 @@ RangeFacet = (function(_super) {
   };
 
   RangeFacet.prototype.update = function(newOptions) {
+    var ll, ul;
     if (_.isArray(newOptions)) {
       if (newOptions[0] != null) {
         newOptions = newOptions[0];
-      } else {
-        newOptions = {
-          lowerLimit: this.model.get('options').lowerLimit,
-          upperLimit: this.model.get('options').upperLimit
-        };
+        if (_.isNumber(newOptions.lowerLimit)) {
+          ll = newOptions.lowerLimit;
+          ul = newOptions.upperLimit;
+        } else {
+          ll = this.model.convertLimit2Year(newOptions.lowerLimit);
+          ul = this.model.convertLimit2Year(newOptions.upperLimit);
+        }
+        this.model.set({
+          currentMin: ll,
+          currentMax: ul
+        });
       }
+    } else {
+      this.model.reset();
     }
-    this.model.set({
-      currentMin: +(newOptions.lowerLimit + '').substr(0, 4),
-      currentMax: +(newOptions.upperLimit + '').substr(0, 4)
-    });
     if (this.button != null) {
       return this.button.style.display = 'none';
     }
@@ -4332,7 +4405,7 @@ Results = (function(_super) {
   /* options
   	@constructs
   	@param {object} this.options={}
-  	@prop {object} options.config
+  	@prop {Backbone.Model} options.config
   	@prop {Backbone.Collection} options.searchResults
    */
 
@@ -4376,8 +4449,9 @@ Results = (function(_super) {
       this.subviews.sortLevels.destroy();
     }
     this.subviews.sortLevels = new Views.SortLevels({
+      config: this.options.config,
       levels: this.options.config.get('levels'),
-      entryMetadataFields: this.options.config.get('entryMetadataFields')
+      entryMetadataFields: this.options.config.get('sortableFields')
     });
     this.$('header nav ul').prepend(this.subviews.sortLevels.$el);
     return this.listenTo(this.subviews.sortLevels, 'change', (function(_this) {
@@ -4800,8 +4874,15 @@ SortLevels = (function(_super) {
 
   SortLevels.prototype.className = 'sort-levels';
 
+
+  /*
+  	@param {object} this.options
+  	@param {Backbone.Model} this.options.config
+   */
+
   SortLevels.prototype.initialize = function(options) {
     this.options = options != null ? options : {};
+    this.listenTo(this.options.config, 'change:sortableFields', this.render);
     return this.render();
   };
 
@@ -4809,7 +4890,7 @@ SortLevels = (function(_super) {
     var leave, levels, rtpl;
     rtpl = tpl({
       levels: this.options.levels,
-      entryMetadataFields: this.options.entryMetadataFields
+      entryMetadataFields: this.options.config.get('sortableFields')
     });
     this.$el.html(rtpl);
     this.listenTo(Backbone, 'sortlevels:update', (function(_this) {
@@ -5255,8 +5336,8 @@ module.exports = function template(locals) {
 var buf = [];
 var jade_mixins = {};
 var jade_interp;
-;var locals_for_with = (locals || {});(function (options) {
-buf.push("<div class=\"slider\"><span class=\"dash\">-</span><div class=\"handle-min handle\"><input" + (jade.attr("value", options.lowerLimit, true, false)) + " disabled=\"disabled\" class=\"min\"/></div><div class=\"handle-max handle\"><input" + (jade.attr("value", options.upperLimit, true, false)) + " disabled=\"disabled\" class=\"max\"/></div><div class=\"bar\">&nbsp;</div><button>Search?</button></div>");}("options" in locals_for_with?locals_for_with.options:typeof options!=="undefined"?options:undefined));;return buf.join("");
+;var locals_for_with = (locals || {});(function (min, max) {
+buf.push("<div class=\"slider\"><span class=\"dash\">-</span><div class=\"handle-min handle\"><input" + (jade.attr("value", min, true, false)) + " disabled=\"disabled\" class=\"min\"/></div><div class=\"handle-max handle\"><input" + (jade.attr("value", max, true, false)) + " disabled=\"disabled\" class=\"max\"/></div><div class=\"bar\">&nbsp;</div><button><svg version=\"1.1\" xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" viewBox=\"0 0 216 146\" xml:space=\"preserve\"><path d=\"M172.77,123.025L144.825,95.08c6.735-9.722,10.104-20.559,10.104-32.508c0-7.767-1.508-15.195-4.523-22.283c-3.014-7.089-7.088-13.199-12.221-18.332s-11.242-9.207-18.33-12.221c-7.09-3.015-14.518-4.522-22.285-4.522c-7.767,0-15.195,1.507-22.283,4.522c-7.089,3.014-13.199,7.088-18.332,12.221c-5.133,5.133-9.207,11.244-12.221,18.332c-3.015,7.089-4.522,14.516-4.522,22.283c0,7.767,1.507,15.193,4.522,22.283c3.014,7.088,7.088,13.197,12.221,18.33c5.133,5.134,11.244,9.207,18.332,12.222c7.089,3.015,14.516,4.522,22.283,4.522c11.951,0,22.787-3.369,32.509-10.104l27.945,27.863c1.955,2.064,4.397,3.096,7.332,3.096c2.824,0,5.27-1.032,7.332-3.096c2.064-2.063,3.096-4.508,3.096-7.332C175.785,127.479,174.781,125.034,172.77,123.025z M123.357,88.357c-7.143,7.143-15.738,10.714-25.787,10.714c-10.048,0-18.643-3.572-25.786-10.714c-7.143-7.143-10.714-15.737-10.714-25.786c0-10.048,3.572-18.644,10.714-25.786c7.142-7.143,15.738-10.714,25.786-10.714c10.048,0,18.643,3.572,25.787,10.714c7.143,7.142,10.715,15.738,10.715,25.786C134.072,72.62,130.499,81.214,123.357,88.357z\"></path></svg></button></div>");}("min" in locals_for_with?locals_for_with.min:typeof min!=="undefined"?min:undefined,"max" in locals_for_with?locals_for_with.max:typeof max!=="undefined"?max:undefined));;return buf.join("");
 };
 },{"jade/runtime":10}],45:[function(_dereq_,module,exports){
 var jade = _dereq_("jade/runtime");

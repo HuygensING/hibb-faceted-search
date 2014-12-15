@@ -154,6 +154,8 @@ class MainView extends Backbone.View
 	initSearchResults: ->
 		@searchResults = new SearchResults null, config: @config
 
+		@listenToOnce @searchResults, 'change:results', (responseModel) =>
+			@config.set sortableFields: responseModel.get('sortableFields')
 		# Listen to the change:results event and (re)render the facets everytime the result changes.
 		@listenTo @searchResults, 'change:results', (responseModel) =>
 			# Nothing needs updating if the facets aren't visible.
