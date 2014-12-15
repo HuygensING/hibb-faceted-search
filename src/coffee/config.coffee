@@ -7,6 +7,8 @@ class Config extends Backbone.Model
 	@prop {boolean} [results=false] - Render the results. When kept to false, the showing of the results has to be taken care of in the application.
 	@prop {string} [entryTermSingular="entry"] - Name of one result, for example: book, woman, country, alumnus, etc.
 	@prop {string} [entryTermPlural="entries"] - Name of multiple results, for example: books, women, countries, alunmi, etc.
+	@prop {boolean} [sortLevels=true] - Render sort levels in the results header
+	@prop {boolean} [showMetadata=true] - Render show metadata toggle in the results header
 	###
 	defaults: ->
 		# Number of results per query/page. The backend returns resultRows
@@ -54,6 +56,8 @@ class Config extends Backbone.Model
 		requestOptions: {}
 
 		results: false
+		sortLevels: true
+		showMetadata: true
 
 		entryTermSingular: 'entry'
 		entryTermPlural: 'entries'

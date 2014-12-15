@@ -45,6 +45,7 @@ class Results extends Backbone.View
 	# ### Render
 	render: ->
 		@$el.html tpl
+			showMetadata: @options.config.get 'showMetadata'
 			resultsPerPage: @options.config.get 'resultRows'
 
 		@renderLevels()
@@ -56,6 +57,8 @@ class Results extends Backbone.View
 		@
 
 	renderLevels: ->
+		return unless @options.config.get('sortLevels')
+
 		@subviews.sortLevels.destroy() if @subviews.sortLevels?
 		@subviews.sortLevels = new Views.SortLevels
 			config: @options.config

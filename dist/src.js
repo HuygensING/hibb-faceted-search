@@ -2226,6 +2226,8 @@ Config = (function(_super) {
   	@prop {boolean} [results=false] - Render the results. When kept to false, the showing of the results has to be taken care of in the application.
   	@prop {string} [entryTermSingular="entry"] - Name of one result, for example: book, woman, country, alumnus, etc.
   	@prop {string} [entryTermPlural="entries"] - Name of multiple results, for example: books, women, countries, alunmi, etc.
+  	@prop {boolean} [sortLevels=true] - Render sort levels in the results header
+  	@prop {boolean} [showMetadata=true] - Render show metadata toggle in the results header
    */
 
   Config.prototype.defaults = function() {
@@ -2242,6 +2244,8 @@ Config = (function(_super) {
       autoSearch: true,
       requestOptions: {},
       results: false,
+      sortLevels: true,
+      showMetadata: true,
       entryTermSingular: 'entry',
       entryTermPlural: 'entries',
       entryMetadataFields: [],
@@ -4431,6 +4435,7 @@ Results = (function(_super) {
 
   Results.prototype.render = function() {
     this.$el.html(tpl({
+      showMetadata: this.options.config.get('showMetadata'),
       resultsPerPage: this.options.config.get('resultRows')
     }));
     this.renderLevels();
@@ -4445,6 +4450,9 @@ Results = (function(_super) {
   };
 
   Results.prototype.renderLevels = function() {
+    if (!this.options.config.get('sortLevels')) {
+      return;
+    }
     if (this.subviews.sortLevels != null) {
       this.subviews.sortLevels.destroy();
     }
@@ -4575,7 +4583,7 @@ module.exports = function template(locals) {
 var buf = [];
 var jade_mixins = {};
 var jade_interp;
-;var locals_for_with = (locals || {});(function (resultsPerPage) {
+;var locals_for_with = (locals || {});(function (resultsPerPage, showMetadata) {
 buf.push("<header><h3 class=\"numfound\"></h3><nav><ul><li class=\"results-per-page\"><select name=\"results-per-page\">");
 // iterate [10, 25, 50, 100, 250, 500, 1000]
 ;(function(){
@@ -4599,7 +4607,12 @@ buf.push("<option" + (jade.attr("value", count, true, false)) + (jade.attr("sele
   }
 }).call(this);
 
-buf.push("</select></li><li class=\"select-all\"><input id=\"i9d8sdf\" type=\"checkbox\"/><label for=\"i9d8sdf\">Select all</label></li><li class=\"show-metadata\"><input id=\"o45hes3\" type=\"checkbox\" checked=\"checked\"/><label for=\"o45hes3\">Show metadata</label></li></ul></nav><div class=\"pagination\"></div></header><div class=\"pages\"></div>");}("resultsPerPage" in locals_for_with?locals_for_with.resultsPerPage:typeof resultsPerPage!=="undefined"?resultsPerPage:undefined));;return buf.join("");
+buf.push("</select></li>");
+if ( showMetadata)
+{
+buf.push("<li class=\"show-metadata\"><input id=\"o45hes3\" type=\"checkbox\" checked=\"checked\"/><label for=\"o45hes3\">Show metadata</label></li>");
+}
+buf.push("</ul></nav><div class=\"pagination\"></div></header><div class=\"pages\"></div>");}("resultsPerPage" in locals_for_with?locals_for_with.resultsPerPage:typeof resultsPerPage!=="undefined"?resultsPerPage:undefined,"showMetadata" in locals_for_with?locals_for_with.showMetadata:typeof showMetadata!=="undefined"?showMetadata:undefined));;return buf.join("");
 };
 },{"jade/runtime":10}],33:[function(_dereq_,module,exports){
 var Backbone, Result, tpl,
