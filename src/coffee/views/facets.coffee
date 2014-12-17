@@ -68,12 +68,14 @@ class Facets extends Backbone.View
 
 				if @viewMap.hasOwnProperty facet.get('type')
 					fragment.appendChild @renderFacet(facet.attributes).el
-					fragment.appendChild document.createElement 'hr'
+					# fragment.appendChild document.createElement 'hr'
 				else
 					console.error 'Unknown facetView', facet.get('type')
 
 			@el.innerHTML = ''
 			@el.appendChild fragment
+
+			@_postRenderFacets()
 
 		@
 
@@ -90,6 +92,10 @@ class Facets extends Backbone.View
 			@trigger 'change', queryOptions, options
 
 		@views[facetData.name]
+
+	_postRenderFacets: ->
+		for facetName, view of @views
+			view.postRender()
 
 	# ### Methods
 	update: (facetData) ->

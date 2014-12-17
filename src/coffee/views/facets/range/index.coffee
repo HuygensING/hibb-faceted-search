@@ -1,42 +1,40 @@
 $ = require 'jquery'
 _ = require 'underscore'
 
-Models =
-	Range: require '../../models/facets/range'
+Range = require './model'
 
-Views = 
-	Facet: require './main'
+Facet = require '../main'
 
-bodyTpl = require '../../../jade/facets/range.body.jade'
+bodyTpl = require './body.jade'
 
-# Placeholders for stopDrag and onResize method, needed for removing event listeners.
-dragStopper = null
-resizer = null
-
-class RangeFacet extends Views.Facet
+class RangeFacet extends Facet
 	className: 'facet range'
 
 	# ### INITIALIZE
-	initialize: (options) ->
+	###
+	@constructs
+	@param {object} 		this.options
+	@param {Backbone.Model} this.options.config
+	@param {object} 		this.options.attrs
+	###
+	initialize: (@options) ->
 		super
-
-		@config = options.config
 
 		@draggingMin = false
 		@draggingMax = false
 
-		@model = new Models.Range options.attrs, parse: true
+		@model = new Range @options.attrs, parse: true
 		@listenTo @model, 'change:options', @render
 		@listenTo @model, 'change', (model) =>
 			if model.changed.hasOwnProperty('currentMin') or model.changed.hasOwnProperty('currentMax')
-				@button.style.display = 'block' if @button? and @config.get('autoSearch')
+				@button.style.display = 'block' if @button? and @options.config.get('autoSearch')
 		@listenTo @model, 'change:handleMinLeft', (model, value) =>
 			@handleMin.css 'left', value
-			@bar.css 'left', value
+			@bar.css 'left', value + (@model.get('handleWidth')/2)
 
 		@listenTo @model, 'change:handleMaxLeft', (model, value) =>
 			@handleMax.css 'left', value
-			@bar.css 'right', model.get('sliderWidth') - value
+			@bar.css 'right', model.get('sliderWidth') - value - (@model.get('handleWidth')/2)
 
 		@listenTo @model, 'change:currentMin', (model, value) =>
 			@inputMin.val Math.ceil value
@@ -50,20 +48,18 @@ class RangeFacet extends Views.Facet
 	render: ->
 		super
 
-		bodyTpl = @config.get('templates')['range.body'] if @config.get('templates').hasOwnProperty 'range.body'
+		bodyTpl = @options.config.get('templates')['range.body'] if @options.config.get('templates').hasOwnProperty 'range.body'
 
 		rtpl = bodyTpl @model.attributes
 		@$('.body').html rtpl
 
 		@$('header .menu').hide()
 
-		dragStopper = @stopDragging.bind(@)
-		@$el.on 'mouseleave', dragStopper
+		@dragStopper = @stopDragging.bind(@)
+		@$el.on 'mouseleave', @dragStopper
 
-		resizer = @onResize.bind(@)
-		window.addEventListener 'resize', resizer
-
-		setTimeout (=> @postRender()), 0
+		@resizer = @onResize.bind(@)
+		window.addEventListener 'resize', @resizer
 
 		@
 
@@ -125,11 +121,11 @@ class RangeFacet extends Views.Facet
 	startDragging: (ev) ->
 		target = $ ev.currentTarget
 
-		# Return if the input is editable, ie: not disabled.
 		input = target.find 'input'
 		# If the bar is dragged, an input is not found.
 		if input.length > 0
-			return unless input.attr('disabled')?
+			# Return if the input is being editted
+			return if input.hasClass 'edit'
 
 		if target.hasClass('handle-min')
 			@draggingMin = true
@@ -193,21 +189,21 @@ class RangeFacet extends Views.Facet
 			# search button. When the button is clicked, the queryModel is updated and
 			# a new search is triggered. If we silently update the model beforehand,
 			# the new search would not be triggered.
-			unless @config.get('autoSearch')
+			unless @options.config.get('autoSearch')
 				@triggerChange silent: true
 
 	enableInputEditable: (input) ->
-		input.attr 'disabled', null
+		input.addClass 'edit'
 		input.focus()
 
 	disableInputEditable: (input) ->
-		input.attr 'disabled', true
+		input.removeClass 'edit'
 
 	# ### METHODS
 
 	destroy: ->
-		@$el.off 'mouseleave', dragStopper
-		window.removeEventListener 'resize', resizer
+		@$el.off 'mouseleave', @dragStopper
+		window.removeEventListener 'resize', @resizer
 		@remove()
 
 	triggerChange: (options={}) ->
@@ -268,7 +264,7 @@ class RangeFacet extends Views.Facet
 	# Update the labels value.
 	# Called on every scroll event! Keep optimized!
 #	updateHandleLabel: (handle, leftPos) ->
-#		@button.style.display = 'block' if @button? and @config.get('autoSearch')
+#		@button.style.display = 'block' if @button? and @options.config.get('autoSearch')
 #
 #		input = if handle is 'min' then @inputMin else @inputMax
 #		input.val @model.getYearFromLeftPos(leftPos)
@@ -278,7 +274,8 @@ class RangeFacet extends Views.Facet
 			if newOptions[0]?
 				newOptions = newOptions[0]
 
-				if _.isNumber(newOptions.lowerLimit)
+				# This software will break in the year 2500. :)
+				if newOptions.lowerLimit < 2500
 					ll = newOptions.lowerLimit
 					ul = newOptions.upperLimit
 				else
@@ -304,7 +301,5 @@ class RangeFacet extends Views.Facet
 		# 	currentMax: +(newOptions.upperLimit+'').substr(0, 4)
 
 		@button.style.display = 'none' if @button?
-
-
 
 module.exports = RangeFacet

@@ -294,15 +294,6 @@
     transform: scale(1, 1);
   }
 }
-.faceted-search hr {
-  border: none;
-  height: 1px;
-  background-color: #eee;
-  margin: 10px 8px;
-}
-.faceted-search hr:last-child {
-  display: none;
-}
 .faceted-search .facet {
   position: relative;
 }
@@ -659,44 +650,37 @@
   -o-transition: opacity 500ms;
   -ms-transition: opacity 500ms;
   transition: opacity 500ms;
+  cursor: pointer;
 }
-.faceted-search.search-type-simple .text-search .body .row-1,
-.faceted-search.search-type-advanced .text-search .body .row-1,
-.faceted-search.search-type-simple .text-search .body .row-2,
-.faceted-search.search-type-advanced .text-search .body .row-2 {
-  margin: 10px 0 0 2px;
-}
-.faceted-search.search-type-simple .text-search .body .row-1 .cell-1,
-.faceted-search.search-type-advanced .text-search .body .row-1 .cell-1,
-.faceted-search.search-type-simple .text-search .body .row-2 .cell-1,
-.faceted-search.search-type-advanced .text-search .body .row-2 .cell-1,
-.faceted-search.search-type-simple .text-search .body .row-1 .cell-2,
-.faceted-search.search-type-advanced .text-search .body .row-1 .cell-2,
-.faceted-search.search-type-simple .text-search .body .row-2 .cell-2,
-.faceted-search.search-type-advanced .text-search .body .row-2 .cell-2 {
-  display: inline-block;
-  vertical-align: top;
-}
-.faceted-search.search-type-simple .text-search .body .row-1 .cell-1,
-.faceted-search.search-type-advanced .text-search .body .row-1 .cell-1,
-.faceted-search.search-type-simple .text-search .body .row-2 .cell-1,
-.faceted-search.search-type-advanced .text-search .body .row-2 .cell-1 {
-  width: 120px;
-}
-.faceted-search.search-type-simple .text-search .body label,
-.faceted-search.search-type-advanced .text-search .body label {
-  font-size: 0.9em;
-}
-.faceted-search.search-type-simple .text-search .body input[type="checkbox"],
-.faceted-search.search-type-advanced .text-search .body input[type="checkbox"] {
-  margin-right: 4px;
-}
-.faceted-search.search-type-simple .text-search .body ul.textlayers,
-.faceted-search.search-type-advanced .text-search .body ul.textlayers,
-.faceted-search.search-type-simple .text-search .body ul.searchins,
-.faceted-search.search-type-advanced .text-search .body ul.searchins {
-  margin-top: 6px;
+.faceted-search.search-type-simple .text-search .body .menu ul,
+.faceted-search.search-type-advanced .text-search .body .menu ul {
+  margin: 0;
+  padding: 0;
   list-style: none;
+}
+.faceted-search.search-type-simple .text-search .body .menu ul.options > li,
+.faceted-search.search-type-advanced .text-search .body .menu ul.options > li {
+  margin-top: 10px;
+}
+.faceted-search.search-type-simple .text-search .body .menu ul.options > li:first-child,
+.faceted-search.search-type-advanced .text-search .body .menu ul.options > li:first-child {
+  margin-top: 0;
+}
+.faceted-search.search-type-simple .text-search .body .menu ul.fields li input[type="checkbox"],
+.faceted-search.search-type-advanced .text-search .body .menu ul.fields li input[type="checkbox"],
+.faceted-search.search-type-simple .text-search .body .menu ul.fields li label,
+.faceted-search.search-type-advanced .text-search .body .menu ul.fields li label {
+  display: inline-block;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+  vertical-align: top;
+  vertical-align: middle;
+  margin-left: 6px;
+}
+.faceted-search.search-type-simple .text-search .body .menu ul.fields li label,
+.faceted-search.search-type-advanced .text-search .body .menu ul.fields li label {
+  font-size: 0.85em;
 }
 .faceted-search.search-type-advanced ul.facets-menu li.collapse-expand {
   display: block;
@@ -727,7 +711,7 @@
   border-top-left-radius: 3px;
   width: 85%;
   height: 30px;
-  border: 1px solid #eee;
+  border: 1px solid #ddd;
   margin: 0;
   padding-left: 8px;
   font-size: 1.2em;
@@ -756,10 +740,10 @@
   padding: 20px;
 }
 .faceted-search-placeholder.with-results .faceted-search {
-  width: 30%;
+  width: 33.33%;
 }
 .faceted-search-placeholder.with-results .results {
-  width: 70%;
+  width: 66.66%;
 }
 .faceted-search-placeholder.with-results .results header {
   background: #fff;

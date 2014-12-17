@@ -5,10 +5,17 @@ class Config extends Backbone.Model
 	@prop {object} [facetTitleMap={}] - Map of facet names, mapping to facet titles. Use this map to give user friendly display names to facets in case the server doesn't give them.
 	@prop {string[]} [facetOrder=[]] - Define the rendering order of the facets. If undefined, the facets are rendered in the order returned by the backend.
 	@prop {boolean} [results=false] - Render the results. When kept to false, the showing of the results has to be taken care of in the application.
-	@prop {string} [entryTermSingular="entry"] - Name of one result, for example: book, woman, country, alumnus, etc.
-	@prop {string} [entryTermPlural="entries"] - Name of multiple results, for example: books, women, countries, alunmi, etc.
+	@prop {string} [termSingular="entry"] - Name of one result, for example: book, woman, country, alumnus, etc.
+	@prop {string} [termPlural="entries"] - Name of multiple results, for example: books, women, countries, alunmi, etc.
 	@prop {boolean} [sortLevels=true] - Render sort levels in the results header
 	@prop {boolean} [showMetadata=true] - Render show metadata toggle in the results header
+
+	@prop {object} [textSearchOptions] - Options that are passed to the text search component.
+	@prop {boolean} [textSearchOptions.caseSensitive=false] - false
+	@prop {boolean} [textSearchOptions.fuzzy=false] - false
+	@prop {string} [textSearchOptions.title] - Title of the text search
+	@prop {string} [textSearchOptions.name] - Name of the text search
+
 	###
 	defaults: ->
 		# Number of results per query/page. The backend returns resultRows
@@ -26,6 +33,17 @@ class Config extends Backbone.Model
 		# simple: text search is shown, facets are hidden, loader is hidden
 		# advanced: text search is shown, facets are shown, loader is shown
 		textSearch: 'advanced'
+		textSearchOptions:
+			caseSensitive: false
+			fuzzy: false
+			fullTextSearchParameters: []
+			
+		labels:
+			fullTextSearchFields: "Search in"
+			numFound: "Found"
+			filterOptions: "Filter options"
+			sortAlphabetically: "Sort alphabetically"
+			sortNumerically: "Sort numerically"
 
 		authorizationHeaderToken: null
 
@@ -59,8 +77,8 @@ class Config extends Backbone.Model
 		sortLevels: true
 		showMetadata: true
 
-		entryTermSingular: 'entry'
-		entryTermPlural: 'entries'
+		termSingular: 'entry'
+		termPlural: 'entries'
 
 		# A list of all the entries metadata fields. This list corresponds
 		# to the facets and is used to populate the sortLevels in the 

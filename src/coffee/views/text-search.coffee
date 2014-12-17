@@ -6,24 +6,57 @@ Models =
 
 tpl = require '../../jade/text-search.jade'
 
+funcky = require('funcky.util')
+
 class TextSearch extends Backbone.View
 
   className: 'text-search'
 
   # ### Initialize
-  initialize: (options) ->
-    @config = options.config
+  initialize: (@options) ->
     @reset()
+
+  _addFullTextSearchParameters: ->
+    ftsp = @options.config.get('textSearchOptions').fullTextSearchParameters
+   
+    if ftsp?
+      params = []
+      for param in ftsp
+        params.push
+          name: param
+          term: "*"
+
+      @model.set fullTextSearchParameters: params
 
   setModel: ->
     @stopListening @model if @model?
 
-    @model = new Models.Search @config.get('textSearchOptions')
+    textSearchOptions = @options.config.get('textSearchOptions')
+
+    attrs = {}
+    attrs.caseSensitive = false if textSearchOptions.caseSensitive
+    attrs.fuzzy = false if textSearchOptions.fuzzy
+    
+    @model = new Models.Search attrs
+    @_addFullTextSearchParameters()
+
+    @listenTo @options.config, "change:textSearchOptions", =>
+      @_addFullTextSearchParameters()
+      @render()
+
+    # @listenTo @options.config, "change:textSearchOptions", =>
+    #   console.log 'change text search options'
+
+    # console.log @options.config.get('textSearchOptions').fullTextSearchParameters
 
   # ### Render
   render: ->
-    tpl = @config.get('templates')['text-search'] if @config.get('templates').hasOwnProperty 'text-search'
-    @$el.html tpl model: @model
+    tpl = @options.config.get('templates')['text-search'] if @options.config.get('templates').hasOwnProperty 'text-search'
+    @$el.html tpl
+      model: @model
+      # options: @options.config.get('textSearchOptions')
+      config: @options.config
+      generateId: funcky.generateID
 
     @
 
@@ -40,33 +73,55 @@ class TextSearch extends Backbone.View
       ev.preventDefault()
       return @search ev
 
-    # Update the mainModel (queryOptions) silently. We want to set the term
-    # to the mainModel. When autoSearch is off and the user wants to
-    # perform a search, the term is known to the queryModel.
-    if @model.get('term') isnt ev.currentTarget.value
-      @model.set term: ev.currentTarget.value
-      @updateQueryModel()
+    # The term can be passed to 
+    if @model.has('term')
+      # Update the mainModel (queryOptions) silently. We want to set the term
+      # to the mainModel. When autoSearch is off and the user wants to
+      # perform a search, the term is known to the queryModel.
+      if @model.get('term') isnt ev.currentTarget.value
+        @model.set term: ev.currentTarget.value
+    else
+      clone = _.clone @model.get('fullTextSearchParameters')
+      for field in clone
+        field.term = ev.currentTarget.value
+      @model.set fullTextSearchParameters: clone
 
+    @updateQueryModel()
 
   checkboxChanged: (ev) ->
-    if attr = ev.currentTarget.getAttribute('data-attr')
+    dataAttr = ev.currentTarget.getAttribute('data-attr')
+    dataAttrArray = ev.currentTarget.getAttribute('data-attr-array')
+
+    if attr = dataAttr
       if attr is 'searchInTranscriptions'
         @$('ul.textlayers').toggle ev.currentTarget.checked
       @model.set attr, ev.currentTarget.checked
-    else if attr = ev.currentTarget.getAttribute('data-attr-array')
+    else if dataAttrArray is 'fullTextSearchParameters'
       checkedArray = []
-      for cb in @el.querySelectorAll '[data-attr-array="'+attr+'"]' when cb.checked
+      for cb in @el.querySelectorAll '[data-attr-array="fullTextSearchParameters"]' when cb.checked
+        checkedArray.push
+          name: cb.getAttribute('data-value')
+          term: @$('input[name="search"]').val()
+      @model.set dataAttrArray, checkedArray
+    else if dataAttrArray?
+      checkedArray = []
+      for cb in @el.querySelectorAll "[data-attr-array=\"#{dataAttrArray}\"]" when cb.checked
         checkedArray.push cb.getAttribute('data-value')
-      @model.set attr, checkedArray
+      @model.set dataAttrArray, checkedArray
 
     @updateQueryModel()
+    # else
+    #   console.log attr
+    # console.log @model.attributes
+    # @updateQueryModel()
 
   search: (ev) ->
     ev.preventDefault()
     @trigger 'search'
 
   # ### Methods
-  updateQueryModel: -> @trigger 'change', @model.queryData()
+  updateQueryModel: ->
+    @trigger 'change', @model.attributes
 
   reset: ->
     @setModel()

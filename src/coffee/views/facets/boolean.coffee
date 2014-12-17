@@ -59,7 +59,10 @@ class BooleanFacet extends Views.Facet
         values: _.map @$('i.fa-check-square-o'), (cb) -> cb.getAttribute 'data-value'
 
   # ### Methods
-  update: (newOptions) -> @model.set 'options', newOptions
-  reset: -> @render()
+  update: (newOptions) ->
+    @model.set 'options', newOptions
+  
+  reset: ->
+    @render()
 
 module.exports = BooleanFacet

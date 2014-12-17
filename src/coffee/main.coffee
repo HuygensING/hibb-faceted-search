@@ -2,6 +2,8 @@ Backbone = require 'backbone'
 $ = require 'jquery'
 Backbone.$ = $
 
+assert = require 'assert'
+
 _ = require 'underscore'
 
 funcky = require('funcky.el').el
@@ -130,13 +132,23 @@ class MainView extends Backbone.View
 		@remove()
 
 	extendConfig: (options) ->
+		# Create a map of properties which need to be extended (not overriden)
+		toBeExtended = 
+			facetTitleMap: null
+			textSearchOptions: null
+			labels: null
 
-		ftm = options.facetTitleMap
-		delete options.facetTitleMap
+		# Copy the keys to a different map and remove from the options, otherwise
+		# the defaults will be overriden.
+		for key, value of toBeExtended
+			toBeExtended[key] = options[key]
+			delete options[key]
 
 		@config = new Config options
 
-		@config.set facetTitleMap: _.extend @config.get('facetTitleMap'), ftm
+		# Extend en (re)set the extended property values.
+		for key, value of toBeExtended
+			@config.set key, _.extend @config.get(key), value
 
 		# Set the default of config type in case the user sends an unknown string.
 		@config.set textSearch: 'advanced' if ['none', 'simple', 'advanced'].indexOf(@config.get('textSearch')) is -1
@@ -145,7 +157,8 @@ class MainView extends Backbone.View
 			@refresh()
 
 	initQueryOptions: ->
-		attrs = _.extend @config.get('queryOptions'), @config.get('textSearchOptions')
+		# attrs = _.extend @config.get('queryOptions'), @config.get('textSearchOptions')
+		attrs = @config.get('queryOptions')
 		@queryOptions = new QueryOptions attrs
 
 		if @config.get 'autoSearch'
@@ -156,6 +169,13 @@ class MainView extends Backbone.View
 
 		@listenToOnce @searchResults, 'change:results', (responseModel) =>
 			@config.set sortableFields: responseModel.get('sortableFields')
+
+			if responseModel.has 'fullTextSearchFields'
+				# Clone textSearchOptions to force Backbone's change event to fire.
+				textSearchOptions = _.clone(@config.get('textSearchOptions'))
+				textSearchOptions.fullTextSearchParameters = responseModel.get('fullTextSearchFields')
+				@config.set textSearchOptions: textSearchOptions
+
 		# Listen to the change:results event and (re)render the facets everytime the result changes.
 		@listenTo @searchResults, 'change:results', (responseModel) =>
 			# Nothing needs updating if the facets aren't visible.
@@ -314,6 +334,8 @@ class MainView extends Backbone.View
 		for name, view of @facets.views
 			if view instanceof Views.ListFacet
 				view.revert()
+
+		assert.ok @$(".facet[data-name=\"#{facetName}\"] li[data-value=\"#{value}\"]").length > 0, ".facet[data-name=\"#{facetName}\"] li[data-value=\"#{value}\"] not found!"
 
 		@$(".facet[data-name=\"#{facetName}\"] li[data-value=\"#{value}\"]").click()
 

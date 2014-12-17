@@ -16,7 +16,9 @@ class Facet extends Backbone.View
   # ### Render
   render: ->
     tpl = @config.get('templates')['facets.main'] if @config.get('templates').hasOwnProperty 'facets.main'
-    @$el.html tpl @model.attributes
+    @$el.html tpl
+      model: @model
+      config: @config
 
     @$el.attr 'data-name', @model.get('name')
 
@@ -57,6 +59,7 @@ class Facet extends Backbone.View
   # NOOP: Override in child
   update: (newOptions) -> # console.log newOptions
   reset: ->
+  postRender: ->
 
 
 module.exports = Facet

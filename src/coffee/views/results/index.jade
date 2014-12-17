@@ -6,7 +6,7 @@ header
 			li.results-per-page
 				select(name="results-per-page")
 					each count in [10, 25, 50, 100, 250, 500, 1000]
-						option(value=count, selected=count===resultsPerPage)= count + " results"
+						option(value=count, selected=count===resultsPerPage)= count + " " + config.get('termPlural')
 			//- li.select-all
 			//- 	input#i9d8sdf(type="checkbox")
 			//- 	label(for="i9d8sdf") Select all

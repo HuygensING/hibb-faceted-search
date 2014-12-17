@@ -53,6 +53,12 @@ class ListFacet extends Views.Facet
 
 		@
 
+	postRender: ->
+		el = @el.querySelector('.body > .container')
+
+		if el.scrollHeight > el.clientHeight
+			@$el.addClass 'with-scrollbar'
+
 	# Renders the count of the filtered options (ie: "3 of 8") next to the filter <input>
 	renderFilteredOptionCount: ->
 		# filteredLength = @optionsView.filtered_items.length

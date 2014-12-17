@@ -26,26 +26,50 @@
 					margin-right 2px
 					font-size 1.4em
 					transition opacity 500ms
+					cursor pointer
 
-			.row-1, .row-2
-				margin 10px 0 0 2px
+				ul
+					margin 0
+					padding 0
+					list-style none
+					
+					&.options > li
+						margin-top 10px
+						
+						&:first-child
+							margin-top 0
+					
+					&.fields
+						li
+							input[type="checkbox"], label
+								inline-block()
+								vertical-align middle
+								margin-left 6px
+								
+							label
+								font-size 0.85em
+						
+						
 
-				.cell-1, .cell-2
-					display inline-block
-					vertical-align top
+			// .row-1, .row-2
+			// 	margin 10px 0 0 2px
 
-				.cell-1
-					width 120px
+			// 	.cell-1, .cell-2
+			// 		display inline-block
+			// 		vertical-align top
 
-			label
-				font-size 0.9em
+			// 	.cell-1
+			// 		width 120px
 
-			input[type="checkbox"]
-				margin-right 4px
+			// label
+			// 	font-size 0.9em
 
-			ul.textlayers, ul.searchins
-				margin-top 6px
-				list-style none
+			// input[type="checkbox"]
+			// 	margin-right 4px
+
+			// ul.textlayers, ul.searchins
+			// 	margin-top 6px
+			// 	list-style none
 
 .faceted-search.search-type-advanced
 	ul.facets-menu

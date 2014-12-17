@@ -1,4 +1,4 @@
-FacetModel = require './main'
+FacetModel = require '../../../models/facets/main'
 _ = require 'underscore'
 
 class RangeFacet extends FacetModel
@@ -28,7 +28,6 @@ class RangeFacet extends FacetModel
 				@set currentMax: @getYearFromLeft(value)
 
 	set: (attrs, options) ->
-		console.log 'set', attrs
 		if attrs.hasOwnProperty 'currentMin'
 			if attrs.currentMin > @get('currentMax')
 				attrs.currentMax = +attrs.currentMin
@@ -132,11 +131,12 @@ class RangeFacet extends FacetModel
 		Math.round (((left + hhw)/sw) * (ul - ll)) + ll
 		
 	dragMin: (pos) =>
-		if 0 <= pos <= @get('handleMaxLeft')
+		handelWidthHalf = @get('handleWidth')/2
+		if (-handelWidthHalf) <= pos <= @get('handleMaxLeft')
 			@set handleMinLeft: pos
 
 	dragMax: (pos) =>
-		if @get('handleMinLeft') < pos <= @get('sliderWidth')
+		if @get('handleMinLeft') < pos <= @get('sliderWidth') - (@get('handleWidth')/2)
 			@set handleMaxLeft: pos
 
 module.exports = RangeFacet

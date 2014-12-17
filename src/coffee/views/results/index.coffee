@@ -32,7 +32,7 @@ class Results extends Backbone.View
 
 
 		@listenTo @options.searchResults, 'change:results', (responseModel) =>
-			@$('header h3.numfound').html "Found #{responseModel.get('numFound')} #{@options.config.get('entryTermPlural')}"
+			@$('header h3.numfound').html "#{@options.config.get('labels').numFound} #{responseModel.get('numFound')} #{@options.config.get('termPlural')}"
 			
 			@renderPagination responseModel
 
@@ -47,6 +47,7 @@ class Results extends Backbone.View
 		@$el.html tpl
 			showMetadata: @options.config.get 'showMetadata'
 			resultsPerPage: @options.config.get 'resultRows'
+			config: @options.config
 
 		@renderLevels()
 

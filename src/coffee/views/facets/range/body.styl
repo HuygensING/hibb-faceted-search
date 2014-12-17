@@ -1,0 +1,115 @@
+// Sync handleWidth with RangeFacet view!
+handleWidth = 12px
+sliderHeight = 6px
+
+.facet.range
+	.body
+		height 32px
+		padding 6px 20px
+
+		.slider
+			select_none()
+
+			height sliderHeight
+			background #EEE
+			border-radius sliderHeight
+			box-shadow inset 1px 1px (sliderHeight/2) #888
+			position relative
+			margin 0 (handleWidth/2)
+
+			button
+				display none
+				position absolute
+				right -30px
+				width 28px
+				height 28px
+				top -41px
+				border none
+				padding 0
+				fill #888
+				
+				svg
+					width 28px	
+					height 28px
+
+				// top -35px
+				// width 80px
+				// margin 0 auto
+				// color #444
+				// background rgba(255, 189, 223, 0.3)
+				// outline none
+				// border none
+				// border-radius 4px
+
+			.bar
+				height sliderHeight
+				background rgba(225, 9, 121, 0.3)
+				left 0
+				right 0
+				position absolute
+				z-index 1
+				cursor pointer
+
+			.handle
+				position absolute
+				width handleWidth
+				height handleWidth
+				border-radius handleWidth
+				background #CCC
+				box-shadow inset 1px 1px (handleWidth/2) #444
+				cursor pointer
+				z-index 2
+
+				&.handle-min
+					left -1 * (handleWidth/2)
+					top ((handleWidth - sliderHeight)/-2)
+
+				&.handle-max
+					// left 391px
+					top ((handleWidth - sliderHeight)/-2)
+					right -1 * (handleWidth/2)
+
+				input
+					&.min, &.max, &.single
+						position: absolute
+						top 20px
+
+
+					&.min, &.max
+						cursor pointer
+						border 1px solid #eeeeee
+						padding 0 3px
+						border-radius 3px
+						width 50px
+						text-align center
+						transition border 1s
+						background white
+						select_none()
+
+						&.overlap
+							border 1px solid white
+
+						&.edit
+							background rgba(255, 189, 223, 0.3)
+						
+
+					&.min
+						left -20px
+						transition left 150ms
+						
+					&.max
+						right -20px
+
+			.dash
+				display none
+				position absolute
+				top 18px
+				z-index 12
+
+
+				&.max
+					right -20px
+					transition right 150ms
+
+				&.single
+					display none

@@ -4,19 +4,9 @@ _ = require 'underscore'
 class Search extends Backbone.Model
 
 	defaults: ->
-		term: '*'
-		caseSensitive: false
-		fuzzy: false
-		title: 'Text Search'
-		name: 'text_search'
-
-	queryData: ->
-		attrs = _.extend {}, @attributes
-
-		delete attrs.name
-		delete attrs.title
-
-		attrs
+		# term: '*'
+		# title: 'Text Search'
+		# name: 'text_search'
 
 module.exports = Search
 
