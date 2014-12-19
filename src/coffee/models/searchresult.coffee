@@ -15,7 +15,7 @@ class SearchResult extends Backbone.Model
 		solrquery: ''
 		sortableFields: []
 		start: null
-		term: ''
+		# term: ''
 		facets: []
 
 module.exports = SearchResult

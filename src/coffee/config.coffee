@@ -10,13 +10,14 @@ class Config extends Backbone.Model
 	@prop {boolean} [sortLevels=true] - Render sort levels in the results header
 	@prop {boolean} [showMetadata=true] - Render show metadata toggle in the results header
 
-	@prop {object} [textSearchOptions] - Options that are passed to the text search component.
-	@prop {boolean} [textSearchOptions.caseSensitive=false] - false
-	@prop {boolean} [textSearchOptions.fuzzy=false] - false
-	@prop {string} [textSearchOptions.title] - Title of the text search
-	@prop {string} [textSearchOptions.name] - Name of the text search
-
+	@prop {object} [textSearchOptions] - Options that are passed to the text search component
+	@prop {boolean} [textSearchOptions.caseSensitive=false] - Render caseSensitive option?
+	@prop {boolean} [textSearchOptions.fuzzy=false] - Render fuzzy option?
+	@prop {object[]} [textSearchOptions.fullTextSearchParameters] - Objects passed have a name and term attribute. Used for searching multiple fields.
 	###
+
+	# @prop {string} [textSearchOptions.title] - Title of the text search
+	# @prop {string} [textSearchOptions.name] - Name of the text search
 	defaults: ->
 		# Number of results per query/page. The backend returns resultRows
 		# of results and the results page displays this amount as well.
@@ -36,7 +37,6 @@ class Config extends Backbone.Model
 		textSearchOptions:
 			caseSensitive: false
 			fuzzy: false
-			fullTextSearchParameters: []
 			
 		labels:
 			fullTextSearchFields: "Search in"

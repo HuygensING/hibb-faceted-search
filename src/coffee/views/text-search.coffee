@@ -14,11 +14,11 @@ class TextSearch extends Backbone.View
 
   # ### Initialize
   initialize: (@options) ->
-    @reset()
+    @setModel()
 
   _addFullTextSearchParameters: ->
     ftsp = @options.config.get('textSearchOptions').fullTextSearchParameters
-   
+
     if ftsp?
       params = []
       for param in ftsp
@@ -33,10 +33,12 @@ class TextSearch extends Backbone.View
 
     textSearchOptions = @options.config.get('textSearchOptions')
 
-    attrs = {}
-    attrs.caseSensitive = false if textSearchOptions.caseSensitive
-    attrs.fuzzy = false if textSearchOptions.fuzzy
-    
+    attrs = _.clone textSearchOptions
+    if textSearchOptions.caseSensitive?
+      attrs.caseSensitive = not textSearchOptions.caseSensitive
+    if textSearchOptions.fuzzy?
+      attrs.fuzzy = not textSearchOptions.fuzzy
+
     @model = new Models.Search attrs
     @_addFullTextSearchParameters()
 

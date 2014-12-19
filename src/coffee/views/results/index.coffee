@@ -80,9 +80,13 @@ class Results extends Backbone.View
 		@destroyResultItems()
 		@$("div.pages").html('')
 
-		# eLaborate uses "*:*" when no searchterm was entered, Timbuctoo uses "*".
-		fulltext = responseModel.has('term') and responseModel.get('term').indexOf('*:*') is -1 and responseModel.get('term').indexOf('*') is -1
-
+		# Check if the results are a generated for a full text search.
+		# This is only necessary for eLaborate.
+		fulltext = false
+		if responseModel.get('results').length > 0
+			if Object.keys(responseModel.get('results')[0].terms).length > 0
+				fulltext = true
+		
 		# Create a document fragment and append entry listitem views.
 		frag = document.createDocumentFragment()
 

@@ -2229,11 +2229,10 @@ Config = (function(_super) {
   	@prop {boolean} [sortLevels=true] - Render sort levels in the results header
   	@prop {boolean} [showMetadata=true] - Render show metadata toggle in the results header
   
-  	@prop {object} [textSearchOptions] - Options that are passed to the text search component.
-  	@prop {boolean} [textSearchOptions.caseSensitive=false] - false
-  	@prop {boolean} [textSearchOptions.fuzzy=false] - false
-  	@prop {string} [textSearchOptions.title] - Title of the text search
-  	@prop {string} [textSearchOptions.name] - Name of the text search
+  	@prop {object} [textSearchOptions] - Options that are passed to the text search component
+  	@prop {boolean} [textSearchOptions.caseSensitive=false] - Render caseSensitive option?
+  	@prop {boolean} [textSearchOptions.fuzzy=false] - Render fuzzy option?
+  	@prop {object[]} [textSearchOptions.fullTextSearchParameters] - Objects passed have a name and term attribute. Used for searching multiple fields.
    */
 
   Config.prototype.defaults = function() {
@@ -2244,8 +2243,7 @@ Config = (function(_super) {
       textSearch: 'advanced',
       textSearchOptions: {
         caseSensitive: false,
-        fuzzy: false,
-        fullTextSearchParameters: []
+        fuzzy: false
       },
       labels: {
         fullTextSearchFields: "Search in",
@@ -2328,6 +2326,9 @@ MainView = (function(_super) {
       delete options.facetViewMap;
     }
     this.extendConfig(options);
+    if (this.config.get('textSearch') === 'simple' || this.config.get('textSearch') === 'advanced') {
+      this.initTextSearch();
+    }
     this.initQueryOptions();
     this.initSearchResults();
     this.render();
@@ -2349,22 +2350,17 @@ MainView = (function(_super) {
     this.el.innerHTML = tpl();
     this.initFacets(this.facetViewMap);
     this.$('.faceted-search').addClass("search-type-" + (this.config.get('textSearch')));
-    if (this.config.get('textSearch') === 'simple' || this.config.get('textSearch') === 'advanced') {
-      this.renderTextSearch();
-    }
+    this.renderTextSearch();
     if (this.config.get('results')) {
       this.renderResults();
     }
     return this;
   };
 
-  MainView.prototype.renderTextSearch = function() {
-    var textSearchPlaceholder;
+  MainView.prototype.initTextSearch = function() {
     this.textSearch = new Views.TextSearch({
       config: this.config
     });
-    textSearchPlaceholder = this.el.querySelector('.text-search-placeholder');
-    textSearchPlaceholder.parentNode.replaceChild(this.textSearch.el, textSearchPlaceholder);
     this.listenTo(this.textSearch, 'change', (function(_this) {
       return function(queryOptions) {
         return _this.queryOptions.set(queryOptions, {
@@ -2377,6 +2373,16 @@ MainView = (function(_super) {
         return _this.search();
       };
     })(this));
+  };
+
+  MainView.prototype.renderTextSearch = function() {
+    var textSearchPlaceholder;
+    if (this.textSearch == null) {
+      return;
+    }
+    this.textSearch.render();
+    textSearchPlaceholder = this.el.querySelector('.text-search-placeholder');
+    return textSearchPlaceholder.parentNode.replaceChild(this.textSearch.el, textSearchPlaceholder);
   };
 
   MainView.prototype.renderResults = function() {
@@ -2472,7 +2478,8 @@ MainView = (function(_super) {
 
   MainView.prototype.initQueryOptions = function() {
     var attrs;
-    attrs = this.config.get('queryOptions');
+    attrs = _.extend(this.config.get('queryOptions'), this.textSearch.model.attributes);
+    delete attrs.term;
     this.queryOptions = new QueryOptions(attrs);
     if (this.config.get('autoSearch')) {
       return this.listenTo(this.queryOptions, 'change', (function(_this) {
@@ -2994,7 +3001,6 @@ SearchResult = (function(_super) {
       solrquery: '',
       sortableFields: [],
       start: null,
-      term: '',
       facets: []
     };
   };
@@ -3090,7 +3096,7 @@ Facets = (function(_super) {
       _ref = this.options.config.get('facetOrder');
       for (_j = 0, _len1 = _ref.length; _j < _len1; _j++) {
         facetName = _ref[_j];
-        assert.ok(facets.get(facetName) != null, "FacetedSearch :: Facets : Unknown facet name: \"" + facetName + "\"!");
+        assert.ok(facets.get(facetName) != null, "FacetedSearch :: config.facetOrder : Unknown facet name: \"" + facetName + "\"!");
         facet = facets.get(facetName);
         if (this.viewMap.hasOwnProperty(facet.get('type'))) {
           fragment.appendChild(this.renderFacet(facet.attributes).el);
@@ -4532,7 +4538,12 @@ Results = (function(_super) {
     var frag, fulltext, pageNumber, result, ul, _i, _len, _ref;
     this.destroyResultItems();
     this.$("div.pages").html('');
-    fulltext = responseModel.has('term') && responseModel.get('term').indexOf('*:*') === -1 && responseModel.get('term').indexOf('*') === -1;
+    fulltext = false;
+    if (responseModel.get('results').length > 0) {
+      if (Object.keys(responseModel.get('results')[0].terms).length > 0) {
+        fulltext = true;
+      }
+    }
     frag = document.createDocumentFragment();
     _ref = responseModel.get('results');
     for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -5174,7 +5185,7 @@ TextSearch = (function(_super) {
 
   TextSearch.prototype.initialize = function(options) {
     this.options = options;
-    return this.reset();
+    return this.setModel();
   };
 
   TextSearch.prototype._addFullTextSearchParameters = function() {
@@ -5201,12 +5212,12 @@ TextSearch = (function(_super) {
       this.stopListening(this.model);
     }
     textSearchOptions = this.options.config.get('textSearchOptions');
-    attrs = {};
-    if (textSearchOptions.caseSensitive) {
-      attrs.caseSensitive = false;
+    attrs = _.clone(textSearchOptions);
+    if (textSearchOptions.caseSensitive != null) {
+      attrs.caseSensitive = !textSearchOptions.caseSensitive;
     }
-    if (textSearchOptions.fuzzy) {
-      attrs.fuzzy = false;
+    if (textSearchOptions.fuzzy != null) {
+      attrs.fuzzy = !textSearchOptions.fuzzy;
     }
     this.model = new Models.Search(attrs);
     this._addFullTextSearchParameters();
@@ -5488,29 +5499,31 @@ buf.push("<div class=\"placeholder\"><div class=\"body\"><div class=\"search-inp
 if ( config.get('textSearchOptions').caseSensitive)
 {
 id = generateId()
-buf.push("<li class=\"option\"><input" + (jade.attr("id", id, true, false)) + " type=\"checkbox\" data-attr=\"caseSensitive\"/><label" + (jade.attr("for", id, true, false)) + ">Match case</label></li>");
+buf.push("<li class=\"option case-sensitive\"><input" + (jade.attr("id", id, true, false)) + " type=\"checkbox\" data-attr=\"caseSensitive\"/><label" + (jade.attr("for", id, true, false)) + ">Match case</label></li>");
 }
 if ( config.get('textSearchOptions').fuzzy)
 {
 id = generateId()
-buf.push("<li class=\"option\"><input" + (jade.attr("id", id, true, false)) + " type=\"checkbox\" data-attr=\"fuzzy\"/><label" + (jade.attr("for", id, true, false)) + ">Fuzzy</label></li>");
+buf.push("<li class=\"option fuzzy\"><input" + (jade.attr("id", id, true, false)) + " type=\"checkbox\" data-attr=\"fuzzy\"/><label" + (jade.attr("for", id, true, false)) + ">Fuzzy</label></li>");
 }
 if ( model.has('searchInAnnotations') || model.has('searchInTranscriptions'))
 {
-buf.push("<li class=\"option\"><h4>Search in:</h4><ul class=\"searchins\">");
+buf.push("<li class=\"option search-annotations\"><h4>Search in:</h4><ul class=\"searchins\">");
 if ( model.has('searchInTranscriptions'))
 {
-buf.push("<li class=\"searchin\"><input id=\"cb_searchin_transcriptions\" type=\"checkbox\" data-attr=\"searchInTranscriptions\"" + (jade.attr("checked", model.get('searchInTranscriptions'), true, false)) + "/><label for=\"cb_searchin_transcriptions\">Transcriptions</label></li>");
+id = generateId()
+buf.push("<li class=\"searchin\"><input" + (jade.attr("id", id, true, false)) + " type=\"checkbox\" data-attr=\"searchInTranscriptions\"" + (jade.attr("checked", model.get('searchInTranscriptions'), true, false)) + "/><label" + (jade.attr("for", id, true, false)) + ">Transcriptions</label></li>");
 }
 if ( model.has('searchInAnnotations'))
 {
-buf.push("<li class=\"searchin\"><input id=\"cb_searchin_annotations\" type=\"checkbox\" data-attr=\"searchInAnnotations\"" + (jade.attr("checked", model.get('searchInAnnotations'), true, false)) + "/><label for=\"cb_searchin_annotations\">Annotations</label></li>");
+id = generateId()
+buf.push("<li class=\"searchin\"><input" + (jade.attr("id", id, true, false)) + " type=\"checkbox\" data-attr=\"searchInAnnotations\"" + (jade.attr("checked", model.get('searchInAnnotations'), true, false)) + "/><label" + (jade.attr("for", id, true, false)) + ">Annotations</label></li>");
 }
 buf.push("</ul></li>");
 }
 if ( model.has('textLayers') && model.get('textLayers').length > 1)
 {
-buf.push("<li class=\"option\"><h4>Textlayers:</h4><ul class=\"textlayers\">");
+buf.push("<li class=\"option search-textlayers\"><h4>Textlayers:</h4><ul class=\"textlayers\">");
 // iterate model.get('textLayers')
 ;(function(){
   var $$obj = model.get('textLayers');
@@ -5535,12 +5548,13 @@ buf.push("<li class=\"textlayer\"><input" + (jade.attr("id", 'cb_textlayer'+text
 
 buf.push("</ul></li>");
 }
-if ( config.get('textSearchOptions').fullTextSearchParameters.length > 1)
+var fields = config.get('textSearchOptions').fullTextSearchParameters;
+if ( fields != null && fields.length > 1)
 {
-buf.push("<li class=\"option\"><h4>" + (jade.escape(null == (jade_interp = config.get('labels').fullTextSearchParameters) ? "" : jade_interp)) + "</h4><ul class=\"fields\">");
-// iterate config.get('textSearchOptions').fullTextSearchParameters
+buf.push("<li class=\"option fields\"><h4>" + (jade.escape(null == (jade_interp = config.get('labels').fullTextSearchParameters) ? "" : jade_interp)) + "</h4><ul class=\"fields\">");
+// iterate fields
 ;(function(){
-  var $$obj = config.get('textSearchOptions').fullTextSearchParameters;
+  var $$obj = fields;
   if ('number' == typeof $$obj.length) {
 
     for (var $index = 0, $$l = $$obj.length; $index < $$l; $index++) {

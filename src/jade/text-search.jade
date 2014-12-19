@@ -11,31 +11,35 @@
 			ul.options
 				if config.get('textSearchOptions').caseSensitive
 					- id = generateId()
-					li.option
+					li.option.case-sensitive
 						input(id=id, type="checkbox", data-attr="caseSensitive")
 						label(for=id) Match case
 
 				if config.get('textSearchOptions').fuzzy
 					- id = generateId()
-					li.option
+					li.option.fuzzy
 						input(id=id, type="checkbox", data-attr="fuzzy")
 						label(for=id) Fuzzy
 
+				//- Specific for eLaborate
 				if model.has('searchInAnnotations') || model.has('searchInTranscriptions')
-					li.option
+					li.option.search-annotations
 						h4 Search in:
 						ul.searchins
 							if model.has('searchInTranscriptions')
+								- id = generateId()
 								li.searchin
-									input(id="cb_searchin_transcriptions", type="checkbox", data-attr="searchInTranscriptions", checked=model.get('searchInTranscriptions'))
-									label(for!="cb_searchin_transcriptions") Transcriptions
+									input(id=id, type="checkbox", data-attr="searchInTranscriptions", checked=model.get('searchInTranscriptions'))
+									label(for=id) Transcriptions
 							if model.has('searchInAnnotations')
+								- id = generateId()
 								li.searchin
-									input(id="cb_searchin_annotations", type="checkbox", data-attr="searchInAnnotations", checked=model.get('searchInAnnotations'))
-									label(for!="cb_searchin_annotations") Annotations
+									input(id=id, type="checkbox", data-attr="searchInAnnotations", checked=model.get('searchInAnnotations'))
+									label(for=id) Annotations
 
+				//- Specific for eLaborate
 				if model.has('textLayers') && model.get('textLayers').length > 1
-					li.option
+					li.option.search-textlayers
 						h4 Textlayers:
 						ul.textlayers
 							each textLayer in model.get('textLayers')
@@ -43,11 +47,13 @@
 									input(id='cb_textlayer'+textLayer, type="checkbox", data-attr-array="textLayers", data-value=textLayer, checked=true)
 									label(for='cb_textlayer'+textLayer)= textLayer
 
-				if config.get('textSearchOptions').fullTextSearchParameters.length > 1
-					li.option
+				//- Specific for Timbuctoo
+				- var fields = config.get('textSearchOptions').fullTextSearchParameters;
+				if fields != null && fields.length > 1
+					li.option.fields
 						h4= config.get('labels').fullTextSearchParameters
 						ul.fields
-							for field in config.get('textSearchOptions').fullTextSearchParameters
+							for field in fields
 								- id = generateId()
 								li
 									input(type="checkbox", checked, name=field, id=id, data-attr-array="fullTextSearchParameters", data-value=field)

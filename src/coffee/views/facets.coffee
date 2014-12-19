@@ -63,7 +63,7 @@ class Facets extends Backbone.View
 
 			fragment = document.createDocumentFragment()
 			for facetName in @options.config.get('facetOrder')
-				assert.ok facets.get(facetName)?, "FacetedSearch :: Facets : Unknown facet name: \"#{facetName}\"!"
+				assert.ok facets.get(facetName)?, "FacetedSearch :: config.facetOrder : Unknown facet name: \"#{facetName}\"!"
 				facet = facets.get facetName
 
 				if @viewMap.hasOwnProperty facet.get('type')

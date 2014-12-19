@@ -556,7 +556,6 @@
   padding: 0 3px;
   -webkit-border-radius: 3px;
   border-radius: 3px;
-  background: rgba(255,189,223,0.3);
   width: 50px;
   text-align: center;
   -webkit-transition: border 1s;
@@ -564,13 +563,6 @@
   -o-transition: border 1s;
   -ms-transition: border 1s;
   transition: border 1s;
-}
-.facet.range .body .slider .handle input.min.overlap,
-.facet.range .body .slider .handle input.max.overlap {
-  border: 1px solid #fff;
-}
-.facet.range .body .slider .handle input.min[disabled],
-.facet.range .body .slider .handle input.max[disabled] {
   background: #fff;
   -webkit-touch-callout: none;
   -webkit-user-select: none;
@@ -581,6 +573,14 @@
   -moz-user-select: none;
   -ms-user-select: none;
   user-select: none;
+}
+.facet.range .body .slider .handle input.min.overlap,
+.facet.range .body .slider .handle input.max.overlap {
+  border: 1px solid #fff;
+}
+.facet.range .body .slider .handle input.min.edit,
+.facet.range .body .slider .handle input.max.edit {
+  background: rgba(255,189,223,0.3);
 }
 .facet.range .body .slider .handle input.min {
   left: -20px;
@@ -661,10 +661,6 @@
 .faceted-search.search-type-simple .text-search .body .menu ul.options > li,
 .faceted-search.search-type-advanced .text-search .body .menu ul.options > li {
   margin-top: 10px;
-}
-.faceted-search.search-type-simple .text-search .body .menu ul.options > li:first-child,
-.faceted-search.search-type-advanced .text-search .body .menu ul.options > li:first-child {
-  margin-top: 0;
 }
 .faceted-search.search-type-simple .text-search .body .menu ul.fields li input[type="checkbox"],
 .faceted-search.search-type-advanced .text-search .body .menu ul.fields li input[type="checkbox"],
