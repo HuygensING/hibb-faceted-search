@@ -1,6 +1,6 @@
 {
   "name": "huygens-faceted-search",
-  "version": "2.2.0",
+  "version": "2.3.0",
   "description": "Faceted search library from Huygens ING.",
   "author": {
     "name": "Gijsjan Brouwer",
@@ -22,7 +22,7 @@
     "underscore": "~1.6.0",
     "body-parser": "^1.3.1",
     "express": "^4.4.3",
-    "huygens-backbone-pagination": "git+https://github.com/HuygensING/huygens-backbone-pagination.git#v1.1.0",
+    "hibb-pagination": "git+https://github.com/HuygensING/hibb-pagination.git#v1.1.0",
     "funcky.arr": "git+https://github.com/Gijsjan/funcky.arr.git",
     "funcky.el": "git+https://github.com/Gijsjan/funcky.el.git#v0.1.0",
     "funcky.req": "git+https://github.com/Gijsjan/funcky.req.git",
