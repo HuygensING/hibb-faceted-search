@@ -4539,7 +4539,7 @@ Results = (function(_super) {
     this.destroyResultItems();
     this.$("div.pages").html('');
     fulltext = false;
-    if (responseModel.get('results').length > 0) {
+    if (responseModel.get('results').length > 0 && (responseModel.get('results')[0].terms != null)) {
       if (Object.keys(responseModel.get('results')[0].terms).length > 0) {
         fulltext = true;
       }
@@ -5213,11 +5213,15 @@ TextSearch = (function(_super) {
     }
     textSearchOptions = this.options.config.get('textSearchOptions');
     attrs = _.clone(textSearchOptions);
-    if (textSearchOptions.caseSensitive != null) {
-      attrs.caseSensitive = !textSearchOptions.caseSensitive;
+    if (textSearchOptions.caseSensitive) {
+      attrs.caseSensitive = false;
+    } else {
+      delete attrs.caseSensitive;
     }
-    if (textSearchOptions.fuzzy != null) {
-      attrs.fuzzy = !textSearchOptions.fuzzy;
+    if (textSearchOptions.fuzzy) {
+      attrs.fuzzy = false;
+    } else {
+      delete attrs.fuzzy;
     }
     this.model = new Models.Search(attrs);
     this._addFullTextSearchParameters();
