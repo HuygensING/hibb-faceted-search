@@ -83,7 +83,7 @@ class Results extends Backbone.View
 		# Check if the results are a generated for a full text search.
 		# This is only necessary for eLaborate.
 		fulltext = false
-		if responseModel.get('results').length > 0
+		if responseModel.get('results').length > 0 and responseModel.get('results')[0].terms?
 			if Object.keys(responseModel.get('results')[0].terms).length > 0
 				fulltext = true
 		
