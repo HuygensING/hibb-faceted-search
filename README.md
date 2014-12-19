@@ -3,13 +3,14 @@ Backbone based library
 
 ### Changelog
 
-### DEV
-- [BREAKING] TextSearchOptions aren't passed to queryOptions anymore.
+### v2.3.0
 - [feat] ShowMetadata and sortLevels in the results <header> are now optional.
 - [feat] Add facetOrder to config, to be able to rearrange facets returned by the server.
 - [feat] Add a method to search for a single value. Programmatically mimic a user selecting one option of a facet.
 - [perf] More advanced caching of search results.
 - [feat] Double click to edit range limits.
+- [feat] Add labels to config for easy renaming (support multiple languages)
+- [fix] Rendering of TextSearch is split in init and render, so init data can be used in the queryOptions.
 
 ### v2.2.0
 
