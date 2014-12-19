@@ -34,6 +34,11 @@ class MainView extends Backbone.View
 		
 		@extendConfig options
 
+		# The text search is split with an init method and a render method, because
+		# the options are transformed in the init and needed for initQueryOptions.
+		if @config.get('textSearch') is 'simple' or @config.get('textSearch') is 'advanced'
+			@initTextSearch()
+
 		@initQueryOptions()
 
 		@initSearchResults()
@@ -60,25 +65,27 @@ class MainView extends Backbone.View
 
 		@$('.faceted-search').addClass "search-type-#{@config.get('textSearch')}"
 
-		# See config for more about none, simple and advanced options.
-		if @config.get('textSearch') is 'simple' or @config.get('textSearch') is 'advanced'
-			@renderTextSearch()
+		@renderTextSearch()
 
 		if @config.get 'results'
 			@renderResults()
 
 		@
 
-	renderTextSearch: ->
+	initTextSearch: ->
 		@textSearch = new Views.TextSearch config: @config
-		textSearchPlaceholder = @el.querySelector('.text-search-placeholder')
-		textSearchPlaceholder.parentNode.replaceChild @textSearch.el, textSearchPlaceholder
-
 		@listenTo @textSearch, 'change', (queryOptions) =>
 			@queryOptions.set queryOptions, silent: true
 
 		@listenTo @textSearch, 'search', =>
 			@search()
+		
+	renderTextSearch: ->
+		return unless @textSearch?
+
+		@textSearch.render()
+		textSearchPlaceholder = @el.querySelector('.text-search-placeholder')
+		textSearchPlaceholder.parentNode.replaceChild @textSearch.el, textSearchPlaceholder
 
 	renderResults: ->
 		@$el.addClass 'with-results'
@@ -157,8 +164,9 @@ class MainView extends Backbone.View
 			@refresh()
 
 	initQueryOptions: ->
-		# attrs = _.extend @config.get('queryOptions'), @config.get('textSearchOptions')
-		attrs = @config.get('queryOptions')
+		attrs = _.extend @config.get('queryOptions'), @textSearch.model.attributes
+		# attrs = @config.get('queryOptions')
+		delete attrs.term
 		@queryOptions = new QueryOptions attrs
 
 		if @config.get 'autoSearch'
