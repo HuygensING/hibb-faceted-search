@@ -90,7 +90,7 @@ class Config extends Backbone.Model
 		# fields and are also present in the entryMetadataFields array.
 		levels: []
 
-		sortableFields: []
+		# sortableFields: []
 
 # Config is not a singleton, because it must be possible to have
 # multiple faceted searches which don't share a config.

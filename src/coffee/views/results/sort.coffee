@@ -20,29 +20,24 @@ class SortLevels extends Backbone.View
 	@param {Backbone.Model} this.options.config
 	###
 	initialize: (@options={}) ->
-		@listenTo @options.config, 'change:sortableFields', @render
-
 		@render()
 
-	# ### Render
-	render: ->
-		rtpl = tpl
-			levels: @options.levels
-			entryMetadataFields: @options.config.get('sortableFields')
-		@$el.html rtpl
+		@listenTo @options.config, 'change:entryMetadataFields', @render
 
-		@listenTo Backbone, 'sortlevels:update', (sortLevels) =>
-			@options.levels = sortLevels
-
+		@listenTo @options.config, 'change:levels', (model, sortLevels) =>
 			sortParameters = []
 			sortParameters.push fieldname: level, direction: 'asc' for level in sortLevels
 			@trigger 'change', sortParameters
 
 			@render()
 
-		@listenTo Backbone, 'entrymetadatafields:update', (fields) =>
-			@options.entryMetadataFields = fields
-			@render()
+	# ### Render
+	render: ->
+		rtpl = tpl
+			levels: @options.config.get('levels')
+			entryMetadataFields: @options.config.get('entryMetadataFields')
+		@$el.html rtpl
+
 
 		levels = @$('div.levels')
 		leave = (ev) ->

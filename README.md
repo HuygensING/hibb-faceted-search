@@ -3,6 +3,9 @@ Backbone based library
 
 ### Changelog
 
+### v2.3.1
+- [fix] Change updating of sortable fields.
+
 ### v2.3.0
 - [feat] ShowMetadata and sortLevels in the results <header> are now optional.
 - [feat] Add facetOrder to config, to be able to rearrange facets returned by the server.

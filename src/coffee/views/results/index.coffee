@@ -63,8 +63,8 @@ class Results extends Backbone.View
 		@subviews.sortLevels.destroy() if @subviews.sortLevels?
 		@subviews.sortLevels = new Views.SortLevels
 			config: @options.config
-			levels: @options.config.get 'levels'
-			entryMetadataFields: @options.config.get 'sortableFields'
+			# levels: @options.config.get 'levels'
+			# entryMetadataFields: @options.config.get 'sortableFields'
 		@$('header nav ul').prepend @subviews.sortLevels.$el
 
 		@listenTo @subviews.sortLevels, 'change', (sortParameters) =>
