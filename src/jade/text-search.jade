@@ -53,8 +53,8 @@
 					li.option.fields
 						h4= config.get('labels').fullTextSearchParameters
 						ul.fields
-							for field in fields
+							for field, i in fields
 								- id = generateId()
 								li
-									input(type="checkbox", checked, name=field, id=id, data-attr-array="fullTextSearchParameters", data-value=field)
+									input(type="radio", checked=i==0?true:false, name="textsearchoptions", id=id, data-attr-array="fullTextSearchParameters", data-value=field)
 									label(for=id)= config.get('facetTitleMap')[field]

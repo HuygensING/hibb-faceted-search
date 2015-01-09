@@ -74,6 +74,7 @@ class TextSearch extends Backbone.View
 		'focus input[name="search"]': -> @$('.body .menu').slideDown(150)
 		'click .menu .fa-times': -> @$('.body .menu').slideUp(150)
 		'change input[type="checkbox"]': 'checkboxChanged'
+		'change input[type="radio"]': 'checkboxChanged'
 
 	onKeyUp: (ev) ->
 		if ev.keyCode is 13
@@ -88,10 +89,19 @@ class TextSearch extends Backbone.View
 			if @model.get('term') isnt ev.currentTarget.value
 				@model.set term: ev.currentTarget.value
 		else
-			clone = _.clone @model.get('fullTextSearchParameters')
-			for field in clone
-				field.term = ev.currentTarget.value
-			@model.set fullTextSearchParameters: clone
+
+			for cb in @el.querySelectorAll '[data-attr-array="fullTextSearchParameters"]'
+				if cb.checked
+					@model.set fullTextSearchParameters: [
+						name: cb.getAttribute('data-value')
+						term: ev.currentTarget.value
+					]
+					
+
+			# for field in clone
+			# 	console.log field
+			# 	field.term = ev.currentTarget.value
+			# 	
 
 		@updateQueryModel()
 
@@ -104,7 +114,7 @@ class TextSearch extends Backbone.View
 				@$('ul.textlayers').toggle ev.currentTarget.checked
 			@model.set attr, ev.currentTarget.checked
 		else if dataAttrArray is 'fullTextSearchParameters'
-			checkedArray = []
+			checkedArray = []		
 			for cb in @el.querySelectorAll '[data-attr-array="fullTextSearchParameters"]' when cb.checked
 				checkedArray.push
 					name: cb.getAttribute('data-value')
