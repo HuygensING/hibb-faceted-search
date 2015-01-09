@@ -337,16 +337,23 @@ class MainView extends Backbone.View
 	@param {string} value - Value of option to be selected.
 	@param {object} options - Options to pass to @search
 	###
+	# searchValue: (facetName, value, options) ->
+	# 	@queryOptions.reset()
+
+	# 	for name, view of @facets.views
+	# 		if view instanceof Views.ListFacet
+	# 			view.revert()
+
+	# 	assert.ok @$(".facet[data-name=\"#{facetName}\"] li[data-value=\"#{value}\"]").length > 0, ".facet[data-name=\"#{facetName}\"] li[data-value=\"#{value}\"] not found!"
+
+	# 	@$(".facet[data-name=\"#{facetName}\"] li[data-value=\"#{value}\"]").click()
+
 	searchValue: (facetName, value, options) ->
 		@queryOptions.reset()
-
-		for name, view of @facets.views
-			if view instanceof Views.ListFacet
-				view.revert()
-
-		assert.ok @$(".facet[data-name=\"#{facetName}\"] li[data-value=\"#{value}\"]").length > 0, ".facet[data-name=\"#{facetName}\"] li[data-value=\"#{value}\"] not found!"
-
-		@$(".facet[data-name=\"#{facetName}\"] li[data-value=\"#{value}\"]").click()
-
+		@refresh
+			facetValues: [
+				name: facetName
+				values: [value]
+			]
 
 module.exports = MainView
