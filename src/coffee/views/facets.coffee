@@ -6,22 +6,39 @@ assert = require 'assert'
 
 #tpl = require '../../jade/facets.jade'
 
+###
+# @class
+# @namespace Views
+###
 class Facets extends Backbone.View
 
+	###
+	# @property
+	# @type {String}
+	###
 	className: 'facets'
 
-	viewMap:
+	###
+	# Hash of facet views. The faceted search has several types build-in,
+	# which are the defaults, but this map can be extended, to add or override
+	# facet views.
+	#
+	# @property
+	# @type {Object} Keys are types in capital, values are Backbone.Views.
+	# @example {BOOLEAN: MyBooleanView, LIST: MyListView}
+	###
+	viewMap: {
 		BOOLEAN: require './facets/boolean'
 		DATE: require './facets/date'
 		RANGE: require './facets/range'
 		LIST: require './facets/list'
+	}
 
-	# ### Initialize
 	###
-	@constructs
-	@param {object} this.options
-	@param {object} this.options.viewMap
-	@param {Backbone.Model} this.options.config
+	# @constructs
+	# @param {Object} this.options
+	# @param {Object} this.options.viewMap
+	# @param {Config} this.options.config
 	###
 	initialize: (@options) ->
 		_.extend @viewMap, @options.viewMap

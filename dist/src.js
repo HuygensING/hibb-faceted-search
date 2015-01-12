@@ -2242,6 +2242,12 @@ var Backbone, Config,
 
 Backbone = _dereq_('backbone');
 
+
+/*
+ * @class
+ * @namespace Models
+ */
+
 Config = (function(_super) {
   __extends(Config, _super);
 
@@ -2251,18 +2257,29 @@ Config = (function(_super) {
 
 
   /*
-  	@prop {object} [facetTitleMap={}] - Map of facet names, mapping to facet titles. Use this map to give user friendly display names to facets in case the server doesn't give them.
-  	@prop {string[]} [facetOrder=[]] - Define the rendering order of the facets. If undefined, the facets are rendered in the order returned by the backend.
-  	@prop {boolean} [results=false] - Render the results. When kept to false, the showing of the results has to be taken care of in the application.
-  	@prop {string} [termSingular="entry"] - Name of one result, for example: book, woman, country, alumnus, etc.
-  	@prop {string} [termPlural="entries"] - Name of multiple results, for example: books, women, countries, alunmi, etc.
-  	@prop {boolean} [sortLevels=true] - Render sort levels in the results header
-  	@prop {boolean} [showMetadata=true] - Render show metadata toggle in the results header
-  
-  	@prop {object} [textSearchOptions] - Options that are passed to the text search component
-  	@prop {boolean} [textSearchOptions.caseSensitive=false] - Render caseSensitive option?
-  	@prop {boolean} [textSearchOptions.fuzzy=false] - Render fuzzy option?
-  	@prop {object[]} [textSearchOptions.fullTextSearchParameters] - Objects passed have a name and term attribute. Used for searching multiple fields.
+  	 * Default attributes.
+  	 *
+  	 * Does not require any parameters, but the @param tag is (ab)used to document
+  	 * the returned hash.
+  	 *
+  	 * @method
+  	 * @param {String} baseUrl Base of the URL to perform searches.
+  	 * @param {String} searchPath Path of the URL to perform searches.
+  	 * @param {Number} [resultRows=10] Number of results per query/page.
+  	 * @param {Object} [facetTitleMap={}] Map of facet names, mapping to facet titles. Use this map to give user friendly display names to facets in case the server doesn't give them.
+  	 * @param {Array<String>} [facetOrder=[]] Define the rendering order of the facets. If undefined, the facets are rendered in the order returned by the backend.
+  	 * @param {Boolean} [results=false] Render the results. When kept to false, the showing of the results has to be taken care of in the application.
+  	 * @param {String} [termSingular="entry"] Name of one result, for example: book, woman, country, alumnus, etc.
+  	 * @param {String} [termPlural="entries"] Name of multiple results, for example: books, women, countries, alunmi, etc.
+  	 * @param {Boolean} [sortLevels=true] Render sort levels in the results header
+  	 * @param {Boolean} [showMetadata=true] Render show metadata toggle in the results header
+  	 * @param {String} [textSearch='advanced'] One of 'none', 'simple' or 'advanced'. None: text search is hidden, facets are shown, loader is shown. Simple: text search is shown, facets are hidden, loader is hidden. Advanced: text search is shown, facets are shown, loader is shown.
+  	 * @param {Object} [textSearchOptions] Options that are passed to the text search component
+  	 * @param {Boolean} [textSearchOptions.caseSensitive=false] Render caseSensitive option?
+  	 * @param {Boolean} [textSearchOptions.fuzzy=false] Render fuzzy option?
+  	 * @param {Array<Object>} [textSearchOptions.fullTextSearchParameters] Objects passed have a name and term attribute. Used for searching multiple fields.
+  	 * @param {Object} labels Hash of labels, used in the interface. Quick 'n dirty way to change the language.
+  	 * @return {Object} A hash of options and their values. Documentated as @param's.
    */
 
   Config.prototype.defaults = function() {
@@ -2342,6 +2359,7 @@ tpl = _dereq_('../jade/main.jade');
 
 /*
  * @class
+ * @namespace Views
  */
 
 MainView = (function(_super) {
@@ -2353,38 +2371,17 @@ MainView = (function(_super) {
 
 
   /*
-  	 * Hash of facet views. The faceted search has several types build-in,
-  	 * but for some project other facet views could be necessary or default
-  	 * views have to be overriden.
-  	 *
-  	 * The facetViewMap is removed from the options, because if it's moved to config,
-  	 * it will cause a circular reference. This must be done in @initialize, but the
-  	 * map is only used in @render, therefor facetViewMap needs to be an attribute of
-  	 * the class.
-  	 *
-  	 * @property
-  	 * @type {Object} Keys are types in capital, values are Backbone.Views.
-  	 * @example {BOOLEAN: MyBooleanView, LIST: MyListView}
-   */
-
-  MainView.prototype.facetViewMap = {};
-
-
-  /*
   	 * @method
   	 * @constructs
-  	 * @param {object} [options={}]
+  	 * @param {object} [this.options={}]
    */
 
   MainView.prototype.initialize = function(options) {
-    if (options == null) {
-      options = {};
-    }
-    if (options.facetViewMap != null) {
-      this.facetViewMap = _.clone(options.facetViewMap);
-      delete options.facetViewMap;
-    }
-    this.extendConfig(options);
+    var configOptions;
+    this.options = options != null ? options : {};
+    configOptions = _.clone(this.options);
+    delete configOptions.facetViewMap;
+    this.extendConfig(configOptions);
     if (this.config.get('textSearch') === 'simple' || this.config.get('textSearch') === 'advanced') {
       this.initTextSearch();
     }
@@ -2406,6 +2403,7 @@ MainView = (function(_super) {
   /*
   	 * @method
   	 * @return {MainView} Instance of MainView to enable chaining.
+  	 * @chainable
    */
 
   MainView.prototype.render = function() {
@@ -2661,7 +2659,7 @@ MainView = (function(_super) {
   MainView.prototype.initFacets = function() {
     var facetsPlaceholder;
     this.facets = new Views.Facets({
-      viewMap: this.facetViewMap,
+      viewMap: this.options.facetViewMap,
       config: this.config
     });
     facetsPlaceholder = this.el.querySelector('.facets-placeholder');
@@ -3212,6 +3210,12 @@ $ = _dereq_('jquery');
 
 assert = _dereq_('assert');
 
+
+/*
+ * @class
+ * @namespace Views
+ */
+
 Facets = (function(_super) {
   __extends(Facets, _super);
 
@@ -3220,7 +3224,24 @@ Facets = (function(_super) {
     return Facets.__super__.constructor.apply(this, arguments);
   }
 
+
+  /*
+  	 * @property
+  	 * @type {String}
+   */
+
   Facets.prototype.className = 'facets';
+
+
+  /*
+  	 * Hash of facet views. The faceted search has several types build-in,
+  	 * which are the defaults, but this map can be extended, to add or override
+  	 * facet views.
+  	 *
+  	 * @property
+  	 * @type {Object} Keys are types in capital, values are Backbone.Views.
+  	 * @example {BOOLEAN: MyBooleanView, LIST: MyListView}
+   */
 
   Facets.prototype.viewMap = {
     BOOLEAN: _dereq_('./facets/boolean'),
@@ -3231,10 +3252,10 @@ Facets = (function(_super) {
 
 
   /*
-  	@constructs
-  	@param {object} this.options
-  	@param {object} this.options.viewMap
-  	@param {Backbone.Model} this.options.config
+  	 * @constructs
+  	 * @param {Object} this.options
+  	 * @param {Object} this.options.viewMap
+  	 * @param {Config} this.options.config
    */
 
   Facets.prototype.initialize = function(options) {

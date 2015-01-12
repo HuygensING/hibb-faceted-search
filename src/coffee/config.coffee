@@ -1,38 +1,41 @@
 Backbone = require 'backbone'
 
+###
+# @class
+# @namespace Models
+###
 class Config extends Backbone.Model
 	###
-	@prop {object} [facetTitleMap={}] - Map of facet names, mapping to facet titles. Use this map to give user friendly display names to facets in case the server doesn't give them.
-	@prop {string[]} [facetOrder=[]] - Define the rendering order of the facets. If undefined, the facets are rendered in the order returned by the backend.
-	@prop {boolean} [results=false] - Render the results. When kept to false, the showing of the results has to be taken care of in the application.
-	@prop {string} [termSingular="entry"] - Name of one result, for example: book, woman, country, alumnus, etc.
-	@prop {string} [termPlural="entries"] - Name of multiple results, for example: books, women, countries, alunmi, etc.
-	@prop {boolean} [sortLevels=true] - Render sort levels in the results header
-	@prop {boolean} [showMetadata=true] - Render show metadata toggle in the results header
-
-	@prop {object} [textSearchOptions] - Options that are passed to the text search component
-	@prop {boolean} [textSearchOptions.caseSensitive=false] - Render caseSensitive option?
-	@prop {boolean} [textSearchOptions.fuzzy=false] - Render fuzzy option?
-	@prop {object[]} [textSearchOptions.fullTextSearchParameters] - Objects passed have a name and term attribute. Used for searching multiple fields.
+	# Default attributes.
+	#
+	# Does not require any parameters, but the @param tag is (ab)used to document
+	# the returned hash.
+	#
+	# @method
+	# @param {String} baseUrl Base of the URL to perform searches.
+	# @param {String} searchPath Path of the URL to perform searches.
+	# @param {Number} [resultRows=10] Number of results per query/page.
+	# @param {Object} [facetTitleMap={}] Map of facet names, mapping to facet titles. Use this map to give user friendly display names to facets in case the server doesn't give them.
+	# @param {Array<String>} [facetOrder=[]] Define the rendering order of the facets. If undefined, the facets are rendered in the order returned by the backend.
+	# @param {Boolean} [results=false] Render the results. When kept to false, the showing of the results has to be taken care of in the application.
+	# @param {String} [termSingular="entry"] Name of one result, for example: book, woman, country, alumnus, etc.
+	# @param {String} [termPlural="entries"] Name of multiple results, for example: books, women, countries, alunmi, etc.
+	# @param {Boolean} [sortLevels=true] Render sort levels in the results header
+	# @param {Boolean} [showMetadata=true] Render show metadata toggle in the results header
+	# @param {String} [textSearch='advanced'] One of 'none', 'simple' or 'advanced'. None: text search is hidden, facets are shown, loader is shown. Simple: text search is shown, facets are hidden, loader is hidden. Advanced: text search is shown, facets are shown, loader is shown.
+	# @param {Object} [textSearchOptions] Options that are passed to the text search component
+	# @param {Boolean} [textSearchOptions.caseSensitive=false] Render caseSensitive option?
+	# @param {Boolean} [textSearchOptions.fuzzy=false] Render fuzzy option?
+	# @param {Array<Object>} [textSearchOptions.fullTextSearchParameters] Objects passed have a name and term attribute. Used for searching multiple fields.
+	# @param {Object} labels Hash of labels, used in the interface. Quick 'n dirty way to change the language.
+	# @return {Object} A hash of options and their values. Documentated as @param's.
 	###
-
-	# @prop {string} [textSearchOptions.title] - Title of the text search
-	# @prop {string} [textSearchOptions.name] - Name of the text search
 	defaults: ->
-		# Number of results per query/page. The backend returns resultRows
-		# of results and the results page displays this amount as well.
 		resultRows: 10
 
-		# TODO: Merge baseUrl & searchPath into searchUrl, elaborate uses baseUrl + searchPath, publication collection uses
-		# searchPath only. If elaborate uses baseUrl & searchPath, concat them by hand before sending to FS.
 		baseUrl: ''
-
 		searchPath: ''
 
-		# textSearch has three options: 'none', 'simple', 'advanced'
-		# none: text search is hidden, facets are shown, loader is shown
-		# simple: text search is shown, facets are hidden, loader is hidden
-		# advanced: text search is shown, facets are shown, loader is shown
 		textSearch: 'advanced'
 		textSearchOptions:
 			caseSensitive: false
@@ -48,7 +51,6 @@ class Config extends Backbone.Model
 		authorizationHeaderToken: null
 
 		queryOptions: {}
-		# * resultRows
 
 		facetTitleMap: {}
 		facetOrder: []

@@ -23,38 +23,20 @@ tpl = require '../jade/main.jade'
 
 ###
 # @class
+# @namespace Views
 ###
 class MainView extends Backbone.View
 
 	###
-	# Hash of facet views. The faceted search has several types build-in,
-	# but for some project other facet views could be necessary or default
-	# views have to be overriden.
-	#
-	# The facetViewMap is removed from the options, because if it's moved to config,
-	# it will cause a circular reference. This must be done in @initialize, but the
-	# map is only used in @render, therefor facetViewMap needs to be an attribute of
-	# the class.
-	#
-	# @property
-	# @type {Object} Keys are types in capital, values are Backbone.Views.
-	# @example {BOOLEAN: MyBooleanView, LIST: MyListView}
-	###
-	facetViewMap: {}
-
-	###
 	# @method
 	# @constructs
-	# @param {object} [options={}]
+	# @param {object} [this.options={}]
 	###
-	initialize: (options={}) ->
-		# See @facetViewMap.
-		if options.facetViewMap?
-			@facetViewMap = _.clone options.facetViewMap
-			
-			delete options.facetViewMap
+	initialize: (@options={}) ->
+		configOptions = _.clone @options
+		delete configOptions.facetViewMap
 		
-		@extendConfig options
+		@extendConfig configOptions
 
 		# The text search is split with an init method and a render method, because
 		# the options are transformed in the init and needed for initQueryOptions.
@@ -75,6 +57,7 @@ class MainView extends Backbone.View
 	###
 	# @method
 	# @return {MainView} Instance of MainView to enable chaining.
+	# @chainable
 	###
 	render: ->
 		tpl = @config.get('templates').main if @config.get('templates').hasOwnProperty 'main'
@@ -265,7 +248,7 @@ class MainView extends Backbone.View
 	###
 	initFacets: ->
 		@facets = new Views.Facets
-			viewMap: @facetViewMap
+			viewMap: @options.facetViewMap
 			config: @config
 
 		# Replace the facets placeholder with the 'real' DOM element (@facets.el).
