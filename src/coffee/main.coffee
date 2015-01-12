@@ -21,15 +21,37 @@ Views =
 
 tpl = require '../jade/main.jade'
 
+###
+# @class
+###
 class MainView extends Backbone.View
 
-	# ### Initialize
+	###
+	# Hash of facet views. The faceted search has several types build-in,
+	# but for some project other facet views could be necessary or default
+	# views have to be overriden.
+	#
+	# The facetViewMap is removed from the options, because if it's moved to config,
+	# it will cause a circular reference. This must be done in @initialize, but the
+	# map is only used in @render, therefor facetViewMap needs to be an attribute of
+	# the class.
+	#
+	# @property
+	# @type {Object} Keys are types in capital, values are Backbone.Views.
+	# @example {BOOLEAN: MyBooleanView, LIST: MyListView}
+	###
+	facetViewMap: {}
+
+	###
+	# @method
+	# @constructs
+	# @param {object} [options={}]
+	###
 	initialize: (options={}) ->
-		# The facetViewMap cannot be part of the config, because of circular reference.
-		# The facetViewMap is removed from the options, so it is not added to config.
-		# Do this before @extendConfig.
+		# See @facetViewMap.
 		if options.facetViewMap?
 			@facetViewMap = _.clone options.facetViewMap
+			
 			delete options.facetViewMap
 		
 		@extendConfig options
@@ -50,18 +72,21 @@ class MainView extends Backbone.View
 			@searchResults.cachedModels['{"facetValues":[],"sortParameters":[]}'] = @searchResults.first()
 			setTimeout (=> @$('.overlay').hide()), 100
 
-	# ### Render
+	###
+	# @method
+	# @return {MainView} Instance of MainView to enable chaining.
+	###
 	render: ->
 		tpl = @config.get('templates').main if @config.get('templates').hasOwnProperty 'main'
 
 		@el.innerHTML = tpl()
 
 		# Instantiate the Facets view after instantiating the QueryOptions model and
-		# before rendering the textSearch. The textSearchPlaceholder can be located
-		# in the main and in the facets template. So we render the facets view to
-		# get (potentially) the div.text-search-placeholder and call renderFacets
-		# in @update, to actually render the separate facet views.
-		@initFacets @facetViewMap
+		# after rendering the main template, but before rendering the textSearch. 
+		# The textSearchPlaceholder can be located in the main and in the facets template.
+		# So we render the facets view to get (potentially) the div.text-search-placeholder
+		# and call renderFacets in @update, to actually render the separate facet views.
+		@initFacets()
 
 		@$('.faceted-search').addClass "search-type-#{@config.get('textSearch')}"
 
@@ -72,6 +97,10 @@ class MainView extends Backbone.View
 
 		@
 
+	###
+	# @method
+	# @private
+	###
 	initTextSearch: ->
 		@textSearch = new Views.TextSearch config: @config
 		@listenTo @textSearch, 'change', (queryOptions) =>
@@ -80,6 +109,10 @@ class MainView extends Backbone.View
 		@listenTo @textSearch, 'search', =>
 			@search()
 		
+	###
+	# @method
+	# @private
+	###
 	renderTextSearch: ->
 		return unless @textSearch?
 
@@ -87,6 +120,10 @@ class MainView extends Backbone.View
 		textSearchPlaceholder = @el.querySelector('.text-search-placeholder')
 		textSearchPlaceholder.parentNode.replaceChild @textSearch.el, textSearchPlaceholder
 
+	###
+	# @method
+	# @private
+	###
 	renderResults: ->
 		@$el.addClass 'with-results'
 
@@ -104,13 +141,20 @@ class MainView extends Backbone.View
 		@listenTo @results, 'change:sort-levels', (sortParameters) ->
 			@sortResultsBy sortParameters
 
-	# ### Events
+	###
+	# @property
+	# @type {Object}
+	###
 	events: ->
 		'click ul.facets-menu li.collapse-expand': (ev) -> @facets.toggle ev
 		# Don't use @refresh as String, because the ev object will be passed.
 		'click ul.facets-menu li.reset': 'onReset'
 		'click ul.facets-menu li.switch button': 'onSwitchType'
 
+	###
+	# @method
+	# @private
+	###
 	onSwitchType: (ev) ->
 		ev.preventDefault()
 
@@ -125,19 +169,19 @@ class MainView extends Backbone.View
 		else if @searchResults.length > 1
 			@update()
 
+	###
+	# @method
+	# @private
+	###
 	onReset: (ev) ->
 		ev.preventDefault()
 		@reset()
 
-	# ### Methods
 
-	destroy: ->
-		@facets.destroy() if @facets?
-		@textSearch.destroy() if @textSearch?
-		@results.destroy() if @results?
-
-		@remove()
-
+	###
+	# @method
+	# @private
+	###
 	extendConfig: (options) ->
 		# Create a map of properties which need to be extended (not overriden)
 		toBeExtended = 
@@ -163,6 +207,10 @@ class MainView extends Backbone.View
 		@listenTo @config, 'change:resultRows', =>
 			@refresh()
 
+	###
+	# @method
+	# @private
+	###
 	initQueryOptions: ->
 		attrs = _.extend @config.get('queryOptions'), @textSearch.model.attributes
 		# attrs = @config.get('queryOptions')
@@ -172,6 +220,10 @@ class MainView extends Backbone.View
 		if @config.get 'autoSearch'
 			@listenTo @queryOptions, 'change', => @search()
 
+	###
+	# @method
+	# @private
+	###
 	initSearchResults: ->
 		@searchResults = new SearchResults null, config: @config
 
@@ -207,9 +259,13 @@ class MainView extends Backbone.View
 		@listenTo @searchResults, 'unauthorized', => @trigger 'unauthorized'
 		@listenTo @searchResults, 'request:failed', (res) => @trigger 'request:failed', res
 
-	initFacets: (viewMap={}) ->
+	###
+	# @method
+	# @private
+	###
+	initFacets: ->
 		@facets = new Views.Facets
-			viewMap: viewMap
+			viewMap: @facetViewMap
 			config: @config
 
 		# Replace the facets placeholder with the 'real' DOM element (@facets.el).
@@ -218,6 +274,10 @@ class MainView extends Backbone.View
 
 		@listenTo @facets, 'change', (queryOptions, options) => @queryOptions.set queryOptions, options
 
+	###
+	# @method
+	# @private
+	###
 	showLoader: ->
 		overlay = @el.querySelector('.overlay')
 		return false if overlay.style.display is 'block'
@@ -252,9 +312,17 @@ class MainView extends Backbone.View
 		# event stack.
 		setTimeout calc, 0
 
+	###
+	# @method
+	# @private
+	###
 	hideLoader: ->
 		@el.querySelector('.overlay').style.display = 'none'
 
+	###
+	# @method
+	# @private
+	###
 	update: ->
 		facets = @searchResults.getCurrent().get('facets')
 		# console.log @searchResults.queryAmount, @searchResults.length
@@ -265,26 +333,53 @@ class MainView extends Backbone.View
 		else if @searchResults.length > 1
 			@facets.update facets
 
-	# ### Interface
+	###
+	# @method
+	###
+	destroy: ->
+		@facets.destroy() if @facets?
+		@textSearch.destroy() if @textSearch?
+		@results.destroy() if @results?
 
+		@remove()
+
+	###
+	# @method
+	###
 	page: (pagenumber, database) ->
 		@searchResults.page pagenumber, database
 
+	###
+	# @method
+	###
 	next: ->
 		@searchResults.moveCursor '_next'
 
+	###
+	# @method
+	###
 	prev: ->
 		@searchResults.moveCursor '_prev'
 
+	###
+	# @method
+	###
 	hasNext: ->
 		@searchResults.getCurrent().has '_next'
 
+	###
+	# @method
+	###
 	hasPrev: ->
 		@searchResults.getCurrent().has '_prev'
 
+	###
 	# Sort the results by the parameters given. The parameters are an array of
 	# objects, containing 'fieldName' and 'direction': [{fieldName: "name", direction: "desc"}]
 	# When the queryOptions are set, a change event is triggered and send to the server.
+	#
+	# @method
+	###
 	sortResultsBy: (sortParameters) ->
 		@queryOptions.set
 			sortParameters: sortParameters
@@ -294,10 +389,14 @@ class MainView extends Backbone.View
 			# An alternative is creating a method for it.
 			resultFields: _.pluck(sortParameters, 'fieldname')
 
+	###
 	# Silently change @attributes and trigger a change event manually afterwards.
 	# arguments.cache Boolean Tells searchResults if we want to fetch result from cache.
 	# 	In an app where data is dynamic, we usually don't want cache (get new result from server),
 	#	in an app where data is static, we can use cache to speed up the app.
+	#
+	# @method
+	###
 	reset: (cache=false) ->
 		@textSearch.reset() if @textSearch?
 		@results.reset() if @results?
@@ -311,11 +410,13 @@ class MainView extends Backbone.View
 		@search cache: cache
 
 	###
-	A refresh of the Faceted Search means (re)sending the current @attributes (queryOptions) again.
-	We set the cache flag to false, otherwise the searchResults collection will return the cached
-	model, instead of fetching a new one from the server.
-	The newQueryOptions are optional. The can be used to add or update one or more queryOptions
-	before sending the same (or now altered) queryOptions to the server again.
+	# A refresh of the Faceted Search means (re)sending the current @attributes (queryOptions) again.
+	# We set the cache flag to false, otherwise the searchResults collection will return the cached
+	# model, instead of fetching a new one from the server.
+	# The newQueryOptions are optional. The can be used to add or update one or more queryOptions
+	# before sending the same (or now altered) queryOptions to the server again.
+	#
+	# @method
 	###
 	refresh: (newQueryOptions={}) ->
 		if Object.keys(newQueryOptions).length > 0
@@ -323,32 +424,18 @@ class MainView extends Backbone.View
 			
 		@search cache: false
 
+	###
+	# @method
+	###
 	search: (options) ->
 		@searchResults.runQuery @queryOptions.attributes, options
 
 	###
-	Search for a single value. Programmatic version of a user
-	checking (clicking the checkbox) one value right after init.
-
-	TODO: this is a dirty implementation. Better would be to reset the
-	views, reset and update the queryOptions and run @search.
-
-	@param {string} facetName - Name of the facet.
-	@param {string} value - Value of option to be selected.
-	@param {object} options - Options to pass to @search
+	# @method
+	# @param {String} facetName
+	# @param value
 	###
-	# searchValue: (facetName, value, options) ->
-	# 	@queryOptions.reset()
-
-	# 	for name, view of @facets.views
-	# 		if view instanceof Views.ListFacet
-	# 			view.revert()
-
-	# 	assert.ok @$(".facet[data-name=\"#{facetName}\"] li[data-value=\"#{value}\"]").length > 0, ".facet[data-name=\"#{facetName}\"] li[data-value=\"#{value}\"] not found!"
-
-	# 	@$(".facet[data-name=\"#{facetName}\"] li[data-value=\"#{value}\"]").click()
-
-	searchValue: (facetName, value, options) ->
+	searchValue: (facetName, value) ->
 		@queryOptions.reset()
 		@refresh
 			facetValues: [
@@ -357,3 +444,25 @@ class MainView extends Backbone.View
 			]
 
 module.exports = MainView
+
+# ###
+# Search for a single value. Programmatic version of a user
+# checking (clicking the checkbox) one value right after init.
+
+# TODO: this is a dirty implementation. Better would be to reset the
+# views, reset and update the queryOptions and run @search.
+
+# @param {string} facetName - Name of the facet.
+# @param {string} value - Value of option to be selected.
+# @param {object} options - Options to pass to @search
+# ###
+# # searchValue: (facetName, value, options) ->
+# # 	@queryOptions.reset()
+
+# # 	for name, view of @facets.views
+# # 		if view instanceof Views.ListFacet
+# # 			view.revert()
+
+# # 	assert.ok @$(".facet[data-name=\"#{facetName}\"] li[data-value=\"#{value}\"]").length > 0, ".facet[data-name=\"#{facetName}\"] li[data-value=\"#{value}\"] not found!"
+
+# # 	@$(".facet[data-name=\"#{facetName}\"] li[data-value=\"#{value}\"]").click()

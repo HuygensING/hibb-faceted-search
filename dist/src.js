@@ -2339,12 +2339,42 @@ Views = {
 
 tpl = _dereq_('../jade/main.jade');
 
+
+/*
+ * @class
+ */
+
 MainView = (function(_super) {
   __extends(MainView, _super);
 
   function MainView() {
     return MainView.__super__.constructor.apply(this, arguments);
   }
+
+
+  /*
+  	 * Hash of facet views. The faceted search has several types build-in,
+  	 * but for some project other facet views could be necessary or default
+  	 * views have to be overriden.
+  	 *
+  	 * The facetViewMap is removed from the options, because if it's moved to config,
+  	 * it will cause a circular reference. This must be done in @initialize, but the
+  	 * map is only used in @render, therefor facetViewMap needs to be an attribute of
+  	 * the class.
+  	 *
+  	 * @property
+  	 * @type {Object} Keys are types in capital, values are Backbone.Views.
+  	 * @example {BOOLEAN: MyBooleanView, LIST: MyListView}
+   */
+
+  MainView.prototype.facetViewMap = {};
+
+
+  /*
+  	 * @method
+  	 * @constructs
+  	 * @param {object} [options={}]
+   */
 
   MainView.prototype.initialize = function(options) {
     if (options == null) {
@@ -2372,12 +2402,18 @@ MainView = (function(_super) {
     }
   };
 
+
+  /*
+  	 * @method
+  	 * @return {MainView} Instance of MainView to enable chaining.
+   */
+
   MainView.prototype.render = function() {
     if (this.config.get('templates').hasOwnProperty('main')) {
       tpl = this.config.get('templates').main;
     }
     this.el.innerHTML = tpl();
-    this.initFacets(this.facetViewMap);
+    this.initFacets();
     this.$('.faceted-search').addClass("search-type-" + (this.config.get('textSearch')));
     this.renderTextSearch();
     if (this.config.get('results')) {
@@ -2385,6 +2421,12 @@ MainView = (function(_super) {
     }
     return this;
   };
+
+
+  /*
+  	 * @method
+  	 * @private
+   */
 
   MainView.prototype.initTextSearch = function() {
     this.textSearch = new Views.TextSearch({
@@ -2404,6 +2446,12 @@ MainView = (function(_super) {
     })(this));
   };
 
+
+  /*
+  	 * @method
+  	 * @private
+   */
+
   MainView.prototype.renderTextSearch = function() {
     var textSearchPlaceholder;
     if (this.textSearch == null) {
@@ -2413,6 +2461,12 @@ MainView = (function(_super) {
     textSearchPlaceholder = this.el.querySelector('.text-search-placeholder');
     return textSearchPlaceholder.parentNode.replaceChild(this.textSearch.el, textSearchPlaceholder);
   };
+
+
+  /*
+  	 * @method
+  	 * @private
+   */
 
   MainView.prototype.renderResults = function() {
     this.$el.addClass('with-results');
@@ -2432,6 +2486,12 @@ MainView = (function(_super) {
     });
   };
 
+
+  /*
+  	 * @property
+  	 * @type {Object}
+   */
+
   MainView.prototype.events = function() {
     return {
       'click ul.facets-menu li.collapse-expand': function(ev) {
@@ -2441,6 +2501,12 @@ MainView = (function(_super) {
       'click ul.facets-menu li.switch button': 'onSwitchType'
     };
   };
+
+
+  /*
+  	 * @method
+  	 * @private
+   */
 
   MainView.prototype.onSwitchType = function(ev) {
     var textSearch;
@@ -2458,23 +2524,22 @@ MainView = (function(_super) {
     }
   };
 
+
+  /*
+  	 * @method
+  	 * @private
+   */
+
   MainView.prototype.onReset = function(ev) {
     ev.preventDefault();
     return this.reset();
   };
 
-  MainView.prototype.destroy = function() {
-    if (this.facets != null) {
-      this.facets.destroy();
-    }
-    if (this.textSearch != null) {
-      this.textSearch.destroy();
-    }
-    if (this.results != null) {
-      this.results.destroy();
-    }
-    return this.remove();
-  };
+
+  /*
+  	 * @method
+  	 * @private
+   */
 
   MainView.prototype.extendConfig = function(options) {
     var key, toBeExtended, value;
@@ -2505,6 +2570,12 @@ MainView = (function(_super) {
     })(this));
   };
 
+
+  /*
+  	 * @method
+  	 * @private
+   */
+
   MainView.prototype.initQueryOptions = function() {
     var attrs;
     attrs = _.extend(this.config.get('queryOptions'), this.textSearch.model.attributes);
@@ -2518,6 +2589,12 @@ MainView = (function(_super) {
       })(this));
     }
   };
+
+
+  /*
+  	 * @method
+  	 * @private
+   */
 
   MainView.prototype.initSearchResults = function() {
     this.searchResults = new SearchResults(null, {
@@ -2575,13 +2652,16 @@ MainView = (function(_super) {
     })(this));
   };
 
-  MainView.prototype.initFacets = function(viewMap) {
+
+  /*
+  	 * @method
+  	 * @private
+   */
+
+  MainView.prototype.initFacets = function() {
     var facetsPlaceholder;
-    if (viewMap == null) {
-      viewMap = {};
-    }
     this.facets = new Views.Facets({
-      viewMap: viewMap,
+      viewMap: this.facetViewMap,
       config: this.config
     });
     facetsPlaceholder = this.el.querySelector('.facets-placeholder');
@@ -2592,6 +2672,12 @@ MainView = (function(_super) {
       };
     })(this));
   };
+
+
+  /*
+  	 * @method
+  	 * @private
+   */
 
   MainView.prototype.showLoader = function() {
     var calc, overlay;
@@ -2620,9 +2706,21 @@ MainView = (function(_super) {
     return setTimeout(calc, 0);
   };
 
+
+  /*
+  	 * @method
+  	 * @private
+   */
+
   MainView.prototype.hideLoader = function() {
     return this.el.querySelector('.overlay').style.display = 'none';
   };
+
+
+  /*
+  	 * @method
+  	 * @private
+   */
 
   MainView.prototype.update = function() {
     var facets;
@@ -2634,25 +2732,77 @@ MainView = (function(_super) {
     }
   };
 
+
+  /*
+  	 * @method
+   */
+
+  MainView.prototype.destroy = function() {
+    if (this.facets != null) {
+      this.facets.destroy();
+    }
+    if (this.textSearch != null) {
+      this.textSearch.destroy();
+    }
+    if (this.results != null) {
+      this.results.destroy();
+    }
+    return this.remove();
+  };
+
+
+  /*
+  	 * @method
+   */
+
   MainView.prototype.page = function(pagenumber, database) {
     return this.searchResults.page(pagenumber, database);
   };
+
+
+  /*
+  	 * @method
+   */
 
   MainView.prototype.next = function() {
     return this.searchResults.moveCursor('_next');
   };
 
+
+  /*
+  	 * @method
+   */
+
   MainView.prototype.prev = function() {
     return this.searchResults.moveCursor('_prev');
   };
+
+
+  /*
+  	 * @method
+   */
 
   MainView.prototype.hasNext = function() {
     return this.searchResults.getCurrent().has('_next');
   };
 
+
+  /*
+  	 * @method
+   */
+
   MainView.prototype.hasPrev = function() {
     return this.searchResults.getCurrent().has('_prev');
   };
+
+
+  /*
+  	 * Sort the results by the parameters given. The parameters are an array of
+  	 * objects, containing 'fieldName' and 'direction': [{fieldName: "name", direction: "desc"}]
+  	 * When the queryOptions are set, a change event is triggered and send to the server.
+  	 *
+  	 * @method
+   */
 
   MainView.prototype.sortResultsBy = function(sortParameters) {
     return this.queryOptions.set({
@@ -2660,6 +2810,16 @@ MainView = (function(_super) {
       resultFields: _.pluck(sortParameters, 'fieldname')
     });
   };
+
+
+  /*
+  	 * Silently change @attributes and trigger a change event manually afterwards.
+  	 * arguments.cache Boolean Tells searchResults if we want to fetch result from cache.
+  	 * 	In an app where data is dynamic, we usually don't want cache (get new result from server),
+  	 *	in an app where data is static, we can use cache to speed up the app.
+  	 *
+  	 * @method
+   */
 
   MainView.prototype.reset = function(cache) {
     if (cache == null) {
@@ -2683,11 +2843,13 @@ MainView = (function(_super) {
 
 
   /*
-  	A refresh of the Faceted Search means (re)sending the current @attributes (queryOptions) again.
-  	We set the cache flag to false, otherwise the searchResults collection will return the cached
-  	model, instead of fetching a new one from the server.
-  	The newQueryOptions are optional. The can be used to add or update one or more queryOptions
-  	before sending the same (or now altered) queryOptions to the server again.
+  	 * A refresh of the Faceted Search means (re)sending the current @attributes (queryOptions) again.
+  	 * We set the cache flag to false, otherwise the searchResults collection will return the cached
+  	 * model, instead of fetching a new one from the server.
+  	 * The newQueryOptions are optional. The can be used to add or update one or more queryOptions
+  	 * before sending the same (or now altered) queryOptions to the server again.
+  	 *
+  	 * @method
    */
 
   MainView.prototype.refresh = function(newQueryOptions) {
@@ -2704,24 +2866,23 @@ MainView = (function(_super) {
     });
   };
 
+
+  /*
+  	 * @method
+   */
+
   MainView.prototype.search = function(options) {
     return this.searchResults.runQuery(this.queryOptions.attributes, options);
   };
 
 
   /*
-  	Search for a single value. Programmatic version of a user
-  	checking (clicking the checkbox) one value right after init.
-  
-  	TODO: this is a dirty implementation. Better would be to reset the
-  	views, reset and update the queryOptions and run @search.
-  
-  	@param {string} facetName - Name of the facet.
-  	@param {string} value - Value of option to be selected.
-  	@param {object} options - Options to pass to @search
+  	 * @method
+  	 * @param {String} facetName
+  	 * @param value
    */
 
-  MainView.prototype.searchValue = function(facetName, value, options) {
+  MainView.prototype.searchValue = function(facetName, value) {
     this.queryOptions.reset();
     return this.refresh({
       facetValues: [
