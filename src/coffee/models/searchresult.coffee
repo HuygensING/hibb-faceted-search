@@ -1,10 +1,15 @@
 Backbone = require 'backbone'
 _ = require 'underscore'
 
-config = require '../config'
-
+###
+# @class
+# @namespace Models
+###
 class SearchResult extends Backbone.Model
-
+	###
+	# @method
+	# @return {Object} Hash of default attributes.
+	###
 	defaults: ->
 		_next: null
 		_prev: null

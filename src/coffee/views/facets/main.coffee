@@ -4,62 +4,126 @@ _ = require 'underscore'
 
 tpl = require '../../../jade/facets/main.jade'
 
-class Facet extends Backbone.View
+###
+# @class
+# @abstract
+# @namespace Views
+###
+class FacetView extends Backbone.View
 
-  # ### Initialize
-  initialize: (options) ->
-    @config = options.config
+	###
+	# @method
+	# @construct
+	# @override
+	# @param {Object} options
+	###
+	initialize: (options) ->
+		@config = options.config
 
-    # Override the facet title if the user has given an alternative title in the config.
-    options.attrs.title = @config.get('facetTitleMap')[options.attrs.name] if @config.get('facetTitleMap').hasOwnProperty options.attrs.name
+		# Override the facet title if the user has given an alternative title in the config.
+		options.attrs.title = @config.get('facetTitleMap')[options.attrs.name] if @config.get('facetTitleMap').hasOwnProperty options.attrs.name
 
-  # ### Render
-  render: ->
-    tpl = @config.get('templates')['facets.main'] if @config.get('templates').hasOwnProperty 'facets.main'
-    @$el.html tpl
-      model: @model
-      config: @config
+	###
+	# @method
+	# @override
+	# @return {FacetView} Instance of FacetView to enable chaining.
+	###
+	render: ->
+		tpl = @config.get('templates')['facets.main'] if @config.get('templates').hasOwnProperty 'facets.main'
+		@$el.html tpl
+			model: @model
+			config: @config
 
-    @$el.attr 'data-name', @model.get('name')
+		@$el.attr 'data-name', @model.get('name')
 
-    @
+		@
 
-  # ### Events
-  events: ->
-    'click h3': 'toggleBody'
+	###
+	# @property
+	# @override
+	# @type {Object}
+	###
+	events: ->
+		'click h3': '_toggleBody'
 
-  toggleBody: (ev) ->
-    func = if @$('.body').is(':visible') then @hideBody else @showBody
+	###
+	# This method is called when the facet has to be updated. For instance after
+	# the server has returned with new values.
+	#
+	# @method
+	# @abstract
+	# @param {Object} newOptions
+	###
+	update: (newOptions) ->
 
-    # If ev is a function, than it is the callback. Use call to pass the context.
-    if _.isFunction ev then func.call @, ev else func.call @
+	###
+	# Reset the facet to it's initial state.
+	#
+	# @method
+	# @abstract
+	###
+	reset: ->
 
-  # ### Methods
-  hideMenu: ->
-    $button = @$ 'header i.openclose'
-    $button.addClass 'fa-plus-square-o'
-    $button.removeClass 'fa-minus-square-o'
+	###
+	# The postRender method is being run after render.
+	#
+	# @method
+	# @abstract
+	###
+	postRender: ->
 
-    @$('header .options').slideUp(150)
+	###
+	# Every facet can be minimized by clicking the title of the facet.
+	#
+	# @method
+	# @private
+	# @param {Object} ev The event object.
+	###
+	_toggleBody: (ev) ->
+		func = if @$('.body').is(':visible') then @_hideBody else @_showBody
 
-  hideBody: (done) ->
-    @hideMenu()
+		# If ev is a function, than it is the callback. Use call to pass the context.
+		if _.isFunction ev then func.call @, ev else func.call @
 
-    @$('.body').slideUp 100, =>
-      done() if done?
-      @$('header i.fa').fadeOut 100
+	###
+	# @method
+	# @private
+	###
+	_hideMenu: ->
+		$button = @$ 'header i.openclose'
+		$button.addClass 'fa-plus-square-o'
+		$button.removeClass 'fa-minus-square-o'
 
-  showBody: (done) ->
-    @$('.body').slideDown 100, =>
-      done() if done?
-      @$('header i.fa').fadeIn 100
+		@$('header .options').slideUp(150)
 
-  destroy: -> @remove()
+	###
+	# @method
+	# @private
+	# @param {Function} done Callback called when hide body animation has finished.
+	###
+	_hideBody: (done) ->
+		@_hideMenu()
 
-  # NOOP: Override in child
-  update: (newOptions) -> # console.log newOptions
-  reset: ->
-  postRender: ->
+		@$('.body').slideUp 100, =>
+			done() if done?
+			@$('header i.fa').fadeOut 100
 
+	###
+	# @method
+	# @private
+	# @param {Function} done Callback called when show body animation has finished.
+	###
+	_showBody: (done) ->
+		@$('.body').slideDown 100, =>
+			done() if done?
+			@$('header i.fa').fadeIn 100
 
-module.exports = Facet
+	###
+	# If destroy is not overridden, just call Backbone.View's remove method.
+	#
+	# @method
+	###
+	destroy: ->
+		@remove()
+
+module.exports = FacetView

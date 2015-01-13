@@ -3,27 +3,43 @@ Backbone = require 'backbone'
 tpl = require './result.jade'
 
 ###
-@class Result
-@extends Backbone.View
+# The view of one result item < li >.
+#
+# @class Result
+# @namespace Views
+# @todo Rename to ResultItem
 ###
 class Result extends Backbone.View
-
+	###
+	# @property
+	# @type {String}
+	###
 	className: 'result'
 
+	###
+	# @property
+	# @type {String}
+	###
 	tagName: 'li'
 
 	###
-	@param {object} [options={}]
-	@prop {object} options.data - The data of the result.
-	@prop {boolean} [options.fulltext=false] - Is the result coming from a full text search?
-	@constructs
+	# @method
+	# @construct
+	# @param {Object} this.options
+	# @param {Object} this.options.data The data of the result.
+	# @param {Boolean} [this.options.fulltext=false] Is the result coming from a full text search?
 	###
-	initialize: (@options={}) ->
+	initialize: (@options) ->
 		@options.fulltext ?= false
 		if @options.fulltext then @$el.addClass 'fulltext' else @$el.addClass 'no-fulltext'
 
 		@render()
 
+	###
+	# @method
+	# @chainable
+	# @return {Result}
+	###
 	render: ->
 		found = []
 		found.push "#{count}x #{term}" for own term, count of @options.data.terms
@@ -40,19 +56,35 @@ class Result extends Backbone.View
 
 		@
 
+	###
+	# @method
+	###
 	events: ->
 		'click': '_handleClick'
 		'click li[data-layer]': '_handleLayerClick'
 
+	###
+	# @method
+	# @private
+	# @return {Object} ev The event object.
+	###
 	_handleClick: (ev) ->
 		@trigger 'click', @options.data
 
+	###
+	# @method
+	# @private
+	# @return {Object} ev The event object.
+	###
 	_handleLayerClick: (ev) ->
 		ev.stopPropagation()
 		layer = ev.currentTarget.getAttribute 'data-layer'
 		
 		@trigger 'layer:click', layer, @options.data
 
+	###
+	# @method
+	###
 	destroy: ->
 		@remove()
 

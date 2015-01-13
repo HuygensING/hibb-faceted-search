@@ -13,17 +13,21 @@ Config = require './config'
 QueryOptions = require './models/query-options'
 SearchResults = require './collections/searchresults'
 
-Views =
-	TextSearch: require './views/text-search'
-	Facets: require './views/facets'
-	Results: require './views/results'
-	ListFacet: require './views/facets/list'
+TextSearch = require './views/text-search'
+Facets = require './views/facets'
+Results = require './views/results'
 
 tpl = require '../jade/main.jade'
 
 ###
 # @class
 # @namespace Views
+# @uses Config
+# @uses QueryOptions
+# @uses SearchResults
+# @uses TextSearch
+# @uses Facets
+# @uses Results
 ###
 class MainView extends Backbone.View
 
@@ -85,7 +89,7 @@ class MainView extends Backbone.View
 	# @private
 	###
 	initTextSearch: ->
-		@textSearch = new Views.TextSearch config: @config
+		@textSearch = new TextSearch config: @config
 		@listenTo @textSearch, 'change', (queryOptions) =>
 			@queryOptions.set queryOptions, silent: true
 
@@ -110,7 +114,7 @@ class MainView extends Backbone.View
 	renderResults: ->
 		@$el.addClass 'with-results'
 
-		@results = new Views.Results
+		@results = new Results
 			el: @$('.results')
 			config: @config
 			searchResults: @searchResults
@@ -247,7 +251,7 @@ class MainView extends Backbone.View
 	# @private
 	###
 	initFacets: ->
-		@facets = new Views.Facets
+		@facets = new Facets
 			viewMap: @options.facetViewMap
 			config: @config
 

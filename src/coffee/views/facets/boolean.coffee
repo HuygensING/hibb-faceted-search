@@ -36,7 +36,6 @@ class BooleanFacet extends Views.Facet
 
     @
 
-  # ### Events
   events: -> _.extend {}, super,
     'click i': 'checkChanged'
     'click label': 'checkChanged'

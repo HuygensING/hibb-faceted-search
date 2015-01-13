@@ -5,21 +5,32 @@ el = require('funcky.el').el
 
 tpl = require './sort.jade'
 
-# @options
-# 	project	Backbone.Model The current project
-
+###
+# Input element to set the sorting levels. There are three levels and every
+# level can be set ascending or descending.
+# 
+# @class
+# @namespace Views
+# @uses Config
+###
 class SortLevels extends Backbone.View
-
+	###
+	# @property
+	# @type {String}
+	###
 	tagName: 'li'
 
+	###
+	# @property
+	# @type {String}
+	###
 	className: 'sort-levels'
 
-	# ### Initialize
 	###
-	@param {object} this.options
-	@param {Backbone.Model} this.options.config
+	# @param {Object} this.options
+	# @param {Config} this.options.config
 	###
-	initialize: (@options={}) ->
+	initialize: (@options) ->
 		@render()
 
 		@listenTo @options.config, 'change:entryMetadataFields', @render
@@ -31,7 +42,11 @@ class SortLevels extends Backbone.View
 
 			@render()
 
-	# ### Render
+	###
+	# @method
+	# @chainable
+	# @return {SortLevels}
+	###
 	render: ->
 		rtpl = tpl
 			levels: @options.config.get('levels')
@@ -47,19 +62,33 @@ class SortLevels extends Backbone.View
 		@onMouseleave = leave.bind(@)
 		levels.on 'mouseleave', @onMouseleave
 
-	# ### Events
+		@
+
+	###
+	# @method
+	# @return {Object}
+	###
 	events: ->
 		'click button.toggle': 'toggleLevels'
 		'click li.search button': 'saveLevels'
 		'change div.levels select': 'changeLevels'
 		'click div.levels i.fa': 'changeAlphaSort'
 
+	###
+	# @method
+	###
 	toggleLevels: (ev) ->
 		@$('div.levels').toggle()
 
+	###
+	# @method
+	###
 	hideLevels: ->
 		@$('div.levels').hide()
 
+	###
+	# @method
+	###
 	changeLevels: (ev) ->
 		@$('div.levels').addClass 'show-save-button'
 
@@ -76,6 +105,9 @@ class SortLevels extends Backbone.View
 			$target.addClass 'fa-sort-alpha-asc'
 			$target.removeClass 'fa-sort-alpha-desc'
 
+	###
+	# @method
+	###
 	changeAlphaSort: (ev) ->
 		@$('div.levels').addClass 'show-save-button'
 
@@ -83,6 +115,9 @@ class SortLevels extends Backbone.View
 		$target.toggleClass 'fa-sort-alpha-asc'
 		$target.toggleClass 'fa-sort-alpha-desc'
 
+	###
+	# @method
+	###
 	saveLevels: ->
 		sortParameters = []
 
@@ -99,6 +134,9 @@ class SortLevels extends Backbone.View
 
 		@trigger 'change', sortParameters
 
+	###
+	# @method
+	###
 	destroy: ->
 		@$('div.levels').off 'mouseleave', @onMouseleave
 		@remove()

@@ -1908,7 +1908,7 @@ exports.rethrow = function rethrow(err, filename, lineno, str){
 });
 }).call(this,typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 },{"fs":2}],12:[function(_dereq_,module,exports){
-var Backbone, ListOptions, Models, _,
+var Backbone, ListOption, ListOptions, _,
   __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
@@ -1916,9 +1916,14 @@ Backbone = _dereq_('backbone');
 
 _ = _dereq_('underscore');
 
-Models = {
-  Option: _dereq_('../models/facets/list.option.coffee')
-};
+ListOption = _dereq_('../models/facets/list.option.coffee');
+
+
+/*
+ * @class
+ * @namespace Collections
+ * @uses ListOption
+ */
 
 ListOptions = (function(_super) {
   __extends(ListOptions, _super);
@@ -1927,7 +1932,7 @@ ListOptions = (function(_super) {
     return ListOptions.__super__.constructor.apply(this, arguments);
   }
 
-  ListOptions.prototype.model = Models.Option;
+  ListOptions.prototype.model = ListOption;
 
   ListOptions.prototype.initialize = function() {
     return this.comparator = this.strategies.amount_desc;
@@ -2039,7 +2044,9 @@ funcky = _dereq_('funcky.req');
 
 
 /*
-@class
+ * @class
+ * @namespace Collections
+ * @uses SearchResult
  */
 
 SearchResults = (function(_super) {
@@ -2049,28 +2056,64 @@ SearchResults = (function(_super) {
     return SearchResults.__super__.constructor.apply(this, arguments);
   }
 
+
+  /*
+  	 * @property
+  	 * @type {SearchResult}
+   */
+
   SearchResults.prototype.model = SearchResult;
 
 
   /*
-  	@constructs
-  	@param {object[]} models
-  	@param {object} options
-  	@param {Backbone.Model} options.config
+  	 * Init cachedModels in the initialize function, because when defined in the class
+  	 * as a property, it is defined on the prototype and thus not refreshed when we instantiate
+  	 * a new Collection.
+  	 *
+  	 * Should be redefined during initialization to prevent sharing between instances.
+  	 *
+  	 * @property
+  	 * @type {Object}
+   */
+
+  SearchResults.prototype.cachedModels = null;
+
+
+  /*
+  	 * @construct
+  	 * @param {Array<SearchResult>} models
+  	 * @param {Object} this.options
+  	 * @param {Config} this.options.config
    */
 
   SearchResults.prototype.initialize = function(models, options) {
-    this.config = options.config;
+    this.options = options;
     return this.cachedModels = {};
   };
+
+
+  /*
+  	 * @method
+   */
 
   SearchResults.prototype.clearCache = function() {
     return this.cachedModels = {};
   };
 
+
+  /*
+  	 * @method
+   */
+
   SearchResults.prototype.getCurrent = function() {
     return this._current;
   };
+
+
+  /*
+  	 * @method
+  	 * @private
+   */
 
   SearchResults.prototype._setCurrent = function(_current, changeMessage) {
     this._current = _current;
@@ -2079,13 +2122,14 @@ SearchResults = (function(_super) {
 
 
   /*
-  	Add the latest search result model to a collection for caching.
-  
-  	@method
-  	@param {string} url - Base location of the resultModel. Is used to fetch parts of the result which are not prev or next but at a different place (for example: row 100 - 110) in the result set.
-  	@param {object} attrs - The properties/attributes of the resultModel.
-  	@param {string} cacheId - The ID to file the props/attrs under for caching.
-  	@param {string} changeMessage - The event message to trigger.
+  	 * Add the latest search result model to a collection for caching.
+  	 *
+  	 * @method
+  	 * @private
+  	 * @param {string} url - Base location of the resultModel. Is used to fetch parts of the result which are not prev or next but at a different place (for example: row 100 - 110) in the result set.
+  	 * @param {object} attrs - The properties/attributes of the resultModel.
+  	 * @param {string} cacheId - The ID to file the props/attrs under for caching.
+  	 * @param {string} changeMessage - The event message to trigger.
    */
 
   SearchResults.prototype._addModel = function(url, attrs, cacheId, changeMessage) {
@@ -2097,10 +2141,10 @@ SearchResults = (function(_super) {
 
 
   /*
-  	@method
-  	@param {object} queryOptions
-  	@param {object} [options={}]
-  	@param {boolean} options.cache - Determines if the result can be fetched from the cachedModels (searchResult models). In case of a reset or a refresh, options.cache is set to false.
+  	 * @method
+  	 * @param {Object} queryOptions
+  	 * @param {Object} [options={}]
+  	 * @param {Boolean} [options.cache=true] Determines if the result can be fetched from the cachedModels (searchResult models). In case of a reset or a refresh, options.cache is set to false.
    */
 
   SearchResults.prototype.runQuery = function(queryOptions, options) {
@@ -2119,7 +2163,7 @@ SearchResults = (function(_super) {
       return this.postQuery(queryOptions, (function(_this) {
         return function(url) {
           var getUrl;
-          getUrl = "" + url + "?rows=" + (_this.config.get('resultRows'));
+          getUrl = "" + url + "?rows=" + (_this.options.config.get('resultRows'));
           return _this.getResults(getUrl, function(response) {
             return _this._addModel(url, response, queryOptionsString, changeMessage);
           });
@@ -2148,8 +2192,8 @@ SearchResults = (function(_super) {
   SearchResults.prototype.page = function(pagenumber, database) {
     var changeMessage, start, url;
     changeMessage = 'change:page';
-    start = this.config.get('resultRows') * (pagenumber - 1);
-    url = this._current.get('location') + ("?rows=" + (this.config.get('resultRows')) + "&start=" + start);
+    start = this.options.config.get('resultRows') * (pagenumber - 1);
+    url = this._current.get('location') + ("?rows=" + (this.options.config.get('resultRows')) + "&start=" + start);
     if (database != null) {
       url += "&database=" + database;
     }
@@ -2170,15 +2214,15 @@ SearchResults = (function(_super) {
     ajaxOptions = {
       data: JSON.stringify(queryOptions)
     };
-    if (this.config.has('authorizationHeaderToken')) {
+    if (this.options.config.has('authorizationHeaderToken')) {
       ajaxOptions.headers = {
-        Authorization: this.config.get('authorizationHeaderToken')
+        Authorization: this.options.config.get('authorizationHeaderToken')
       };
     }
-    if (this.config.has('requestOptions')) {
-      _.extend(ajaxOptions, this.config.get('requestOptions'));
+    if (this.options.config.has('requestOptions')) {
+      _.extend(ajaxOptions, this.options.config.get('requestOptions'));
     }
-    req = funcky.post(this.config.get('baseUrl') + this.config.get('searchPath'), ajaxOptions);
+    req = funcky.post(this.options.config.get('baseUrl') + this.options.config.get('searchPath'), ajaxOptions);
     req.done((function(_this) {
       return function(res) {
         if (res.status === 201) {
@@ -2201,10 +2245,10 @@ SearchResults = (function(_super) {
   SearchResults.prototype.getResults = function(url, done) {
     var options, req;
     this.trigger('request');
-    if (this.config.has('authorizationHeaderToken')) {
+    if (this.options.config.has('authorizationHeaderToken')) {
       options = {
         headers: {
-          Authorization: this.config.get('authorizationHeaderToken')
+          Authorization: this.options.config.get('authorizationHeaderToken')
         }
       };
     }
@@ -2246,6 +2290,7 @@ Backbone = _dereq_('backbone');
 /*
  * @class
  * @namespace Models
+ * @todo Move to ./models
  */
 
 Config = (function(_super) {
@@ -2260,38 +2305,78 @@ Config = (function(_super) {
   	 * Default attributes.
   	 *
   	 * Does not require any parameters, but the @param tag is (ab)used to document
-  	 * the returned hash.
+  	 * the default values.
   	 *
   	 * @method
+  	 *
+  	 * REQUEST OPTIONS
   	 * @param {String} baseUrl Base of the URL to perform searches.
   	 * @param {String} searchPath Path of the URL to perform searches.
   	 * @param {Number} [resultRows=10] Number of results per query/page.
-  	 * @param {Object} [facetTitleMap={}] Map of facet names, mapping to facet titles. Use this map to give user friendly display names to facets in case the server doesn't give them.
-  	 * @param {Array<String>} [facetOrder=[]] Define the rendering order of the facets. If undefined, the facets are rendered in the order returned by the backend.
-  	 * @param {Boolean} [results=false] Render the results. When kept to false, the showing of the results has to be taken care of in the application.
-  	 * @param {String} [termSingular="entry"] Name of one result, for example: book, woman, country, alumnus, etc.
-  	 * @param {String} [termPlural="entries"] Name of multiple results, for example: books, women, countries, alunmi, etc.
-  	 * @param {Boolean} [sortLevels=true] Render sort levels in the results header
-  	 * @param {Boolean} [showMetadata=true] Render show metadata toggle in the results header
+  	 * @param {String} [authorizationHeaderToken] If set, an Authorization header with given token will be send along with each request.
+  	 * @param {Object} [queryOptions={}]
+  	 * @param {Array<Object>} [queryOptions.facetValues=[]] Array of objects containing a facet name and values: {name: 'facet_s_writers', values: ['pietje', 'pukje']}
+  	 * @param {Array<Object>} [queryOptions.sortParameters=[]] Array of objects containing fieldname and direction: {fieldname: 'language', direction: 'desc'}
+  
+  	 * @param {Array<String>} [queryOptions.resultFields] List of metadata fields to be returned by the server for every result.
+  	 * @param {Object} [requestOptions={}] Send extra options to the POST query call, such as setting custom headers (e.g., VRE_ID for Timbuctoo).
+  	 * @param {Array<String>} [entryMetadataFields=[]] A list of all the entries metadata fields. This list corresponds to the facets and is used to populate the sortLevels in the  result view.
+  	 * @param {Array<String>} [levels=[]] An array of max three strings. Determine the three levels of sorting the results. The three levels are entry metadata fields and are also present in the entryMetadataFields array.
+  	 *
+  	 * FACETS OPTIONS
   	 * @param {String} [textSearch='advanced'] One of 'none', 'simple' or 'advanced'. None: text search is hidden, facets are shown, loader is shown. Simple: text search is shown, facets are hidden, loader is hidden. Advanced: text search is shown, facets are shown, loader is shown.
   	 * @param {Object} [textSearchOptions] Options that are passed to the text search component
-  	 * @param {Boolean} [textSearchOptions.caseSensitive=false] Render caseSensitive option?
-  	 * @param {Boolean} [textSearchOptions.fuzzy=false] Render fuzzy option?
-  	 * @param {Array<Object>} [textSearchOptions.fullTextSearchParameters] Objects passed have a name and term attribute. Used for searching multiple fields.
-  	 * @param {Object} labels Hash of labels, used in the interface. Quick 'n dirty way to change the language.
-  	 * @return {Object} A hash of options and their values. Documentated as @param's.
+  	 * @param {Boolean} [textSearchOptions.caseSensitive=false] Render caseSensitive option.
+  	 * @param {Boolean} [textSearchOptions.fuzzy=false] Render fuzzy option.
+  	 * @param {Array<Object>} [textSearchOptions.fullTextSearchParameters] Search in multiple full text fields. Objects passed have a name and term attribute.
+  	 * @param {Boolean} [autoSearch=true] # When set to true, a search is performed whenever the mainModel (queryOptions) change.
+  	 * @param {Object} [facetTitleMap={}] Map of facet names, mapping to facet titles. Use this map to give user friendly display names to facets in case the server doesn't give them.
+  	 * @param {Array<String>} [facetOrder=[]] Define the rendering order of the facets. If undefined, the facets are rendered in the order returned by the backend.
+  	 *
+  	 * RESULTS OPTIONS
+  	 * @param {Boolean} [results=false] Render the results. When kept to false, the showing of the results has to be taken care of in the application.
+  	 * @param {Boolean} [sortLevels=true] Render sort levels in the results header
+  	 * @param {Boolean} [showMetadata=true] Render show metadata toggle in the results header
+  	 *
+  	 * OTHER RENDERING OPTIONS
+  	 * @param {Object} [templates={}] Hash of templates. The templates should be functions which take a hash as argument to render vars. Possible keys: main, facets, text-search, facets.main, list.menu, list.body and range.body.
+  	 * @param {Object} [labels={}] Hash of labels, used in the interface. Quick 'n dirty way to change the language.
+  	 * @param {String} [termSingular="entry"] Name of one result, for example: book, woman, country, alumnus, etc.
+  	 * @param {String} [termPlural="entries"] Name of multiple results, for example: books, women, countries, alunmi, etc.
+  	 *
+  	 * @return {Object} A hash of default attributes and their values. Documentated as @param's.
    */
 
   Config.prototype.defaults = function() {
     return {
+
+      /* REQUEST OPTIONS */
+      baseUrl: null,
+      searchPath: null,
       resultRows: 10,
-      baseUrl: '',
-      searchPath: '',
+      authorizationHeaderToken: null,
+      queryOptions: {},
+      requestOptions: {},
+      entryMetadataFields: [],
+      levels: [],
+
+      /* FACETS OPTIONS */
       textSearch: 'advanced',
       textSearchOptions: {
         caseSensitive: false,
         fuzzy: false
       },
+      autoSearch: true,
+      facetTitleMap: {},
+      facetOrder: [],
+
+      /* RESULTS OPTIONS */
+      results: false,
+      sortLevels: true,
+      showMetadata: true,
+
+      /* OTHER RENDERING OPTIONS */
+      templates: {},
       labels: {
         fullTextSearchFields: "Search in",
         numFound: "Found",
@@ -2299,20 +2384,8 @@ Config = (function(_super) {
         sortAlphabetically: "Sort alphabetically",
         sortNumerically: "Sort numerically"
       },
-      authorizationHeaderToken: null,
-      queryOptions: {},
-      facetTitleMap: {},
-      facetOrder: [],
-      templates: {},
-      autoSearch: true,
-      requestOptions: {},
-      results: false,
-      sortLevels: true,
-      showMetadata: true,
       termSingular: 'entry',
-      termPlural: 'entries',
-      entryMetadataFields: [],
-      levels: []
+      termPlural: 'entries'
     };
   };
 
@@ -2325,7 +2398,7 @@ module.exports = Config;
 
 
 },{}],15:[function(_dereq_,module,exports){
-var $, Backbone, Config, MainView, QueryOptions, SearchResults, Views, assert, funcky, tpl, _,
+var $, Backbone, Config, Facets, MainView, QueryOptions, Results, SearchResults, TextSearch, assert, funcky, tpl, _,
   __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
@@ -2347,12 +2420,11 @@ QueryOptions = _dereq_('./models/query-options');
 
 SearchResults = _dereq_('./collections/searchresults');
 
-Views = {
-  TextSearch: _dereq_('./views/text-search'),
-  Facets: _dereq_('./views/facets'),
-  Results: _dereq_('./views/results'),
-  ListFacet: _dereq_('./views/facets/list')
-};
+TextSearch = _dereq_('./views/text-search');
+
+Facets = _dereq_('./views/facets');
+
+Results = _dereq_('./views/results');
 
 tpl = _dereq_('../jade/main.jade');
 
@@ -2360,6 +2432,12 @@ tpl = _dereq_('../jade/main.jade');
 /*
  * @class
  * @namespace Views
+ * @uses Config
+ * @uses QueryOptions
+ * @uses SearchResults
+ * @uses TextSearch
+ * @uses Facets
+ * @uses Results
  */
 
 MainView = (function(_super) {
@@ -2427,7 +2505,7 @@ MainView = (function(_super) {
    */
 
   MainView.prototype.initTextSearch = function() {
-    this.textSearch = new Views.TextSearch({
+    this.textSearch = new TextSearch({
       config: this.config
     });
     this.listenTo(this.textSearch, 'change', (function(_this) {
@@ -2468,7 +2546,7 @@ MainView = (function(_super) {
 
   MainView.prototype.renderResults = function() {
     this.$el.addClass('with-results');
-    this.results = new Views.Results({
+    this.results = new Results({
       el: this.$('.results'),
       config: this.config,
       searchResults: this.searchResults
@@ -2658,7 +2736,7 @@ MainView = (function(_super) {
 
   MainView.prototype.initFacets = function() {
     var facetsPlaceholder;
-    this.facets = new Views.Facets({
+    this.facets = new Facets({
       viewMap: this.options.facetViewMap,
       config: this.config
     });
@@ -2900,14 +2978,18 @@ module.exports = MainView;
 
 
 
-},{"../jade/main.jade":46,"./collections/searchresults":13,"./config":14,"./models/query-options":21,"./views/facets":24,"./views/facets/list":27,"./views/results":33,"./views/text-search":39,"assert":1,"funcky.el":7}],16:[function(_dereq_,module,exports){
-var BooleanFacet, Models,
+},{"../jade/main.jade":46,"./collections/searchresults":13,"./config":14,"./models/query-options":21,"./views/facets":24,"./views/results":33,"./views/text-search":39,"assert":1,"funcky.el":7}],16:[function(_dereq_,module,exports){
+var BooleanFacet, FacetModel,
   __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
-Models = {
-  Facet: _dereq_('./main')
-};
+FacetModel = _dereq_('./main');
+
+
+/*
+ * @class
+ * @namespace Models
+ */
 
 BooleanFacet = (function(_super) {
   __extends(BooleanFacet, _super);
@@ -2915,6 +2997,14 @@ BooleanFacet = (function(_super) {
   function BooleanFacet() {
     return BooleanFacet.__super__.constructor.apply(this, arguments);
   }
+
+
+  /*
+  	 * @method
+  	 * @override FacetModel::set
+  	 * @param {String|Object} attrs
+  	 * @param {Object} [options]
+   */
 
   BooleanFacet.prototype.set = function(attrs, options) {
     if (attrs === 'options') {
@@ -2924,6 +3014,12 @@ BooleanFacet = (function(_super) {
     }
     return BooleanFacet.__super__.set.call(this, attrs, options);
   };
+
+
+  /*
+  	 * @method
+  	 * @param {Object} options
+   */
 
   BooleanFacet.prototype.parseOptions = function(options) {
     var _ref;
@@ -2939,7 +3035,7 @@ BooleanFacet = (function(_super) {
 
   return BooleanFacet;
 
-})(Models.Facet);
+})(FacetModel);
 
 module.exports = BooleanFacet;
 
@@ -2951,13 +3047,17 @@ module.exports = BooleanFacet;
 
 
 },{}],18:[function(_dereq_,module,exports){
-var List, Models,
+var FacetModel, List,
   __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
-Models = {
-  Facet: _dereq_('./main')
-};
+FacetModel = _dereq_('./main');
+
+
+/*
+ * @class
+ * @namespace Models
+ */
 
 List = (function(_super) {
   __extends(List, _super);
@@ -2968,7 +3068,7 @@ List = (function(_super) {
 
   return List;
 
-})(Models.Facet);
+})(FacetModel);
 
 module.exports = List;
 
@@ -2980,6 +3080,12 @@ var Backbone, ListOption,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
 Backbone = _dereq_('backbone');
+
+
+/*
+ * @class
+ * @namespace Models
+ */
 
 ListOption = (function(_super) {
   __extends(ListOption, _super);
@@ -3014,24 +3120,40 @@ module.exports = ListOption;
 
 
 },{}],20:[function(_dereq_,module,exports){
-var Backbone, Facet, config,
+var Backbone, FacetModel,
   __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
 Backbone = _dereq_('backbone');
 
-config = _dereq_('../../config');
 
-Facet = (function(_super) {
-  __extends(Facet, _super);
+/*
+ * @class
+ * @namespace Models
+ */
 
-  function Facet() {
-    return Facet.__super__.constructor.apply(this, arguments);
+FacetModel = (function(_super) {
+  __extends(FacetModel, _super);
+
+  function FacetModel() {
+    return FacetModel.__super__.constructor.apply(this, arguments);
   }
 
-  Facet.prototype.idAttribute = 'name';
 
-  Facet.prototype.defaults = function() {
+  /*
+  	 * @property
+  	 * @type {String}
+   */
+
+  FacetModel.prototype.idAttribute = 'name';
+
+
+  /*
+  	 * @method
+  	 * @return {Object} Hash of default attributes.
+   */
+
+  FacetModel.prototype.defaults = function() {
     return {
       name: null,
       title: null,
@@ -3040,16 +3162,16 @@ Facet = (function(_super) {
     };
   };
 
-  return Facet;
+  return FacetModel;
 
 })(Backbone.Model);
 
-module.exports = Facet;
+module.exports = FacetModel;
 
 
 
-},{"../../config":14}],21:[function(_dereq_,module,exports){
-var Backbone, QueryOptions, config, _,
+},{}],21:[function(_dereq_,module,exports){
+var Backbone, QueryOptions, _,
   __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
@@ -3057,7 +3179,11 @@ Backbone = _dereq_('backbone');
 
 _ = _dereq_('underscore');
 
-config = _dereq_('../config');
+
+/*
+ * @class
+ * @namespace Models
+ */
 
 QueryOptions = (function(_super) {
   __extends(QueryOptions, _super);
@@ -3068,9 +3194,9 @@ QueryOptions = (function(_super) {
 
 
   /*
-  	@prop {object[]} facetValues=[] - Array of objects containing a facet name and values: {name: 'facet_s_writers', values: ['pietje', 'pukje']}
-  	@prop {object[]} sortParameters=[] - Array of objects containing fieldname and direction: {fieldname: 'language', direction: 'desc'}
-  	@prop {string[]} [resultFields] - List of metadata fields to be returned by the server for every result.
+  	 * @method
+  	 * @override
+  	 * @see Config
    */
 
   QueryOptions.prototype.defaults = function() {
@@ -3082,13 +3208,21 @@ QueryOptions = (function(_super) {
 
 
   /*
-  	@constructs
-  	@param {object} this.initialAttributes - The initial attributes are stored and not mutated, because on reset the original data is needed.
+  	 * @method
+  	 * @override
+  	 * @constructs
+  	 * @param {Object} this.initialAttributes The initial attributes are stored and not mutated, because on reset the original data is needed.
    */
 
   QueryOptions.prototype.initialize = function(initialAttributes) {
     this.initialAttributes = initialAttributes;
   };
+
+
+  /*
+  	 * @method
+  	 * @override
+   */
 
   QueryOptions.prototype.set = function(attrs, options) {
     var facetValues;
@@ -3108,6 +3242,13 @@ QueryOptions = (function(_super) {
     }
     return QueryOptions.__super__.set.call(this, attrs, options);
   };
+
+
+  /*
+  	 * Reset the queryOptions to reflect the initial state.
+  	 *
+  	 * @method
+   */
 
   QueryOptions.prototype.reset = function() {
     this.clear({
@@ -3129,8 +3270,8 @@ module.exports = QueryOptions;
 
 
 
-},{"../config":14}],22:[function(_dereq_,module,exports){
-var Backbone, Search, _,
+},{}],22:[function(_dereq_,module,exports){
+var Backbone, SearchModel, _,
   __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
@@ -3138,25 +3279,29 @@ Backbone = _dereq_('backbone');
 
 _ = _dereq_('underscore');
 
-Search = (function(_super) {
-  __extends(Search, _super);
 
-  function Search() {
-    return Search.__super__.constructor.apply(this, arguments);
+/*
+ * @class
+ * @namespace Models
+ */
+
+SearchModel = (function(_super) {
+  __extends(SearchModel, _super);
+
+  function SearchModel() {
+    return SearchModel.__super__.constructor.apply(this, arguments);
   }
 
-  Search.prototype.defaults = function() {};
-
-  return Search;
+  return SearchModel;
 
 })(Backbone.Model);
 
-module.exports = Search;
+module.exports = SearchModel;
 
 
 
 },{}],23:[function(_dereq_,module,exports){
-var Backbone, SearchResult, config, _,
+var Backbone, SearchResult, _,
   __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
@@ -3164,7 +3309,11 @@ Backbone = _dereq_('backbone');
 
 _ = _dereq_('underscore');
 
-config = _dereq_('../config');
+
+/*
+ * @class
+ * @namespace Models
+ */
 
 SearchResult = (function(_super) {
   __extends(SearchResult, _super);
@@ -3172,6 +3321,12 @@ SearchResult = (function(_super) {
   function SearchResult() {
     return SearchResult.__super__.constructor.apply(this, arguments);
   }
+
+
+  /*
+  	 * @method
+  	 * @return {Object} Hash of default attributes.
+   */
 
   SearchResult.prototype.defaults = function() {
     return {
@@ -3196,7 +3351,7 @@ module.exports = SearchResult;
 
 
 
-},{"../config":14}],24:[function(_dereq_,module,exports){
+},{}],24:[function(_dereq_,module,exports){
 var $, Backbone, Facets, assert, _,
   __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
   __hasProp = {}.hasOwnProperty,
@@ -3214,13 +3369,14 @@ assert = _dereq_('assert');
 /*
  * @class
  * @namespace Views
+ * @uses Config
  */
 
 Facets = (function(_super) {
   __extends(Facets, _super);
 
   function Facets() {
-    this.renderFacet = __bind(this.renderFacet, this);
+    this._renderFacet = __bind(this._renderFacet, this);
     return Facets.__super__.constructor.apply(this, arguments);
   }
 
@@ -3241,6 +3397,7 @@ Facets = (function(_super) {
   	 * @property
   	 * @type {Object} Keys are types in capital, values are Backbone.Views.
   	 * @example {BOOLEAN: MyBooleanView, LIST: MyListView}
+  	 * @todo Move to external module.
    */
 
   Facets.prototype.viewMap = {
@@ -3265,6 +3422,14 @@ Facets = (function(_super) {
     return this.render();
   };
 
+
+  /*
+  	 * @method
+  	 * @override
+  	 * @chainable
+  	 * @return {Facets} Instance of Facets to enable chaining.
+   */
+
   Facets.prototype.render = function() {
     var tpl;
     if (this.options.config.get('templates').hasOwnProperty('facets')) {
@@ -3274,16 +3439,22 @@ Facets = (function(_super) {
     return this;
   };
 
+
+  /*
+  	 * @method
+  	 * @param {Object} data
+   */
+
   Facets.prototype.renderFacets = function(data) {
     var facet, facetData, facetName, facets, fragment, index, placeholder, _i, _j, _len, _len1, _ref;
-    this.destroyFacets();
+    this._destroyFacets();
     if (this.options.config.get('templates').hasOwnProperty('facets')) {
       for (index = _i = 0, _len = data.length; _i < _len; index = ++_i) {
         facetData = data[index];
         if (this.viewMap.hasOwnProperty(facetData.type)) {
           placeholder = this.el.querySelector("." + facetData.name + "-placeholder");
           if (placeholder != null) {
-            placeholder.parentNode.replaceChild(this.renderFacet(facetData).el, placeholder);
+            placeholder.parentNode.replaceChild(this._renderFacet(facetData).el, placeholder);
           }
         }
       }
@@ -3305,7 +3476,7 @@ Facets = (function(_super) {
         assert.ok(facets.get(facetName) != null, "FacetedSearch :: config.facetOrder : Unknown facet name: \"" + facetName + "\"!");
         facet = facets.get(facetName);
         if (this.viewMap.hasOwnProperty(facet.get('type'))) {
-          fragment.appendChild(this.renderFacet(facet.attributes).el);
+          fragment.appendChild(this._renderFacet(facet.attributes).el);
         } else {
           console.error('Unknown facetView', facet.get('type'));
         }
@@ -3317,7 +3488,14 @@ Facets = (function(_super) {
     return this;
   };
 
-  Facets.prototype.renderFacet = function(facetData) {
+
+  /*
+  	 * @method
+  	 * @private
+  	 * @param {Object} facetData
+   */
+
+  Facets.prototype._renderFacet = function(facetData) {
     var View;
     if (_.isString(facetData)) {
       facetData = _.findWhere(this.searchResults.first().get('facets'), {
@@ -3340,6 +3518,12 @@ Facets = (function(_super) {
     return this.views[facetData.name];
   };
 
+
+  /*
+  	 * @method
+  	 * @private
+   */
+
   Facets.prototype._postRenderFacets = function() {
     var facetName, view, _ref, _results;
     _ref = this.views;
@@ -3350,6 +3534,12 @@ Facets = (function(_super) {
     }
     return _results;
   };
+
+
+  /*
+  	 * @method
+  	 * @param {Object} facetData
+   */
 
   Facets.prototype.update = function(facetData) {
     var data, options, view, viewName, _ref, _results;
@@ -3367,6 +3557,11 @@ Facets = (function(_super) {
     return _results;
   };
 
+
+  /*
+  	 * @method
+   */
+
   Facets.prototype.reset = function() {
     var facetView, key, _ref, _results;
     _ref = this.views;
@@ -3383,7 +3578,13 @@ Facets = (function(_super) {
     return _results;
   };
 
-  Facets.prototype.destroyFacets = function() {
+
+  /*
+  	 * @method
+  	 * @private
+   */
+
+  Facets.prototype._destroyFacets = function() {
     var view, viewName, _ref, _results;
     this.stopListening();
     _ref = this.views;
@@ -3397,10 +3598,26 @@ Facets = (function(_super) {
     return _results;
   };
 
+
+  /*
+  	 * Destroy the child views (facets) and remove the view.
+  	 *
+  	 * @method
+   */
+
   Facets.prototype.destroy = function() {
-    this.destroyFacets();
+    this._destroyFacets();
     return this.remove();
   };
+
+
+  /*
+  	 * The facets are slided one by one. When the slide of a facet is finished, the
+  	 * next facet starts sliding. That's why we use a recursive function.
+  	 *
+  	 * @method
+  	 * @param {Object} ev The event object.
+   */
 
   Facets.prototype.toggle = function(ev) {
     var facetNames, icon, index, open, slideFacet, span, text;
@@ -3597,7 +3814,7 @@ module.exports = DateFacet;
 
 
 },{"../../../jade/facets/date.jade":41,"../../models/facets/date":17,"./main":29}],27:[function(_dereq_,module,exports){
-var $, Collections, ListFacet, Models, Views, menuTpl, _,
+var $, FacetView, List, ListFacet, ListFacetOptions, ListOptions, menuTpl, _,
   __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
@@ -3605,20 +3822,24 @@ $ = _dereq_('jquery');
 
 _ = _dereq_('underscore');
 
-Models = {
-  List: _dereq_('../../models/facets/list')
-};
+List = _dereq_('../../models/facets/list');
 
-Collections = {
-  Options: _dereq_('../../collections/list.options')
-};
+ListOptions = _dereq_('../../collections/list.options');
 
-Views = {
-  Facet: _dereq_('./main'),
-  Options: _dereq_('./list.options')
-};
+FacetView = _dereq_('./main');
+
+ListFacetOptions = _dereq_('./list.options');
 
 menuTpl = _dereq_('../../../jade/facets/list.menu.jade');
+
+
+/*
+ * @class
+ * @namespace Views
+ * @uses ListFacetOptions
+ * @uses ListOptions
+ * @uses List
+ */
 
 ListFacet = (function(_super) {
   __extends(ListFacet, _super);
@@ -3627,20 +3848,42 @@ ListFacet = (function(_super) {
     return ListFacet.__super__.constructor.apply(this, arguments);
   }
 
+
+  /*
+  	 * @property
+  	 * @type {String}
+   */
+
   ListFacet.prototype.className = 'facet list';
+
+
+  /*
+  	 * @method
+  	 * @construct
+  	 * @override FacetView::initialize
+  	 * @param {Object} options
+   */
 
   ListFacet.prototype.initialize = function(options) {
     ListFacet.__super__.initialize.apply(this, arguments);
     this.resetActive = false;
     this.config = options.config;
-    this.model = new Models.List(options.attrs, {
+    this.model = new List(options.attrs, {
       parse: true
     });
-    this.collection = new Collections.Options(options.attrs.options, {
+    this.collection = new ListOptions(options.attrs.options, {
       parse: true
     });
     return this.render();
   };
+
+
+  /*
+  	 * @method
+  	 * @override FacetView::render
+  	 * @chainable
+  	 * @return {ListFacet} Instance of ListFacet to enable chaining.
+   */
 
   ListFacet.prototype.render = function() {
     var menu;
@@ -3654,7 +3897,7 @@ ListFacet = (function(_super) {
       });
       this.$('header .options').html(menu);
     }
-    this.optionsView = new Views.Options({
+    this.optionsView = new ListFacetOptions({
       collection: this.collection,
       facetName: this.model.get('name'),
       config: this.config
@@ -3672,6 +3915,12 @@ ListFacet = (function(_super) {
     return this;
   };
 
+
+  /*
+  	 * @method
+  	 * @override FacetView::postRender
+   */
+
   ListFacet.prototype.postRender = function() {
     var el;
     el = this.el.querySelector('.body > .container');
@@ -3679,6 +3928,13 @@ ListFacet = (function(_super) {
       return this.$el.addClass('with-scrollbar');
     }
   };
+
+
+  /*
+  	 * Renders the count of the filtered options (ie: "3 of 8") next to the filter < input >
+  	 *
+  	 * @method
+   */
 
   ListFacet.prototype.renderFilteredOptionCount = function() {
     var filteredModels, value, visibleModels, _ref;
@@ -3699,6 +3955,16 @@ ListFacet = (function(_super) {
     return this;
   };
 
+
+  /*
+  	 * Extend the events of Facet with ListFacet events.
+  	 *
+  	 * @method
+  	 * @override FacetView::events
+  	 * @type {Object}
+  	 * @return {Object}
+   */
+
   ListFacet.prototype.events = function() {
     return _.extend({}, ListFacet.__super__.events.apply(this, arguments), {
       'keyup input[name="filter"]': function(ev) {
@@ -3707,13 +3973,19 @@ ListFacet = (function(_super) {
       'change header .options input[type="checkbox"][name="all"]': function(ev) {
         return this.optionsView.setCheckboxes(ev);
       },
-      'click header .menu i.filter': 'toggleFilterMenu',
-      'click header .menu i.alpha': 'changeOrder',
-      'click header .menu i.amount': 'changeOrder'
+      'click header .menu i.filter': '_toggleFilterMenu',
+      'click header .menu i.alpha': '_changeOrder',
+      'click header .menu i.amount': '_changeOrder'
     });
   };
 
-  ListFacet.prototype.toggleFilterMenu = function() {
+
+  /*
+  	 * @method
+  	 * @private
+   */
+
+  ListFacet.prototype._toggleFilterMenu = function() {
     var filterIcon, optionsDiv;
     optionsDiv = this.$('header .options');
     filterIcon = this.$('i.filter');
@@ -3734,7 +4006,14 @@ ListFacet = (function(_super) {
     })(this));
   };
 
-  ListFacet.prototype.changeOrder = function(ev) {
+
+  /*
+  	 * @method
+  	 * @private
+  	 * @param {Object} ev The event object.
+   */
+
+  ListFacet.prototype._changeOrder = function(ev) {
     var $target, order, type;
     if (!this.$('i.filter').hasClass('active')) {
       this.optionsView.renderAll();
@@ -3758,6 +4037,13 @@ ListFacet = (function(_super) {
     return this.collection.orderBy(type + '_' + order);
   };
 
+
+  /*
+  	 * @method
+  	 * @override FacetView::update
+  	 * @param {Object} newOptions
+   */
+
   ListFacet.prototype.update = function(newOptions) {
     if (this.resetActive) {
       this.collection.reset(newOptions, {
@@ -3769,25 +4055,31 @@ ListFacet = (function(_super) {
     }
   };
 
+
+  /*
+  	 * @method
+  	 * @override FacetView::reset
+   */
+
   ListFacet.prototype.reset = function() {
     this.resetActive = true;
     if (this.$('i.filter').hasClass('active')) {
-      return this.toggleFilterMenu();
+      return this._toggleFilterMenu();
     }
   };
 
 
   /*
-  	Alias for reset, but used for different implementation. This should be the base
-  	of the original reset, but no time for proper refactor. Current project (ebnm)
-  	doesn't have a reset button, so harder to test.
-  
-  	TODO refactor @reset.
+  	 * Alias for reset, but used for different implementation. This should be the base
+  	 * of the original reset, but no time for proper refactor.
+  	 *
+  	 * @method
+  	 * @todo refactor @reset.
    */
 
   ListFacet.prototype.revert = function() {
     if (this.$('i.filter').hasClass('active')) {
-      this.toggleFilterMenu();
+      this._toggleFilterMenu();
     }
     this.collection.revert();
     return this.collection.sort();
@@ -3795,7 +4087,7 @@ ListFacet = (function(_super) {
 
   return ListFacet;
 
-})(Views.Facet);
+})(FacetView);
 
 module.exports = ListFacet;
 
@@ -3823,6 +4115,12 @@ bodyTpl = _dereq_('../../../jade/facets/list.body.jade');
 
 optionTpl = _dereq_('../../../jade/facets/list.option.jade');
 
+
+/*
+ * @class
+ * @namespace Views
+ */
+
 ListFacetOptions = (function(_super) {
   __extends(ListFacetOptions, _super);
 
@@ -3830,6 +4128,12 @@ ListFacetOptions = (function(_super) {
     this.triggerChange = __bind(this.triggerChange, this);
     return ListFacetOptions.__super__.constructor.apply(this, arguments);
   }
+
+
+  /*
+  	 * @property
+  	 * @type {String}
+   */
 
   ListFacetOptions.prototype.className = 'container';
 
@@ -4004,7 +4308,7 @@ module.exports = ListFacetOptions;
 
 
 },{"../../../jade/facets/list.body.jade":42,"../../../jade/facets/list.option.jade":44,"../../models/facets/list":18,"funcky.util":9}],29:[function(_dereq_,module,exports){
-var $, Backbone, Facet, tpl, _,
+var $, Backbone, FacetView, tpl, _,
   __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
@@ -4016,21 +4320,43 @@ _ = _dereq_('underscore');
 
 tpl = _dereq_('../../../jade/facets/main.jade');
 
-Facet = (function(_super) {
-  __extends(Facet, _super);
 
-  function Facet() {
-    return Facet.__super__.constructor.apply(this, arguments);
+/*
+ * @class
+ * @abstract
+ * @namespace Views
+ */
+
+FacetView = (function(_super) {
+  __extends(FacetView, _super);
+
+  function FacetView() {
+    return FacetView.__super__.constructor.apply(this, arguments);
   }
 
-  Facet.prototype.initialize = function(options) {
+
+  /*
+  	 * @method
+  	 * @construct
+  	 * @override
+  	 * @param {Object} options
+   */
+
+  FacetView.prototype.initialize = function(options) {
     this.config = options.config;
     if (this.config.get('facetTitleMap').hasOwnProperty(options.attrs.name)) {
       return options.attrs.title = this.config.get('facetTitleMap')[options.attrs.name];
     }
   };
 
-  Facet.prototype.render = function() {
+
+  /*
+  	 * @method
+  	 * @override
+  	 * @return {FacetView} Instance of FacetView to enable chaining.
+   */
+
+  FacetView.prototype.render = function() {
     if (this.config.get('templates').hasOwnProperty('facets.main')) {
       tpl = this.config.get('templates')['facets.main'];
     }
@@ -4042,15 +4368,63 @@ Facet = (function(_super) {
     return this;
   };
 
-  Facet.prototype.events = function() {
+
+  /*
+  	 * @property
+  	 * @override
+  	 * @type {Object}
+   */
+
+  FacetView.prototype.events = function() {
     return {
-      'click h3': 'toggleBody'
+      'click h3': '_toggleBody'
     };
   };
 
-  Facet.prototype.toggleBody = function(ev) {
+
+  /*
+  	 * This method is called when the facet has to be updated. For instance after
+  	 * the server has returned with new values.
+  	 *
+  	 * @method
+  	 * @abstract
+  	 * @param {Object} newOptions
+   */
+
+  FacetView.prototype.update = function(newOptions) {};
+
+
+  /*
+  	 * Reset the facet to it's initial state.
+  	 *
+  	 * @method
+  	 * @abstract
+   */
+
+  FacetView.prototype.reset = function() {};
+
+
+  /*
+  	 * The postRender method is being run after render.
+  	 *
+  	 * @method
+  	 * @abstract
+   */
+
+  FacetView.prototype.postRender = function() {};
+
+
+  /*
+  	 * Every facet can be minimized by clicking the title of the facet.
+  	 *
+  	 * @method
+  	 * @private
+  	 * @param {Object} ev The event object.
+   */
+
+  FacetView.prototype._toggleBody = function(ev) {
     var func;
-    func = this.$('.body').is(':visible') ? this.hideBody : this.showBody;
+    func = this.$('.body').is(':visible') ? this._hideBody : this._showBody;
     if (_.isFunction(ev)) {
       return func.call(this, ev);
     } else {
@@ -4058,7 +4432,13 @@ Facet = (function(_super) {
     }
   };
 
-  Facet.prototype.hideMenu = function() {
+
+  /*
+  	 * @method
+  	 * @private
+   */
+
+  FacetView.prototype._hideMenu = function() {
     var $button;
     $button = this.$('header i.openclose');
     $button.addClass('fa-plus-square-o');
@@ -4066,8 +4446,15 @@ Facet = (function(_super) {
     return this.$('header .options').slideUp(150);
   };
 
-  Facet.prototype.hideBody = function(done) {
-    this.hideMenu();
+
+  /*
+  	 * @method
+  	 * @private
+  	 * @param {Function} done Callback called when hide body animation has finished.
+   */
+
+  FacetView.prototype._hideBody = function(done) {
+    this._hideMenu();
     return this.$('.body').slideUp(100, (function(_this) {
       return function() {
         if (done != null) {
@@ -4078,7 +4465,14 @@ Facet = (function(_super) {
     })(this));
   };
 
-  Facet.prototype.showBody = function(done) {
+
+  /*
+  	 * @method
+  	 * @private
+  	 * @param {Function} done Callback called when show body animation has finished.
+   */
+
+  FacetView.prototype._showBody = function(done) {
     return this.$('.body').slideDown(100, (function(_this) {
       return function() {
         if (done != null) {
@@ -4089,21 +4483,22 @@ Facet = (function(_super) {
     })(this));
   };
 
-  Facet.prototype.destroy = function() {
+
+  /*
+  	 * If destroy is not overridden, just call Backbone.View's remove method.
+  	 *
+  	 * @method
+   */
+
+  FacetView.prototype.destroy = function() {
     return this.remove();
   };
 
-  Facet.prototype.update = function(newOptions) {};
-
-  Facet.prototype.reset = function() {};
-
-  Facet.prototype.postRender = function() {};
-
-  return Facet;
+  return FacetView;
 
 })(Backbone.View);
 
-module.exports = Facet;
+module.exports = FacetView;
 
 
 
@@ -4118,7 +4513,7 @@ var jade_interp;
 buf.push("<div class=\"slider\"><span class=\"dash\">-</span><div class=\"handle-min handle\"><input" + (jade.attr("value", min, true, false)) + " class=\"min\"/></div><div class=\"handle-max handle\"><input" + (jade.attr("value", max, true, false)) + " class=\"max\"/></div><div class=\"bar\">&nbsp;</div><button><svg version=\"1.1\" xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" viewBox=\"0 0 216 146\" xml:space=\"preserve\"><path d=\"M172.77,123.025L144.825,95.08c6.735-9.722,10.104-20.559,10.104-32.508c0-7.767-1.508-15.195-4.523-22.283c-3.014-7.089-7.088-13.199-12.221-18.332s-11.242-9.207-18.33-12.221c-7.09-3.015-14.518-4.522-22.285-4.522c-7.767,0-15.195,1.507-22.283,4.522c-7.089,3.014-13.199,7.088-18.332,12.221c-5.133,5.133-9.207,11.244-12.221,18.332c-3.015,7.089-4.522,14.516-4.522,22.283c0,7.767,1.507,15.193,4.522,22.283c3.014,7.088,7.088,13.197,12.221,18.33c5.133,5.134,11.244,9.207,18.332,12.222c7.089,3.015,14.516,4.522,22.283,4.522c11.951,0,22.787-3.369,32.509-10.104l27.945,27.863c1.955,2.064,4.397,3.096,7.332,3.096c2.824,0,5.27-1.032,7.332-3.096c2.064-2.063,3.096-4.508,3.096-7.332C175.785,127.479,174.781,125.034,172.77,123.025z M123.357,88.357c-7.143,7.143-15.738,10.714-25.787,10.714c-10.048,0-18.643-3.572-25.786-10.714c-7.143-7.143-10.714-15.737-10.714-25.786c0-10.048,3.572-18.644,10.714-25.786c7.142-7.143,15.738-10.714,25.786-10.714c10.048,0,18.643,3.572,25.787,10.714c7.143,7.142,10.715,15.738,10.715,25.786C134.072,72.62,130.499,81.214,123.357,88.357z\"></path></svg></button></div>");}.call(this,"max" in locals_for_with?locals_for_with.max:typeof max!=="undefined"?max:undefined,"min" in locals_for_with?locals_for_with.min:typeof min!=="undefined"?min:undefined));;return buf.join("");
 };
 },{"jade/runtime":11}],31:[function(_dereq_,module,exports){
-var $, Facet, Range, RangeFacet, bodyTpl, _,
+var $, FacetView, Range, RangeFacet, bodyTpl, _,
   __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
@@ -4128,9 +4523,16 @@ _ = _dereq_('underscore');
 
 Range = _dereq_('./model');
 
-Facet = _dereq_('../main');
+FacetView = _dereq_('../main');
 
 bodyTpl = _dereq_('./body.jade');
+
+
+/*
+ * @class
+ * @namespace Views
+ * @uses Range
+ */
 
 RangeFacet = (function(_super) {
   __extends(RangeFacet, _super);
@@ -4139,21 +4541,52 @@ RangeFacet = (function(_super) {
     return RangeFacet.__super__.constructor.apply(this, arguments);
   }
 
+
+  /*
+  	 * @property
+  	 * @override FacetView::className
+  	 * @type {String}
+   */
+
   RangeFacet.prototype.className = 'facet range';
 
 
   /*
-  	@constructs
-  	@param {object} 		this.options
-  	@param {Backbone.Model} this.options.config
-  	@param {object} 		this.options.attrs
+  	 * @property
+  	 * @type {Boolean}
+   */
+
+  RangeFacet.prototype.draggingMin = false;
+
+
+  /*
+  	 * @property
+  	 * @type {Boolean}
+   */
+
+  RangeFacet.prototype.draggingMax = false;
+
+
+  /*
+  	 * @property
+  	 * @type {Range}
+   */
+
+  RangeFacet.prototype.model = null;
+
+
+  /*
+  	 * @method
+  	 * @override FacetView::initialize
+  	 * @construct
+  	 * @param {Object} this.options
+  	 * @param {Config} this.options.config
+  	 * @param {Object} this.options.attrs
    */
 
   RangeFacet.prototype.initialize = function(options) {
     this.options = options;
     RangeFacet.__super__.initialize.apply(this, arguments);
-    this.draggingMin = false;
-    this.draggingMax = false;
     this.model = new Range(this.options.attrs, {
       parse: true
     });
@@ -4192,6 +4625,14 @@ RangeFacet = (function(_super) {
     return this.render();
   };
 
+
+  /*
+  	 * @method
+  	 * @override FacetView::render
+  	 * @chainable
+  	 * @return {RangeFacet}
+   */
+
   RangeFacet.prototype.render = function() {
     var rtpl;
     RangeFacet.__super__.render.apply(this, arguments);
@@ -4207,6 +4648,12 @@ RangeFacet = (function(_super) {
     window.addEventListener('resize', this.resizer);
     return this;
   };
+
+
+  /*
+  	 * @method
+  	 * @override FacetView::postRender
+   */
 
   RangeFacet.prototype.postRender = function() {
     var slider;
@@ -4226,6 +4673,12 @@ RangeFacet = (function(_super) {
     });
   };
 
+
+  /*
+  	 * @method
+  	 * @override FacetView::events
+   */
+
   RangeFacet.prototype.events = function() {
     return _.extend({}, RangeFacet.__super__.events.apply(this, arguments), {
       'mousedown .handle': 'startDragging',
@@ -4244,6 +4697,13 @@ RangeFacet = (function(_super) {
     });
   };
 
+
+  /*
+  	 * @method
+  	 * @private
+  	 * @return {Object} ev The event object.
+   */
+
   RangeFacet.prototype.setYear = function(ev) {
     if (ev.type === 'focusout' || ev.type === 'blur' || (ev.type === 'keyup' && ev.keyCode === 13)) {
       if (ev.currentTarget.className.indexOf('min') > -1) {
@@ -4260,10 +4720,24 @@ RangeFacet = (function(_super) {
     }
   };
 
+
+  /*
+  	 * @method
+  	 * @private
+  	 * @return {Object} ev The event object.
+   */
+
   RangeFacet.prototype.doSearch = function(ev) {
     ev.preventDefault();
     return this.triggerChange();
   };
+
+
+  /*
+  	 * @method
+  	 * @private
+  	 * @return {Object} ev The event object.
+   */
 
   RangeFacet.prototype.startDragging = function(ev) {
     var input, target;
@@ -4290,6 +4764,15 @@ RangeFacet = (function(_super) {
     }
   };
 
+
+  /*
+  	 * Called on every scroll event! Keep optimized!
+  	 *
+  	 * @method
+  	 * @private
+  	 * @return {Object} ev The event object.
+   */
+
   RangeFacet.prototype.drag = function(ev) {
     var left, mousePosLeft, right;
     mousePosLeft = ev.clientX - this.model.get('sliderLeft');
@@ -4314,7 +4797,14 @@ RangeFacet = (function(_super) {
     }
   };
 
-  RangeFacet.prototype.stopDragging = function() {
+
+  /*
+  	 * @method
+  	 * @private
+  	 * @return {Object} ev The event object.
+   */
+
+  RangeFacet.prototype.stopDragging = function(ev) {
     if (this.draggingMin || this.draggingMax || (this.draggingBar != null)) {
       if (this.draggingMin) {
         if (this.model.get('currentMin') !== +this.inputMin.val()) {
@@ -4341,20 +4831,46 @@ RangeFacet = (function(_super) {
     }
   };
 
+
+  /*
+  	 * @method
+  	 * @param {Object} input Reference to jquery wrapped input element.
+   */
+
   RangeFacet.prototype.enableInputEditable = function(input) {
     input.addClass('edit');
     return input.focus();
   };
 
+
+  /*
+  	 * @method
+  	 * @param {Object} input Reference to jquery wrapped input element.
+   */
+
   RangeFacet.prototype.disableInputEditable = function(input) {
     return input.removeClass('edit');
   };
+
+
+  /*
+  	 * Before removing the range facet, the global mouseleave and resize event
+  	 * listeners have to be removed.
+  	 *
+  	 * @method
+   */
 
   RangeFacet.prototype.destroy = function() {
     this.$el.off('mouseleave', this.dragStopper);
     window.removeEventListener('resize', this.resizer);
     return this.remove();
   };
+
+
+  /*
+  	 * @method
+  	 * @param {Object} [options={}]
+   */
 
   RangeFacet.prototype.triggerChange = function(options) {
     var queryOptions;
@@ -4371,6 +4887,11 @@ RangeFacet = (function(_super) {
     return this.trigger('change', queryOptions, options);
   };
 
+
+  /*
+  	 * @method
+   */
+
   RangeFacet.prototype.onResize = function() {
     this.postRender();
     this.update([
@@ -4381,6 +4902,11 @@ RangeFacet = (function(_super) {
     ]);
     return this.checkInputOverlap();
   };
+
+
+  /*
+  	 * @method
+   */
 
   RangeFacet.prototype.checkInputOverlap = function() {
     var diff, maxRect, minRect;
@@ -4394,6 +4920,12 @@ RangeFacet = (function(_super) {
     }
   };
 
+
+  /*
+  	 * @method
+  	 * @param {Number} diff Difference in pixels between inputMin and inputMax.
+   */
+
   RangeFacet.prototype.enableInputOverlap = function(diff) {
     this.inputMin.css('left', -20 - diff / 2);
     this.inputMax.css('right', -20 - diff / 2);
@@ -4403,6 +4935,11 @@ RangeFacet = (function(_super) {
     return this.inputMax.addClass('overlap');
   };
 
+
+  /*
+  	 * @method
+   */
+
   RangeFacet.prototype.disableInputOverlap = function() {
     this.inputMin.css('left', -20);
     this.inputMax.css('right', -20);
@@ -4411,9 +4948,21 @@ RangeFacet = (function(_super) {
     return this.inputMax.removeClass('overlap');
   };
 
+
+  /*
+  	 * @method
+   */
+
   RangeFacet.prototype.updateDash = function() {
     return this.$('.dash').css('left', this.model.get('handleMinLeft') + ((this.model.get('handleMaxLeft') - this.model.get('handleMinLeft')) / 2) + 3);
   };
+
+
+  /*
+  	 * @method
+  	 * @override FacetView::update
+  	 * @param {Object} newOptions
+   */
 
   RangeFacet.prototype.update = function(newOptions) {
     var ll, ul;
@@ -4442,33 +4991,46 @@ RangeFacet = (function(_super) {
 
   return RangeFacet;
 
-})(Facet);
+})(FacetView);
 
 module.exports = RangeFacet;
 
 
 
 },{"../main":29,"./body.jade":30,"./model":32}],32:[function(_dereq_,module,exports){
-var FacetModel, RangeFacet, _,
+var FacetModel, Range, _,
   __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
   __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
-FacetModel = _dereq_('../../../models/facets/main');
-
 _ = _dereq_('underscore');
 
-RangeFacet = (function(_super) {
-  __extends(RangeFacet, _super);
+FacetModel = _dereq_('../../../models/facets/main');
 
-  function RangeFacet() {
+
+/*
+ * @class
+ * @namespace Models
+ */
+
+Range = (function(_super) {
+  __extends(Range, _super);
+
+  function Range() {
     this.dragMax = __bind(this.dragMax, this);
     this.dragMin = __bind(this.dragMin, this);
-    return RangeFacet.__super__.constructor.apply(this, arguments);
+    return Range.__super__.constructor.apply(this, arguments);
   }
 
-  RangeFacet.prototype.defaults = function() {
-    return _.extend({}, RangeFacet.__super__.defaults.apply(this, arguments), {
+
+  /*
+  	 * @method
+  	 * @override FacetModel::defaults
+  	 * @return {Obect} Hash of default attributes.
+   */
+
+  Range.prototype.defaults = function() {
+    return _.extend({}, Range.__super__.defaults.apply(this, arguments), {
       min: null,
       max: null,
       currentMin: null,
@@ -4479,7 +5041,14 @@ RangeFacet = (function(_super) {
     });
   };
 
-  RangeFacet.prototype.initialize = function() {
+
+  /*
+  	 * @method
+  	 * @override FacetModel::initialize
+  	 * @construct
+   */
+
+  Range.prototype.initialize = function() {
     return this.once('change', (function(_this) {
       return function() {
         _this.on('change:currentMin', function(model, value) {
@@ -4506,7 +5075,13 @@ RangeFacet = (function(_super) {
     })(this));
   };
 
-  RangeFacet.prototype.set = function(attrs, options) {
+
+  /*
+  	 * @method
+  	 * @override FacetModel::set
+   */
+
+  Range.prototype.set = function(attrs, options) {
     if (attrs.hasOwnProperty('currentMin')) {
       if (attrs.currentMin > this.get('currentMax')) {
         attrs.currentMax = +attrs.currentMin;
@@ -4525,11 +5100,19 @@ RangeFacet = (function(_super) {
     if (attrs.hasOwnProperty('currentMax') && this.has('max') && attrs.currentMax > this.get('max')) {
       attrs.currentMax = this.get('max');
     }
-    return RangeFacet.__super__.set.apply(this, arguments);
+    return Range.__super__.set.apply(this, arguments);
   };
 
-  RangeFacet.prototype.parse = function(attrs) {
-    RangeFacet.__super__.parse.apply(this, arguments);
+
+  /*
+  	 * @method
+  	 * @override FacetModel::parse
+  	 * @param {Object} attrs Attributes returned by the server.
+  	 * @return {Object} The parsed attributes.
+   */
+
+  Range.prototype.parse = function(attrs) {
+    Range.__super__.parse.apply(this, arguments);
     attrs.min = attrs.currentMin = this.convertLimit2Year(attrs.options[0].lowerLimit);
     attrs.max = attrs.currentMax = this.convertLimit2Year(attrs.options[0].upperLimit);
     delete attrs.options;
@@ -4538,15 +5121,15 @@ RangeFacet = (function(_super) {
 
 
   /*
-  	Convert the lower and upper limit string to a year.
-  	For example "20141213" returns 2014; "8000101" returns 800.
-  
-  	@method convertLimit2Year
-  	@param {number} limit - Lower or upper limit, for example: 20141213
-  	@returns {number} A year, for example: 2014
+  	 * Convert the lower and upper limit string to a year.
+  	 *
+  	 * @method
+  	 * @param {Number} limit - Lower or upper limit, for example: 20141213
+  	 * @return {Number} A year, for example: 2014
+  	 * @example "20141213" returns 2014; "8000101" returns 800.
    */
 
-  RangeFacet.prototype.convertLimit2Year = function(limit) {
+  Range.prototype.convertLimit2Year = function(limit) {
     var year;
     year = limit + '';
     if (year.length === 8) {
@@ -4554,23 +5137,24 @@ RangeFacet = (function(_super) {
     } else if (year.length === 7) {
       year = year.substr(0, 3);
     } else {
-      throw new Error("RangeFacet: lower or upper limit is not 7 or 8 chars!");
+      throw new Error("Range: lower or upper limit is not 7 or 8 chars!");
     }
     return +year;
   };
 
 
   /*
-  	Convert a year to a lower or upper limit string
-  	For example: 2014 returns "20141231"; 800 returns "8000101".
-  
-  	@method convertLimit2Year
-  	@param {number} year - A year
-  	@param {boolean} from - If from is true, the limit start at januari 1st, else it ends at december 31st
-  	@returns {number} A limit, for example: 20140101
+  	 * Convert a year to a lower or upper limit string
+  	 *
+  	 * @method
+  	 * @private
+  	 * @param {Number} year - A year
+  	 * @param {Boolean} from - If from is true, the limit start at januari 1st, else it ends at december 31st
+  	 * @return {Number} A limit, for example: 20140101
+  	 * @example 2014 returns "20141231"; 800 returns "8000101".
    */
 
-  RangeFacet.prototype._convertYear2Limit = function(year, from) {
+  Range.prototype._convertYear2Limit = function(year, from) {
     var limit;
     if (from == null) {
       from = true;
@@ -4580,15 +5164,15 @@ RangeFacet = (function(_super) {
     return +limit;
   };
 
-  RangeFacet.prototype.getLowerLimit = function() {
+  Range.prototype.getLowerLimit = function() {
     return this._convertYear2Limit(this.get('currentMin'));
   };
 
-  RangeFacet.prototype.getUpperLimit = function() {
+  Range.prototype.getUpperLimit = function() {
     return this._convertYear2Limit(this.get('currentMax'), false);
   };
 
-  RangeFacet.prototype.reset = function() {
+  Range.prototype.reset = function() {
     return this.set({
       currentMin: this.get('min'),
       currentMax: this.get('max'),
@@ -4597,7 +5181,7 @@ RangeFacet = (function(_super) {
     });
   };
 
-  RangeFacet.prototype.getLeftFromYear = function(year) {
+  Range.prototype.getLeftFromYear = function(year) {
     var hhw, ll, sw, ul;
     ll = this.get('min');
     ul = this.get('max');
@@ -4606,7 +5190,7 @@ RangeFacet = (function(_super) {
     return (((year - ll) / (ul - ll)) * sw) - hhw;
   };
 
-  RangeFacet.prototype.getYearFromLeft = function(left) {
+  Range.prototype.getYearFromLeft = function(left) {
     var hhw, ll, sw, ul;
     ll = this.get('min');
     ul = this.get('max');
@@ -4615,7 +5199,7 @@ RangeFacet = (function(_super) {
     return Math.round((((left + hhw) / sw) * (ul - ll)) + ll);
   };
 
-  RangeFacet.prototype.dragMin = function(pos) {
+  Range.prototype.dragMin = function(pos) {
     var handelWidthHalf;
     handelWidthHalf = this.get('handleWidth') / 2;
     if (((-handelWidthHalf) <= pos && pos <= this.get('handleMaxLeft'))) {
@@ -4625,7 +5209,7 @@ RangeFacet = (function(_super) {
     }
   };
 
-  RangeFacet.prototype.dragMax = function(pos) {
+  Range.prototype.dragMax = function(pos) {
     if ((this.get('handleMinLeft') < pos && pos <= this.get('sliderWidth') - (this.get('handleWidth') / 2))) {
       return this.set({
         handleMaxLeft: pos
@@ -4633,16 +5217,16 @@ RangeFacet = (function(_super) {
     }
   };
 
-  return RangeFacet;
+  return Range;
 
 })(FacetModel);
 
-module.exports = RangeFacet;
+module.exports = Range;
 
 
 
 },{"../../../models/facets/main":20}],33:[function(_dereq_,module,exports){
-var $, Backbone, Results, Views, listItems, tpl, _,
+var $, Backbone, HibbPagination, Result, Results, SortLevels, listItems, tpl, _,
   __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
@@ -4652,15 +5236,29 @@ $ = _dereq_('jquery');
 
 _ = _dereq_('underscore');
 
-Views = {
-  Result: _dereq_('./result'),
-  SortLevels: _dereq_('./sort'),
-  Pagination: _dereq_('hibb-pagination')
-};
+Result = _dereq_('./result');
+
+SortLevels = _dereq_('./sort');
+
+HibbPagination = _dereq_('hibb-pagination');
 
 tpl = _dereq_('./index.jade');
 
 listItems = [];
+
+
+/*
+ * Contains a header and a body. In the header the number of results, sorting and
+ * pagination is rendered. In the body a list of results.
+ *
+ * @class
+ * @namespace Views
+ * @uses Result
+ * @uses SortLevels
+ * @uses HibbPagination
+ * @uses Config
+ * @uses SearchResults
+ */
 
 Results = (function(_super) {
   __extends(Results, _super);
@@ -4670,32 +5268,67 @@ Results = (function(_super) {
   }
 
 
-  /* options
-  	@constructs
-  	@param {object} this.options={}
-  	@prop {Backbone.Model} options.config
-  	@prop {Backbone.Collection} options.searchResults
+  /*
+  	 * @property
+  	 * @type {Boolean}
+   */
+
+  Results.prototype.isMetadataVisible = true;
+
+
+  /*
+  	 * Keep track of instanciated result item views.
+  	 *
+  	 * Should be redefined during initialization to prevent sharing between instances.
+  	 *
+  	 * @property
+  	 * @type {Array<Result>}
+   */
+
+  Results.prototype.resultItems = null;
+
+
+  /*
+  	 * Hash to keep track of instanciated subviews.
+  	 *
+  	 * Should be redefined during initialization to prevent sharing between instances.
+  	 *
+  	 * @property
+  	 * @type {Object}
+   */
+
+  Results.prototype.subviews = null;
+
+
+  /*
+  	 * @method
+  	 * @constructs
+  	 * @param {Object} this.options
+  	 * @param {Config} this.options.config
+  	 * @param {SearchResults} this.options.searchResults
    */
 
   Results.prototype.initialize = function(options) {
-    this.options = options != null ? options : {};
-
-    /*
-    		@prop resultItems
-     */
+    this.options = options;
+    this.subviews = {};
     this.resultItems = [];
-    this.isMetadataVisible = true;
-    this.listenTo(this.options.searchResults, 'change:page', this.renderResultsPage);
+    this.listenTo(this.options.searchResults, 'change:page', this._renderResultsPage);
     this.listenTo(this.options.searchResults, 'change:results', (function(_this) {
       return function(responseModel) {
         _this.$('header h3.numfound').html("" + (_this.options.config.get('labels').numFound) + " " + (responseModel.get('numFound')) + " " + (_this.options.config.get('termPlural')));
         _this.renderPagination(responseModel);
-        return _this.renderResultsPage(responseModel);
+        return _this._renderResultsPage(responseModel);
       };
     })(this));
-    this.subviews = {};
     return this.render();
   };
+
+
+  /*
+  	 * @method
+  	 * @chainable
+  	 * @return {Results}
+   */
 
   Results.prototype.render = function() {
     this.$el.html(tpl({
@@ -4703,7 +5336,7 @@ Results = (function(_super) {
       resultsPerPage: this.options.config.get('resultRows'),
       config: this.options.config
     }));
-    this.renderLevels();
+    this._renderSorting();
     $(window).resize((function(_this) {
       return function() {
         var pages;
@@ -4714,7 +5347,13 @@ Results = (function(_super) {
     return this;
   };
 
-  Results.prototype.renderLevels = function() {
+
+  /*
+  	 * @method
+  	 * @private
+   */
+
+  Results.prototype._renderSorting = function() {
     if (!this.options.config.get('sortLevels')) {
       return;
     }
@@ -4734,13 +5373,14 @@ Results = (function(_super) {
 
 
   /*
-  	@method renderResultsPage
-  	@param {object} responseModel - The model returned by the server.
+  	 * @method
+  	 * @private
+  	 * @param {Object} responseModel The model returned by the server.
    */
 
-  Results.prototype.renderResultsPage = function(responseModel) {
+  Results.prototype._renderResultsPage = function(responseModel) {
     var frag, fulltext, pageNumber, result, ul, _i, _len, _ref;
-    this.destroyResultItems();
+    this._destroyResultItems();
     this.$("div.pages").html('');
     fulltext = false;
     if (responseModel.get('results').length > 0 && (responseModel.get('results')[0].terms != null)) {
@@ -4752,7 +5392,7 @@ Results = (function(_super) {
     _ref = responseModel.get('results');
     for (_i = 0, _len = _ref.length; _i < _len; _i++) {
       result = _ref[_i];
-      result = new Views.Result({
+      result = new Result({
         data: result,
         fulltext: fulltext,
         config: this.options.config
@@ -4772,12 +5412,17 @@ Results = (function(_super) {
     return this.$("div.pages").append(ul);
   };
 
+
+  /*
+  	 * @method
+   */
+
   Results.prototype.renderPagination = function(responseModel) {
     if (this.subviews.pagination != null) {
       this.stopListening(this.subviews.pagination);
       this.subviews.pagination.destroy();
     }
-    this.subviews.pagination = new Views.Pagination({
+    this.subviews.pagination = new HibbPagination({
       resultsStart: responseModel.get('start'),
       resultsPerPage: this.options.config.get('resultRows'),
       resultsTotal: responseModel.get('numFound')
@@ -4785,6 +5430,12 @@ Results = (function(_super) {
     this.listenTo(this.subviews.pagination, 'change:pagenumber', this.changePage);
     return this.$('header .pagination').html(this.subviews.pagination.el);
   };
+
+
+  /*
+  	 * @method
+  	 * @param {Number} pageNumber
+   */
 
   Results.prototype.changePage = function(pageNumber) {
     var page, pages;
@@ -4798,6 +5449,12 @@ Results = (function(_super) {
     }
   };
 
+
+  /*
+  	 * @method
+  	 * @return {Object}
+   */
+
   Results.prototype.events = function() {
     return {
       'change li.show-metadata input': 'showMetadata',
@@ -4805,27 +5462,53 @@ Results = (function(_super) {
     };
   };
 
+
+  /*
+  	 * @method
+   */
+
   Results.prototype.onChangeResultsPerPage = function(ev) {
     var t;
     t = ev.currentTarget;
     return this.options.config.set('resultRows', t.options[t.selectedIndex].value);
   };
 
+
+  /*
+  	 * @method
+   */
+
   Results.prototype.showMetadata = function(ev) {
     this.isMetadataVisible = ev.currentTarget.checked;
     return this.$('.metadata').toggle(this.isMetadataVisible);
   };
 
+
+  /*
+  	 * @method
+   */
+
   Results.prototype.reset = function() {
-    return this.renderLevels();
+    return this._renderSorting();
   };
 
+
+  /*
+  	 * @method
+   */
+
   Results.prototype.destroy = function() {
-    this.destroyResultItems();
+    this._destroyResultItems();
     return this.subviews.sortLevels.destroy();
   };
 
-  Results.prototype.destroyResultItems = function() {
+
+  /*
+  	 * @method
+  	 * @private
+   */
+
+  Results.prototype._destroyResultItems = function() {
     var item, _i, _len, _ref, _results;
     _ref = this.resultItems;
     _results = [];
@@ -4893,8 +5576,11 @@ tpl = _dereq_('./result.jade');
 
 
 /*
-@class Result
-@extends Backbone.View
+ * The view of one result item < li >.
+ *
+ * @class Result
+ * @namespace Views
+ * @todo Rename to ResultItem
  */
 
 Result = (function(_super) {
@@ -4904,21 +5590,34 @@ Result = (function(_super) {
     return Result.__super__.constructor.apply(this, arguments);
   }
 
+
+  /*
+  	 * @property
+  	 * @type {String}
+   */
+
   Result.prototype.className = 'result';
+
+
+  /*
+  	 * @property
+  	 * @type {String}
+   */
 
   Result.prototype.tagName = 'li';
 
 
   /*
-  	@param {object} [options={}]
-  	@prop {object} options.data - The data of the result.
-  	@prop {boolean} [options.fulltext=false] - Is the result coming from a full text search?
-  	@constructs
+  	 * @method
+  	 * @construct
+  	 * @param {Object} this.options
+  	 * @param {Object} this.options.data The data of the result.
+  	 * @param {Boolean} [this.options.fulltext=false] Is the result coming from a full text search?
    */
 
   Result.prototype.initialize = function(options) {
     var _base;
-    this.options = options != null ? options : {};
+    this.options = options;
     if ((_base = this.options).fulltext == null) {
       _base.fulltext = false;
     }
@@ -4929,6 +5628,13 @@ Result = (function(_super) {
     }
     return this.render();
   };
+
+
+  /*
+  	 * @method
+  	 * @chainable
+  	 * @return {Result}
+   */
 
   Result.prototype.render = function() {
     var count, found, rtpl, term, _ref;
@@ -4951,6 +5657,11 @@ Result = (function(_super) {
     return this;
   };
 
+
+  /*
+  	 * @method
+   */
+
   Result.prototype.events = function() {
     return {
       'click': '_handleClick',
@@ -4958,9 +5669,23 @@ Result = (function(_super) {
     };
   };
 
+
+  /*
+  	 * @method
+  	 * @private
+  	 * @return {Object} ev The event object.
+   */
+
   Result.prototype._handleClick = function(ev) {
     return this.trigger('click', this.options.data);
   };
+
+
+  /*
+  	 * @method
+  	 * @private
+  	 * @return {Object} ev The event object.
+   */
 
   Result.prototype._handleLayerClick = function(ev) {
     var layer;
@@ -4968,6 +5693,11 @@ Result = (function(_super) {
     layer = ev.currentTarget.getAttribute('data-layer');
     return this.trigger('layer:click', layer, this.options.data);
   };
+
+
+  /*
+  	 * @method
+   */
 
   Result.prototype.destroy = function() {
     return this.remove();
@@ -5144,6 +5874,16 @@ el = _dereq_('funcky.el').el;
 
 tpl = _dereq_('./sort.jade');
 
+
+/*
+ * Input element to set the sorting levels. There are three levels and every
+ * level can be set ascending or descending.
+ * 
+ * @class
+ * @namespace Views
+ * @uses Config
+ */
+
 SortLevels = (function(_super) {
   __extends(SortLevels, _super);
 
@@ -5151,18 +5891,30 @@ SortLevels = (function(_super) {
     return SortLevels.__super__.constructor.apply(this, arguments);
   }
 
+
+  /*
+  	 * @property
+  	 * @type {String}
+   */
+
   SortLevels.prototype.tagName = 'li';
+
+
+  /*
+  	 * @property
+  	 * @type {String}
+   */
 
   SortLevels.prototype.className = 'sort-levels';
 
 
   /*
-  	@param {object} this.options
-  	@param {Backbone.Model} this.options.config
+  	 * @param {Object} this.options
+  	 * @param {Config} this.options.config
    */
 
   SortLevels.prototype.initialize = function(options) {
-    this.options = options != null ? options : {};
+    this.options = options;
     this.render();
     this.listenTo(this.options.config, 'change:entryMetadataFields', this.render);
     return this.listenTo(this.options.config, 'change:levels', (function(_this) {
@@ -5182,6 +5934,13 @@ SortLevels = (function(_super) {
     })(this));
   };
 
+
+  /*
+  	 * @method
+  	 * @chainable
+  	 * @return {SortLevels}
+   */
+
   SortLevels.prototype.render = function() {
     var leave, levels, rtpl;
     rtpl = tpl({
@@ -5196,8 +5955,15 @@ SortLevels = (function(_super) {
       }
     };
     this.onMouseleave = leave.bind(this);
-    return levels.on('mouseleave', this.onMouseleave);
+    levels.on('mouseleave', this.onMouseleave);
+    return this;
   };
+
+
+  /*
+  	 * @method
+  	 * @return {Object}
+   */
 
   SortLevels.prototype.events = function() {
     return {
@@ -5208,13 +5974,28 @@ SortLevels = (function(_super) {
     };
   };
 
+
+  /*
+  	 * @method
+   */
+
   SortLevels.prototype.toggleLevels = function(ev) {
     return this.$('div.levels').toggle();
   };
 
+
+  /*
+  	 * @method
+   */
+
   SortLevels.prototype.hideLevels = function() {
     return this.$('div.levels').hide();
   };
+
+
+  /*
+  	 * @method
+   */
 
   SortLevels.prototype.changeLevels = function(ev) {
     var $target, i, select, target, _i, _j, _len, _len1, _ref, _ref1, _results;
@@ -5238,6 +6019,11 @@ SortLevels = (function(_super) {
     return _results;
   };
 
+
+  /*
+  	 * @method
+   */
+
   SortLevels.prototype.changeAlphaSort = function(ev) {
     var $target;
     this.$('div.levels').addClass('show-save-button');
@@ -5245,6 +6031,11 @@ SortLevels = (function(_super) {
     $target.toggleClass('fa-sort-alpha-asc');
     return $target.toggleClass('fa-sort-alpha-desc');
   };
+
+
+  /*
+  	 * @method
+   */
 
   SortLevels.prototype.saveLevels = function() {
     var li, select, sortParameter, sortParameters, _i, _len, _ref;
@@ -5261,6 +6052,11 @@ SortLevels = (function(_super) {
     this.hideLevels();
     return this.trigger('change', sortParameters);
   };
+
+
+  /*
+  	 * @method
+   */
 
   SortLevels.prototype.destroy = function() {
     this.$('div.levels').off('mouseleave', this.onMouseleave);
@@ -5355,7 +6151,7 @@ buf.push("</select><i class=\"fa fa-sort-alpha-asc\"></i></li>");
 buf.push("<li class=\"search\">&nbsp;<button>Change levels</button></li></ul></div>");}.call(this,"entryMetadataFields" in locals_for_with?locals_for_with.entryMetadataFields:typeof entryMetadataFields!=="undefined"?entryMetadataFields:undefined,"levels" in locals_for_with?locals_for_with.levels:typeof levels!=="undefined"?levels:undefined,"undefined" in locals_for_with?locals_for_with.undefined:typeof undefined!=="undefined"?undefined:undefined));;return buf.join("");
 };
 },{"jade/runtime":11}],39:[function(_dereq_,module,exports){
-var Backbone, Models, TextSearch, funcky, tpl, _,
+var Backbone, SearchModel, TextSearch, funcky, tpl, _,
   __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
@@ -5363,13 +6159,19 @@ Backbone = _dereq_('backbone');
 
 _ = _dereq_('underscore');
 
-Models = {
-  Search: _dereq_('../models/search')
-};
+SearchModel = _dereq_('../models/search');
 
 tpl = _dereq_('../../jade/text-search.jade');
 
 funcky = _dereq_('funcky.util');
+
+
+/*
+ * @class
+ * @namespace Views
+ * @uses Config
+ * @uses SearchModel
+ */
 
 TextSearch = (function(_super) {
   __extends(TextSearch, _super);
@@ -5380,10 +6182,64 @@ TextSearch = (function(_super) {
 
   TextSearch.prototype.className = 'text-search';
 
+
+  /*
+  	 * @method
+  	 * @construct
+  	 * @param {Object} this.options
+  	 * @param {Config} this.options.config
+   */
+
   TextSearch.prototype.initialize = function(options) {
     this.options = options;
     return this.setModel();
   };
+
+
+  /*
+  	 * @method
+  	 * @chainable
+  	 * @return {TextSearch}
+   */
+
+  TextSearch.prototype.render = function() {
+    if (this.options.config.get('templates').hasOwnProperty('text-search')) {
+      tpl = this.options.config.get('templates')['text-search'];
+    }
+    this.$el.html(tpl({
+      model: this.model,
+      config: this.options.config,
+      generateId: funcky.generateID
+    }));
+    return this;
+  };
+
+
+  /*
+  	 * @method
+  	 * @return {Object}
+   */
+
+  TextSearch.prototype.events = function() {
+    return {
+      'click i.fa-search': 'search',
+      'keyup input[name="search"]': 'onKeyUp',
+      'focus input[name="search"]': function() {
+        return this.$('.body .menu').slideDown(150);
+      },
+      'click .menu .fa-times': function() {
+        return this.$('.body .menu').slideUp(150);
+      },
+      'change input[type="checkbox"]': 'checkboxChanged',
+      'change input[type="radio"]': 'checkboxChanged'
+    };
+  };
+
+
+  /*
+  	 * @method
+  	 * @private
+   */
 
   TextSearch.prototype._addFullTextSearchParameters = function() {
     var ftsp, param, params, _i, _len;
@@ -5403,6 +6259,11 @@ TextSearch = (function(_super) {
     }
   };
 
+
+  /*
+  	 * @method
+   */
+
   TextSearch.prototype.setModel = function() {
     var attrs, textSearchOptions;
     if (this.model != null) {
@@ -5420,7 +6281,7 @@ TextSearch = (function(_super) {
     } else {
       delete attrs.fuzzy;
     }
-    this.model = new Models.Search(attrs);
+    this.model = new SearchModel(attrs);
     this._addFullTextSearchParameters();
     return this.listenTo(this.options.config, "change:textSearchOptions", (function(_this) {
       return function() {
@@ -5430,32 +6291,11 @@ TextSearch = (function(_super) {
     })(this));
   };
 
-  TextSearch.prototype.render = function() {
-    if (this.options.config.get('templates').hasOwnProperty('text-search')) {
-      tpl = this.options.config.get('templates')['text-search'];
-    }
-    this.$el.html(tpl({
-      model: this.model,
-      config: this.options.config,
-      generateId: funcky.generateID
-    }));
-    return this;
-  };
 
-  TextSearch.prototype.events = function() {
-    return {
-      'click i.fa-search': 'search',
-      'keyup input[name="search"]': 'onKeyUp',
-      'focus input[name="search"]': function() {
-        return this.$('.body .menu').slideDown(150);
-      },
-      'click .menu .fa-times': function() {
-        return this.$('.body .menu').slideUp(150);
-      },
-      'change input[type="checkbox"]': 'checkboxChanged',
-      'change input[type="radio"]': 'checkboxChanged'
-    };
-  };
+  /*
+  	 * @method
+  	 * @private
+   */
 
   TextSearch.prototype.onKeyUp = function(ev) {
     var cb, _i, _len, _ref;
@@ -5487,6 +6327,12 @@ TextSearch = (function(_super) {
     }
     return this.updateQueryModel();
   };
+
+
+  /*
+  	 * @method
+  	 * @param {Object} ev The event object.
+   */
 
   TextSearch.prototype.checkboxChanged = function(ev) {
     var attr, cb, checkedArray, dataAttr, dataAttrArray, _i, _j, _len, _len1, _ref, _ref1;
@@ -5524,19 +6370,39 @@ TextSearch = (function(_super) {
     return this.updateQueryModel();
   };
 
+
+  /*
+  	 * @method
+   */
+
   TextSearch.prototype.search = function(ev) {
     ev.preventDefault();
     return this.trigger('search');
   };
 
+
+  /*
+  	 * @method
+   */
+
   TextSearch.prototype.updateQueryModel = function() {
     return this.trigger('change', this.model.attributes);
   };
+
+
+  /*
+  	 * @method
+   */
 
   TextSearch.prototype.reset = function() {
     this.setModel();
     return this.render();
   };
+
+
+  /*
+  	 * @method
+   */
 
   TextSearch.prototype.destroy = function() {
     return this.remove();

@@ -1,25 +1,37 @@
 Backbone = require 'backbone'
 _ = require 'underscore'
-config = require '../config'
 
-
+###
+# @class
+# @namespace Models
+###
 class QueryOptions extends Backbone.Model
+	#
+	# @prop {object[]} facetValues=[] - Array of objects containing a facet name and values: {name: 'facet_s_writers', values: ['pietje', 'pukje']}
+	# @prop {object[]} sortParameters=[] - Array of objects containing fieldname and direction: {fieldname: 'language', direction: 'desc'}
+	# @prop {string[]} [resultFields] - List of metadata fields to be returned by the server for every result.
+	#
 	###
-	@prop {object[]} facetValues=[] - Array of objects containing a facet name and values: {name: 'facet_s_writers', values: ['pietje', 'pukje']}
-	@prop {object[]} sortParameters=[] - Array of objects containing fieldname and direction: {fieldname: 'language', direction: 'desc'}
-	@prop {string[]} [resultFields] - List of metadata fields to be returned by the server for every result.
+	# @method
+	# @override
+	# @see Config
 	###
 	defaults: ->
 		facetValues: []
 		sortParameters: []
 
 	###
-	@constructs
-	@param {object} this.initialAttributes - The initial attributes are stored and not mutated, because on reset the original data is needed.
+	# @method
+	# @override
+	# @constructs
+	# @param {Object} this.initialAttributes The initial attributes are stored and not mutated, because on reset the original data is needed.
  	###
 	initialize: (@initialAttributes) ->
 
-	# ### Overrides
+	###
+	# @method
+	# @override
+	###
 	set: (attrs, options) ->
 		if attrs.facetValue?
 			# Remove old facetValue from facetValues
@@ -42,9 +54,11 @@ class QueryOptions extends Backbone.Model
 
 		super attrs, options
 
-	# ### Methods
-
-	# Reset the queryOptions to it's initial state.
+	###
+	# Reset the queryOptions to reflect the initial state.
+	#
+	# @method
+	###
 	reset: ->
 		# Remove attributes.
 		@clear silent: true

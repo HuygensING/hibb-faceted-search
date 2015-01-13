@@ -1,14 +1,25 @@
 Backbone = require 'backbone'
-config = require '../../config'
 
-class Facet extends Backbone.Model
+###
+# @class
+# @namespace Models
+###
+class FacetModel extends Backbone.Model
 
-  idAttribute: 'name'
+	###
+	# @property
+	# @type {String}
+	###
+	idAttribute: 'name'
 
-  defaults: ->
-    name: null
-    title: null
-    type: null
-    options: null
+	###
+	# @method
+	# @return {Object} Hash of default attributes.
+	###
+	defaults: ->
+		name: null
+		title: null
+		type: null
+		options: null
 
-module.exports = Facet
+module.exports = FacetModel

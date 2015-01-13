@@ -1,18 +1,34 @@
-FacetModel = require '../../../models/facets/main'
 _ = require 'underscore'
 
-class RangeFacet extends FacetModel
+FacetModel = require '../../../models/facets/main'
 
-	defaults: -> _.extend {}, super,
-		min: null
-		max: null
-		currentMin: null
-		currentMax: null
-		handleMinLeft: null
-		handleMaxLeft: null
-		sliderWidth: null
-		# options: {}
+###
+# @class
+# @namespace Models
+###
+class Range extends FacetModel
 
+	###
+	# @method
+	# @override FacetModel::defaults
+	# @return {Obect} Hash of default attributes.
+	###
+	defaults: ->
+		_.extend {}, super,
+			min: null
+			max: null
+			currentMin: null
+			currentMax: null
+			handleMinLeft: null
+			handleMaxLeft: null
+			sliderWidth: null
+			# options: {}
+
+	###
+	# @method
+	# @override FacetModel::initialize
+	# @construct
+	###
 	initialize: ->
 		@once 'change', =>
 			@on 'change:currentMin', (model, value) =>
@@ -27,6 +43,10 @@ class RangeFacet extends FacetModel
 			@on 'change:handleMaxLeft', (model, value) =>
 				@set currentMax: @getYearFromLeft(value)
 
+	###
+	# @method
+	# @override FacetModel::set
+	###
 	set: (attrs, options) ->
 		if attrs.hasOwnProperty 'currentMin'
 			if attrs.currentMin > @get('currentMax')
@@ -49,7 +69,12 @@ class RangeFacet extends FacetModel
 		super
 
 
-
+	###
+	# @method
+	# @override FacetModel::parse
+	# @param {Object} attrs Attributes returned by the server.
+	# @return {Object} The parsed attributes.
+	###
 	parse: (attrs) ->
 		super
 
@@ -60,15 +85,13 @@ class RangeFacet extends FacetModel
 
 		attrs
 
-	# CUSTOM METHODS
-
 	###
-	Convert the lower and upper limit string to a year.
-	For example "20141213" returns 2014; "8000101" returns 800.
-
-	@method convertLimit2Year
-	@param {number} limit - Lower or upper limit, for example: 20141213
-	@returns {number} A year, for example: 2014
+	# Convert the lower and upper limit string to a year.
+	#
+	# @method
+	# @param {Number} limit - Lower or upper limit, for example: 20141213
+	# @return {Number} A year, for example: 2014
+	# @example "20141213" returns 2014; "8000101" returns 800.
 	###
 	convertLimit2Year: (limit) ->
 		year = limit + ''
@@ -78,18 +101,19 @@ class RangeFacet extends FacetModel
 		else if year.length is 7
 			year = year.substr 0, 3
 		else
-			throw new Error "RangeFacet: lower or upper limit is not 7 or 8 chars!"
+			throw new Error "Range: lower or upper limit is not 7 or 8 chars!"
 
 		+year
 
 	###
-	Convert a year to a lower or upper limit string
-	For example: 2014 returns "20141231"; 800 returns "8000101".
-
-	@method convertLimit2Year
-	@param {number} year - A year
-	@param {boolean} from - If from is true, the limit start at januari 1st, else it ends at december 31st
-	@returns {number} A limit, for example: 20140101
+	# Convert a year to a lower or upper limit string
+	#
+	# @method
+	# @private
+	# @param {Number} year - A year
+	# @param {Boolean} from - If from is true, the limit start at januari 1st, else it ends at december 31st
+	# @return {Number} A limit, for example: 20140101
+	# @example 2014 returns "20141231"; 800 returns "8000101".
 	###
 	_convertYear2Limit: (year, from=true) ->
 		limit = year + ''
@@ -139,4 +163,4 @@ class RangeFacet extends FacetModel
 		if @get('handleMinLeft') < pos <= @get('sliderWidth') - (@get('handleWidth')/2)
 			@set handleMaxLeft: pos
 
-module.exports = RangeFacet
+module.exports = Range

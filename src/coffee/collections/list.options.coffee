@@ -1,12 +1,16 @@
 Backbone = require 'backbone'
 _ = require 'underscore'
 
-Models =
-	Option: require '../models/facets/list.option.coffee'
+ListOption = require '../models/facets/list.option.coffee'
 
+###
+# @class
+# @namespace Collections
+# @uses ListOption
+###
 class ListOptions extends Backbone.Collection
 
-	model: Models.Option
+	model: ListOption
 
 	# ### Initialize
 	initialize: ->

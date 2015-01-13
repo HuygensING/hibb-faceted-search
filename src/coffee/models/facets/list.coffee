@@ -1,6 +1,9 @@
-Models =
-  Facet: require './main'
+FacetModel = require './main'
 
-class List extends Models.Facet
+###
+# @class
+# @namespace Models
+###
+class List extends FacetModel
 
 module.exports = List

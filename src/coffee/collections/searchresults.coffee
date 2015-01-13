@@ -6,49 +6,70 @@ SearchResult = require '../models/searchresult'
 funcky = require 'funcky.req'
 
 ###
-@class
+# @class
+# @namespace Collections
+# @uses SearchResult
 ###
 class SearchResults extends Backbone.Collection
 
+	###
+	# @property
+	# @type {SearchResult}
+	###
 	model: SearchResult
 
 	###
-	@constructs
-	@param {object[]} models
-	@param {object} options
-	@param {Backbone.Model} options.config
+	# Init cachedModels in the initialize function, because when defined in the class
+	# as a property, it is defined on the prototype and thus not refreshed when we instantiate
+	# a new Collection.
+	#
+	# Should be redefined during initialization to prevent sharing between instances.
+	#
+	# @property
+	# @type {Object}
 	###
-	initialize: (models, options) ->
-		@config = options.config
+	cachedModels: null
 
-		# Init cachedModels in the initialize function, because when defined in the class
-		# as a property, it is defined on the prototype and thus not refreshed when we instantiate
-		# a new Collection.
+	###
+	# @construct
+	# @param {Array<SearchResult>} models
+	# @param {Object} this.options
+	# @param {Config} this.options.config
+	###
+	initialize: (models, @options) ->
+		# Set cachedModels to an empty object. If it was assigned on object
+		# creation it would have been passed by reference and thus shared
+		# by instances of SearchResults.
 		@cachedModels = {}
 
-		# Hold a count of the number of run queries. We can't use @length, because
-		# if the second query is fetched from cache, the length stays at length one.
-		# @queryAmount = 0
-
-		# @on 'add', @_setCurrent, @
-
+	###
+	# @method
+	###
 	clearCache: ->
 		@cachedModels = {}
 
+	###
+	# @method
+	###
 	getCurrent: ->
 		@_current
 
+	###
+	# @method
+	# @private
+	###
 	_setCurrent: (@_current, changeMessage) ->
 		@trigger changeMessage, @_current
 
 	###
-	Add the latest search result model to a collection for caching.
-
-	@method
-	@param {string} url - Base location of the resultModel. Is used to fetch parts of the result which are not prev or next but at a different place (for example: row 100 - 110) in the result set.
-	@param {object} attrs - The properties/attributes of the resultModel.
-	@param {string} cacheId - The ID to file the props/attrs under for caching.
-	@param {string} changeMessage - The event message to trigger.
+	# Add the latest search result model to a collection for caching.
+	#
+	# @method
+	# @private
+	# @param {string} url - Base location of the resultModel. Is used to fetch parts of the result which are not prev or next but at a different place (for example: row 100 - 110) in the result set.
+	# @param {object} attrs - The properties/attributes of the resultModel.
+	# @param {string} cacheId - The ID to file the props/attrs under for caching.
+	# @param {string} changeMessage - The event message to trigger.
 	###
 	_addModel: (url, attrs, cacheId, changeMessage) ->
 		attrs.location = url
@@ -59,10 +80,10 @@ class SearchResults extends Backbone.Collection
 
 
 	###
-	@method
-	@param {object} queryOptions
-	@param {object} [options={}]
-	@param {boolean} options.cache - Determines if the result can be fetched from the cachedModels (searchResult models). In case of a reset or a refresh, options.cache is set to false.
+	# @method
+	# @param {Object} queryOptions
+	# @param {Object} [options={}]
+	# @param {Boolean} [options.cache=true] Determines if the result can be fetched from the cachedModels (searchResult models). In case of a reset or a refresh, options.cache is set to false.
 	###
 	runQuery: (queryOptions, options={}) ->
 		options.cache ?= true
@@ -83,7 +104,7 @@ class SearchResults extends Backbone.Collection
 			@_setCurrent @cachedModels[queryOptionsString], changeMessage
 		else
 			@postQuery queryOptions, (url) =>
-				getUrl = "#{url}?rows=#{@config.get('resultRows')}"
+				getUrl = "#{url}?rows=#{@options.config.get('resultRows')}"
 
 				@getResults getUrl, (response) =>
 					@_addModel url, response, queryOptionsString, changeMessage
@@ -103,8 +124,8 @@ class SearchResults extends Backbone.Collection
 	page: (pagenumber, database) ->
 		changeMessage = 'change:page'
 
-		start = @config.get('resultRows') * (pagenumber - 1)
-		url = @_current.get('location') + "?rows=#{@config.get('resultRows')}&start=#{start}"
+		start = @options.config.get('resultRows') * (pagenumber - 1)
+		url = @_current.get('location') + "?rows=#{@options.config.get('resultRows')}&start=#{start}"
 		url += "&database=#{database}" if database?
 
 		if @cachedModels.hasOwnProperty url
@@ -119,19 +140,19 @@ class SearchResults extends Backbone.Collection
 		ajaxOptions =
 			data: JSON.stringify queryOptions
 
-		if @config.has 'authorizationHeaderToken'
-			ajaxOptions.headers = Authorization: @config.get('authorizationHeaderToken')
+		if @options.config.has 'authorizationHeaderToken'
+			ajaxOptions.headers = Authorization: @options.config.get('authorizationHeaderToken')
 
 		# This is used for extra options to the ajax call,
 		# such as setting custom headers (e.g., VRE_ID)
-		if @config.has 'requestOptions'
-			_.extend ajaxOptions, @config.get('requestOptions')
+		if @options.config.has 'requestOptions'
+			_.extend ajaxOptions, @options.config.get('requestOptions')
 
-		req = funcky.post @config.get('baseUrl') + @config.get('searchPath'), ajaxOptions
+		req = funcky.post @options.config.get('baseUrl') + @options.config.get('searchPath'), ajaxOptions
 		req.done (res) =>
 			if res.status is 201
 				# @postURL = res.getResponseHeader('Location')
-				# url = if @config.has('resultRows') then @postURL + '?rows=' + @config.get('resultRows') else @postURL
+				# url = if @options.config.has('resultRows') then @postURL + '?rows=' + @options.config.get('resultRows') else @postURL
 				# Add number of results to fetch.
 				done res.getResponseHeader('Location')
 		req.fail (res) =>
@@ -144,10 +165,10 @@ class SearchResults extends Backbone.Collection
 	getResults: (url, done) ->
 		@trigger 'request'
 
-		if @config.has 'authorizationHeaderToken'
+		if @options.config.has 'authorizationHeaderToken'
 			options =
 				headers:
-					Authorization: @config.get('authorizationHeaderToken')
+					Authorization: @options.config.get('authorizationHeaderToken')
 
 		# Fire GET request.
 		req = funcky.get url, options

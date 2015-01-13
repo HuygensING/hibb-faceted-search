@@ -1,5 +1,9 @@
 Backbone = require 'backbone'
 
+###
+# @class
+# @namespace Models
+###
 class ListOption extends Backbone.Model
 
 	idAttribute: 'name'

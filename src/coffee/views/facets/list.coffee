@@ -1,22 +1,36 @@
 $ = require 'jquery'
 _ = require 'underscore'
 
-Models =
-	List: require '../../models/facets/list'
+List = require '../../models/facets/list'
 
-Collections =
-	Options: require '../../collections/list.options'
+ListOptions = require '../../collections/list.options'
 
-Views =
-	Facet: require './main'
-	Options: require './list.options'
+FacetView = require './main'
+ListFacetOptions = require './list.options'
 
 menuTpl = require '../../../jade/facets/list.menu.jade'
 
-class ListFacet extends Views.Facet
+###
+# @class
+# @namespace Views
+# @uses ListFacetOptions
+# @uses ListOptions
+# @uses List
+###
+class ListFacet extends FacetView
 
+	###
+	# @property
+	# @type {String}
+	###
 	className: 'facet list'
 
+	###
+	# @method
+	# @construct
+	# @override FacetView::initialize
+	# @param {Object} options
+	###	
 	initialize: (options) ->
 		super
 
@@ -24,12 +38,17 @@ class ListFacet extends Views.Facet
 
 		@config = options.config
 
-		@model = new Models.List options.attrs, parse: true
-		@collection = new Collections.Options options.attrs.options, parse: true
+		@model = new List options.attrs, parse: true
+		@collection = new ListOptions options.attrs.options, parse: true
 
 		@render()
 
-	# ### Render
+	###
+	# @method
+	# @override FacetView::render
+	# @chainable
+	# @return {ListFacet} Instance of ListFacet to enable chaining.
+	###
 	render: ->
 		super
 
@@ -38,7 +57,7 @@ class ListFacet extends Views.Facet
 			menu = menuTpl model: @model.attributes
 			@$('header .options').html menu
 
-		@optionsView = new Views.Options
+		@optionsView = new ListFacetOptions
 			collection: @collection
 			facetName: @model.get 'name'
 			config: @config
@@ -53,13 +72,21 @@ class ListFacet extends Views.Facet
 
 		@
 
+	###
+	# @method
+	# @override FacetView::postRender
+	###
 	postRender: ->
 		el = @el.querySelector('.body > .container')
 
 		if el.scrollHeight > el.clientHeight
 			@$el.addClass 'with-scrollbar'
 
-	# Renders the count of the filtered options (ie: "3 of 8") next to the filter <input>
+	###
+	# Renders the count of the filtered options (ie: "3 of 8") next to the filter < input >
+	#
+	# @method
+	###
 	renderFilteredOptionCount: ->
 		# filteredLength = @optionsView.filtered_items.length
 		# collectionLength = @optionsView.collection.length
@@ -79,15 +106,26 @@ class ListFacet extends Views.Facet
 
 		@
 
-	# ### Events
+	###
+	# Extend the events of Facet with ListFacet events.
+	#
+	# @method
+	# @override FacetView::events
+	# @type {Object}
+	# @return {Object}
+	###
 	events: -> _.extend {}, super,
 		'keyup input[name="filter"]': (ev) -> @optionsView.filterOptions ev.currentTarget.value
 		'change header .options input[type="checkbox"][name="all"]': (ev) -> @optionsView.setCheckboxes ev
-		'click header .menu i.filter': 'toggleFilterMenu'
-		'click header .menu i.alpha': 'changeOrder'
-		'click header .menu i.amount': 'changeOrder'
+		'click header .menu i.filter': '_toggleFilterMenu'
+		'click header .menu i.alpha': '_changeOrder'
+		'click header .menu i.amount': '_changeOrder'
 
-	toggleFilterMenu: ->
+	###
+	# @method
+	# @private
+	###
+	_toggleFilterMenu: ->
 		optionsDiv = @$('header .options')
 		filterIcon = @$('i.filter')
 		filterIcon.toggleClass 'active'
@@ -103,7 +141,12 @@ class ListFacet extends Views.Facet
 				input.val('')
 				@collection.setAllVisible()
 
-	changeOrder: (ev) ->
+	###
+	# @method
+	# @private
+	# @param {Object} ev The event object.
+	###
+	_changeOrder: (ev) ->
 		# When changing the order, all the items must be active (set to visible).
 		# Unless the filter menu is active, than we only change the order of the
 		# filtered items.
@@ -130,6 +173,11 @@ class ListFacet extends Views.Facet
 
 		@collection.orderBy type+'_'+order
 
+	###
+	# @method
+	# @override FacetView::update
+	# @param {Object} newOptions
+	###
 	update: (newOptions) ->
 		if @resetActive
 			@collection.reset newOptions, parse: true
@@ -137,20 +185,24 @@ class ListFacet extends Views.Facet
 		else
 			@collection.updateOptions(newOptions)
 
+	###
+	# @method
+	# @override FacetView::reset
+	###
 	reset: ->
 		@resetActive = true
 
-		@toggleFilterMenu() if @$('i.filter').hasClass 'active'
+		@_toggleFilterMenu() if @$('i.filter').hasClass 'active'
 
 	###
-	Alias for reset, but used for different implementation. This should be the base
-	of the original reset, but no time for proper refactor. Current project (ebnm)
-	doesn't have a reset button, so harder to test.
-
-	TODO refactor @reset.
+	# Alias for reset, but used for different implementation. This should be the base
+	# of the original reset, but no time for proper refactor.
+	#
+	# @method
+	# @todo refactor @reset.
 	###
 	revert: ->
-		@toggleFilterMenu() if @$('i.filter').hasClass 'active'
+		@_toggleFilterMenu() if @$('i.filter').hasClass 'active'
 		
 		@collection.revert()
 		@collection.sort()

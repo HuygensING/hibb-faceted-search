@@ -3,27 +3,55 @@ _ = require 'underscore'
 
 Range = require './model'
 
-Facet = require '../main'
+FacetView = require '../main'
 
 bodyTpl = require './body.jade'
 
-class RangeFacet extends Facet
+###
+# @class
+# @namespace Views
+# @uses Range
+###
+class RangeFacet extends FacetView
+
+	###
+	# @property
+	# @override FacetView::className
+	# @type {String}
+	###
 	className: 'facet range'
 
-	# ### INITIALIZE
 	###
-	@constructs
-	@param {object} 		this.options
-	@param {Backbone.Model} this.options.config
-	@param {object} 		this.options.attrs
+	# @property
+	# @type {Boolean}
+	###
+	draggingMin: false
+
+	###
+	# @property
+	# @type {Boolean}
+	###
+	draggingMax: false
+
+	###
+	# @property
+	# @type {Range}
+	###
+	model: null
+
+	###
+	# @method
+	# @override FacetView::initialize
+	# @construct
+	# @param {Object} this.options
+	# @param {Config} this.options.config
+	# @param {Object} this.options.attrs
 	###
 	initialize: (@options) ->
 		super
 
-		@draggingMin = false
-		@draggingMax = false
-
 		@model = new Range @options.attrs, parse: true
+
 		@listenTo @model, 'change:options', @render
 		@listenTo @model, 'change', (model) =>
 			if model.changed.hasOwnProperty('currentMin') or model.changed.hasOwnProperty('currentMax')
@@ -44,7 +72,12 @@ class RangeFacet extends Facet
 
 		@render()
 
-	# ### RENDER
+	###
+	# @method
+	# @override FacetView::render
+	# @chainable
+	# @return {RangeFacet}
+	###
 	render: ->
 		super
 
@@ -63,6 +96,10 @@ class RangeFacet extends Facet
 
 		@
 
+	###
+	# @method
+	# @override FacetView::postRender
+	###
 	postRender: ->
 		# The handles that indicate the position of min and max on the range.
 		# Can be dragged
@@ -90,20 +127,29 @@ class RangeFacet extends Facet
 			# The assumption is made that the minHandle and maxHandle have an equal width
 			handleWidth: @handleMin.width()
 
-	# ### EVENTS
-	events: -> _.extend {}, super,
-		'mousedown .handle': 'startDragging'
-		'mousedown .bar': 'startDragging'
-		'mouseup': 'stopDragging'
-		'mousemove': 'drag'
-		'blur input': 'setYear'
-		'keyup input': 'setYear'
-		'click button': 'doSearch'
-		'dblclick input.min': (ev) -> 
-			@enableInputEditable @inputMin
-		'dblclick input.max': (ev) ->
-			@enableInputEditable @inputMax
+	###
+	# @method
+	# @override FacetView::events
+	###
+	events: ->
+		_.extend {}, super,
+			'mousedown .handle': 'startDragging'
+			'mousedown .bar': 'startDragging'
+			'mouseup': 'stopDragging'
+			'mousemove': 'drag'
+			'blur input': 'setYear'
+			'keyup input': 'setYear'
+			'click button': 'doSearch'
+			'dblclick input.min': (ev) -> 
+				@enableInputEditable @inputMin
+			'dblclick input.max': (ev) ->
+				@enableInputEditable @inputMax
 
+	###
+	# @method
+	# @private
+	# @return {Object} ev The event object.
+	###
 	setYear: (ev) ->
 		if ev.type is 'focusout' or ev.type is 'blur' or (ev.type is 'keyup' and ev.keyCode is 13)
 			if ev.currentTarget.className.indexOf('min') > -1
@@ -113,11 +159,20 @@ class RangeFacet extends Facet
 				@model.set currentMax: +ev.currentTarget.value
 				@disableInputEditable @inputMax
 
-
+	###
+	# @method
+	# @private
+	# @return {Object} ev The event object.
+	###
 	doSearch: (ev) ->
 		ev.preventDefault()
 		@triggerChange()
 
+	###
+	# @method
+	# @private
+	# @return {Object} ev The event object.
+	###
 	startDragging: (ev) ->
 		target = $ ev.currentTarget
 
@@ -142,7 +197,13 @@ class RangeFacet extends Facet
 				offsetLeft: (ev.clientX - @model.get('sliderLeft')) - @model.get('handleMinLeft')
 				barWidth: @bar.width()
 
+	###
 	# Called on every scroll event! Keep optimized!
+	#
+	# @method
+	# @private
+	# @return {Object} ev The event object.
+	###
 	drag: (ev) ->
 		mousePosLeft = ev.clientX - @model.get('sliderLeft')
 
@@ -166,7 +227,12 @@ class RangeFacet extends Facet
 		if @draggingMax
 			@model.dragMax mousePosLeft - (@model.get('handleWidth')/2)
 
-	stopDragging: ->
+	###
+	# @method
+	# @private
+	# @return {Object} ev The event object.
+	###
+	stopDragging: (ev) ->
 		if @draggingMin or @draggingMax or @draggingBar?
 			if @draggingMin
 				if @model.get('currentMin') isnt +@inputMin.val()
@@ -191,21 +257,36 @@ class RangeFacet extends Facet
 			# the new search would not be triggered.
 			unless @options.config.get('autoSearch')
 				@triggerChange silent: true
-
+	###
+	# @method
+	# @param {Object} input Reference to jquery wrapped input element.
+	###
 	enableInputEditable: (input) ->
 		input.addClass 'edit'
 		input.focus()
-
+		
+	###
+	# @method
+	# @param {Object} input Reference to jquery wrapped input element.
+	###
 	disableInputEditable: (input) ->
 		input.removeClass 'edit'
 
-	# ### METHODS
-
+	###
+	# Before removing the range facet, the global mouseleave and resize event
+	# listeners have to be removed.
+	#
+	# @method
+	###
 	destroy: ->
 		@$el.off 'mouseleave', @dragStopper
 		window.removeEventListener 'resize', @resizer
 		@remove()
 
+	###
+	# @method
+	# @param {Object} [options={}]
+	###
 	triggerChange: (options={}) ->
 		queryOptions =
 			facetValue:
@@ -215,6 +296,9 @@ class RangeFacet extends Facet
 
 		@trigger 'change', queryOptions, options
 
+	###
+	# @method
+	###
 	onResize: ->
 		# Calculate and redefine properties.
 		@postRender()
@@ -228,6 +312,9 @@ class RangeFacet extends Facet
 		# The labels could be overlapping after resize.
 		@checkInputOverlap()
 
+	###
+	# @method
+	###
 	checkInputOverlap: ->
 		minRect = @inputMin[0].getBoundingClientRect()
 		maxRect = @inputMax[0].getBoundingClientRect()
@@ -239,6 +326,10 @@ class RangeFacet extends Facet
 		else
 			@disableInputOverlap()
 
+	###
+	# @method
+	# @param {Number} diff Difference in pixels between inputMin and inputMax.
+	###
 	enableInputOverlap: (diff) ->
 		@inputMin.css 'left', -20 - diff/2
 		@inputMax.css 'right', -20 - diff/2
@@ -249,6 +340,9 @@ class RangeFacet extends Facet
 		@inputMin.addClass 'overlap'
 		@inputMax.addClass 'overlap'
 
+	###
+	# @method
+	###
 	disableInputOverlap: ->
 		@inputMin.css 'left', -20
 		@inputMax.css 'right', -20
@@ -258,6 +352,9 @@ class RangeFacet extends Facet
 		@inputMin.removeClass 'overlap'
 		@inputMax.removeClass 'overlap'
 
+	###
+	# @method
+	###
 	updateDash: ->
 		@$('.dash').css 'left', @model.get('handleMinLeft') + ((@model.get('handleMaxLeft') - @model.get('handleMinLeft'))/2) + 3
 
@@ -269,6 +366,11 @@ class RangeFacet extends Facet
 #		input = if handle is 'min' then @inputMin else @inputMax
 #		input.val @model.getYearFromLeftPos(leftPos)
 
+	###
+	# @method
+	# @override FacetView::update
+	# @param {Object} newOptions
+	###
 	update: (newOptions) ->
 		if _.isArray(newOptions)
 			if newOptions[0]?

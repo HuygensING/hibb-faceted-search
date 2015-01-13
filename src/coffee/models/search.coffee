@@ -1,14 +1,13 @@
 Backbone = require 'backbone'
 _ = require 'underscore'
 
-class Search extends Backbone.Model
+###
+# @class
+# @namespace Models
+###
+class SearchModel extends Backbone.Model
 
-	defaults: ->
-		# term: '*'
-		# title: 'Text Search'
-		# name: 'text_search'
-
-module.exports = Search
+module.exports = SearchModel
 
 # EXAMPLE QUERY:
 # {

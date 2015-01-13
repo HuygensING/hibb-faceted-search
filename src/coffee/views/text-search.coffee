@@ -1,21 +1,63 @@
 Backbone = require 'backbone'
 _ = require 'underscore'
 
-Models =
-	Search: require '../models/search'
+SearchModel = require '../models/search'
 
 tpl = require '../../jade/text-search.jade'
 
 funcky = require('funcky.util')
 
+###
+# @class
+# @namespace Views
+# @uses Config
+# @uses SearchModel
+###
 class TextSearch extends Backbone.View
 
 	className: 'text-search'
 
-	# ### Initialize
+	###
+	# @method
+	# @construct
+	# @param {Object} this.options
+	# @param {Config} this.options.config
+	###
 	initialize: (@options) ->
 		@setModel()
 
+
+	###
+	# @method
+	# @chainable
+	# @return {TextSearch}
+	###
+	render: ->
+		tpl = @options.config.get('templates')['text-search'] if @options.config.get('templates').hasOwnProperty 'text-search'
+		@$el.html tpl
+			model: @model
+			# options: @options.config.get('textSearchOptions')
+			config: @options.config
+			generateId: funcky.generateID
+
+		@
+
+	###
+	# @method
+	# @return {Object}
+	###
+	events: ->
+		'click i.fa-search': 'search'
+		'keyup input[name="search"]': 'onKeyUp'
+		'focus input[name="search"]': -> @$('.body .menu').slideDown(150)
+		'click .menu .fa-times': -> @$('.body .menu').slideUp(150)
+		'change input[type="checkbox"]': 'checkboxChanged'
+		'change input[type="radio"]': 'checkboxChanged'
+
+	###
+	# @method
+	# @private
+	###
 	_addFullTextSearchParameters: ->
 		ftsp = @options.config.get('textSearchOptions').fullTextSearchParameters
 
@@ -28,6 +70,9 @@ class TextSearch extends Backbone.View
 
 			@model.set fullTextSearchParameters: params
 
+	###
+	# @method
+	###
 	setModel: ->
 		@stopListening @model if @model?
 
@@ -44,38 +89,17 @@ class TextSearch extends Backbone.View
 		else
 			delete attrs.fuzzy
 
-		@model = new Models.Search attrs
+		@model = new SearchModel attrs
 		@_addFullTextSearchParameters()
 
 		@listenTo @options.config, "change:textSearchOptions", =>
 			@_addFullTextSearchParameters()
 			@render()
 
-		# @listenTo @options.config, "change:textSearchOptions", =>
-		#   console.log 'change text search options'
-
-		# console.log @options.config.get('textSearchOptions').fullTextSearchParameters
-
-	# ### Render
-	render: ->
-		tpl = @options.config.get('templates')['text-search'] if @options.config.get('templates').hasOwnProperty 'text-search'
-		@$el.html tpl
-			model: @model
-			# options: @options.config.get('textSearchOptions')
-			config: @options.config
-			generateId: funcky.generateID
-
-		@
-
-	# ### Events
-	events: ->
-		'click i.fa-search': 'search'
-		'keyup input[name="search"]': 'onKeyUp'
-		'focus input[name="search"]': -> @$('.body .menu').slideDown(150)
-		'click .menu .fa-times': -> @$('.body .menu').slideUp(150)
-		'change input[type="checkbox"]': 'checkboxChanged'
-		'change input[type="radio"]': 'checkboxChanged'
-
+	###
+	# @method
+	# @private
+	###
 	onKeyUp: (ev) ->
 		if ev.keyCode is 13
 			ev.preventDefault()
@@ -105,6 +129,10 @@ class TextSearch extends Backbone.View
 
 		@updateQueryModel()
 
+	###
+	# @method
+	# @param {Object} ev The event object.
+	###
 	checkboxChanged: (ev) ->
 		dataAttr = ev.currentTarget.getAttribute('data-attr')
 		dataAttrArray = ev.currentTarget.getAttribute('data-attr-array')
@@ -132,18 +160,30 @@ class TextSearch extends Backbone.View
 		# console.log @model.attributes
 		# @updateQueryModel()
 
+	###
+	# @method
+	###
 	search: (ev) ->
 		ev.preventDefault()
 		@trigger 'search'
 
-	# ### Methods
+	###
+	# @method
+	###
 	updateQueryModel: ->
 		@trigger 'change', @model.attributes
 
+	###
+	# @method
+	###
 	reset: ->
 		@setModel()
 		@render()
 
-	destroy: -> @remove()
+	###
+	# @method
+	###
+	destroy: ->
+		@remove()
 
 module.exports = TextSearch

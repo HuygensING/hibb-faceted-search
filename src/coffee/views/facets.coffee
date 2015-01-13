@@ -9,6 +9,7 @@ assert = require 'assert'
 ###
 # @class
 # @namespace Views
+# @uses Config
 ###
 class Facets extends Backbone.View
 
@@ -26,6 +27,7 @@ class Facets extends Backbone.View
 	# @property
 	# @type {Object} Keys are types in capital, values are Backbone.Views.
 	# @example {BOOLEAN: MyBooleanView, LIST: MyListView}
+	# @todo Move to external module.
 	###
 	viewMap: {
 		BOOLEAN: require './facets/boolean'
@@ -49,7 +51,12 @@ class Facets extends Backbone.View
 
 		@render()
 
-	# ### Render
+	###
+	# @method
+	# @override
+	# @chainable
+	# @return {Facets} Instance of Facets to enable chaining.
+	###
 	render: ->
 		if @options.config.get('templates').hasOwnProperty 'facets'
 			tpl = @options.config.get('templates').facets
@@ -57,8 +64,12 @@ class Facets extends Backbone.View
 
 		@
 
+	###
+	# @method
+	# @param {Object} data 
+	###
 	renderFacets: (data) ->
-		@destroyFacets()
+		@_destroyFacets()
 
 		# If there is a template for main, than use the template and
 		# attach facets to their placeholder.
@@ -68,7 +79,7 @@ class Facets extends Backbone.View
 					placeholder = @el.querySelector(".#{facetData.name}-placeholder")
 
 					if placeholder?
-						placeholder.parentNode.replaceChild @renderFacet(facetData).el, placeholder
+						placeholder.parentNode.replaceChild @_renderFacet(facetData).el, placeholder
 		# If there is no template for main, create a document fragment and append
 		# all facets to it and attach it to the DOM.
 		else
@@ -84,7 +95,7 @@ class Facets extends Backbone.View
 				facet = facets.get facetName
 
 				if @viewMap.hasOwnProperty facet.get('type')
-					fragment.appendChild @renderFacet(facet.attributes).el
+					fragment.appendChild @_renderFacet(facet.attributes).el
 					# fragment.appendChild document.createElement 'hr'
 				else
 					console.error 'Unknown facetView', facet.get('type')
@@ -96,7 +107,12 @@ class Facets extends Backbone.View
 
 		@
 
-	renderFacet: (facetData) =>
+	###
+	# @method
+	# @private
+	# @param {Object} facetData
+	###
+	_renderFacet: (facetData) =>
 		if _.isString(facetData)
 			facetData = _.findWhere @searchResults.first().get('facets'), name: facetData
 
@@ -110,11 +126,18 @@ class Facets extends Backbone.View
 
 		@views[facetData.name]
 
+	###
+	# @method
+	# @private
+	###
 	_postRenderFacets: ->
 		for facetName, view of @views
 			view.postRender()
 
-	# ### Methods
+	###
+	# @method
+	# @param {Object} facetData
+	###
 	update: (facetData) ->
 		for own viewName, view of @views
 			data = _.findWhere(facetData, name: viewName)
@@ -122,23 +145,40 @@ class Facets extends Backbone.View
 
 			view.update options
 
+	###
+	# @method
+	###
 	reset: ->
 		for own key, facetView of @views
 			facetView.reset() if typeof facetView.reset is 'function'
 
-	destroyFacets: ->
+	###
+	# @method
+	# @private
+	###
+	_destroyFacets: ->
 		@stopListening()
 
 		for own viewName, view of @views
 			view.destroy()
 			delete @views[viewName]
 
+	###
+	# Destroy the child views (facets) and remove the view.
+	#
+	# @method
+	###
 	destroy: ->
-		@destroyFacets()
+		@_destroyFacets()
 		@remove()
 
+	###
 	# The facets are slided one by one. When the slide of a facet is finished, the
 	# next facet starts sliding. That's why we use a recursive function.
+	#
+	# @method
+	# @param {Object} ev The event object.
+	###
 	toggle: (ev) ->
 		ev.preventDefault()
 

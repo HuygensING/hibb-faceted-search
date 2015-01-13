@@ -2,54 +2,87 @@ Backbone = require 'backbone'
 $ = require 'jquery'
 _ = require 'underscore'
 
-Views =
-	Result: require './result'
-	SortLevels: require './sort'
-	Pagination: require 'hibb-pagination'
+Result = require './result'
+SortLevels = require './sort'
+HibbPagination = require 'hibb-pagination'
 
 tpl = require './index.jade'
 
 listItems = []
 
-
+###
+# Contains a header and a body. In the header the number of results, sorting and
+# pagination is rendered. In the body a list of results.
+#
+# @class
+# @namespace Views
+# @uses Result
+# @uses SortLevels
+# @uses HibbPagination
+# @uses Config
+# @uses SearchResults
+###
 class Results extends Backbone.View
-
-	### options
-	@constructs
-	@param {object} this.options={}
-	@prop {Backbone.Model} options.config
-	@prop {Backbone.Collection} options.searchResults
 	###
-	initialize: (@options={}) ->
-		###
-		@prop resultItems
-		###
+	# @property
+	# @type {Boolean}
+	###
+	isMetadataVisible: true
+
+	###
+	# Keep track of instanciated result item views.
+	#
+	# Should be redefined during initialization to prevent sharing between instances.
+	#
+	# @property
+	# @type {Array<Result>}
+	###
+	resultItems: null
+	
+	###
+	# Hash to keep track of instanciated subviews.
+	#
+	# Should be redefined during initialization to prevent sharing between instances.
+	#
+	# @property
+	# @type {Object}	
+	###
+	subviews: null
+
+	###
+	# @method
+	# @constructs
+	# @param {Object} this.options
+	# @param {Config} this.options.config
+	# @param {SearchResults} this.options.searchResults
+	###
+	initialize: (@options) ->
+		@subviews = {}
 		@resultItems = []
 
-		@isMetadataVisible = true
-
-		@listenTo @options.searchResults, 'change:page', @renderResultsPage
-
+		@listenTo @options.searchResults, 'change:page', @_renderResultsPage
 
 		@listenTo @options.searchResults, 'change:results', (responseModel) =>
 			@$('header h3.numfound').html "#{@options.config.get('labels').numFound} #{responseModel.get('numFound')} #{@options.config.get('termPlural')}"
 			
 			@renderPagination responseModel
 
-			@renderResultsPage responseModel
-
-		@subviews = {}
+			@_renderResultsPage responseModel
 
 		@render()
 
-	# ### Render
+	###
+	# @method
+	# @chainable
+	# @return {Results}
+	###
 	render: ->
 		@$el.html tpl
 			showMetadata: @options.config.get 'showMetadata'
 			resultsPerPage: @options.config.get 'resultRows'
 			config: @options.config
 
-		@renderLevels()
+		@_renderSorting()
 
 		$(window).resize =>
 			pages = @$('div.pages')
@@ -57,7 +90,11 @@ class Results extends Backbone.View
 
 		@
 
-	renderLevels: ->
+	###
+	# @method
+	# @private
+	###
+	_renderSorting: ->
 		return unless @options.config.get('sortLevels')
 
 		@subviews.sortLevels.destroy() if @subviews.sortLevels?
@@ -71,13 +108,14 @@ class Results extends Backbone.View
 			@trigger 'change:sort-levels', sortParameters
 
 	###
-	@method renderResultsPage
-	@param {object} responseModel - The model returned by the server.
+	# @method
+	# @private
+	# @param {Object} responseModel The model returned by the server.
 	###
-	renderResultsPage: (responseModel) ->
+	_renderResultsPage: (responseModel) ->
 		# Search results are cached by @options.searchresults, so on render
 		# all results are properly destroyed and re-rendered.
-		@destroyResultItems()
+		@_destroyResultItems()
 		@$("div.pages").html('')
 
 		# Check if the results are a generated for a full text search.
@@ -92,7 +130,7 @@ class Results extends Backbone.View
 
 		for result in responseModel.get 'results'
 			# Instantiate a new list item.
-			result = new Views.Result
+			result = new Result
 				data: result
 				fulltext: fulltext
 				config: @options.config
@@ -118,18 +156,25 @@ class Results extends Backbone.View
 
 		@$("div.pages").append ul
 
+	###
+	# @method
+	###
 	renderPagination: (responseModel) ->
 		if @subviews.pagination?
 			@stopListening @subviews.pagination
 			@subviews.pagination.destroy()
 
-		@subviews.pagination = new Views.Pagination
+		@subviews.pagination = new HibbPagination
 			resultsStart: responseModel.get('start')
 			resultsPerPage: @options.config.get 'resultRows'
 			resultsTotal: responseModel.get('numFound')
 		@listenTo @subviews.pagination, 'change:pagenumber', @changePage
 		@$('header .pagination').html @subviews.pagination.el
 
+	###
+	# @method
+	# @param {Number} pageNumber
+	###
 	changePage: (pageNumber) ->
 		pages = @$ 'div.pages'
 		pages.find('ul.page').hide()
@@ -141,27 +186,45 @@ class Results extends Backbone.View
 		else
 			@options.searchResults.page pageNumber
 
-	# ### Events
+	###
+	# @method
+	# @return {Object}
+	###
 	events: ->
 		'change li.show-metadata input': 'showMetadata'
 		'change li.results-per-page select': 'onChangeResultsPerPage'
 
+	###
+	# @method
+	###
 	onChangeResultsPerPage: (ev) ->
 		t = ev.currentTarget
 		@options.config.set 'resultRows', t.options[t.selectedIndex].value
 
+	###
+	# @method
+	###
 	showMetadata: (ev) ->
 		@isMetadataVisible = ev.currentTarget.checked
 		@$('.metadata').toggle @isMetadataVisible
 
+	###
+	# @method
+	###
 	reset: ->
-		@renderLevels()
-
+		@_renderSorting()
+	###
+	# @method
+	###
 	destroy: ->
-		@destroyResultItems()
+		@_destroyResultItems()
 		@subviews.sortLevels.destroy()
 
-	destroyResultItems: ->
+	###
+	# @method
+	# @private
+	###
+	_destroyResultItems: ->
 		item.destroy() for item in @resultItems
 
 module.exports = Results

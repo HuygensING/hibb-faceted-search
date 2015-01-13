@@ -10,8 +10,16 @@ Models =
 bodyTpl = require '../../../jade/facets/list.body.jade'
 optionTpl = require '../../../jade/facets/list.option.jade'
 
+###
+# @class
+# @namespace Views
+###
 class ListFacetOptions extends Backbone.View
 
+	###
+	# @property
+	# @type {String}
+	###
 	className: 'container'
 
 	# ### Initialize
