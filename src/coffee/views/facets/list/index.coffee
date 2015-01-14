@@ -3,7 +3,7 @@ _ = require 'underscore'
 
 List = require './models/list'
 
-ListOptions = require './collections/list.options'
+ListOptions = require './collections/options'
 
 FacetView = require '../main'
 ListFacetOptions = require './options'
@@ -183,7 +183,7 @@ class ListFacet extends FacetView
 			@collection.reset newOptions, parse: true
 			@resetActive = false
 		else
-			@collection.updateOptions(newOptions)
+			@collection.update(newOptions)
 
 	###
 	# @method

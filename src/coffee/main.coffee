@@ -454,6 +454,11 @@ class MainView extends Backbone.View
 		unless isListFacet or isBooleanFacet
 			throw "\"facetName\" is not an instance of ListFacet or BooleanFacet"
 
+		@facets.views[facetName].collection.revert()
+		@facets.views[facetName].collection.get(value).set
+			checked: true
+			visible: true
+
 		@queryOptions.reset()
 		@refresh
 			facetValues: [

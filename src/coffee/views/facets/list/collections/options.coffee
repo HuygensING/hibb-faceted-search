@@ -45,9 +45,10 @@ class ListOptions extends Backbone.Collection
 
 	###
 	# @method
+	# @param {Array<Object>} [newOptions=[]] Only the new options which have a count greater than zero are passed for the update. List of {count: Number, name: String}.
 	# @todo Don't do two loops, combine into one.
 	###
-	updateOptions: (newOptions=[]) ->
+	update: (newOptions=[]) ->
 		# Reset all the options count to 0
 		@each (option) => option.set 'count', 0, silent: true
 

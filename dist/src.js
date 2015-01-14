@@ -2871,6 +2871,11 @@ MainView = (function(_super) {
     if (!(isListFacet || isBooleanFacet)) {
       throw "\"facetName\" is not an instance of ListFacet or BooleanFacet";
     }
+    this.facets.views[facetName].collection.revert();
+    this.facets.views[facetName].collection.get(value).set({
+      checked: true,
+      visible: true
+    });
     this.queryOptions.reset();
     return this.refresh({
       facetValues: [
@@ -3683,10 +3688,11 @@ ListOptions = (function(_super) {
 
   /*
   	 * @method
+  	 * @param {Array<Object>} [newOptions=[]] Only the new options which have a count greater than zero are passed for the update. List of {count: Number, name: String}.
   	 * @todo Don't do two loops, combine into one.
    */
 
-  ListOptions.prototype.updateOptions = function(newOptions) {
+  ListOptions.prototype.update = function(newOptions) {
     if (newOptions == null) {
       newOptions = [];
     }
@@ -3799,7 +3805,7 @@ _ = _dereq_('underscore');
 
 List = _dereq_('./models/list');
 
-ListOptions = _dereq_('./collections/list.options');
+ListOptions = _dereq_('./collections/options');
 
 FacetView = _dereq_('../main');
 
@@ -4026,7 +4032,7 @@ ListFacet = (function(_super) {
       });
       return this.resetActive = false;
     } else {
-      return this.collection.updateOptions(newOptions);
+      return this.collection.update(newOptions);
     }
   };
 
@@ -4068,7 +4074,7 @@ module.exports = ListFacet;
 
 
 
-},{"../main":30,"./collections/list.options":22,"./models/list":24,"./options":26,"./templates/menu.jade":28}],24:[function(_dereq_,module,exports){
+},{"../main":30,"./collections/options":22,"./models/list":24,"./options":26,"./templates/menu.jade":28}],24:[function(_dereq_,module,exports){
 var FacetModel, List,
   __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
