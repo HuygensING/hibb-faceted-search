@@ -6,7 +6,7 @@ Backbone based library
 ### Emoji's
 - :zap: `:zap:` when introducing a breaking change
 - :bug: `:bug:` when fixing a bug
-- :cake: `:cake:` when adding a feature
+- :sparkles: `:sparkles:` when adding a feature
 - :flashlight: `:flashlight:` when improving debuggability
 - :lipstick: `:lipstick:` when improving the format/structure of the code
 - :racehorse: `:racehorse:` when improving performance
@@ -29,25 +29,25 @@ Backbone based library
 - :bug: Change updating of sortable fields.
 
 ### v2.3.0
-- :cake: ShowMetadata and sortLevels in the results <header> are now optional.
-- :cake: Add facetOrder to config, to be able to rearrange facets returned by the server.
-- :cake: Add a method to search for a single value. Programmatically mimic a user selecting one option of a facet.
+- :sparkles: ShowMetadata and sortLevels in the results <header> are now optional.
+- :sparkles: Add facetOrder to config, to be able to rearrange facets returned by the server.
+- :sparkles: Add a method to search for a single value. Programmatically mimic a user selecting one option of a facet.
 - :racehorse: More advanced caching of search results.
-- :cake: Double click to edit range limits.
-- :cake: Add labels to config for easy renaming (support multiple languages)
+- :sparkles: Double click to edit range limits.
+- :sparkles: Add labels to config for easy renaming (support multiple languages)
 - :bug: Rendering of TextSearch is split in init and render, so init data can be used in the queryOptions.
 
 ### v2.2.0
 
 - :bug: Store result model on change page
-- :cake: Add isMetadataVisible prop to results view
-- :cake: Add result-per-page option to results view
+- :sparkles: Add isMetadataVisible prop to results view
+- :sparkles: Add result-per-page option to results view
 
 ### v2.1.1
 - :lipstick: Little refactoring and code clean up.
 
 ### v2.1.0
-- :cake: Add a view for the results
+- :sparkles: Add a view for the results
 
 ### v2.0.10
 - :racehorse: Move range logic from view to model.
