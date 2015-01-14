@@ -1,14 +1,14 @@
 $ = require 'jquery'
 _ = require 'underscore'
 
-List = require '../../models/facets/list'
+List = require './models/list'
 
-ListOptions = require '../../collections/list.options'
+ListOptions = require './collections/list.options'
 
-FacetView = require './main'
-ListFacetOptions = require './list.options'
+FacetView = require '../main'
+ListFacetOptions = require './options'
 
-menuTpl = require '../../../jade/facets/list.menu.jade'
+menuTpl = require './templates/menu.jade'
 
 ###
 # @class

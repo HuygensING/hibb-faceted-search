@@ -1908,128 +1908,6 @@ exports.rethrow = function rethrow(err, filename, lineno, str){
 });
 }).call(this,typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 },{"fs":2}],12:[function(_dereq_,module,exports){
-var Backbone, ListOption, ListOptions, _,
-  __hasProp = {}.hasOwnProperty,
-  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
-
-Backbone = _dereq_('backbone');
-
-_ = _dereq_('underscore');
-
-ListOption = _dereq_('../models/facets/list.option.coffee');
-
-
-/*
- * @class
- * @namespace Collections
- * @uses ListOption
- */
-
-ListOptions = (function(_super) {
-  __extends(ListOptions, _super);
-
-  function ListOptions() {
-    return ListOptions.__super__.constructor.apply(this, arguments);
-  }
-
-  ListOptions.prototype.model = ListOption;
-
-  ListOptions.prototype.initialize = function() {
-    return this.comparator = this.strategies.amount_desc;
-  };
-
-  ListOptions.prototype.revert = function() {
-    this.comparator = this.strategies.amount_desc;
-    return this.each((function(_this) {
-      return function(option) {
-        return option.set('checked', false, {
-          silent: true
-        });
-      };
-    })(this));
-  };
-
-  ListOptions.prototype.updateOptions = function(newOptions) {
-    if (newOptions == null) {
-      newOptions = [];
-    }
-    this.each((function(_this) {
-      return function(option) {
-        return option.set('count', 0, {
-          silent: true
-        });
-      };
-    })(this));
-    _.each(newOptions, (function(_this) {
-      return function(newOption) {
-        var opt;
-        opt = _this.get(newOption.name);
-        if (opt != null) {
-          return opt.set('count', newOption.count, {
-            silent: true
-          });
-        } else {
-          opt = new Models.Option(newOption);
-          return _this.add(opt);
-        }
-      };
-    })(this));
-    return this.sort();
-  };
-
-  ListOptions.prototype.strategies = {
-    alpha_asc: function(model) {
-      return +(!model.get('visible')) + (+(!model.get('count')) + model.get('name'));
-    },
-    alpha_desc: function(model) {
-      var str;
-      str = String.fromCharCode.apply(String, _.map(model.get('name').split(''), function(c) {
-        return 0xffff - c.charCodeAt();
-      }));
-      return +(!model.get('visible')) + (+(!model.get('count')) + str);
-    },
-    amount_asc: function(model) {
-      var cnt, tmp;
-      tmp = model.get('visible') ? 0 : 10;
-      tmp += +(!model.get('count'));
-      cnt = model.get('count') === 0 ? model.get('total') : model.get('count');
-      return tmp -= 1 / cnt;
-    },
-    amount_desc: function(model) {
-      var cnt, tmp;
-      tmp = model.get('visible') ? 0 : 10;
-      tmp += +(!model.get('count'));
-      cnt = model.get('count') === 0 ? model.get('total') : model.get('count');
-      return tmp += 1 / cnt;
-    }
-  };
-
-  ListOptions.prototype.orderBy = function(strategy, silent) {
-    if (silent == null) {
-      silent = false;
-    }
-    this.comparator = this.strategies[strategy];
-    return this.sort({
-      silent: silent
-    });
-  };
-
-  ListOptions.prototype.setAllVisible = function() {
-    this.each(function(model) {
-      return model.set('visible', true);
-    });
-    return this.sort();
-  };
-
-  return ListOptions;
-
-})(Backbone.Collection);
-
-module.exports = ListOptions;
-
-
-
-},{"../models/facets/list.option.coffee":18}],13:[function(_dereq_,module,exports){
 var Backbone, SearchResult, SearchResults, funcky, _,
   __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
@@ -2279,7 +2157,7 @@ module.exports = SearchResults;
 
 
 
-},{"../models/searchresult":22,"funcky.req":8}],14:[function(_dereq_,module,exports){
+},{"../models/searchresult":19,"funcky.req":8}],13:[function(_dereq_,module,exports){
 var Backbone, Config,
   __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
@@ -2397,7 +2275,7 @@ module.exports = Config;
 
 
 
-},{}],15:[function(_dereq_,module,exports){
+},{}],14:[function(_dereq_,module,exports){
 var $, Backbone, BooleanFacet, Config, Facets, ListFacet, MainView, QueryOptions, Results, SearchResults, TextSearch, assert, funcky, tpl, _,
   __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
@@ -3012,7 +2890,7 @@ module.exports = MainView;
 
 
 
-},{"../jade/main.jade":43,"./collections/searchresults":13,"./config":14,"./models/query-options":20,"./views/facets":23,"./views/facets/boolean":24,"./views/facets/list":25,"./views/results":31,"./views/text-search":37,"assert":1,"funcky.el":7}],16:[function(_dereq_,module,exports){
+},{"../jade/main.jade":43,"./collections/searchresults":12,"./config":13,"./models/query-options":17,"./views/facets":20,"./views/facets/boolean":21,"./views/facets/list":23,"./views/results":34,"./views/text-search":40,"assert":1,"funcky.el":7}],15:[function(_dereq_,module,exports){
 var BooleanFacet, FacetModel,
   __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
@@ -3075,80 +2953,7 @@ module.exports = BooleanFacet;
 
 
 
-},{"./main":19}],17:[function(_dereq_,module,exports){
-var FacetModel, List,
-  __hasProp = {}.hasOwnProperty,
-  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
-
-FacetModel = _dereq_('./main');
-
-
-/*
- * @class
- * @namespace Models
- */
-
-List = (function(_super) {
-  __extends(List, _super);
-
-  function List() {
-    return List.__super__.constructor.apply(this, arguments);
-  }
-
-  return List;
-
-})(FacetModel);
-
-module.exports = List;
-
-
-
-},{"./main":19}],18:[function(_dereq_,module,exports){
-var Backbone, ListOption,
-  __hasProp = {}.hasOwnProperty,
-  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
-
-Backbone = _dereq_('backbone');
-
-
-/*
- * @class
- * @namespace Models
- */
-
-ListOption = (function(_super) {
-  __extends(ListOption, _super);
-
-  function ListOption() {
-    return ListOption.__super__.constructor.apply(this, arguments);
-  }
-
-  ListOption.prototype.idAttribute = 'name';
-
-  ListOption.prototype.defaults = function() {
-    return {
-      name: '',
-      count: 0,
-      total: 0,
-      checked: false,
-      visible: false
-    };
-  };
-
-  ListOption.prototype.parse = function(attrs) {
-    attrs.total = attrs.count;
-    return attrs;
-  };
-
-  return ListOption;
-
-})(Backbone.Model);
-
-module.exports = ListOption;
-
-
-
-},{}],19:[function(_dereq_,module,exports){
+},{"./main":16}],16:[function(_dereq_,module,exports){
 var Backbone, FacetModel,
   __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
@@ -3199,7 +3004,7 @@ module.exports = FacetModel;
 
 
 
-},{}],20:[function(_dereq_,module,exports){
+},{}],17:[function(_dereq_,module,exports){
 var Backbone, QueryOptions, _,
   __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
@@ -3299,7 +3104,7 @@ module.exports = QueryOptions;
 
 
 
-},{}],21:[function(_dereq_,module,exports){
+},{}],18:[function(_dereq_,module,exports){
 var Backbone, SearchModel, _,
   __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
@@ -3329,7 +3134,7 @@ module.exports = SearchModel;
 
 
 
-},{}],22:[function(_dereq_,module,exports){
+},{}],19:[function(_dereq_,module,exports){
 var Backbone, SearchResult, _,
   __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
@@ -3380,7 +3185,7 @@ module.exports = SearchResult;
 
 
 
-},{}],23:[function(_dereq_,module,exports){
+},{}],20:[function(_dereq_,module,exports){
 var $, Backbone, Facets, assert, _,
   __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
   __hasProp = {}.hasOwnProperty,
@@ -3696,7 +3501,7 @@ module.exports = Facets;
 
 
 
-},{"./facets/boolean":24,"./facets/list":25,"./facets/range":29,"assert":1}],24:[function(_dereq_,module,exports){
+},{"./facets/boolean":21,"./facets/list":23,"./facets/range":32,"assert":1}],21:[function(_dereq_,module,exports){
 var $, BooleanFacet, Models, Views, bodyTpl, _,
   __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
@@ -3804,7 +3609,129 @@ module.exports = BooleanFacet;
 
 
 
-},{"../../../jade/facets/boolean.body.jade":38,"../../models/facets/boolean":16,"./main":27}],25:[function(_dereq_,module,exports){
+},{"../../../jade/facets/boolean.body.jade":41,"../../models/facets/boolean":15,"./main":30}],22:[function(_dereq_,module,exports){
+var Backbone, ListOption, ListOptions, _,
+  __hasProp = {}.hasOwnProperty,
+  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
+
+Backbone = _dereq_('backbone');
+
+_ = _dereq_('underscore');
+
+ListOption = _dereq_('../models/option.coffee');
+
+
+/*
+ * @class
+ * @namespace Collections
+ * @uses ListOption
+ */
+
+ListOptions = (function(_super) {
+  __extends(ListOptions, _super);
+
+  function ListOptions() {
+    return ListOptions.__super__.constructor.apply(this, arguments);
+  }
+
+  ListOptions.prototype.model = ListOption;
+
+  ListOptions.prototype.initialize = function() {
+    return this.comparator = this.strategies.amount_desc;
+  };
+
+  ListOptions.prototype.revert = function() {
+    this.comparator = this.strategies.amount_desc;
+    return this.each((function(_this) {
+      return function(option) {
+        return option.set('checked', false, {
+          silent: true
+        });
+      };
+    })(this));
+  };
+
+  ListOptions.prototype.updateOptions = function(newOptions) {
+    if (newOptions == null) {
+      newOptions = [];
+    }
+    this.each((function(_this) {
+      return function(option) {
+        return option.set('count', 0, {
+          silent: true
+        });
+      };
+    })(this));
+    _.each(newOptions, (function(_this) {
+      return function(newOption) {
+        var opt;
+        opt = _this.get(newOption.name);
+        if (opt != null) {
+          return opt.set('count', newOption.count, {
+            silent: true
+          });
+        } else {
+          opt = new Models.Option(newOption);
+          return _this.add(opt);
+        }
+      };
+    })(this));
+    return this.sort();
+  };
+
+  ListOptions.prototype.strategies = {
+    alpha_asc: function(model) {
+      return +(!model.get('visible')) + (+(!model.get('count')) + model.get('name'));
+    },
+    alpha_desc: function(model) {
+      var str;
+      str = String.fromCharCode.apply(String, _.map(model.get('name').split(''), function(c) {
+        return 0xffff - c.charCodeAt();
+      }));
+      return +(!model.get('visible')) + (+(!model.get('count')) + str);
+    },
+    amount_asc: function(model) {
+      var cnt, tmp;
+      tmp = model.get('visible') ? 0 : 10;
+      tmp += +(!model.get('count'));
+      cnt = model.get('count') === 0 ? model.get('total') : model.get('count');
+      return tmp -= 1 / cnt;
+    },
+    amount_desc: function(model) {
+      var cnt, tmp;
+      tmp = model.get('visible') ? 0 : 10;
+      tmp += +(!model.get('count'));
+      cnt = model.get('count') === 0 ? model.get('total') : model.get('count');
+      return tmp += 1 / cnt;
+    }
+  };
+
+  ListOptions.prototype.orderBy = function(strategy, silent) {
+    if (silent == null) {
+      silent = false;
+    }
+    this.comparator = this.strategies[strategy];
+    return this.sort({
+      silent: silent
+    });
+  };
+
+  ListOptions.prototype.setAllVisible = function() {
+    this.each(function(model) {
+      return model.set('visible', true);
+    });
+    return this.sort();
+  };
+
+  return ListOptions;
+
+})(Backbone.Collection);
+
+module.exports = ListOptions;
+
+
+
+},{"../models/option.coffee":25}],23:[function(_dereq_,module,exports){
 var $, FacetView, List, ListFacet, ListFacetOptions, ListOptions, menuTpl, _,
   __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
@@ -3813,15 +3740,15 @@ $ = _dereq_('jquery');
 
 _ = _dereq_('underscore');
 
-List = _dereq_('../../models/facets/list');
+List = _dereq_('./models/list');
 
-ListOptions = _dereq_('../../collections/list.options');
+ListOptions = _dereq_('./collections/list.options');
 
-FacetView = _dereq_('./main');
+FacetView = _dereq_('../main');
 
-ListFacetOptions = _dereq_('./list.options');
+ListFacetOptions = _dereq_('./options');
 
-menuTpl = _dereq_('../../../jade/facets/list.menu.jade');
+menuTpl = _dereq_('./templates/menu.jade');
 
 
 /*
@@ -4084,8 +4011,81 @@ module.exports = ListFacet;
 
 
 
-},{"../../../jade/facets/list.menu.jade":40,"../../collections/list.options":12,"../../models/facets/list":17,"./list.options":26,"./main":27}],26:[function(_dereq_,module,exports){
-var $, Backbone, ListFacetOptions, Models, bodyTpl, funcky, optionTpl, _,
+},{"../main":30,"./collections/list.options":22,"./models/list":24,"./options":26,"./templates/menu.jade":28}],24:[function(_dereq_,module,exports){
+var FacetModel, List,
+  __hasProp = {}.hasOwnProperty,
+  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
+
+FacetModel = _dereq_('../../../../models/facets/main');
+
+
+/*
+ * @class
+ * @namespace Models
+ */
+
+List = (function(_super) {
+  __extends(List, _super);
+
+  function List() {
+    return List.__super__.constructor.apply(this, arguments);
+  }
+
+  return List;
+
+})(FacetModel);
+
+module.exports = List;
+
+
+
+},{"../../../../models/facets/main":16}],25:[function(_dereq_,module,exports){
+var Backbone, ListOption,
+  __hasProp = {}.hasOwnProperty,
+  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
+
+Backbone = _dereq_('backbone');
+
+
+/*
+ * @class
+ * @namespace Models
+ */
+
+ListOption = (function(_super) {
+  __extends(ListOption, _super);
+
+  function ListOption() {
+    return ListOption.__super__.constructor.apply(this, arguments);
+  }
+
+  ListOption.prototype.idAttribute = 'name';
+
+  ListOption.prototype.defaults = function() {
+    return {
+      name: '',
+      count: 0,
+      total: 0,
+      checked: false,
+      visible: false
+    };
+  };
+
+  ListOption.prototype.parse = function(attrs) {
+    attrs.total = attrs.count;
+    return attrs;
+  };
+
+  return ListOption;
+
+})(Backbone.Model);
+
+module.exports = ListOption;
+
+
+
+},{}],26:[function(_dereq_,module,exports){
+var $, Backbone, ListFacetOptions, bodyTpl, funcky, optionTpl, _,
   __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
   __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
@@ -4098,13 +4098,9 @@ _ = _dereq_('underscore');
 
 funcky = _dereq_('funcky.util');
 
-Models = {
-  List: _dereq_('../../models/facets/list')
-};
+bodyTpl = _dereq_('./templates/body.jade');
 
-bodyTpl = _dereq_('../../../jade/facets/list.body.jade');
-
-optionTpl = _dereq_('../../../jade/facets/list.option.jade');
+optionTpl = _dereq_('./templates/option.jade');
 
 
 /*
@@ -4298,7 +4294,37 @@ module.exports = ListFacetOptions;
 
 
 
-},{"../../../jade/facets/list.body.jade":39,"../../../jade/facets/list.option.jade":41,"../../models/facets/list":17,"funcky.util":9}],27:[function(_dereq_,module,exports){
+},{"./templates/body.jade":27,"./templates/option.jade":29,"funcky.util":9}],27:[function(_dereq_,module,exports){
+var jade = _dereq_("jade/runtime");
+
+module.exports = function template(locals) {
+var buf = [];
+var jade_mixins = {};
+var jade_interp;
+
+buf.push("<ul></ul>");;return buf.join("");
+};
+},{"jade/runtime":11}],28:[function(_dereq_,module,exports){
+var jade = _dereq_("jade/runtime");
+
+module.exports = function template(locals) {
+var buf = [];
+var jade_mixins = {};
+var jade_interp;
+
+buf.push("<input type=\"checkbox\" name=\"all\"/><input type=\"text\" name=\"filter\"/><small class=\"optioncount\"></small>");;return buf.join("");
+};
+},{"jade/runtime":11}],29:[function(_dereq_,module,exports){
+var jade = _dereq_("jade/runtime");
+
+module.exports = function template(locals) {
+var buf = [];
+var jade_mixins = {};
+var jade_interp;
+;var locals_for_with = (locals || {});(function (option) {
+buf.push("<li" + (jade.attr("data-count", option.get('count'), true, false)) + (jade.attr("data-value", option.id, true, false)) + (jade.cls([option.get('checked')?'checked':null], [true])) + "><i" + (jade.attr("data-value", option.id, true, false)) + " class=\"unchecked fa fa-square-o\"></i><i" + (jade.attr("data-value", option.id, true, false)) + " class=\"checked fa fa-check-square-o\"></i><label" + (jade.attr("data-value", option.id, true, false)) + ">" + (null == (jade_interp = option.id === ':empty' ? '<em>(empty)</em>' : option.id) ? "" : jade_interp) + "</label><div class=\"count\">" + (jade.escape(null == (jade_interp = option.get('count') === 0 ? option.get('total') : option.get('count')) ? "" : jade_interp)) + "</div></li>");}.call(this,"option" in locals_for_with?locals_for_with.option:typeof option!=="undefined"?option:undefined));;return buf.join("");
+};
+},{"jade/runtime":11}],30:[function(_dereq_,module,exports){
 var $, Backbone, FacetView, tpl, _,
   __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
@@ -4493,7 +4519,7 @@ module.exports = FacetView;
 
 
 
-},{"../../../jade/facets/main.jade":42}],28:[function(_dereq_,module,exports){
+},{"../../../jade/facets/main.jade":42}],31:[function(_dereq_,module,exports){
 var jade = _dereq_("jade/runtime");
 
 module.exports = function template(locals) {
@@ -4503,7 +4529,7 @@ var jade_interp;
 ;var locals_for_with = (locals || {});(function (max, min) {
 buf.push("<div class=\"slider\"><span class=\"dash\">-</span><div class=\"handle-min handle\"><input" + (jade.attr("value", min, true, false)) + " class=\"min\"/></div><div class=\"handle-max handle\"><input" + (jade.attr("value", max, true, false)) + " class=\"max\"/></div><div class=\"bar\">&nbsp;</div><button><svg version=\"1.1\" xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" viewBox=\"0 0 216 146\" xml:space=\"preserve\"><path d=\"M172.77,123.025L144.825,95.08c6.735-9.722,10.104-20.559,10.104-32.508c0-7.767-1.508-15.195-4.523-22.283c-3.014-7.089-7.088-13.199-12.221-18.332s-11.242-9.207-18.33-12.221c-7.09-3.015-14.518-4.522-22.285-4.522c-7.767,0-15.195,1.507-22.283,4.522c-7.089,3.014-13.199,7.088-18.332,12.221c-5.133,5.133-9.207,11.244-12.221,18.332c-3.015,7.089-4.522,14.516-4.522,22.283c0,7.767,1.507,15.193,4.522,22.283c3.014,7.088,7.088,13.197,12.221,18.33c5.133,5.134,11.244,9.207,18.332,12.222c7.089,3.015,14.516,4.522,22.283,4.522c11.951,0,22.787-3.369,32.509-10.104l27.945,27.863c1.955,2.064,4.397,3.096,7.332,3.096c2.824,0,5.27-1.032,7.332-3.096c2.064-2.063,3.096-4.508,3.096-7.332C175.785,127.479,174.781,125.034,172.77,123.025z M123.357,88.357c-7.143,7.143-15.738,10.714-25.787,10.714c-10.048,0-18.643-3.572-25.786-10.714c-7.143-7.143-10.714-15.737-10.714-25.786c0-10.048,3.572-18.644,10.714-25.786c7.142-7.143,15.738-10.714,25.786-10.714c10.048,0,18.643,3.572,25.787,10.714c7.143,7.142,10.715,15.738,10.715,25.786C134.072,72.62,130.499,81.214,123.357,88.357z\"></path></svg></button></div>");}.call(this,"max" in locals_for_with?locals_for_with.max:typeof max!=="undefined"?max:undefined,"min" in locals_for_with?locals_for_with.min:typeof min!=="undefined"?min:undefined));;return buf.join("");
 };
-},{"jade/runtime":11}],29:[function(_dereq_,module,exports){
+},{"jade/runtime":11}],32:[function(_dereq_,module,exports){
 var $, FacetView, Range, RangeFacet, bodyTpl, _,
   __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
@@ -4988,7 +5014,7 @@ module.exports = RangeFacet;
 
 
 
-},{"../main":27,"./body.jade":28,"./model":30}],30:[function(_dereq_,module,exports){
+},{"../main":30,"./body.jade":31,"./model":33}],33:[function(_dereq_,module,exports){
 var FacetModel, Range, _,
   __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
   __hasProp = {}.hasOwnProperty,
@@ -5216,7 +5242,7 @@ module.exports = Range;
 
 
 
-},{"../../../models/facets/main":19}],31:[function(_dereq_,module,exports){
+},{"../../../models/facets/main":16}],34:[function(_dereq_,module,exports){
 var $, Backbone, HibbPagination, Result, Results, SortLevels, listItems, tpl, _,
   __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
@@ -5518,7 +5544,7 @@ module.exports = Results;
 
 
 
-},{"./index.jade":32,"./result":33,"./sort":35,"hibb-pagination":10}],32:[function(_dereq_,module,exports){
+},{"./index.jade":35,"./result":36,"./sort":38,"hibb-pagination":10}],35:[function(_dereq_,module,exports){
 var jade = _dereq_("jade/runtime");
 
 module.exports = function template(locals) {
@@ -5556,7 +5582,7 @@ buf.push("<li class=\"show-metadata\"><input id=\"o45hes3\" type=\"checkbox\" ch
 }
 buf.push("</ul></nav><div class=\"pagination\"></div></header><div class=\"pages\"></div>");}.call(this,"config" in locals_for_with?locals_for_with.config:typeof config!=="undefined"?config:undefined,"resultsPerPage" in locals_for_with?locals_for_with.resultsPerPage:typeof resultsPerPage!=="undefined"?resultsPerPage:undefined,"showMetadata" in locals_for_with?locals_for_with.showMetadata:typeof showMetadata!=="undefined"?showMetadata:undefined,"undefined" in locals_for_with?locals_for_with.undefined:typeof undefined!=="undefined"?undefined:undefined));;return buf.join("");
 };
-},{"jade/runtime":11}],33:[function(_dereq_,module,exports){
+},{"jade/runtime":11}],36:[function(_dereq_,module,exports){
 var Backbone, Result, tpl,
   __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
@@ -5742,7 +5768,7 @@ class Result extends Backbone.View
 
 
 
-},{"./result.jade":34}],34:[function(_dereq_,module,exports){
+},{"./result.jade":37}],37:[function(_dereq_,module,exports){
 var jade = _dereq_("jade/runtime");
 
 module.exports = function template(locals) {
@@ -5852,7 +5878,7 @@ buf.push("</ul></li>");
 buf.push("</ul></div>");
 }}.call(this,"data" in locals_for_with?locals_for_with.data:typeof data!=="undefined"?data:undefined,"found" in locals_for_with?locals_for_with.found:typeof found!=="undefined"?found:undefined,"fulltext" in locals_for_with?locals_for_with.fulltext:typeof fulltext!=="undefined"?fulltext:undefined,"undefined" in locals_for_with?locals_for_with.undefined:typeof undefined!=="undefined"?undefined:undefined));;return buf.join("");
 };
-},{"jade/runtime":11}],35:[function(_dereq_,module,exports){
+},{"jade/runtime":11}],38:[function(_dereq_,module,exports){
 var $, Backbone, SortLevels, el, tpl,
   __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
@@ -6062,7 +6088,7 @@ module.exports = SortLevels;
 
 
 
-},{"./sort.jade":36,"funcky.el":7}],36:[function(_dereq_,module,exports){
+},{"./sort.jade":39,"funcky.el":7}],39:[function(_dereq_,module,exports){
 var jade = _dereq_("jade/runtime");
 
 module.exports = function template(locals) {
@@ -6141,7 +6167,7 @@ buf.push("</select><i class=\"fa fa-sort-alpha-asc\"></i></li>");
 
 buf.push("<li class=\"search\">&nbsp;<button>Change levels</button></li></ul></div>");}.call(this,"entryMetadataFields" in locals_for_with?locals_for_with.entryMetadataFields:typeof entryMetadataFields!=="undefined"?entryMetadataFields:undefined,"levels" in locals_for_with?locals_for_with.levels:typeof levels!=="undefined"?levels:undefined,"undefined" in locals_for_with?locals_for_with.undefined:typeof undefined!=="undefined"?undefined:undefined));;return buf.join("");
 };
-},{"jade/runtime":11}],37:[function(_dereq_,module,exports){
+},{"jade/runtime":11}],40:[function(_dereq_,module,exports){
 var Backbone, SearchModel, TextSearch, funcky, tpl, _,
   __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
@@ -6407,7 +6433,7 @@ module.exports = TextSearch;
 
 
 
-},{"../../jade/text-search.jade":44,"../models/search":21,"funcky.util":9}],38:[function(_dereq_,module,exports){
+},{"../../jade/text-search.jade":44,"../models/search":18,"funcky.util":9}],41:[function(_dereq_,module,exports){
 var jade = _dereq_("jade/runtime");
 
 module.exports = function template(locals) {
@@ -6439,36 +6465,6 @@ buf.push("<li><div class=\"row span6\"><div class=\"cell span5\"><i" + (jade.att
 }).call(this);
 
 buf.push("</ul>");}.call(this,"options" in locals_for_with?locals_for_with.options:typeof options!=="undefined"?options:undefined,"ucfirst" in locals_for_with?locals_for_with.ucfirst:typeof ucfirst!=="undefined"?ucfirst:undefined,"undefined" in locals_for_with?locals_for_with.undefined:typeof undefined!=="undefined"?undefined:undefined));;return buf.join("");
-};
-},{"jade/runtime":11}],39:[function(_dereq_,module,exports){
-var jade = _dereq_("jade/runtime");
-
-module.exports = function template(locals) {
-var buf = [];
-var jade_mixins = {};
-var jade_interp;
-
-buf.push("<ul></ul>");;return buf.join("");
-};
-},{"jade/runtime":11}],40:[function(_dereq_,module,exports){
-var jade = _dereq_("jade/runtime");
-
-module.exports = function template(locals) {
-var buf = [];
-var jade_mixins = {};
-var jade_interp;
-
-buf.push("<input type=\"checkbox\" name=\"all\"/><input type=\"text\" name=\"filter\"/><small class=\"optioncount\"></small>");;return buf.join("");
-};
-},{"jade/runtime":11}],41:[function(_dereq_,module,exports){
-var jade = _dereq_("jade/runtime");
-
-module.exports = function template(locals) {
-var buf = [];
-var jade_mixins = {};
-var jade_interp;
-;var locals_for_with = (locals || {});(function (option) {
-buf.push("<li" + (jade.attr("data-count", option.get('count'), true, false)) + (jade.attr("data-value", option.id, true, false)) + (jade.cls([option.get('checked')?'checked':null], [true])) + "><i" + (jade.attr("data-value", option.id, true, false)) + " class=\"unchecked fa fa-square-o\"></i><i" + (jade.attr("data-value", option.id, true, false)) + " class=\"checked fa fa-check-square-o\"></i><label" + (jade.attr("data-value", option.id, true, false)) + ">" + (null == (jade_interp = option.id === ':empty' ? '<em>(empty)</em>' : option.id) ? "" : jade_interp) + "</label><div class=\"count\">" + (jade.escape(null == (jade_interp = option.get('count') === 0 ? option.get('total') : option.get('count')) ? "" : jade_interp)) + "</div></li>");}.call(this,"option" in locals_for_with?locals_for_with.option:typeof option!=="undefined"?option:undefined));;return buf.join("");
 };
 },{"jade/runtime":11}],42:[function(_dereq_,module,exports){
 var jade = _dereq_("jade/runtime");
@@ -6589,6 +6585,6 @@ buf.push("</ul></li>");
 }
 buf.push("</ul></div></div></div>");}.call(this,"config" in locals_for_with?locals_for_with.config:typeof config!=="undefined"?config:undefined,"generateId" in locals_for_with?locals_for_with.generateId:typeof generateId!=="undefined"?generateId:undefined,"id" in locals_for_with?locals_for_with.id:typeof id!=="undefined"?id:undefined,"model" in locals_for_with?locals_for_with.model:typeof model!=="undefined"?model:undefined,"undefined" in locals_for_with?locals_for_with.undefined:typeof undefined!=="undefined"?undefined:undefined));;return buf.join("");
 };
-},{"jade/runtime":11}]},{},[15])
-(15)
+},{"jade/runtime":11}]},{},[14])
+(14)
 });

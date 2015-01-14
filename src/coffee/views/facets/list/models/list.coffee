@@ -1,4 +1,4 @@
-FacetModel = require './main'
+FacetModel = require '../../../../models/facets/main'
 
 ###
 # @class

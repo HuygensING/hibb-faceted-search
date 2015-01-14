@@ -23,6 +23,7 @@ Backbone based library
 - :bug: Select max one text search field per search (for Timbuctoo).
 - :lipstick: Remove dirty implementation of _searchValue and add clean version.
 - :fire: Remove date facet
+- :memo: Add jsdocs (with crojsdoc)
 - :arrow_up: Hibb-pagination to 1.2.0
 
 ### v2.3.1

@@ -1,7 +1,7 @@
 Backbone = require 'backbone'
 _ = require 'underscore'
 
-ListOption = require '../models/facets/list.option.coffee'
+ListOption = require '../models/option.coffee'
 
 ###
 # @class
