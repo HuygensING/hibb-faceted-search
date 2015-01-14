@@ -10,22 +10,43 @@ ListOption = require '../models/option.coffee'
 ###
 class ListOptions extends Backbone.Collection
 
+	###
+	# @property
+	# @type ListOption
+	###
 	model: ListOption
 
-	# ### Initialize
+	###
+	# Default sorting strategy.
+	#
+	# @property
+	# @type {Function}
+	###
+	comparator: null
+
+	###
+	# @method
+	# @construct
+	###
 	initialize: ->
 		# Set the default comparator
 		@comparator = @strategies.amount_desc
 
-	# ### Methods
-
-	# Alias for reset, because a collection already has a reset method.
+	
+	###
+	# Alias for reset, because a Backbone.Collection already has a reset method.
+	#
+	# @method
+	###
 	revert: ->
 		@comparator = @strategies.amount_desc
 
 		@each (option) => option.set 'checked', false, silent: true
 
-	# TODO Don't do two loops, combine into one.
+	###
+	# @method
+	# @todo Don't do two loops, combine into one.
+	###
 	updateOptions: (newOptions=[]) ->
 		# Reset all the options count to 0
 		@each (option) => option.set 'count', 0, silent: true
@@ -44,6 +65,12 @@ class ListOptions extends Backbone.Collection
 
 		@sort()
 
+	###
+	# Hash of sorting strategies.
+	#
+	# @property
+	# @type {Object}
+	###
 	strategies:
 		# Name from A to Z
 		# +!true == +false == 0
@@ -73,10 +100,20 @@ class ListOptions extends Backbone.Collection
 #      add = if model.get('visible') then -10000000 else 0
 #      add + (-1 * +model.get('count'))
 
+	###
+	# @method
+	# @param {Function} strategy One of the sorting strategy functions
+	# @param {Boolean} [silent=false] Set to true to disable the triggering of the sort event.
+	###
 	orderBy: (strategy, silent=false) ->
 		@comparator = @strategies[strategy]
 		@sort(silent: silent)
 
+	###
+	# Set all options to visible and sort afterwards.
+	#
+	# @method
+	###
 	setAllVisible: ->
 		@each (model) -> model.set 'visible', true
 		@sort()

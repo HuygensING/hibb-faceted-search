@@ -3634,11 +3634,40 @@ ListOptions = (function(_super) {
     return ListOptions.__super__.constructor.apply(this, arguments);
   }
 
+
+  /*
+  	 * @property
+  	 * @type ListOption
+   */
+
   ListOptions.prototype.model = ListOption;
+
+
+  /*
+  	 * Default sorting strategy.
+  	 *
+  	 * @property
+  	 * @type {Function}
+   */
+
+  ListOptions.prototype.comparator = null;
+
+
+  /*
+  	 * @method
+  	 * @construct
+   */
 
   ListOptions.prototype.initialize = function() {
     return this.comparator = this.strategies.amount_desc;
   };
+
+
+  /*
+  	 * Alias for reset, because a Backbone.Collection already has a reset method.
+  	 *
+  	 * @method
+   */
 
   ListOptions.prototype.revert = function() {
     this.comparator = this.strategies.amount_desc;
@@ -3650,6 +3679,12 @@ ListOptions = (function(_super) {
       };
     })(this));
   };
+
+
+  /*
+  	 * @method
+  	 * @todo Don't do two loops, combine into one.
+   */
 
   ListOptions.prototype.updateOptions = function(newOptions) {
     if (newOptions == null) {
@@ -3679,6 +3714,14 @@ ListOptions = (function(_super) {
     return this.sort();
   };
 
+
+  /*
+  	 * Hash of sorting strategies.
+  	 *
+  	 * @property
+  	 * @type {Object}
+   */
+
   ListOptions.prototype.strategies = {
     alpha_asc: function(model) {
       return +(!model.get('visible')) + (+(!model.get('count')) + model.get('name'));
@@ -3706,6 +3749,13 @@ ListOptions = (function(_super) {
     }
   };
 
+
+  /*
+  	 * @method
+  	 * @param {Function} strategy One of the sorting strategy functions
+  	 * @param {Boolean} [silent=false] Set to true to disable the triggering of the sort event.
+   */
+
   ListOptions.prototype.orderBy = function(strategy, silent) {
     if (silent == null) {
       silent = false;
@@ -3715,6 +3765,13 @@ ListOptions = (function(_super) {
       silent: silent
     });
   };
+
+
+  /*
+  	 * Set all options to visible and sort afterwards.
+  	 *
+  	 * @method
+   */
 
   ListOptions.prototype.setAllVisible = function() {
     this.each(function(model) {
