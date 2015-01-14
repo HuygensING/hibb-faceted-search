@@ -5,8 +5,8 @@ Backbone based library
 
 ### Emoji's
 - :zap: `:zap:` when introducing a breaking change
-- :bug: `:bug:` when fixing a bug
 - :sparkles: `:sparkles:` when adding a feature
+- :bug: `:bug:` when fixing a bug
 - :flashlight: `:flashlight:` when improving debuggability
 - :lipstick: `:lipstick:` when improving the format/structure of the code
 - :racehorse: `:racehorse:` when improving performance
@@ -20,8 +20,8 @@ Backbone based library
 ## Changelog
 
 ### DEV
-- :lipstick: Remove dirty implementation of _searchValue and add clean version.
 - :bug: Select max one text search field per search (for Timbuctoo).
+- :lipstick: Remove dirty implementation of _searchValue and add clean version.
 - :fire: Remove date facet
 - :arrow_up: Hibb-pagination to 1.2.0
 
@@ -32,16 +32,16 @@ Backbone based library
 - :sparkles: ShowMetadata and sortLevels in the results <header> are now optional.
 - :sparkles: Add facetOrder to config, to be able to rearrange facets returned by the server.
 - :sparkles: Add a method to search for a single value. Programmatically mimic a user selecting one option of a facet.
-- :racehorse: More advanced caching of search results.
 - :sparkles: Double click to edit range limits.
 - :sparkles: Add labels to config for easy renaming (support multiple languages)
 - :bug: Rendering of TextSearch is split in init and render, so init data can be used in the queryOptions.
+- :racehorse: More advanced caching of search results.
 
 ### v2.2.0
 
-- :bug: Store result model on change page
 - :sparkles: Add isMetadataVisible prop to results view
 - :sparkles: Add result-per-page option to results view
+- :bug: Store result model on change page
 
 ### v2.1.1
 - :lipstick: Little refactoring and code clean up.
