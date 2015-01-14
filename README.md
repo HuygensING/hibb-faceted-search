@@ -1,6 +1,22 @@
 # Faceted Search
 Backbone based library
 
+## Git commit messages
+
+### Emoji's
+- :zap: `:zap:` when introducing a breaking change
+- :bug: `:bug:` when fixing a bug
+- :cake: `:cake:` when adding a feature
+- :flashlight: `:flashlight:` when improving debuggability
+- :lipstick: `:lipstick:` when improving the format/structure of the code
+- :racehorse: `:racehorse:` when improving performance
+- :lock: `:lock:` when dealing with security
+- :fire: `:fire:` when removing code or files
+- :white_check_mark: `:white_check_mark:` when adding tests
+- :memo: `:memo:` when writing docs
+- :arrow_up: `:arrow_up:` when upgrading dependencies
+- :arrow_down: `:arrow_down:` when downgrading dependencies
+
 ## Changelog
 
 ### DEV
@@ -13,31 +29,31 @@ Backbone based library
 - :bug: Change updating of sortable fields.
 
 ### v2.3.0
-- [feat] ShowMetadata and sortLevels in the results <header> are now optional.
-- [feat] Add facetOrder to config, to be able to rearrange facets returned by the server.
-- [feat] Add a method to search for a single value. Programmatically mimic a user selecting one option of a facet.
-- [perf] More advanced caching of search results.
-- [feat] Double click to edit range limits.
-- [feat] Add labels to config for easy renaming (support multiple languages)
-- [fix] Rendering of TextSearch is split in init and render, so init data can be used in the queryOptions.
+- :cake: ShowMetadata and sortLevels in the results <header> are now optional.
+- :cake: Add facetOrder to config, to be able to rearrange facets returned by the server.
+- :cake: Add a method to search for a single value. Programmatically mimic a user selecting one option of a facet.
+- :racehorse: More advanced caching of search results.
+- :cake: Double click to edit range limits.
+- :cake: Add labels to config for easy renaming (support multiple languages)
+- :bug: Rendering of TextSearch is split in init and render, so init data can be used in the queryOptions.
 
 ### v2.2.0
 
-- [fix] Store result model on change page
-- [feat] Add isMetadataVisible prop to results view
-- [feat] Add result-per-page option to results view
+- :bug: Store result model on change page
+- :cake: Add isMetadataVisible prop to results view
+- :cake: Add result-per-page option to results view
 
 ### v2.1.1
-- Little refactoring and code clean up.
+- :lipstick: Little refactoring and code clean up.
 
 ### v2.1.0
-- [feat] Add a view for the results
+- :cake: Add a view for the results
 
 ### v2.0.10
-- [perf] Move range logic from view to model.
+- :racehorse: Move range logic from view to model.
 
 ### v2.0.9
-- [bug] sortResultsBy still worked using sort instead of sortParameters.
+- :bug: sortResultsBy still worked using sort instead of sortParameters.
 
 ### v2.0.8
 - Don't remove active class from filter when toggling sorting.
