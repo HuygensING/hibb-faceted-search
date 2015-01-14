@@ -11,8 +11,16 @@ Views =
 # 	Body: require 'text!html/facet/boolean.body.html'
 bodyTpl = require '../../../jade/facets/boolean.body.jade'
 
+###
+# @class
+# @namespace Views
+###
 class BooleanFacet extends Views.Facet
 
+  ###
+  # @property
+  # @type {String}
+  ###
   className: 'facet boolean'
 
   # ### Initialize

@@ -4,12 +4,13 @@ Backbone based library
 ## Changelog
 
 ### DEV
-- [fix] Remove dirty implementation of _searchValue and add clean version.
-- Use radiobuttons to select full text search fields for Timbuctoo.
-- [bump] Hibb-pagination to 1.2.0
+- :lipstick: Remove dirty implementation of _searchValue and add clean version.
+- :bug: Select max one text search field per search (for Timbuctoo).
+- :fire: Remove date facet
+- :arrow_up: Hibb-pagination to 1.2.0
 
 ### v2.3.1
-- [fix] Change updating of sortable fields.
+- :bug: Change updating of sortable fields.
 
 ### v2.3.0
 - [feat] ShowMetadata and sortLevels in the results <header> are now optional.

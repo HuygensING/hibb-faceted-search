@@ -16,6 +16,8 @@ SearchResults = require './collections/searchresults'
 TextSearch = require './views/text-search'
 Facets = require './views/facets'
 Results = require './views/results'
+ListFacet = require './views/facets/list'
+BooleanFacet = require './views/facets/boolean'
 
 tpl = require '../jade/main.jade'
 
@@ -28,8 +30,16 @@ tpl = require '../jade/main.jade'
 # @uses TextSearch
 # @uses Facets
 # @uses Results
+# @uses ListFacet
+# @uses BooleanFacet
 ###
 class MainView extends Backbone.View
+
+	###
+	# @property
+	# @type {Facets}
+	###
+	facets: null
 
 	###
 	# @method
@@ -259,7 +269,8 @@ class MainView extends Backbone.View
 		facetsPlaceholder = @el.querySelector('.facets-placeholder')
 		facetsPlaceholder.parentNode.replaceChild @facets.el, facetsPlaceholder
 
-		@listenTo @facets, 'change', (queryOptions, options) => @queryOptions.set queryOptions, options
+		@listenTo @facets, 'change', (queryOptions, options) =>
+			@queryOptions.set queryOptions, options
 
 	###
 	# @method
@@ -412,17 +423,37 @@ class MainView extends Backbone.View
 		@search cache: false
 
 	###
+	# Run a search query using the queryOptions and given options.
+	#
 	# @method
+	# @param {Object} options
 	###
 	search: (options) ->
 		@searchResults.runQuery @queryOptions.attributes, options
 
 	###
+	# Set a single option in a list or boolean facet and perform a search.
+	#
+	# Equivalent to a user resetting the faceted search and selecting one value.
+	# This is only usable for LIST and BOOLEAN facets.
+	#
 	# @method
 	# @param {String} facetName
 	# @param value
 	###
 	searchValue: (facetName, value) ->
+		hasProp = @facets.views.hasOwnProperty facetName 
+
+		if hasProp
+			isListFacet = @facets.views[facetName] instanceof ListFacet
+			isBooleanFacet = @facets.views[facetName] instanceof BooleanFacet
+		
+		unless hasProp
+			throw "The facets view doesn't have a \"#{facetName}\""
+
+		unless isListFacet or isBooleanFacet
+			throw "\"facetName\" is not an instance of ListFacet or BooleanFacet"
+
 		@queryOptions.reset()
 		@refresh
 			facetValues: [

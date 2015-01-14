@@ -31,10 +31,15 @@ class Facets extends Backbone.View
 	###
 	viewMap: {
 		BOOLEAN: require './facets/boolean'
-		DATE: require './facets/date'
 		RANGE: require './facets/range'
 		LIST: require './facets/list'
 	}
+
+	###
+	# @property
+	# @type {Object}
+	###
+	views: null
 
 	###
 	# @constructs
