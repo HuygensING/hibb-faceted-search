@@ -61,7 +61,7 @@ class ListOptions extends Backbone.Collection
 				opt.set 'count', newOption.count, silent: true
 			# Else create the new option and add it to the collection.
 			else
-				opt = new Models.Option newOption
+				opt = new ListOption newOption
 				@add opt
 
 		@sort()

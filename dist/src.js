@@ -3712,7 +3712,7 @@ ListOptions = (function(_super) {
             silent: true
           });
         } else {
-          opt = new Models.Option(newOption);
+          opt = new ListOption(newOption);
           return _this.add(opt);
         }
       };
