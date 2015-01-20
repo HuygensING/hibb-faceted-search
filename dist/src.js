@@ -2050,6 +2050,12 @@ SearchResults = (function(_super) {
     }
   };
 
+
+  /*
+  	 * @method
+  	 * @param {String} direction One of "_prev", "_next".
+   */
+
   SearchResults.prototype.moveCursor = function(direction) {
     var changeMessage, url;
     url = direction === '_prev' || direction === '_next' ? this._current.get(direction) : direction;
@@ -2590,7 +2596,7 @@ MainView = (function(_super) {
     })(this));
     this.listenTo(this.searchResults, 'change:cursor', (function(_this) {
       return function(responseModel) {
-        return _this.trigger('change:results', responseModel);
+        return _this.trigger('change:cursor', responseModel);
       };
     })(this));
     this.listenTo(this.searchResults, 'change:page', (function(_this) {

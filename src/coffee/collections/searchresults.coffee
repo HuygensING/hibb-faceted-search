@@ -109,6 +109,10 @@ class SearchResults extends Backbone.Collection
 				@getResults getUrl, (response) =>
 					@_addModel url, response, queryOptionsString, changeMessage
 
+	###
+	# @method
+	# @param {String} direction One of "_prev", "_next".
+	###
 	moveCursor: (direction) ->
 		url = if direction is '_prev' or direction is '_next' then @_current.get direction else direction
 		changeMessage = 'change:cursor'
