@@ -19,7 +19,10 @@ class ListFacetOptions extends Backbone.View
 	###
 	className: 'container'
 
-	# ### Initialize
+	###
+	# @method
+	# @construct
+	###
 	initialize: (options) ->
 		@config = options.config
 		@facetName = options.facetName
@@ -33,7 +36,11 @@ class ListFacetOptions extends Backbone.View
 
 		@render()
 
-	# ### Render
+	###
+	# @method
+	# @chainable
+	# @return {ListFacetOptions}
+	###
 	render: ->
 		@showingCursor = 0
 		@showingIncrement = 50
@@ -49,6 +56,9 @@ class ListFacetOptions extends Backbone.View
 
 		@
 
+	###
+	# @method
+	###
 	rerender: ->
 		tpl = ''
 
@@ -64,6 +74,10 @@ class ListFacetOptions extends Backbone.View
 
 		@el.querySelector('ul').innerHTML = tpl
 
+	###
+	# @method
+	# @param {Boolean} all
+	###
 	appendOptions: (all=false) ->
 		# If true is passed as argument, all options are added.
 		@showingIncrement = @collection.length if all
@@ -78,18 +92,28 @@ class ListFacetOptions extends Backbone.View
 
 		@$('ul').append tpl
 
+	###
+	# @method
+	###
 	renderAll: ->
 		# When all models are set to visible, the collection is sorted and
 		# @rerender is called.
 		@collection.setAllVisible()
 
-	# ### Events
+	###
+	# @method
+	# @return {Object} Hash of events.
+	###
 	events: ->
 		'click li': 'checkChanged'
 		# 'click label': 'checkChanged'
 		'scroll': 'onScroll'
-
+	###
 	# When scolling lazy render the rest of the options. This speeds up page load.
+	#
+	# @method
+	# @param {Object} ev
+	###
 	onScroll: (ev) ->
 		if @showingCursor < @collection.length
 			target = ev.currentTarget
@@ -98,7 +122,9 @@ class ListFacetOptions extends Backbone.View
 			if topPerc > (@showingCursor/2)/@collection.length
 				@showingIncrement += @showingIncrement
 				@appendOptions()
-
+	###
+	# @method
+	###
 	checkChanged: (ev) ->
 		# $target = if ev.currentTarget.tagName is 'LABEL' then @$ 'i[data-value="'+ev.currentTarget.getAttribute('data-value')+'"]' else $ ev.currentTarget
 		$target = $ ev.currentTarget
@@ -127,6 +153,10 @@ class ListFacetOptions extends Backbone.View
 		else
 			funcky.setResetTimeout 1000, => @triggerChange()
 
+	###
+	# @method
+	# @param {Array<Object>} values
+	###
 	triggerChange: (values) =>
 		unless values?
 			checkedModels = @collection.filter (item) -> item.get 'checked'
@@ -140,7 +170,10 @@ class ListFacetOptions extends Backbone.View
 	# ### Methods
 
 	###
-	Called by parent (ListFacet) when user types in the search input
+	# Called by parent (ListFacet) when user types in the search input
+	#
+	# @method
+	# @param {String} value Query to filter results on.
 	###
 	filterOptions: (value) ->
 		@collection.map (model) ->
@@ -153,6 +186,10 @@ class ListFacetOptions extends Backbone.View
 
 		# @render()
 
+	###
+	# @method
+	# @param {Object} ev
+	###
 	setCheckboxes: (ev) ->
 		visibleModels = @collection.filter (model) -> model.get 'visible'
 		model.set 'checked', ev.currentTarget.checked for model in visibleModels
