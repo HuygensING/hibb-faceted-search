@@ -18,6 +18,7 @@ class ListOption extends Backbone.Model
 	###
 	defaults: ->
 		name: ''
+		displayName: null
 		count: 0
 		total: 0
 		checked: false
