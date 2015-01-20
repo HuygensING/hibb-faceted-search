@@ -2216,6 +2216,7 @@ Config = (function(_super) {
   	 * @param {Boolean} [autoSearch=true] # When set to true, a search is performed whenever the mainModel (queryOptions) change.
   	 * @param {Object} [facetTitleMap={}] Map of facet names, mapping to facet titles. Use this map to give user friendly display names to facets in case the server doesn't give them.
   	 * @param {Array<String>} [facetOrder=[]] Define the rendering order of the facets. If undefined, the facets are rendered in the order returned by the backend.
+  	 * @param {Object} [parsers={}] Hash of parser functions. Takes the options from the result and parses the options before rendering. Use sparsely, because with large option lists, the perfomance penalty can become great.
   	 *
   	 * RESULTS OPTIONS
   	 * @param {Boolean} [results=false] Render the results. When kept to false, the showing of the results has to be taken care of in the application.
@@ -2253,6 +2254,7 @@ Config = (function(_super) {
       autoSearch: true,
       facetTitleMap: {},
       facetOrder: [],
+      parsers: {},
 
       /* RESULTS OPTIONS */
       results: false,
@@ -3356,7 +3358,7 @@ Facets = (function(_super) {
     }
     View = this.viewMap[facetData.type];
     this.views[facetData.name] = new View({
-      attrs: facetData,
+      attrs: this._parseFacetData(facetData),
       config: this.options.config
     });
     this.listenTo(this.views[facetData.name], 'change', (function(_this) {
@@ -3368,6 +3370,23 @@ Facets = (function(_super) {
       };
     })(this));
     return this.views[facetData.name];
+  };
+
+
+  /*
+  	 * @method
+  	 * @private
+  	 * @param {Object} facetData
+  	 * @return {Object} Parsed facet data
+   */
+
+  Facets.prototype._parseFacetData = function(facetData) {
+    var parsers;
+    parsers = this.options.config.get('parsers');
+    if (parsers.hasOwnProperty(facetData.name)) {
+      facetData = parsers[facetData.name](facetData);
+    }
+    return facetData;
   };
 
 
@@ -4128,17 +4147,36 @@ ListOption = (function(_super) {
     return ListOption.__super__.constructor.apply(this, arguments);
   }
 
+
+  /*
+  	 * @property
+  	 * @type {String}
+   */
+
   ListOption.prototype.idAttribute = 'name';
+
+
+  /*
+  	 * @method
+  	 * @return {Object} Hash of default attributes
+   */
 
   ListOption.prototype.defaults = function() {
     return {
       name: '',
+      displayName: null,
       count: 0,
       total: 0,
       checked: false,
       visible: false
     };
   };
+
+
+  /*
+  	 * @method
+  	 * @param {Object} attrs
+   */
 
   ListOption.prototype.parse = function(attrs) {
     attrs.total = attrs.count;
@@ -4193,6 +4231,12 @@ ListFacetOptions = (function(_super) {
 
   ListFacetOptions.prototype.className = 'container';
 
+
+  /*
+  	 * @method
+  	 * @construct
+   */
+
   ListFacetOptions.prototype.initialize = function(options) {
     this.config = options.config;
     this.facetName = options.facetName;
@@ -4213,6 +4257,13 @@ ListFacetOptions = (function(_super) {
     return this.render();
   };
 
+
+  /*
+  	 * @method
+  	 * @chainable
+  	 * @return {ListFacetOptions}
+   */
+
   ListFacetOptions.prototype.render = function() {
     this.showingCursor = 0;
     this.showingIncrement = 50;
@@ -4225,6 +4276,11 @@ ListFacetOptions = (function(_super) {
     this.appendOptions();
     return this;
   };
+
+
+  /*
+  	 * @method
+   */
 
   ListFacetOptions.prototype.rerender = function() {
     var i, model, tpl, visible;
@@ -4242,6 +4298,12 @@ ListFacetOptions = (function(_super) {
     }
     return this.el.querySelector('ul').innerHTML = tpl;
   };
+
+
+  /*
+  	 * @method
+  	 * @param {Boolean} all
+   */
 
   ListFacetOptions.prototype.appendOptions = function(all) {
     var model, tpl;
@@ -4263,9 +4325,20 @@ ListFacetOptions = (function(_super) {
     return this.$('ul').append(tpl);
   };
 
+
+  /*
+  	 * @method
+   */
+
   ListFacetOptions.prototype.renderAll = function() {
     return this.collection.setAllVisible();
   };
+
+
+  /*
+  	 * @method
+  	 * @return {Object} Hash of events.
+   */
 
   ListFacetOptions.prototype.events = function() {
     return {
@@ -4273,6 +4346,14 @@ ListFacetOptions = (function(_super) {
       'scroll': 'onScroll'
     };
   };
+
+
+  /*
+  	 * When scolling lazy render the rest of the options. This speeds up page load.
+  	 *
+  	 * @method
+  	 * @param {Object} ev
+   */
 
   ListFacetOptions.prototype.onScroll = function(ev) {
     var target, topPerc;
@@ -4285,6 +4366,11 @@ ListFacetOptions = (function(_super) {
       }
     }
   };
+
+
+  /*
+  	 * @method
+   */
 
   ListFacetOptions.prototype.checkChanged = function(ev) {
     var $target, id;
@@ -4302,6 +4388,12 @@ ListFacetOptions = (function(_super) {
       })(this));
     }
   };
+
+
+  /*
+  	 * @method
+  	 * @param {Array<Object>} values
+   */
 
   ListFacetOptions.prototype.triggerChange = function(values) {
     var checkedModels;
@@ -4323,7 +4415,10 @@ ListFacetOptions = (function(_super) {
 
 
   /*
-  	Called by parent (ListFacet) when user types in the search input
+  	 * Called by parent (ListFacet) when user types in the search input
+  	 *
+  	 * @method
+  	 * @param {String} value Query to filter results on.
    */
 
   ListFacetOptions.prototype.filterOptions = function(value) {
@@ -4335,6 +4430,12 @@ ListFacetOptions = (function(_super) {
     this.collection.sort();
     return this.trigger('filter:finished');
   };
+
+
+  /*
+  	 * @method
+  	 * @param {Object} ev
+   */
 
   ListFacetOptions.prototype.setCheckboxes = function(ev) {
     var model, values, visibleModels, _i, _len;
@@ -4391,7 +4492,16 @@ var buf = [];
 var jade_mixins = {};
 var jade_interp;
 ;var locals_for_with = (locals || {});(function (option) {
-buf.push("<li" + (jade.attr("data-count", option.get('count'), true, false)) + (jade.attr("data-value", option.id, true, false)) + (jade.cls([option.get('checked')?'checked':null], [true])) + "><i" + (jade.attr("data-value", option.id, true, false)) + " class=\"unchecked fa fa-square-o\"></i><i" + (jade.attr("data-value", option.id, true, false)) + " class=\"checked fa fa-check-square-o\"></i><label" + (jade.attr("data-value", option.id, true, false)) + ">" + (null == (jade_interp = option.id === ':empty' ? '<em>(empty)</em>' : option.id) ? "" : jade_interp) + "</label><div class=\"count\">" + (jade.escape(null == (jade_interp = option.get('count') === 0 ? option.get('total') : option.get('count')) ? "" : jade_interp)) + "</div></li>");}.call(this,"option" in locals_for_with?locals_for_with.option:typeof option!=="undefined"?option:undefined));;return buf.join("");
+var displayName = option.id
+if ( option.id === ':empty' || option.id === '(empty)')
+{
+displayName = '<em>(empty)</em>'
+}
+if ( option.get('displayName') != null)
+{
+displayName = option.get('displayName')
+}
+buf.push("<li" + (jade.attr("data-count", option.get('count'), true, false)) + (jade.attr("data-value", option.id, true, false)) + (jade.cls([option.get('checked')?'checked':null], [true])) + "><i" + (jade.attr("data-value", option.id, true, false)) + " class=\"unchecked fa fa-square-o\"></i><i" + (jade.attr("data-value", option.id, true, false)) + " class=\"checked fa fa-check-square-o\"></i><label" + (jade.attr("data-value", option.id, true, false)) + ">" + (null == (jade_interp = displayName) ? "" : jade_interp) + "</label><div class=\"count\">" + (jade.escape(null == (jade_interp = option.get('count') === 0 ? option.get('total') : option.get('count')) ? "" : jade_interp)) + "</div></li>");}.call(this,"option" in locals_for_with?locals_for_with.option:typeof option!=="undefined"?option:undefined));;return buf.join("");
 };
 },{"jade/runtime":11}],30:[function(_dereq_,module,exports){
 var $, Backbone, FacetView, tpl, _,

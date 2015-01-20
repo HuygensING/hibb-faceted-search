@@ -123,13 +123,27 @@ class Facets extends Backbone.View
 
 		View = @viewMap[facetData.type]
 		@views[facetData.name] = new View
-			attrs: facetData,
+			attrs: @_parseFacetData(facetData),
 			config: @options.config
 
 		@listenTo @views[facetData.name], 'change', (queryOptions, options={}) =>
 			@trigger 'change', queryOptions, options
 
 		@views[facetData.name]
+
+	###
+	# @method
+	# @private
+	# @param {Object} facetData
+	# @return {Object} Parsed facet data
+	###
+	_parseFacetData: (facetData) ->
+		parsers = @options.config.get('parsers')
+
+		if parsers.hasOwnProperty facetData.name
+			facetData = parsers[facetData.name] facetData
+
+		facetData
 
 	###
 	# @method

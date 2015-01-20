@@ -37,6 +37,7 @@ class Config extends Backbone.Model
 	# @param {Boolean} [autoSearch=true] # When set to true, a search is performed whenever the mainModel (queryOptions) change.
 	# @param {Object} [facetTitleMap={}] Map of facet names, mapping to facet titles. Use this map to give user friendly display names to facets in case the server doesn't give them.
 	# @param {Array<String>} [facetOrder=[]] Define the rendering order of the facets. If undefined, the facets are rendered in the order returned by the backend.
+	# @param {Object} [parsers={}] Hash of parser functions. Takes the options from the result and parses the options before rendering. Use sparsely, because with large option lists, the perfomance penalty can become great.
 	#
 	# RESULTS OPTIONS
 	# @param {Boolean} [results=false] Render the results. When kept to false, the showing of the results has to be taken care of in the application.
@@ -70,6 +71,7 @@ class Config extends Backbone.Model
 		autoSearch: true
 		facetTitleMap: {}
 		facetOrder: []
+		parsers: {}
 
 		### RESULTS OPTIONS ###
 		results: false
