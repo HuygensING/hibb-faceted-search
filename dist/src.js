@@ -6654,7 +6654,7 @@ var jade_mixins = {};
 var jade_interp;
 ;var locals_for_with = (locals || {});(function (config, model, options) {
 options = model.get('options')
-buf.push("<div class=\"placeholder\"><header><h3>" + (jade.escape(null == (jade_interp = model.get('title')) ? "" : jade_interp)) + "</h3><div class=\"menu\">");
+buf.push("<div class=\"placeholder\"><header><h3" + (jade.attr("title", model.get('title'), true, false)) + ">" + (jade.escape(null == (jade_interp = model.get('title')) ? "" : jade_interp)) + "</h3><div class=\"menu\">");
 if ( options != null && options.length != null && options.length > 9)
 {
 buf.push("<i" + (jade.attr("title", config.get('labels').filterOptions, true, false)) + " class=\"filter fa fa-filter\"></i><i" + (jade.attr("title", config.get('labels').sortAlphabetically, true, false)) + " class=\"alpha fa fa-sort-alpha-asc\"></i><i" + (jade.attr("title", config.get('labels').sortNumerically, true, false)) + " class=\"amount active fa fa-sort-amount-desc\"></i>");

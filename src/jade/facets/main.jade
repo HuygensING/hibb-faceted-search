@@ -2,7 +2,7 @@
 
 .placeholder
 	header
-		h3= model.get('title')
+		h3(title=model.get('title'))= model.get('title')
 		.menu
 			if options != null && options.length != null && options.length > 9
 				i.filter.fa.fa-filter(title=config.get('labels').filterOptions)
