@@ -242,7 +242,7 @@ class MainView extends Backbone.View
 			@trigger 'change:results', responseModel
 
 		# The cursor is changed when @next or @prev are called. They are rarely used, since pagination uses @page and thus change:page.
-		@listenTo @searchResults, 'change:cursor', (responseModel) => @trigger 'change:results', responseModel
+		@listenTo @searchResults, 'change:cursor', (responseModel) => @trigger 'change:cursor', responseModel
 
 		@listenTo @searchResults, 'change:page', (responseModel, database) => @trigger 'change:page', responseModel, database
 
