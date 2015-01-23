@@ -3879,7 +3879,6 @@ ListFacet = (function(_super) {
   ListFacet.prototype._parseFacetData = function(facetData) {
     var parsers;
     parsers = this.options.config.get('parsers');
-    console.log(facetData);
     if (parsers.hasOwnProperty(facetData.name)) {
       facetData = parsers[facetData.name](facetData);
     }

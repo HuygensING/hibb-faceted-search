@@ -52,8 +52,6 @@ class ListFacet extends FacetView
 	_parseFacetData: (facetData) ->
 		parsers = @options.config.get('parsers')
 
-		console.log facetData
-
 		if parsers.hasOwnProperty facetData.name
 			facetData = parsers[facetData.name] facetData
 
