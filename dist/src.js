@@ -3358,7 +3358,7 @@ Facets = (function(_super) {
     }
     View = this.viewMap[facetData.type];
     this.views[facetData.name] = new View({
-      attrs: this._parseFacetData(facetData),
+      attrs: facetData,
       config: this.options.config
     });
     this.listenTo(this.views[facetData.name], 'change', (function(_this) {
@@ -3370,23 +3370,6 @@ Facets = (function(_super) {
       };
     })(this));
     return this.views[facetData.name];
-  };
-
-
-  /*
-  	 * @method
-  	 * @private
-  	 * @param {Object} facetData
-  	 * @return {Object} Parsed facet data
-   */
-
-  Facets.prototype._parseFacetData = function(facetData) {
-    var parsers;
-    parsers = this.options.config.get('parsers');
-    if (parsers.hasOwnProperty(facetData.name)) {
-      facetData = parsers[facetData.name](facetData);
-    }
-    return facetData;
   };
 
 
@@ -3867,20 +3850,40 @@ ListFacet = (function(_super) {
   	 * @method
   	 * @construct
   	 * @override FacetView::initialize
-  	 * @param {Object} options
+  	 * @param {Object} this.options
    */
 
   ListFacet.prototype.initialize = function(options) {
+    var facetData;
+    this.options = options;
     ListFacet.__super__.initialize.apply(this, arguments);
     this.resetActive = false;
-    this.config = options.config;
-    this.model = new List(options.attrs, {
+    this.model = new List(this.options.attrs, {
       parse: true
     });
-    this.collection = new ListOptions(options.attrs.options, {
+    facetData = this._parseFacetData(this.options.attrs);
+    this.collection = new ListOptions(facetData.options, {
       parse: true
     });
     return this.render();
+  };
+
+
+  /*
+  	 * @method
+  	 * @private
+  	 * @param {Object} facetData
+  	 * @return {Object} Parsed facet data
+   */
+
+  ListFacet.prototype._parseFacetData = function(facetData) {
+    var parsers;
+    parsers = this.options.config.get('parsers');
+    console.log(facetData);
+    if (parsers.hasOwnProperty(facetData.name)) {
+      facetData = parsers[facetData.name](facetData);
+    }
+    return facetData;
   };
 
 
@@ -3895,8 +3898,8 @@ ListFacet = (function(_super) {
     var menu;
     ListFacet.__super__.render.apply(this, arguments);
     if (this.$('header .options').length > 0) {
-      if (this.config.get('templates').hasOwnProperty('list.menu')) {
-        menuTpl = this.config.get('templates')['list.menu'];
+      if (this.options.config.get('templates').hasOwnProperty('list.menu')) {
+        menuTpl = this.options.config.get('templates')['list.menu'];
       }
       menu = menuTpl({
         model: this.model.attributes
@@ -3906,7 +3909,7 @@ ListFacet = (function(_super) {
     this.optionsView = new ListFacetOptions({
       collection: this.collection,
       facetName: this.model.get('name'),
-      config: this.config
+      config: this.options.config
     });
     this.$('.body').html(this.optionsView.el);
     this.listenTo(this.optionsView, 'filter:finished', this.renderFilteredOptionCount);
@@ -4051,8 +4054,13 @@ ListFacet = (function(_super) {
    */
 
   ListFacet.prototype.update = function(newOptions) {
+    var facetData;
     if (this.resetActive) {
-      this.collection.reset(newOptions, {
+      facetData = this._parseFacetData({
+        options: newOptions,
+        name: this.options.attrs.name
+      });
+      this.collection.reset(facetData.options, {
         parse: true
       });
       return this.resetActive = false;

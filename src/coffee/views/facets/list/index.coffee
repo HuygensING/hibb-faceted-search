@@ -29,19 +29,35 @@ class ListFacet extends FacetView
 	# @method
 	# @construct
 	# @override FacetView::initialize
-	# @param {Object} options
+	# @param {Object} this.options
 	###	
-	initialize: (options) ->
+	initialize: (@options) ->
 		super
 
 		@resetActive = false
 
-		@config = options.config
+		@model = new List @options.attrs, parse: true
 
-		@model = new List options.attrs, parse: true
-		@collection = new ListOptions options.attrs.options, parse: true
+		facetData = @_parseFacetData @options.attrs
+		@collection = new ListOptions facetData.options, parse: true
 
 		@render()
+
+	###
+	# @method
+	# @private
+	# @param {Object} facetData
+	# @return {Object} Parsed facet data
+	###
+	_parseFacetData: (facetData) ->
+		parsers = @options.config.get('parsers')
+
+		console.log facetData
+
+		if parsers.hasOwnProperty facetData.name
+			facetData = parsers[facetData.name] facetData
+
+		facetData
 
 	###
 	# @method
@@ -53,14 +69,14 @@ class ListFacet extends FacetView
 		super
 
 		if @$('header .options').length > 0
-			menuTpl = @config.get('templates')['list.menu'] if @config.get('templates').hasOwnProperty 'list.menu'
+			menuTpl = @options.config.get('templates')['list.menu'] if @options.config.get('templates').hasOwnProperty 'list.menu'
 			menu = menuTpl model: @model.attributes
 			@$('header .options').html menu
 
 		@optionsView = new ListFacetOptions
 			collection: @collection
 			facetName: @model.get 'name'
-			config: @config
+			config: @options.config
 
 		@$('.body').html @optionsView.el
 
@@ -180,7 +196,13 @@ class ListFacet extends FacetView
 	###
 	update: (newOptions) ->
 		if @resetActive
-			@collection.reset newOptions, parse: true
+			# Pass newOptions through parsers
+			# Dirty implementation untill @reset is fixed!
+			facetData = @_parseFacetData
+				options: newOptions
+				name: @options.attrs.name
+
+			@collection.reset facetData.options, parse: true
 			@resetActive = false
 		else
 			@collection.update(newOptions)
