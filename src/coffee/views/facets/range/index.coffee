@@ -53,9 +53,11 @@ class RangeFacet extends FacetView
 		@model = new Range @options.attrs, parse: true
 
 		@listenTo @model, 'change:options', @render
+		
 		@listenTo @model, 'change', (model) =>
 			if model.changed.hasOwnProperty('currentMin') or model.changed.hasOwnProperty('currentMax')
 				@button.style.display = 'block' if @button? and @options.config.get('autoSearch')
+		
 		@listenTo @model, 'change:handleMinLeft', (model, value) =>
 			@handleMin.css 'left', value
 			@bar.css 'left', value + (@model.get('handleWidth')/2)
@@ -65,10 +67,10 @@ class RangeFacet extends FacetView
 			@bar.css 'right', model.get('sliderWidth') - value - (@model.get('handleWidth')/2)
 
 		@listenTo @model, 'change:currentMin', (model, value) =>
-			@inputMin.val Math.ceil value
+			@labelMin.html Math.ceil value
 
 		@listenTo @model, 'change:currentMax', (model, value) =>
-			@inputMax.val Math.ceil value
+			@labelMax.html Math.ceil value
 
 		@render()
 
@@ -107,8 +109,8 @@ class RangeFacet extends FacetView
 		@handleMax = @$ '.handle-max'
 
 		# The labels holding the min and max value.
-		@inputMin = @$ 'input.min'
-		@inputMax = @$ 'input.max'
+		@labelMin = @$ 'label.min'
+		@labelMax = @$ 'label.max'
 
 		# The space (selected range) between the min and max handle.
 		@bar = @$ '.bar'
@@ -140,10 +142,10 @@ class RangeFacet extends FacetView
 			'blur input': 'setYear'
 			'keyup input': 'setYear'
 			'click button': 'doSearch'
-			'dblclick input.min': (ev) -> 
-				@enableInputEditable @inputMin
-			'dblclick input.max': (ev) ->
-				@enableInputEditable @inputMax
+			'dblclick label.min': (ev) -> 
+				@enableInputEditable @labelMin
+			'dblclick label.max': (ev) ->
+				@enableInputEditable @labelMax
 
 	###
 	# @method
@@ -154,10 +156,10 @@ class RangeFacet extends FacetView
 		if ev.type is 'focusout' or ev.type is 'blur' or (ev.type is 'keyup' and ev.keyCode is 13)
 			if ev.currentTarget.className.indexOf('min') > -1
 				@model.set currentMin: +ev.currentTarget.value
-				@disableInputEditable @inputMin
+				@disableInputEditable @labelMin
 			else if ev.currentTarget.className.indexOf('max') > -1
 				@model.set currentMax: +ev.currentTarget.value
-				@disableInputEditable @inputMax
+				@disableInputEditable @labelMax
 
 	###
 	# @method
@@ -235,16 +237,16 @@ class RangeFacet extends FacetView
 	stopDragging: (ev) ->
 		if @draggingMin or @draggingMax or @draggingBar?
 			if @draggingMin
-				if @model.get('currentMin') isnt +@inputMin.val()
-					@model.set currentMin: +@inputMin.val()
+				if @model.get('currentMin') isnt +@labelMin.html()
+					@model.set currentMin: +@labelMin.html()
 				# else
-				# 	@enableInputEditable @inputMin
+				# 	@enableInputEditable @labelMin
 
 			if @draggingMax
-				if @model.get('currentMax') isnt +@inputMax.val()
-					@model.set currentMax: +@inputMax.val()
+				if @model.get('currentMax') isnt +@labelMax.html()
+					@model.set currentMax: +@labelMax.html()
 				# else
-				# 	@enableInputEditable @inputMax
+				# 	@enableInputEditable @labelMax
 
 			@draggingMin = false
 			@draggingMax = false
@@ -259,18 +261,25 @@ class RangeFacet extends FacetView
 				@triggerChange silent: true
 	###
 	# @method
-	# @param {Object} input Reference to jquery wrapped input element.
+	# @param {Object} label Reference to jquery wrapped label element.
 	###
-	enableInputEditable: (input) ->
-		input.addClass 'edit'
-		input.focus()
+	enableInputEditable: (label) ->
+		handle = label.closest('.handle')
+		input = handle.find('input')
+
+		handle.addClass 'edit'
+
+		# The `.val(label.html())` is used to put the cursor to the end of the input.
+		# see: http://stackoverflow.com/questions/4609405/set-focus-after-last-character-in-text-box
+		input.focus().val(label.html())
 		
 	###
 	# @method
-	# @param {Object} input Reference to jquery wrapped input element.
+	# @param {Object} label Reference to jquery wrapped label element.
 	###
-	disableInputEditable: (input) ->
-		input.removeClass 'edit'
+	disableInputEditable: (label) ->
+		handle = label.closest('.handle')
+		handle.removeClass 'edit'
 
 	###
 	# Before removing the range facet, the global mouseleave and resize event
@@ -316,8 +325,8 @@ class RangeFacet extends FacetView
 	# @method
 	###
 	checkInputOverlap: ->
-		minRect = @inputMin[0].getBoundingClientRect()
-		maxRect = @inputMax[0].getBoundingClientRect()
+		minRect = @labelMin[0].getBoundingClientRect()
+		maxRect = @labelMax[0].getBoundingClientRect()
 
 		# If the labels overlap...
 		if !(minRect.right < maxRect.left || minRect.left > maxRect.right || minRect.bottom < maxRect.top || minRect.top > maxRect.bottom)
@@ -328,29 +337,29 @@ class RangeFacet extends FacetView
 
 	###
 	# @method
-	# @param {Number} diff Difference in pixels between inputMin and inputMax.
+	# @param {Number} diff Difference in pixels between labelMin and labelMax.
 	###
 	enableInputOverlap: (diff) ->
-		@inputMin.css 'left', -20 - diff/2
-		@inputMax.css 'right', -20 - diff/2
+		@labelMin.css 'left', -20 - diff/2
+		@labelMax.css 'right', -20 - diff/2
 
 		@updateDash()
 		@$('.dash').show()
 
-		@inputMin.addClass 'overlap'
-		@inputMax.addClass 'overlap'
+		@labelMin.addClass 'overlap'
+		@labelMax.addClass 'overlap'
 
 	###
 	# @method
 	###
 	disableInputOverlap: ->
-		@inputMin.css 'left', -20
-		@inputMax.css 'right', -20
+		@labelMin.css 'left', -20
+		@labelMax.css 'right', -20
 
 		@$('.dash').hide()
 
-		@inputMin.removeClass 'overlap'
-		@inputMax.removeClass 'overlap'
+		@labelMin.removeClass 'overlap'
+		@labelMax.removeClass 'overlap'
 
 	###
 	# @method
@@ -363,7 +372,7 @@ class RangeFacet extends FacetView
 #	updateHandleLabel: (handle, leftPos) ->
 #		@button.style.display = 'block' if @button? and @options.config.get('autoSearch')
 #
-#		input = if handle is 'min' then @inputMin else @inputMax
+#		input = if handle is 'min' then @labelMin else @labelMax
 #		input.val @model.getYearFromLeftPos(leftPos)
 
 	###

@@ -543,14 +543,23 @@
   top: -3px;
   right: -6px;
 }
+.facet.range .body .slider .handle.edit input {
+  display: block;
+}
+.facet.range .body .slider .handle.edit label {
+  display: none;
+}
 .facet.range .body .slider .handle input.min,
+.facet.range .body .slider .handle label.min,
 .facet.range .body .slider .handle input.max,
-.facet.range .body .slider .handle input.single {
+.facet.range .body .slider .handle label.max {
   position: absolute;
   top: 20px;
 }
 .facet.range .body .slider .handle input.min,
-.facet.range .body .slider .handle input.max {
+.facet.range .body .slider .handle label.min,
+.facet.range .body .slider .handle input.max,
+.facet.range .body .slider .handle label.max {
   cursor: pointer;
   border: 1px solid #eee;
   padding: 0 3px;
@@ -575,14 +584,19 @@
   user-select: none;
 }
 .facet.range .body .slider .handle input.min.overlap,
-.facet.range .body .slider .handle input.max.overlap {
+.facet.range .body .slider .handle label.min.overlap,
+.facet.range .body .slider .handle input.max.overlap,
+.facet.range .body .slider .handle label.max.overlap {
   border: 1px solid #fff;
 }
 .facet.range .body .slider .handle input.min.edit,
-.facet.range .body .slider .handle input.max.edit {
+.facet.range .body .slider .handle label.min.edit,
+.facet.range .body .slider .handle input.max.edit,
+.facet.range .body .slider .handle label.max.edit {
   background: rgba(255,189,223,0.3);
 }
-.facet.range .body .slider .handle input.min {
+.facet.range .body .slider .handle input.min,
+.facet.range .body .slider .handle label.min {
   left: -20px;
   -webkit-transition: left 150ms;
   -moz-transition: left 150ms;
@@ -590,8 +604,12 @@
   -ms-transition: left 150ms;
   transition: left 150ms;
 }
-.facet.range .body .slider .handle input.max {
+.facet.range .body .slider .handle input.max,
+.facet.range .body .slider .handle label.max {
   right: -20px;
+}
+.facet.range .body .slider .handle input {
+  display: none;
 }
 .facet.range .body .slider .dash {
   display: none;

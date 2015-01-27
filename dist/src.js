@@ -4713,7 +4713,7 @@ var buf = [];
 var jade_mixins = {};
 var jade_interp;
 ;var locals_for_with = (locals || {});(function (max, min) {
-buf.push("<div class=\"slider\"><span class=\"dash\">-</span><div class=\"handle-min handle\"><input" + (jade.attr("value", min, true, false)) + " class=\"min\"/></div><div class=\"handle-max handle\"><input" + (jade.attr("value", max, true, false)) + " class=\"max\"/></div><div class=\"bar\">&nbsp;</div><button><svg version=\"1.1\" xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" viewBox=\"0 0 216 146\" xml:space=\"preserve\"><path d=\"M172.77,123.025L144.825,95.08c6.735-9.722,10.104-20.559,10.104-32.508c0-7.767-1.508-15.195-4.523-22.283c-3.014-7.089-7.088-13.199-12.221-18.332s-11.242-9.207-18.33-12.221c-7.09-3.015-14.518-4.522-22.285-4.522c-7.767,0-15.195,1.507-22.283,4.522c-7.089,3.014-13.199,7.088-18.332,12.221c-5.133,5.133-9.207,11.244-12.221,18.332c-3.015,7.089-4.522,14.516-4.522,22.283c0,7.767,1.507,15.193,4.522,22.283c3.014,7.088,7.088,13.197,12.221,18.33c5.133,5.134,11.244,9.207,18.332,12.222c7.089,3.015,14.516,4.522,22.283,4.522c11.951,0,22.787-3.369,32.509-10.104l27.945,27.863c1.955,2.064,4.397,3.096,7.332,3.096c2.824,0,5.27-1.032,7.332-3.096c2.064-2.063,3.096-4.508,3.096-7.332C175.785,127.479,174.781,125.034,172.77,123.025z M123.357,88.357c-7.143,7.143-15.738,10.714-25.787,10.714c-10.048,0-18.643-3.572-25.786-10.714c-7.143-7.143-10.714-15.737-10.714-25.786c0-10.048,3.572-18.644,10.714-25.786c7.142-7.143,15.738-10.714,25.786-10.714c10.048,0,18.643,3.572,25.787,10.714c7.143,7.142,10.715,15.738,10.715,25.786C134.072,72.62,130.499,81.214,123.357,88.357z\"></path></svg></button></div>");}.call(this,"max" in locals_for_with?locals_for_with.max:typeof max!=="undefined"?max:undefined,"min" in locals_for_with?locals_for_with.min:typeof min!=="undefined"?min:undefined));;return buf.join("");
+buf.push("<div class=\"slider\"><span class=\"dash\">-</span><div class=\"handle-min handle\"><input" + (jade.attr("value", min, true, false)) + " class=\"min\"/><label class=\"min\">" + (jade.escape(null == (jade_interp = min) ? "" : jade_interp)) + "</label></div><div class=\"handle-max handle\"><input" + (jade.attr("value", max, true, false)) + " class=\"max\"/><label class=\"max\">" + (jade.escape(null == (jade_interp = max) ? "" : jade_interp)) + "</label></div><div class=\"bar\">&nbsp;</div><button title=\"Search within given range\"><svg version=\"1.1\" xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" viewBox=\"0 0 216 146\" xml:space=\"preserve\"><path d=\"M172.77,123.025L144.825,95.08c6.735-9.722,10.104-20.559,10.104-32.508c0-7.767-1.508-15.195-4.523-22.283c-3.014-7.089-7.088-13.199-12.221-18.332s-11.242-9.207-18.33-12.221c-7.09-3.015-14.518-4.522-22.285-4.522c-7.767,0-15.195,1.507-22.283,4.522c-7.089,3.014-13.199,7.088-18.332,12.221c-5.133,5.133-9.207,11.244-12.221,18.332c-3.015,7.089-4.522,14.516-4.522,22.283c0,7.767,1.507,15.193,4.522,22.283c3.014,7.088,7.088,13.197,12.221,18.33c5.133,5.134,11.244,9.207,18.332,12.222c7.089,3.015,14.516,4.522,22.283,4.522c11.951,0,22.787-3.369,32.509-10.104l27.945,27.863c1.955,2.064,4.397,3.096,7.332,3.096c2.824,0,5.27-1.032,7.332-3.096c2.064-2.063,3.096-4.508,3.096-7.332C175.785,127.479,174.781,125.034,172.77,123.025z M123.357,88.357c-7.143,7.143-15.738,10.714-25.787,10.714c-10.048,0-18.643-3.572-25.786-10.714c-7.143-7.143-10.714-15.737-10.714-25.786c0-10.048,3.572-18.644,10.714-25.786c7.142-7.143,15.738-10.714,25.786-10.714c10.048,0,18.643,3.572,25.787,10.714c7.143,7.142,10.715,15.738,10.715,25.786C134.072,72.62,130.499,81.214,123.357,88.357z\"></path></svg></button></div>");}.call(this,"max" in locals_for_with?locals_for_with.max:typeof max!=="undefined"?max:undefined,"min" in locals_for_with?locals_for_with.min:typeof min!=="undefined"?min:undefined));;return buf.join("");
 };
 },{"jade/runtime":11}],32:[function(_dereq_,module,exports){
 var $, FacetView, Range, RangeFacet, bodyTpl, _,
@@ -4817,12 +4817,12 @@ RangeFacet = (function(_super) {
     })(this));
     this.listenTo(this.model, 'change:currentMin', (function(_this) {
       return function(model, value) {
-        return _this.inputMin.val(Math.ceil(value));
+        return _this.labelMin.html(Math.ceil(value));
       };
     })(this));
     this.listenTo(this.model, 'change:currentMax', (function(_this) {
       return function(model, value) {
-        return _this.inputMax.val(Math.ceil(value));
+        return _this.labelMax.html(Math.ceil(value));
       };
     })(this));
     return this.render();
@@ -4862,8 +4862,8 @@ RangeFacet = (function(_super) {
     var slider;
     this.handleMin = this.$('.handle-min');
     this.handleMax = this.$('.handle-max');
-    this.inputMin = this.$('input.min');
-    this.inputMax = this.$('input.max');
+    this.labelMin = this.$('label.min');
+    this.labelMax = this.$('label.max');
     this.bar = this.$('.bar');
     this.button = this.el.querySelector('button');
     slider = this.$('.slider');
@@ -4891,11 +4891,11 @@ RangeFacet = (function(_super) {
       'blur input': 'setYear',
       'keyup input': 'setYear',
       'click button': 'doSearch',
-      'dblclick input.min': function(ev) {
-        return this.enableInputEditable(this.inputMin);
+      'dblclick label.min': function(ev) {
+        return this.enableInputEditable(this.labelMin);
       },
-      'dblclick input.max': function(ev) {
-        return this.enableInputEditable(this.inputMax);
+      'dblclick label.max': function(ev) {
+        return this.enableInputEditable(this.labelMax);
       }
     });
   };
@@ -4913,12 +4913,12 @@ RangeFacet = (function(_super) {
         this.model.set({
           currentMin: +ev.currentTarget.value
         });
-        return this.disableInputEditable(this.inputMin);
+        return this.disableInputEditable(this.labelMin);
       } else if (ev.currentTarget.className.indexOf('max') > -1) {
         this.model.set({
           currentMax: +ev.currentTarget.value
         });
-        return this.disableInputEditable(this.inputMax);
+        return this.disableInputEditable(this.labelMax);
       }
     }
   };
@@ -5010,16 +5010,16 @@ RangeFacet = (function(_super) {
   RangeFacet.prototype.stopDragging = function(ev) {
     if (this.draggingMin || this.draggingMax || (this.draggingBar != null)) {
       if (this.draggingMin) {
-        if (this.model.get('currentMin') !== +this.inputMin.val()) {
+        if (this.model.get('currentMin') !== +this.labelMin.html()) {
           this.model.set({
-            currentMin: +this.inputMin.val()
+            currentMin: +this.labelMin.html()
           });
         }
       }
       if (this.draggingMax) {
-        if (this.model.get('currentMax') !== +this.inputMax.val()) {
+        if (this.model.get('currentMax') !== +this.labelMax.html()) {
           this.model.set({
-            currentMax: +this.inputMax.val()
+            currentMax: +this.labelMax.html()
           });
         }
       }
@@ -5037,22 +5037,27 @@ RangeFacet = (function(_super) {
 
   /*
   	 * @method
-  	 * @param {Object} input Reference to jquery wrapped input element.
+  	 * @param {Object} label Reference to jquery wrapped label element.
    */
 
-  RangeFacet.prototype.enableInputEditable = function(input) {
-    input.addClass('edit');
-    return input.focus();
+  RangeFacet.prototype.enableInputEditable = function(label) {
+    var handle, input;
+    handle = label.closest('.handle');
+    input = handle.find('input');
+    handle.addClass('edit');
+    return input.focus().val(label.html());
   };
 
 
   /*
   	 * @method
-  	 * @param {Object} input Reference to jquery wrapped input element.
+  	 * @param {Object} label Reference to jquery wrapped label element.
    */
 
-  RangeFacet.prototype.disableInputEditable = function(input) {
-    return input.removeClass('edit');
+  RangeFacet.prototype.disableInputEditable = function(label) {
+    var handle;
+    handle = label.closest('.handle');
+    return handle.removeClass('edit');
   };
 
 
@@ -5113,8 +5118,8 @@ RangeFacet = (function(_super) {
 
   RangeFacet.prototype.checkInputOverlap = function() {
     var diff, maxRect, minRect;
-    minRect = this.inputMin[0].getBoundingClientRect();
-    maxRect = this.inputMax[0].getBoundingClientRect();
+    minRect = this.labelMin[0].getBoundingClientRect();
+    maxRect = this.labelMax[0].getBoundingClientRect();
     if (!(minRect.right < maxRect.left || minRect.left > maxRect.right || minRect.bottom < maxRect.top || minRect.top > maxRect.bottom)) {
       diff = minRect.right - maxRect.left;
       return this.enableInputOverlap(diff);
@@ -5126,16 +5131,16 @@ RangeFacet = (function(_super) {
 
   /*
   	 * @method
-  	 * @param {Number} diff Difference in pixels between inputMin and inputMax.
+  	 * @param {Number} diff Difference in pixels between labelMin and labelMax.
    */
 
   RangeFacet.prototype.enableInputOverlap = function(diff) {
-    this.inputMin.css('left', -20 - diff / 2);
-    this.inputMax.css('right', -20 - diff / 2);
+    this.labelMin.css('left', -20 - diff / 2);
+    this.labelMax.css('right', -20 - diff / 2);
     this.updateDash();
     this.$('.dash').show();
-    this.inputMin.addClass('overlap');
-    return this.inputMax.addClass('overlap');
+    this.labelMin.addClass('overlap');
+    return this.labelMax.addClass('overlap');
   };
 
 
@@ -5144,11 +5149,11 @@ RangeFacet = (function(_super) {
    */
 
   RangeFacet.prototype.disableInputOverlap = function() {
-    this.inputMin.css('left', -20);
-    this.inputMax.css('right', -20);
+    this.labelMin.css('left', -20);
+    this.labelMax.css('right', -20);
     this.$('.dash').hide();
-    this.inputMin.removeClass('overlap');
-    return this.inputMax.removeClass('overlap');
+    this.labelMin.removeClass('overlap');
+    return this.labelMax.removeClass('overlap');
   };
 
 

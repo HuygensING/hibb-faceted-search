@@ -68,12 +68,18 @@ sliderHeight = 6px
 					// left 391px
 					top ((handleWidth - sliderHeight)/-2)
 					right -1 * (handleWidth/2)
+					
+				&.edit
+					input
+						display block
+						
+					label
+						display none
 
-				input
-					&.min, &.max, &.single
+				input, label
+					&.min, &.max
 						position: absolute
 						top 20px
-
 
 					&.min, &.max
 						cursor pointer
@@ -99,6 +105,9 @@ sliderHeight = 6px
 						
 					&.max
 						right -20px
+						
+				input
+					display none
 
 			.dash
 				display none
