@@ -1,9 +1,9 @@
 Backbone = require 'backbone'
 _ = require 'underscore'
 
-SearchModel = require '../models/search'
+SearchModel = require '../../models/search'
 
-tpl = require '../../jade/text-search.jade'
+tpl = require './index.jade'
 
 funcky = require('funcky.util')
 
@@ -25,7 +25,6 @@ class TextSearch extends Backbone.View
 	###
 	initialize: (@options) ->
 		@setModel()
-
 
 	###
 	# @method
