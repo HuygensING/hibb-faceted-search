@@ -68,7 +68,7 @@ class TextSearch extends Backbone.View
 	###
 	_addFullTextSearchParameters: ->
 		ftsp = @options.config.get('textSearchOptions').fullTextSearchParameters
-		console.log ftsp
+
 		if ftsp?
 			@currentField = ftsp[0]
 
@@ -100,11 +100,26 @@ class TextSearch extends Backbone.View
 			delete attrs.fuzzy
 
 		@model = new SearchModel attrs
-		@_addFullTextSearchParameters()
+
+		# @listenTo @model, "change:fullTextSearchParameters", (model, values) =>
+		# 	@currentField = values[0].name
 
 		@listenTo @options.config, "change:textSearchOptions", =>
 			@_addFullTextSearchParameters()
 			@render()
+
+		@_addFullTextSearchParameters()
+
+	###
+	# @method
+	# @private
+	###
+	_updateFullTextSearchParameters: ->
+		parameter = 
+			name: @currentField
+			term: @el.querySelector('input[name="search"]').value
+
+		@model.set fullTextSearchParameters: [parameter]
 
 	###
 	# @method
@@ -123,12 +138,18 @@ class TextSearch extends Backbone.View
 			if @model.get('term') isnt ev.currentTarget.value
 				@model.set term: ev.currentTarget.value
 		else
-			for cb in @el.querySelectorAll '[data-attr-array="fullTextSearchParameters"]'
-				if cb.checked
-					@model.set fullTextSearchParameters: [
-						name: cb.getAttribute('data-value')
-						term: ev.currentTarget.value
-					]
+			@_updateFullTextSearchParameters()
+
+			# ftsp = @model.get("fullTextSearchParameters")
+			# parameter = _.find ftsp, name: @currentField
+			# parameter.term = ev.currentTarget.value
+			# console.log parameter
+			# for cb in @el.querySelectorAll '[data-attr-array="fullTextSearchParameters"]'
+			# 	if cb.checked
+			# 		@model.set fullTextSearchParameters: [
+			# 			name: cb.getAttribute('data-value')
+			# 			term: ev.currentTarget.value
+			# 		]
 					
 
 			# for field in clone
@@ -151,12 +172,13 @@ class TextSearch extends Backbone.View
 				@$('ul.textlayers').toggle ev.currentTarget.checked
 			@model.set attr, ev.currentTarget.checked
 		else if dataAttrArray is 'fullTextSearchParameters'
-			checkedArray = []		
+			# Get the checked radio button
 			for cb in @el.querySelectorAll '[data-attr-array="fullTextSearchParameters"]' when cb.checked
-				checkedArray.push
-					name: cb.getAttribute('data-value')
-					term: @$('input[name="search"]').val()
-			@model.set dataAttrArray, checkedArray
+				# The field name is in the data-value attribute.
+				@currentField = cb.getAttribute('data-value')
+
+			@_updateFullTextSearchParameters()
+
 		else if dataAttrArray?
 			checkedArray = []
 			for cb in @el.querySelectorAll "[data-attr-array=\"#{dataAttrArray}\"]" when cb.checked

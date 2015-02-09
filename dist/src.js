@@ -6501,7 +6501,6 @@ TextSearch = (function(_super) {
   TextSearch.prototype._addFullTextSearchParameters = function() {
     var ftsp, param, params, _i, _len;
     ftsp = this.options.config.get('textSearchOptions').fullTextSearchParameters;
-    console.log(ftsp);
     if (ftsp != null) {
       this.currentField = ftsp[0];
       params = [];
@@ -6541,13 +6540,30 @@ TextSearch = (function(_super) {
       delete attrs.fuzzy;
     }
     this.model = new SearchModel(attrs);
-    this._addFullTextSearchParameters();
-    return this.listenTo(this.options.config, "change:textSearchOptions", (function(_this) {
+    this.listenTo(this.options.config, "change:textSearchOptions", (function(_this) {
       return function() {
         _this._addFullTextSearchParameters();
         return _this.render();
       };
     })(this));
+    return this._addFullTextSearchParameters();
+  };
+
+
+  /*
+  	 * @method
+  	 * @private
+   */
+
+  TextSearch.prototype._updateFullTextSearchParameters = function() {
+    var parameter;
+    parameter = {
+      name: this.currentField,
+      term: this.el.querySelector('input[name="search"]').value
+    };
+    return this.model.set({
+      fullTextSearchParameters: [parameter]
+    });
   };
 
 
@@ -6557,7 +6573,6 @@ TextSearch = (function(_super) {
    */
 
   TextSearch.prototype.onKeyUp = function(ev) {
-    var cb, _i, _len, _ref;
     if (ev.keyCode === 13) {
       ev.preventDefault();
       return this.search(ev);
@@ -6569,20 +6584,7 @@ TextSearch = (function(_super) {
         });
       }
     } else {
-      _ref = this.el.querySelectorAll('[data-attr-array="fullTextSearchParameters"]');
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        cb = _ref[_i];
-        if (cb.checked) {
-          this.model.set({
-            fullTextSearchParameters: [
-              {
-                name: cb.getAttribute('data-value'),
-                term: ev.currentTarget.value
-              }
-            ]
-          });
-        }
-      }
+      this._updateFullTextSearchParameters();
     }
     return this.updateQueryModel();
   };
@@ -6603,18 +6605,14 @@ TextSearch = (function(_super) {
       }
       this.model.set(attr, ev.currentTarget.checked);
     } else if (dataAttrArray === 'fullTextSearchParameters') {
-      checkedArray = [];
       _ref = this.el.querySelectorAll('[data-attr-array="fullTextSearchParameters"]');
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         cb = _ref[_i];
         if (cb.checked) {
-          checkedArray.push({
-            name: cb.getAttribute('data-value'),
-            term: this.$('input[name="search"]').val()
-          });
+          this.currentField = cb.getAttribute('data-value');
         }
       }
-      this.model.set(dataAttrArray, checkedArray);
+      this._updateFullTextSearchParameters();
     } else if (dataAttrArray != null) {
       checkedArray = [];
       _ref1 = this.el.querySelectorAll("[data-attr-array=\"" + dataAttrArray + "\"]");
