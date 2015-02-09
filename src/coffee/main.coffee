@@ -225,13 +225,12 @@ class MainView extends Backbone.View
 		@searchResults = new SearchResults null, config: @config
 
 		@listenToOnce @searchResults, 'change:results', (responseModel) =>
-			# console.log responseModel
-			# @config.set sortableFields: responseModel.get('sortableFields')
-
+			# TODO move to config
 			if responseModel.has 'fullTextSearchFields'
 				# Clone textSearchOptions to force Backbone's change event to fire.
 				textSearchOptions = _.clone(@config.get('textSearchOptions'))
 				textSearchOptions.fullTextSearchParameters = responseModel.get('fullTextSearchFields')
+
 				@config.set textSearchOptions: textSearchOptions
 
 		# Listen to the change:results event and (re)render the facets everytime the result changes.

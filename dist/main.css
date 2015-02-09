@@ -490,6 +490,9 @@
   -moz-user-select: none;
   -ms-user-select: none;
   user-select: none;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
   height: 6px;
   background: #eee;
   -webkit-border-radius: 6px;
@@ -715,6 +718,14 @@
 }
 .faceted-search.search-type-none ul.facets-menu li.switch {
   display: none;
+}
+.faceted-search .text-search header h3 {
+  padding: 0;
+  margin: 0;
+  width: calc(100% - 60px);
+  overflow: hidden;
+  -o-text-overflow: ellipsis;
+  text-overflow: ellipsis;
 }
 .faceted-search .text-search .search-input input {
   -webkit-box-sizing: border-box;

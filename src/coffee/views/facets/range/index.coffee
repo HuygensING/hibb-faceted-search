@@ -120,14 +120,15 @@ class RangeFacet extends FacetView
 		# The root element of the range facet.
 		slider = @$ '.slider'
 
-		@model.set
-			sliderWidth: slider.width()
-			sliderLeft: slider.offset().left
-			# The relative left position of the min and max handle.
-			handleMinLeft: @handleMin.position().left
-			handleMaxLeft: @handleMax.position().left
-			# The assumption is made that the minHandle and maxHandle have an equal width
-			handleWidth: @handleMin.width()
+		if slider.width() isnt 0
+			@model.set
+				sliderWidth: slider.width()
+				sliderLeft: slider.offset().left
+				# The relative left position of the min and max handle.
+				handleMinLeft: @handleMin.position().left
+				handleMaxLeft: @handleMax.position().left
+				# The assumption is made that the minHandle and maxHandle have an equal width
+				handleWidth: @handleMin.width()
 
 	###
 	# @method
@@ -180,6 +181,7 @@ class RangeFacet extends FacetView
 
 		input = target.find 'input'
 		# If the bar is dragged, an input is not found.
+
 		if input.length > 0
 			# Return if the input is being editted
 			return if input.hasClass 'edit'
@@ -412,5 +414,18 @@ class RangeFacet extends FacetView
 		# 	currentMax: +(newOptions.upperLimit+'').substr(0, 4)
 
 		@button.style.display = 'none' if @button?
+
+	###
+	# @method
+	# @override FacetView::showBody
+	###
+	showBody: (done) ->
+		ready = =>
+			if not @model.has('sliderWidth') or (@model.get('sliderWidth') is 0)
+				@postRender()
+			
+			done() if done?
+			
+		super ready
 
 module.exports = RangeFacet

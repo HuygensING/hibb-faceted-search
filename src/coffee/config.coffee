@@ -38,6 +38,7 @@ class Config extends Backbone.Model
 	# @param {Object} [facetTitleMap={}] Map of facet names, mapping to facet titles. Use this map to give user friendly display names to facets in case the server doesn't give them.
 	# @param {Array<String>} [facetOrder=[]] Define the rendering order of the facets. If undefined, the facets are rendered in the order returned by the backend.
 	# @param {Object} [parsers={}] Hash of parser functions. Takes the options from the result and parses the options before rendering. Use sparsely, because with large option lists, the perfomance penalty can become great.
+	# @param {Boolean} [collapsed=false] collapsed Start the faceted search with the facets collapsed.
 	#
 	# RESULTS OPTIONS
 	# @param {Boolean} [results=false] Render the results. When kept to false, the showing of the results has to be taken care of in the application.
@@ -68,10 +69,12 @@ class Config extends Backbone.Model
 		textSearchOptions:
 			caseSensitive: false
 			fuzzy: false
+			fullTextSearchParameters: []
 		autoSearch: true
 		facetTitleMap: {}
 		facetOrder: []
 		parsers: {}
+		collapse: false
 
 		### RESULTS OPTIONS ###
 		results: false

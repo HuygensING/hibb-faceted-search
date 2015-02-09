@@ -113,7 +113,6 @@ class TextSearch extends Backbone.View
 			if @model.get('term') isnt ev.currentTarget.value
 				@model.set term: ev.currentTarget.value
 		else
-
 			for cb in @el.querySelectorAll '[data-attr-array="fullTextSearchParameters"]'
 				if cb.checked
 					@model.set fullTextSearchParameters: [

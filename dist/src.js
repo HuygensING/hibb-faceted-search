@@ -2217,6 +2217,7 @@ Config = (function(_super) {
   	 * @param {Object} [facetTitleMap={}] Map of facet names, mapping to facet titles. Use this map to give user friendly display names to facets in case the server doesn't give them.
   	 * @param {Array<String>} [facetOrder=[]] Define the rendering order of the facets. If undefined, the facets are rendered in the order returned by the backend.
   	 * @param {Object} [parsers={}] Hash of parser functions. Takes the options from the result and parses the options before rendering. Use sparsely, because with large option lists, the perfomance penalty can become great.
+  	 * @param {Boolean} [collapsed=false] collapsed Start the faceted search with the facets collapsed.
   	 *
   	 * RESULTS OPTIONS
   	 * @param {Boolean} [results=false] Render the results. When kept to false, the showing of the results has to be taken care of in the application.
@@ -2249,12 +2250,14 @@ Config = (function(_super) {
       textSearch: 'advanced',
       textSearchOptions: {
         caseSensitive: false,
-        fuzzy: false
+        fuzzy: false,
+        fullTextSearchParameters: []
       },
       autoSearch: true,
       facetTitleMap: {},
       facetOrder: [],
       parsers: {},
+      collapse: false,
 
       /* RESULTS OPTIONS */
       results: false,
@@ -3337,8 +3340,8 @@ Facets = (function(_super) {
       }
       this.el.innerHTML = '';
       this.el.appendChild(fragment);
-      this._postRenderFacets();
     }
+    this._postRenderFacets();
     return this;
   };
 
@@ -3384,6 +3387,9 @@ Facets = (function(_super) {
     _results = [];
     for (facetName in _ref) {
       view = _ref[facetName];
+      if (this.options.config.get('collapse')) {
+        view.collapse();
+      }
       _results.push(view.postRender());
     }
     return _results;
@@ -4627,7 +4633,7 @@ FacetView = (function(_super) {
 
   FacetView.prototype._toggleBody = function(ev) {
     var func;
-    func = this.$('.body').is(':visible') ? this._hideBody : this._showBody;
+    func = this.$('.body').is(':visible') ? this.hideBody : this.showBody;
     if (_.isFunction(ev)) {
       return func.call(this, ev);
     } else {
@@ -4652,11 +4658,21 @@ FacetView = (function(_super) {
 
   /*
   	 * @method
-  	 * @private
+   */
+
+  FacetView.prototype.collapse = function() {
+    this._hideMenu();
+    this.$('header i.fa').hide();
+    return this.$('.body').hide();
+  };
+
+
+  /*
+  	 * @method
   	 * @param {Function} done Callback called when hide body animation has finished.
    */
 
-  FacetView.prototype._hideBody = function(done) {
+  FacetView.prototype.hideBody = function(done) {
     this._hideMenu();
     return this.$('.body').slideUp(100, (function(_this) {
       return function() {
@@ -4671,11 +4687,10 @@ FacetView = (function(_super) {
 
   /*
   	 * @method
-  	 * @private
   	 * @param {Function} done Callback called when show body animation has finished.
    */
 
-  FacetView.prototype._showBody = function(done) {
+  FacetView.prototype.showBody = function(done) {
     return this.$('.body').slideDown(100, (function(_this) {
       return function() {
         if (done != null) {
@@ -4867,13 +4882,15 @@ RangeFacet = (function(_super) {
     this.bar = this.$('.bar');
     this.button = this.el.querySelector('button');
     slider = this.$('.slider');
-    return this.model.set({
-      sliderWidth: slider.width(),
-      sliderLeft: slider.offset().left,
-      handleMinLeft: this.handleMin.position().left,
-      handleMaxLeft: this.handleMax.position().left,
-      handleWidth: this.handleMin.width()
-    });
+    if (slider.width() !== 0) {
+      return this.model.set({
+        sliderWidth: slider.width(),
+        sliderLeft: slider.offset().left,
+        handleMinLeft: this.handleMin.position().left,
+        handleMaxLeft: this.handleMax.position().left,
+        handleWidth: this.handleMin.width()
+      });
+    }
   };
 
 
@@ -5195,6 +5212,27 @@ RangeFacet = (function(_super) {
     if (this.button != null) {
       return this.button.style.display = 'none';
     }
+  };
+
+
+  /*
+  	 * @method
+  	 * @override FacetView::showBody
+   */
+
+  RangeFacet.prototype.showBody = function(done) {
+    var ready;
+    ready = (function(_this) {
+      return function() {
+        if (!_this.model.has('sliderWidth') || (_this.model.get('sliderWidth') === 0)) {
+          _this.postRender();
+        }
+        if (done != null) {
+          return done();
+        }
+      };
+    })(this);
+    return RangeFacet.__super__.showBody.call(this, ready);
   };
 
   return RangeFacet;
@@ -6691,7 +6729,13 @@ var buf = [];
 var jade_mixins = {};
 var jade_interp;
 ;var locals_for_with = (locals || {});(function (config, generateId, id, model, undefined) {
-buf.push("<div class=\"placeholder\"><div class=\"body\"><div class=\"search-input\"><input type=\"text\" name=\"search\"/><i class=\"fa fa-search\"></i></div><div class=\"menu\"><i class=\"fa fa-times\"></i><div class=\"close\"></div><ul class=\"options\">");
+var fields = config.get('textSearchOptions').fullTextSearchParameters;
+buf.push("<div class=\"placeholder\">");
+if ( fields.length === 1)
+{
+buf.push("<header><h3>" + (jade.escape(null == (jade_interp = config.get('facetTitleMap')[fields[0]]) ? "" : jade_interp)) + "</h3></header>");
+}
+buf.push("<div class=\"body\"><div class=\"search-input\"><input type=\"text\" name=\"search\"/><i class=\"fa fa-search\"></i></div><div class=\"menu\"><i class=\"fa fa-times\"></i><div class=\"close\"></div><ul class=\"options\">");
 if ( config.get('textSearchOptions').caseSensitive)
 {
 id = generateId()
@@ -6744,7 +6788,6 @@ buf.push("<li class=\"textlayer\"><input" + (jade.attr("id", 'cb_textlayer'+text
 
 buf.push("</ul></li>");
 }
-var fields = config.get('textSearchOptions').fullTextSearchParameters;
 if ( fields != null && fields.length > 1)
 {
 buf.push("<li class=\"option fields\"><h4>" + (jade.escape(null == (jade_interp = config.get('labels').fullTextSearchParameters) ? "" : jade_interp)) + "</h4><ul class=\"fields\">");

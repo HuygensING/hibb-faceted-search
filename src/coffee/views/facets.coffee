@@ -108,7 +108,8 @@ class Facets extends Backbone.View
 			@el.innerHTML = ''
 			@el.appendChild fragment
 
-			@_postRenderFacets()
+		@_postRenderFacets()
+		
 
 		@
 
@@ -138,6 +139,8 @@ class Facets extends Backbone.View
 	###
 	_postRenderFacets: ->
 		for facetName, view of @views
+			if @options.config.get('collapse')
+				view.collapse()
 			view.postRender()
 
 	###

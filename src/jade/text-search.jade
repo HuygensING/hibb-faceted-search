@@ -1,4 +1,9 @@
+- var fields = config.get('textSearchOptions').fullTextSearchParameters;
+
 .placeholder
+	if fields.length === 1
+		header
+			h3= config.get('facetTitleMap')[fields[0]]
 	.body
 		.search-input
 			input(type="text", name="search")
@@ -48,7 +53,7 @@
 									label(for='cb_textlayer'+textLayer)= textLayer
 
 				//- Specific for Timbuctoo
-				- var fields = config.get('textSearchOptions').fullTextSearchParameters;
+				
 				if fields != null && fields.length > 1
 					li.option.fields
 						h4= config.get('labels').fullTextSearchParameters

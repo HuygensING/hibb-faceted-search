@@ -80,7 +80,7 @@ class FacetView extends Backbone.View
 	# @param {Object} ev The event object.
 	###
 	_toggleBody: (ev) ->
-		func = if @$('.body').is(':visible') then @_hideBody else @_showBody
+		func = if @$('.body').is(':visible') then @hideBody else @showBody
 
 		# If ev is a function, than it is the callback. Use call to pass the context.
 		if _.isFunction ev then func.call @, ev else func.call @
@@ -98,10 +98,17 @@ class FacetView extends Backbone.View
 
 	###
 	# @method
-	# @private
+	###
+	collapse: ->
+		@_hideMenu()
+		@$('header i.fa').hide()
+		@$('.body').hide()
+
+	###
+	# @method
 	# @param {Function} done Callback called when hide body animation has finished.
 	###
-	_hideBody: (done) ->
+	hideBody: (done) ->
 		@_hideMenu()
 
 		@$('.body').slideUp 100, =>
@@ -110,10 +117,9 @@ class FacetView extends Backbone.View
 
 	###
 	# @method
-	# @private
 	# @param {Function} done Callback called when show body animation has finished.
 	###
-	_showBody: (done) ->
+	showBody: (done) ->
 		@$('.body').slideDown 100, =>
 			done() if done?
 			@$('header i.fa').fadeIn 100
