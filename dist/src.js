@@ -6430,6 +6430,16 @@ TextSearch = (function(_super) {
 
 
   /*
+  	 * The current field to search in.
+  	 *
+  	 * @property
+  	 * @type {String}
+   */
+
+  TextSearch.prototype.currentField = "";
+
+
+  /*
   	 * @method
   	 * @construct
   	 * @param {Object} this.options
@@ -6455,7 +6465,8 @@ TextSearch = (function(_super) {
     this.$el.html(tpl({
       model: this.model,
       config: this.options.config,
-      generateId: funcky.generateID
+      generateId: funcky.generateID,
+      currentField: this.currentField
     }));
     return this;
   };
@@ -6490,7 +6501,9 @@ TextSearch = (function(_super) {
   TextSearch.prototype._addFullTextSearchParameters = function() {
     var ftsp, param, params, _i, _len;
     ftsp = this.options.config.get('textSearchOptions').fullTextSearchParameters;
+    console.log(ftsp);
     if (ftsp != null) {
+      this.currentField = ftsp[0];
       params = [];
       for (_i = 0, _len = ftsp.length; _i < _len; _i++) {
         param = ftsp[_i];
@@ -6669,7 +6682,7 @@ module.exports = function template(locals) {
 var buf = [];
 var jade_mixins = {};
 var jade_interp;
-;var locals_for_with = (locals || {});(function (config, generateId, id, model, undefined) {
+;var locals_for_with = (locals || {});(function (config, currentField, generateId, id, model, textSearchId, undefined) {
 var fields = config.get('textSearchOptions').fullTextSearchParameters;
 buf.push("<div class=\"placeholder\">");
 if ( fields.length === 1)
@@ -6731,7 +6744,9 @@ buf.push("</ul></li>");
 }
 if ( fields != null && fields.length > 1)
 {
-buf.push("<li class=\"option fields\"><h4>" + (jade.escape(null == (jade_interp = config.get('labels').fullTextSearchParameters) ? "" : jade_interp)) + "</h4><ul class=\"fields\">");
+buf.push("<li class=\"option fields\">");
+textSearchId = generateId()
+buf.push("<h4>" + (jade.escape(null == (jade_interp = config.get('labels').fullTextSearchParameters) ? "" : jade_interp)) + "</h4><ul class=\"fields\">");
 // iterate fields
 ;(function(){
   var $$obj = fields;
@@ -6741,7 +6756,7 @@ buf.push("<li class=\"option fields\"><h4>" + (jade.escape(null == (jade_interp 
       var field = $$obj[i];
 
 id = generateId()
-buf.push("<li><input type=\"radio\"" + (jade.attr("checked", i==0?true:false, true, false)) + " name=\"textsearchoptions\"" + (jade.attr("id", id, true, false)) + " data-attr-array=\"fullTextSearchParameters\"" + (jade.attr("data-value", field, true, false)) + "/><label" + (jade.attr("for", id, true, false)) + ">" + (jade.escape(null == (jade_interp = config.get('facetTitleMap')[field]) ? "" : jade_interp)) + "</label></li>");
+buf.push("<li><input type=\"radio\"" + (jade.attr("checked", field==currentField?true:false, true, false)) + (jade.attr("name", "textsearchoptions-"+textSearchId, true, false)) + (jade.attr("id", id, true, false)) + " data-attr-array=\"fullTextSearchParameters\"" + (jade.attr("data-value", field, true, false)) + "/><label" + (jade.attr("for", id, true, false)) + ">" + (jade.escape(null == (jade_interp = config.get('facetTitleMap')[field]) ? "" : jade_interp)) + "</label></li>");
     }
 
   } else {
@@ -6750,7 +6765,7 @@ buf.push("<li><input type=\"radio\"" + (jade.attr("checked", i==0?true:false, tr
       $$l++;      var field = $$obj[i];
 
 id = generateId()
-buf.push("<li><input type=\"radio\"" + (jade.attr("checked", i==0?true:false, true, false)) + " name=\"textsearchoptions\"" + (jade.attr("id", id, true, false)) + " data-attr-array=\"fullTextSearchParameters\"" + (jade.attr("data-value", field, true, false)) + "/><label" + (jade.attr("for", id, true, false)) + ">" + (jade.escape(null == (jade_interp = config.get('facetTitleMap')[field]) ? "" : jade_interp)) + "</label></li>");
+buf.push("<li><input type=\"radio\"" + (jade.attr("checked", field==currentField?true:false, true, false)) + (jade.attr("name", "textsearchoptions-"+textSearchId, true, false)) + (jade.attr("id", id, true, false)) + " data-attr-array=\"fullTextSearchParameters\"" + (jade.attr("data-value", field, true, false)) + "/><label" + (jade.attr("for", id, true, false)) + ">" + (jade.escape(null == (jade_interp = config.get('facetTitleMap')[field]) ? "" : jade_interp)) + "</label></li>");
     }
 
   }
@@ -6758,7 +6773,7 @@ buf.push("<li><input type=\"radio\"" + (jade.attr("checked", i==0?true:false, tr
 
 buf.push("</ul></li>");
 }
-buf.push("</ul></div></div></div>");}.call(this,"config" in locals_for_with?locals_for_with.config:typeof config!=="undefined"?config:undefined,"generateId" in locals_for_with?locals_for_with.generateId:typeof generateId!=="undefined"?generateId:undefined,"id" in locals_for_with?locals_for_with.id:typeof id!=="undefined"?id:undefined,"model" in locals_for_with?locals_for_with.model:typeof model!=="undefined"?model:undefined,"undefined" in locals_for_with?locals_for_with.undefined:typeof undefined!=="undefined"?undefined:undefined));;return buf.join("");
+buf.push("</ul></div></div></div>");}.call(this,"config" in locals_for_with?locals_for_with.config:typeof config!=="undefined"?config:undefined,"currentField" in locals_for_with?locals_for_with.currentField:typeof currentField!=="undefined"?currentField:undefined,"generateId" in locals_for_with?locals_for_with.generateId:typeof generateId!=="undefined"?generateId:undefined,"id" in locals_for_with?locals_for_with.id:typeof id!=="undefined"?id:undefined,"model" in locals_for_with?locals_for_with.model:typeof model!=="undefined"?model:undefined,"textSearchId" in locals_for_with?locals_for_with.textSearchId:typeof textSearchId!=="undefined"?textSearchId:undefined,"undefined" in locals_for_with?locals_for_with.undefined:typeof undefined!=="undefined"?undefined:undefined));;return buf.join("");
 };
 },{"jade/runtime":11}],42:[function(_dereq_,module,exports){
 var jade = _dereq_("jade/runtime");

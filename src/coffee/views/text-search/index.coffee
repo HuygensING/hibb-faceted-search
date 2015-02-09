@@ -18,6 +18,14 @@ class TextSearch extends Backbone.View
 	className: 'text-search'
 
 	###
+	# The current field to search in.
+	#
+	# @property
+	# @type {String}
+	###
+	currentField: ""
+
+	###
 	# @method
 	# @construct
 	# @param {Object} this.options
@@ -38,6 +46,7 @@ class TextSearch extends Backbone.View
 			# options: @options.config.get('textSearchOptions')
 			config: @options.config
 			generateId: funcky.generateID
+			currentField: @currentField
 
 		@
 
@@ -59,8 +68,10 @@ class TextSearch extends Backbone.View
 	###
 	_addFullTextSearchParameters: ->
 		ftsp = @options.config.get('textSearchOptions').fullTextSearchParameters
-
+		console.log ftsp
 		if ftsp?
+			@currentField = ftsp[0]
+
 			params = []
 			for param in ftsp
 				params.push

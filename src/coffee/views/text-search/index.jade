@@ -56,10 +56,12 @@
 				
 				if fields != null && fields.length > 1
 					li.option.fields
+						//- Add a textSearchId so the radio buttons are linked. The name has to be unique in case multiple faceted searches are used in one page.
+						- textSearchId = generateId()
 						h4= config.get('labels').fullTextSearchParameters
 						ul.fields
 							for field, i in fields
 								- id = generateId()
 								li
-									input(type="radio", checked=i==0?true:false, name="textsearchoptions", id=id, data-attr-array="fullTextSearchParameters", data-value=field)
+									input(type="radio", checked=field==currentField?true:false, name="textsearchoptions-"+textSearchId, id=id, data-attr-array="fullTextSearchParameters", data-value=field)
 									label(for=id)= config.get('facetTitleMap')[field]
