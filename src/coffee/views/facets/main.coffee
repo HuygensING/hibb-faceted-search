@@ -73,6 +73,20 @@ class FacetView extends Backbone.View
 	postRender: ->
 
 	###
+	# @method
+	# @private
+	# @param {Object} facetData
+	# @return {Object} Parsed facet data
+	###
+	parseFacetData: (facetData) ->
+		parsers = @options.config.get('parsers')
+
+		if parsers.hasOwnProperty facetData.name
+			facetData = parsers[facetData.name] facetData
+
+		facetData
+
+	###
 	# Every facet can be minimized by clicking the title of the facet.
 	#
 	# @method

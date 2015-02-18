@@ -1,10 +1,12 @@
 ul
 	each option in options
+		- displayName = option.hasOwnProperty('displayName') ? option.displayName : option.name
+		
 		li
 			.row.span6
 				.cell.span5
 					//- input(id=name+'_'+option.name, name=name+'_'+option.name, type="checkbox", data-value=option.name)
 					i(data-value=option.name, class=option.checked?'fa fa-check-square-o':'fa fa-square-o')
-					label(data-value=option.name)= ucfirst(option.name)
+					label(data-value=option.name)= ucfirst(displayName)
 				.cell.span1.alignright
 					.count= option.count

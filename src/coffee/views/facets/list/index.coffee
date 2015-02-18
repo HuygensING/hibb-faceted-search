@@ -38,24 +38,10 @@ class ListFacet extends FacetView
 
 		@model = new List @options.attrs, parse: true
 
-		facetData = @_parseFacetData @options.attrs
+		facetData = @parseFacetData @options.attrs
 		@collection = new ListOptions facetData.options, parse: true
 
 		@render()
-
-	###
-	# @method
-	# @private
-	# @param {Object} facetData
-	# @return {Object} Parsed facet data
-	###
-	_parseFacetData: (facetData) ->
-		parsers = @options.config.get('parsers')
-
-		if parsers.hasOwnProperty facetData.name
-			facetData = parsers[facetData.name] facetData
-
-		facetData
 
 	###
 	# @method
@@ -196,7 +182,7 @@ class ListFacet extends FacetView
 		if @resetActive
 			# Pass newOptions through parsers
 			# Dirty implementation untill @reset is fixed!
-			facetData = @_parseFacetData
+			facetData = @parseFacetData
 				options: newOptions
 				name: @options.attrs.name
 

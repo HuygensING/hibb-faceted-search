@@ -2950,8 +2950,6 @@ BooleanFacet = (function(_super) {
    */
 
   BooleanFacet.prototype.parseOptions = function(options) {
-    var _ref;
-    options = (_ref = this.get('options')) != null ? _ref : options;
     if (options.length === 1) {
       options.push({
         name: (!JSON.parse(options[0].name)).toString(),
@@ -3554,15 +3552,18 @@ BooleanFacet = (function(_super) {
 
 
   /*
-   * @property
-   * @type {String}
+  	 * @property
+  	 * @type {String}
    */
 
   BooleanFacet.prototype.className = 'facet boolean';
 
   BooleanFacet.prototype.initialize = function(options) {
+    var facetData;
+    this.options = options;
     BooleanFacet.__super__.initialize.apply(this, arguments);
-    this.model = new Models.Boolean(options.attrs, {
+    facetData = this.parseFacetData(this.options.attrs);
+    this.model = new Models.Boolean(facetData, {
       parse: true
     });
     this.listenTo(this.model, 'change:options', this.render);
@@ -3613,7 +3614,12 @@ BooleanFacet = (function(_super) {
   };
 
   BooleanFacet.prototype.update = function(newOptions) {
-    return this.model.set('options', newOptions);
+    var facetData;
+    facetData = this.parseFacetData({
+      name: this.options.attrs.name,
+      options: newOptions
+    });
+    return this.model.set('options', facetData.options);
   };
 
   BooleanFacet.prototype.reset = function() {
@@ -3867,28 +3873,11 @@ ListFacet = (function(_super) {
     this.model = new List(this.options.attrs, {
       parse: true
     });
-    facetData = this._parseFacetData(this.options.attrs);
+    facetData = this.parseFacetData(this.options.attrs);
     this.collection = new ListOptions(facetData.options, {
       parse: true
     });
     return this.render();
-  };
-
-
-  /*
-  	 * @method
-  	 * @private
-  	 * @param {Object} facetData
-  	 * @return {Object} Parsed facet data
-   */
-
-  ListFacet.prototype._parseFacetData = function(facetData) {
-    var parsers;
-    parsers = this.options.config.get('parsers');
-    if (parsers.hasOwnProperty(facetData.name)) {
-      facetData = parsers[facetData.name](facetData);
-    }
-    return facetData;
   };
 
 
@@ -4061,7 +4050,7 @@ ListFacet = (function(_super) {
   ListFacet.prototype.update = function(newOptions) {
     var facetData;
     if (this.resetActive) {
-      facetData = this._parseFacetData({
+      facetData = this.parseFacetData({
         options: newOptions,
         name: this.options.attrs.name
       });
@@ -4621,6 +4610,23 @@ FacetView = (function(_super) {
    */
 
   FacetView.prototype.postRender = function() {};
+
+
+  /*
+  	 * @method
+  	 * @private
+  	 * @param {Object} facetData
+  	 * @return {Object} Parsed facet data
+   */
+
+  FacetView.prototype.parseFacetData = function(facetData) {
+    var parsers;
+    parsers = this.options.config.get('parsers');
+    if (parsers.hasOwnProperty(facetData.name)) {
+      facetData = parsers[facetData.name](facetData);
+    }
+    return facetData;
+  };
 
 
   /*
@@ -6780,7 +6786,7 @@ module.exports = function template(locals) {
 var buf = [];
 var jade_mixins = {};
 var jade_interp;
-;var locals_for_with = (locals || {});(function (options, ucfirst, undefined) {
+;var locals_for_with = (locals || {});(function (displayName, options, ucfirst, undefined) {
 buf.push("<ul>");
 // iterate options
 ;(function(){
@@ -6790,7 +6796,8 @@ buf.push("<ul>");
     for (var $index = 0, $$l = $$obj.length; $index < $$l; $index++) {
       var option = $$obj[$index];
 
-buf.push("<li><div class=\"row span6\"><div class=\"cell span5\"><i" + (jade.attr("data-value", option.name, true, false)) + (jade.cls([option.checked?'fa fa-check-square-o':'fa fa-square-o'], [true])) + "></i><label" + (jade.attr("data-value", option.name, true, false)) + ">" + (jade.escape(null == (jade_interp = ucfirst(option.name)) ? "" : jade_interp)) + "</label></div><div class=\"cell span1 alignright\"><div class=\"count\">" + (jade.escape(null == (jade_interp = option.count) ? "" : jade_interp)) + "</div></div></div></li>");
+displayName = option.hasOwnProperty('displayName') ? option.displayName : option.name
+buf.push("<li><div class=\"row span6\"><div class=\"cell span5\"><i" + (jade.attr("data-value", option.name, true, false)) + (jade.cls([option.checked?'fa fa-check-square-o':'fa fa-square-o'], [true])) + "></i><label" + (jade.attr("data-value", option.name, true, false)) + ">" + (jade.escape(null == (jade_interp = ucfirst(displayName)) ? "" : jade_interp)) + "</label></div><div class=\"cell span1 alignright\"><div class=\"count\">" + (jade.escape(null == (jade_interp = option.count) ? "" : jade_interp)) + "</div></div></div></li>");
     }
 
   } else {
@@ -6798,13 +6805,14 @@ buf.push("<li><div class=\"row span6\"><div class=\"cell span5\"><i" + (jade.att
     for (var $index in $$obj) {
       $$l++;      var option = $$obj[$index];
 
-buf.push("<li><div class=\"row span6\"><div class=\"cell span5\"><i" + (jade.attr("data-value", option.name, true, false)) + (jade.cls([option.checked?'fa fa-check-square-o':'fa fa-square-o'], [true])) + "></i><label" + (jade.attr("data-value", option.name, true, false)) + ">" + (jade.escape(null == (jade_interp = ucfirst(option.name)) ? "" : jade_interp)) + "</label></div><div class=\"cell span1 alignright\"><div class=\"count\">" + (jade.escape(null == (jade_interp = option.count) ? "" : jade_interp)) + "</div></div></div></li>");
+displayName = option.hasOwnProperty('displayName') ? option.displayName : option.name
+buf.push("<li><div class=\"row span6\"><div class=\"cell span5\"><i" + (jade.attr("data-value", option.name, true, false)) + (jade.cls([option.checked?'fa fa-check-square-o':'fa fa-square-o'], [true])) + "></i><label" + (jade.attr("data-value", option.name, true, false)) + ">" + (jade.escape(null == (jade_interp = ucfirst(displayName)) ? "" : jade_interp)) + "</label></div><div class=\"cell span1 alignright\"><div class=\"count\">" + (jade.escape(null == (jade_interp = option.count) ? "" : jade_interp)) + "</div></div></div></li>");
     }
 
   }
 }).call(this);
 
-buf.push("</ul>");}.call(this,"options" in locals_for_with?locals_for_with.options:typeof options!=="undefined"?options:undefined,"ucfirst" in locals_for_with?locals_for_with.ucfirst:typeof ucfirst!=="undefined"?ucfirst:undefined,"undefined" in locals_for_with?locals_for_with.undefined:typeof undefined!=="undefined"?undefined:undefined));;return buf.join("");
+buf.push("</ul>");}.call(this,"displayName" in locals_for_with?locals_for_with.displayName:typeof displayName!=="undefined"?displayName:undefined,"options" in locals_for_with?locals_for_with.options:typeof options!=="undefined"?options:undefined,"ucfirst" in locals_for_with?locals_for_with.ucfirst:typeof ucfirst!=="undefined"?ucfirst:undefined,"undefined" in locals_for_with?locals_for_with.undefined:typeof undefined!=="undefined"?undefined:undefined));;return buf.join("");
 };
 },{"jade/runtime":11}],43:[function(_dereq_,module,exports){
 var jade = _dereq_("jade/runtime");
