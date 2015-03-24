@@ -98,7 +98,7 @@ class Results extends Backbone.View
 		return unless @options.config.get('sortLevels')
 
 		@subviews.sortLevels.destroy() if @subviews.sortLevels?
-		@subviews.sortLevels = new Views.SortLevels
+		@subviews.sortLevels = new SortLevels
 			config: @options.config
 			# levels: @options.config.get 'levels'
 			# entryMetadataFields: @options.config.get 'sortableFields'
@@ -155,6 +155,8 @@ class Results extends Backbone.View
 		ul.html frag
 
 		@$("div.pages").append ul
+
+		@trigger "render:finished"
 
 	###
 	# @method

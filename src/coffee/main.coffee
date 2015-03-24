@@ -138,6 +138,9 @@ class MainView extends Backbone.View
 		@listenTo @results, 'change:sort-levels', (sortParameters) ->
 			@sortResultsBy sortParameters
 
+		@listenTo @results, "render:finished", =>
+			@trigger "results:render:finished"
+
 	###
 	# @property
 	# @type {Object}
