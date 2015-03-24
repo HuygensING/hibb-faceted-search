@@ -6692,7 +6692,7 @@ TextSearch = (function(_super) {
    */
 
   TextSearch.prototype.setModel = function() {
-    var attrs, textSearchOptions;
+    var attrs, hasFullTextSearchParameters, textSearchOptions;
     if (this.model != null) {
       this.stopListening(this.model);
     }
@@ -6709,13 +6709,27 @@ TextSearch = (function(_super) {
       delete attrs.fuzzy;
     }
     this.model = new SearchModel(attrs);
+    hasFullTextSearchParameters = this.options.config.get('textSearchOptions').fullTextSearchParameters != null;
     this.listenTo(this.options.config, "change:textSearchOptions", (function(_this) {
       return function() {
-        _this._addFullTextSearchParameters();
+        if (hasFullTextSearchParameters) {
+          _this._addFullTextSearchParameters();
+        }
         return _this.render();
       };
     })(this));
-    return this._addFullTextSearchParameters();
+    if (hasFullTextSearchParameters) {
+      this._addFullTextSearchParameters();
+    } else {
+      this.model.set({
+        term: ""
+      });
+    }
+    if (this.options.config.has('textLayers')) {
+      return this.model.set({
+        textLayers: this.options.config.get('textLayers')
+      });
+    }
   };
 
 

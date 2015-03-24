@@ -103,12 +103,21 @@ class TextSearch extends Backbone.View
 
 		# @listenTo @model, "change:fullTextSearchParameters", (model, values) =>
 		# 	@currentField = values[0].name
+		hasFullTextSearchParameters = @options.config.get('textSearchOptions').fullTextSearchParameters?
 
 		@listenTo @options.config, "change:textSearchOptions", =>
-			@_addFullTextSearchParameters()
+			if hasFullTextSearchParameters
+				@_addFullTextSearchParameters()
+
 			@render()
 
-		@_addFullTextSearchParameters()
+		if hasFullTextSearchParameters
+			@_addFullTextSearchParameters()
+		else
+			@model.set term: ""
+
+		if @options.config.has('textLayers')
+			@model.set textLayers: @options.config.get('textLayers')
 
 	###
 	# @method
@@ -130,7 +139,7 @@ class TextSearch extends Backbone.View
 			ev.preventDefault()
 			return @search ev
 
-		# The term can be passed to 
+		# The term can be passed to
 		if @model.has('term')
 			# Update the mainModel (queryOptions) silently. We want to set the term
 			# to the mainModel. When autoSearch is off and the user wants to
