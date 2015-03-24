@@ -179,4 +179,4 @@ gulp.task 'browserify', ['browserify-src', 'browserify-libs'], ->
 
 gulp.task 'build', ['browserify', 'concat-css']
 
-gulp.task 'default', ['server']
+gulp.task 'default', ['concat-css', 'watch', 'watchify']

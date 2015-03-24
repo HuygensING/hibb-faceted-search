@@ -33,14 +33,19 @@ class SortLevels extends Backbone.View
 	initialize: (@options) ->
 		@render()
 
-		@listenTo @options.config, 'change:entryMetadataFields', @render
+		@listenTo @options.config, 'change:initLevels', @render
+		# @listenTo @options.config, 'change:levels', =>
+		# 	console.log 'change:levels'
+		# 	console.log arguments
+		# @listenTo @options.config, 'change:levels', (model, sortLevels) =>
+		# 	sortParameters = []
 
-		@listenTo @options.config, 'change:levels', (model, sortLevels) =>
-			sortParameters = []
-			sortParameters.push fieldname: level, direction: 'asc' for level in sortLevels
-			@trigger 'change', sortParameters
+		# 	for level in sortLevels
+		# 		sortParameters.push fieldname: level, direction: 'asc'
+	
+		# 	@trigger 'change', sortParameters
 
-			@render()
+		# 	@render()
 
 	###
 	# @method
@@ -48,19 +53,20 @@ class SortLevels extends Backbone.View
 	# @return {SortLevels}
 	###
 	render: ->
-		rtpl = tpl
-			levels: @options.config.get('levels')
-			entryMetadataFields: @options.config.get('entryMetadataFields')
-		@$el.html rtpl
+		if Object.keys(@options.config.get('initLevels')).length > 0
+			rtpl = tpl
+				initLevels: @options.config.get('initLevels')
+				levels: @options.config.get('levels')
+			@$el.html rtpl
 
 
-		levels = @$('div.levels')
-		leave = (ev) ->
-			# The leave event is triggered when the user clicks the <select>,
-			# so we check if the target isn't part of div.levels
-			levels.hide() unless el(levels[0]).hasDescendant(ev.target) or levels[0] is ev.target
-		@onMouseleave = leave.bind(@)
-		levels.on 'mouseleave', @onMouseleave
+			levels = @$('div.levels')
+			leave = (ev) ->
+				# The leave event is triggered when the user clicks the <select>,
+				# so we check if the target isn't part of div.levels
+				levels.hide() unless el(levels[0]).hasDescendant(ev.target) or levels[0] is ev.target
+			@onMouseleave = leave.bind(@)
+			levels.on 'mouseleave', @onMouseleave
 
 		@
 
@@ -123,12 +129,14 @@ class SortLevels extends Backbone.View
 
 		for li in @el.querySelectorAll 'div.levels li[name]'
 			select = li.querySelector('select')
+			fieldName = select.options[select.selectedIndex].value
 
-			sortParameter = {}
-			sortParameter.fieldname = select.options[select.selectedIndex].value
-			sortParameter.direction = if $(li).find('i.fa').hasClass 'fa-sort-alpha-asc' then 'asc' else 'desc'
+			if fieldName isnt ""
+				sortParameter = {}
+				sortParameter.fieldname = fieldName
+				sortParameter.direction = if $(li).find('i.fa').hasClass 'fa-sort-alpha-asc' then 'asc' else 'desc'
 
-			sortParameters.push sortParameter
+				sortParameters.push sortParameter
 
 		@hideLevels()
 

@@ -1,4 +1,5 @@
 Backbone = require 'backbone'
+_ = require 'underscore'
 
 ###
 # @class
@@ -21,7 +22,6 @@ class Config extends Backbone.Model
 	# @param {String} [authorizationHeaderToken] If set, an Authorization header with given token will be send along with each request.
 	# @param {Object} [queryOptions={}]
 	# @param {Array<Object>} [queryOptions.facetValues=[]] Array of objects containing a facet name and values: {name: 'facet_s_writers', values: ['pietje', 'pukje']}
-	# @param {Array<Object>} [queryOptions.sortParameters=[]] Array of objects containing fieldname and direction: {fieldname: 'language', direction: 'desc'}
 	# @param {Array<String>} [queryOptions.resultFields] List of metadata fields to be returned by the server for every result.
 	# @param {Object} [requestOptions={}] Send extra options to the POST query call, such as setting custom headers (e.g., VRE_ID for Timbuctoo).
 	# @param {Array<String>} [entryMetadataFields=[]] A list of all the entries metadata fields. This list corresponds to the facets and is used to populate the sortLevels in the  result view.
@@ -34,7 +34,7 @@ class Config extends Backbone.Model
 	# @param {Boolean} [textSearchOptions.fuzzy=false] Render fuzzy option.
 	# @param {Array<Object>} [textSearchOptions.fullTextSearchParameters] Search in multiple full text fields. Objects passed have a name and term attribute.
 	# @param {Boolean} [autoSearch=true] # When set to true, a search is performed whenever the mainModel (queryOptions) change.
-	# @param {Object} [facetTitleMap={}] Map of facet names, mapping to facet titles. Use this map to give user friendly display names to facets in case the server doesn't give them.
+	# @param {Object} [facetDisplayNames={}] Map of facet names, mapping to facet titles. Use this map to give user friendly display names to facets in case the server doesn't give them.
 	# @param {Array<String>} [facetOrder=[]] Define the rendering order of the facets. If undefined, the facets are rendered in the order returned by the backend.
 	# @param {Object} [parsers={}] Hash of parser functions. Takes the options from the result and parses the options before rendering. Use sparsely, because with large option lists, the perfomance penalty can become great.
 	# @param {Boolean} [collapsed=false] collapsed Start the faceted search with the facets collapsed.
@@ -59,10 +59,13 @@ class Config extends Backbone.Model
 		searchPath: null
 		resultRows: 10
 		authorizationHeaderToken: null
-		queryOptions: {}
+		queryOptions:
+			facetValues: []
 		requestOptions: {}
 		entryMetadataFields: []
+		levelDisplayNames: {}
 		levels: []
+		initLevels: {}
 
 		### FACETS OPTIONS ###
 		textSearch: 'advanced'
@@ -70,7 +73,8 @@ class Config extends Backbone.Model
 			caseSensitive: false
 			fuzzy: false
 		autoSearch: true
-		facetTitleMap: {}
+		# Rename to facetTitles
+		facetDisplayNames: {}
 		facetOrder: []
 		parsers: {}
 		collapse: false
@@ -91,6 +95,107 @@ class Config extends Backbone.Model
 			sortNumerically: "Sort numerically"
 		termSingular: 'entry'
 		termPlural: 'entries'
+
+	###
+	# Communication with the server relies on the facets field name. But the UI
+	# has to show the displayName. There are three ways to retrieve the displayName.
+	# First: get from the levelDisplayNames
+	# Second: get from the facetDisplayNames
+	# Third: get from the facetData returned in the first responseModel
+	#
+	# @method
+	# @param {Object} responseModel
+	###
+	handleFirstResponseModel: (responseModel) ->
+		if responseModel.has 'fullTextSearchFields'
+			# Clone textSearchOptions to force Backbone's change event to fire.
+			textSearchOptions = _.clone(@get('textSearchOptions'))
+			textSearchOptions.fullTextSearchParameters = responseModel.get('fullTextSearchFields')
+
+			@set textSearchOptions: textSearchOptions
+
+		if Object.keys(@get('levelDisplayNames')).length > 0
+			initLevelMap = @_createDisplayNameMapFromMap 'levels', @get('levelDisplayNames')
+			levelMap = @_createLevelMapFromMap responseModel.get('sortableFields'), @get('levelDisplayNames')
+		else if Object.keys(@get('facetDisplayNames')).length > 0
+			initLevelMap = @_createDisplayNameMapFromMap 'levels', @get('facetDisplayNames')
+			levelMap = @_createLevelMapFromMap responseModel.get('sortableFields'), @get('facetDisplayNames')
+		else
+			initLevelMap = @_createDisplayNameMapFromFacetData 'levels', responseModel.get('facets')
+			levelMap = @_createLevelMapFromFacetData responseModel.get('sortableFields'), responseModel.get('facets')
+
+		if Object.keys(@get('facetDisplayNames')).length > 0
+			fieldMap = @_createDisplayNameMapFromMap 'entryMetadataFields', @get('facetDisplayNames')
+		else
+			fieldMap = @_createDisplayNameMapFromFacetData 'entryMetadataFields', responseModel.get('facets')
+
+		@set entryMetadataFields: fieldMap
+		@set levels: levelMap
+		@set initLevels: initLevelMap
+
+	###
+	# @method
+	###
+	_createLevelMapFromMap: (sortableFields, map) ->
+		levelMap = {}
+		
+		for field in sortableFields
+			unless map.hasOwnProperty field
+				console.warn "Sortable field #{field} not found in map!"
+
+			levelMap[field] = map[field]
+
+		levelMap
+
+
+	###
+	#
+	# @method
+	# @param {String} prop
+	# @param {Object} map
+	###
+	_createDisplayNameMapFromMap: (prop, map) ->
+		newPropValues = {}
+		oldPropValues = _.clone @get(prop)
+
+		if oldPropValues.length > 0
+			for value, j in oldPropValues
+				if map.hasOwnProperty value
+					newPropValues[value] = map[value]
+
+		newPropValues
+
+	###
+	# @method
+	###
+	_createLevelMapFromFacetData: (sortableFields, facetsData) ->
+		levelMap = {}
+		
+		for field in sortableFields
+			for facetData in facetsData
+				if facetData.name is field
+					levelMap[field] = facetData.title
+
+		levelMap
+
+	###
+	#
+	# @method
+	# @param {String} prop
+	# @param {Object} facetsData
+	# @return {Object}
+	###
+	_createDisplayNameMapFromFacetData: (prop, facetsData) ->
+		newPropValues = {}
+		oldPropValues = _.clone @get(prop)
+
+		if oldPropValues.length > 0
+			for facetData, i in facetsData
+				for value, j in oldPropValues
+					if facetData.name is value
+						newPropValues[value] = facetData.title
+
+		newPropValues
 
 # Config is not a singleton, because it must be possible to have
 # multiple faceted searches which don't share a config.

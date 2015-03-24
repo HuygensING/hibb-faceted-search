@@ -21,7 +21,7 @@ class FacetView extends Backbone.View
 		@config = options.config
 
 		# Override the facet title if the user has given an alternative title in the config.
-		options.attrs.title = @config.get('facetTitleMap')[options.attrs.name] if @config.get('facetTitleMap').hasOwnProperty options.attrs.name
+		options.attrs.title = @config.get('facetDisplayNames')[options.attrs.name] if @config.get('facetDisplayNames').hasOwnProperty options.attrs.name
 
 	###
 	# @method

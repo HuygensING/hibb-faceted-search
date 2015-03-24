@@ -3,7 +3,7 @@
 .placeholder
 	if fields != null && fields.length === 1
 		header
-			h3= config.get('facetTitleMap')[fields[0]]
+			h3= config.get('facetDisplayNames')[fields[0]]
 	.body
 		.search-input
 			input(type="text", name="search")
@@ -64,4 +64,4 @@
 								- id = generateId()
 								li
 									input(type="radio", checked=field==currentField?true:false, name="textsearchoptions-"+textSearchId, id=id, data-attr-array="fullTextSearchParameters", data-value=field)
-									label(for=id)= config.get('facetTitleMap')[field]
+									label(for=id)= config.get('facetDisplayNames')[field]

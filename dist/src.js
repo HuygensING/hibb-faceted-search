@@ -2164,11 +2164,13 @@ module.exports = SearchResults;
 
 
 },{"../models/searchresult":19,"funcky.req":8}],13:[function(_dereq_,module,exports){
-var Backbone, Config,
+var Backbone, Config, _,
   __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
 Backbone = _dereq_('backbone');
+
+_ = _dereq_('underscore');
 
 
 /*
@@ -2200,7 +2202,6 @@ Config = (function(_super) {
   	 * @param {String} [authorizationHeaderToken] If set, an Authorization header with given token will be send along with each request.
   	 * @param {Object} [queryOptions={}]
   	 * @param {Array<Object>} [queryOptions.facetValues=[]] Array of objects containing a facet name and values: {name: 'facet_s_writers', values: ['pietje', 'pukje']}
-  	 * @param {Array<Object>} [queryOptions.sortParameters=[]] Array of objects containing fieldname and direction: {fieldname: 'language', direction: 'desc'}
   	 * @param {Array<String>} [queryOptions.resultFields] List of metadata fields to be returned by the server for every result.
   	 * @param {Object} [requestOptions={}] Send extra options to the POST query call, such as setting custom headers (e.g., VRE_ID for Timbuctoo).
   	 * @param {Array<String>} [entryMetadataFields=[]] A list of all the entries metadata fields. This list corresponds to the facets and is used to populate the sortLevels in the  result view.
@@ -2213,7 +2214,7 @@ Config = (function(_super) {
   	 * @param {Boolean} [textSearchOptions.fuzzy=false] Render fuzzy option.
   	 * @param {Array<Object>} [textSearchOptions.fullTextSearchParameters] Search in multiple full text fields. Objects passed have a name and term attribute.
   	 * @param {Boolean} [autoSearch=true] # When set to true, a search is performed whenever the mainModel (queryOptions) change.
-  	 * @param {Object} [facetTitleMap={}] Map of facet names, mapping to facet titles. Use this map to give user friendly display names to facets in case the server doesn't give them.
+  	 * @param {Object} [facetDisplayNames={}] Map of facet names, mapping to facet titles. Use this map to give user friendly display names to facets in case the server doesn't give them.
   	 * @param {Array<String>} [facetOrder=[]] Define the rendering order of the facets. If undefined, the facets are rendered in the order returned by the backend.
   	 * @param {Object} [parsers={}] Hash of parser functions. Takes the options from the result and parses the options before rendering. Use sparsely, because with large option lists, the perfomance penalty can become great.
   	 * @param {Boolean} [collapsed=false] collapsed Start the faceted search with the facets collapsed.
@@ -2241,10 +2242,14 @@ Config = (function(_super) {
       searchPath: null,
       resultRows: 10,
       authorizationHeaderToken: null,
-      queryOptions: {},
+      queryOptions: {
+        facetValues: []
+      },
       requestOptions: {},
       entryMetadataFields: [],
+      levelDisplayNames: {},
       levels: [],
+      initLevels: {},
 
       /* FACETS OPTIONS */
       textSearch: 'advanced',
@@ -2253,7 +2258,7 @@ Config = (function(_super) {
         fuzzy: false
       },
       autoSearch: true,
-      facetTitleMap: {},
+      facetDisplayNames: {},
       facetOrder: [],
       parsers: {},
       collapse: false,
@@ -2276,6 +2281,141 @@ Config = (function(_super) {
       termSingular: 'entry',
       termPlural: 'entries'
     };
+  };
+
+
+  /*
+  	 * Communication with the server relies on the facets field name. But the UI
+  	 * has to show the displayName. There are three ways to retrieve the displayName.
+  	 * First: get from the levelDisplayNames
+  	 * Second: get from the facetDisplayNames
+  	 * Third: get from the facetData returned in the first responseModel
+  	 *
+  	 * @method
+  	 * @param {Object} responseModel
+   */
+
+  Config.prototype.handleFirstResponseModel = function(responseModel) {
+    var fieldMap, initLevelMap, levelMap, textSearchOptions;
+    if (responseModel.has('fullTextSearchFields')) {
+      textSearchOptions = _.clone(this.get('textSearchOptions'));
+      textSearchOptions.fullTextSearchParameters = responseModel.get('fullTextSearchFields');
+      this.set({
+        textSearchOptions: textSearchOptions
+      });
+    }
+    if (Object.keys(this.get('levelDisplayNames')).length > 0) {
+      initLevelMap = this._createDisplayNameMapFromMap('levels', this.get('levelDisplayNames'));
+      levelMap = this._createLevelMapFromMap(responseModel.get('sortableFields'), this.get('levelDisplayNames'));
+    } else if (Object.keys(this.get('facetDisplayNames')).length > 0) {
+      initLevelMap = this._createDisplayNameMapFromMap('levels', this.get('facetDisplayNames'));
+      levelMap = this._createLevelMapFromMap(responseModel.get('sortableFields'), this.get('facetDisplayNames'));
+    } else {
+      initLevelMap = this._createDisplayNameMapFromFacetData('levels', responseModel.get('facets'));
+      levelMap = this._createLevelMapFromFacetData(responseModel.get('sortableFields'), responseModel.get('facets'));
+    }
+    if (Object.keys(this.get('facetDisplayNames')).length > 0) {
+      fieldMap = this._createDisplayNameMapFromMap('entryMetadataFields', this.get('facetDisplayNames'));
+    } else {
+      fieldMap = this._createDisplayNameMapFromFacetData('entryMetadataFields', responseModel.get('facets'));
+    }
+    this.set({
+      entryMetadataFields: fieldMap
+    });
+    this.set({
+      levels: levelMap
+    });
+    return this.set({
+      initLevels: initLevelMap
+    });
+  };
+
+
+  /*
+  	 * @method
+   */
+
+  Config.prototype._createLevelMapFromMap = function(sortableFields, map) {
+    var field, levelMap, _i, _len;
+    levelMap = {};
+    for (_i = 0, _len = sortableFields.length; _i < _len; _i++) {
+      field = sortableFields[_i];
+      if (!map.hasOwnProperty(field)) {
+        console.warn("Sortable field " + field + " not found in map!");
+      }
+      levelMap[field] = map[field];
+    }
+    return levelMap;
+  };
+
+
+  /*
+  	 *
+  	 * @method
+  	 * @param {String} prop
+  	 * @param {Object} map
+   */
+
+  Config.prototype._createDisplayNameMapFromMap = function(prop, map) {
+    var j, newPropValues, oldPropValues, value, _i, _len;
+    newPropValues = {};
+    oldPropValues = _.clone(this.get(prop));
+    if (oldPropValues.length > 0) {
+      for (j = _i = 0, _len = oldPropValues.length; _i < _len; j = ++_i) {
+        value = oldPropValues[j];
+        if (map.hasOwnProperty(value)) {
+          newPropValues[value] = map[value];
+        }
+      }
+    }
+    return newPropValues;
+  };
+
+
+  /*
+  	 * @method
+   */
+
+  Config.prototype._createLevelMapFromFacetData = function(sortableFields, facetsData) {
+    var facetData, field, levelMap, _i, _j, _len, _len1;
+    levelMap = {};
+    for (_i = 0, _len = sortableFields.length; _i < _len; _i++) {
+      field = sortableFields[_i];
+      for (_j = 0, _len1 = facetsData.length; _j < _len1; _j++) {
+        facetData = facetsData[_j];
+        if (facetData.name === field) {
+          levelMap[field] = facetData.title;
+        }
+      }
+    }
+    return levelMap;
+  };
+
+
+  /*
+  	 *
+  	 * @method
+  	 * @param {String} prop
+  	 * @param {Object} facetsData
+  	 * @return {Object}
+   */
+
+  Config.prototype._createDisplayNameMapFromFacetData = function(prop, facetsData) {
+    var facetData, i, j, newPropValues, oldPropValues, value, _i, _j, _len, _len1;
+    newPropValues = {};
+    oldPropValues = _.clone(this.get(prop));
+    if (oldPropValues.length > 0) {
+      for (i = _i = 0, _len = facetsData.length; _i < _len; i = ++_i) {
+        facetData = facetsData[i];
+        for (j = _j = 0, _len1 = oldPropValues.length; _j < _len1; j = ++_j) {
+          value = oldPropValues[j];
+          if (facetData.name === value) {
+            newPropValues[value] = facetData.title;
+          }
+        }
+      }
+    }
+    return newPropValues;
   };
 
   return Config;
@@ -2528,7 +2668,7 @@ MainView = (function(_super) {
   MainView.prototype.extendConfig = function(options) {
     var key, toBeExtended, value;
     toBeExtended = {
-      facetTitleMap: null,
+      facetDisplayNames: null,
       textSearchOptions: null,
       labels: null
     };
@@ -2561,9 +2701,20 @@ MainView = (function(_super) {
    */
 
   MainView.prototype.initQueryOptions = function() {
-    var attrs;
+    var attrs, level, _i, _len, _ref;
     attrs = _.extend(this.config.get('queryOptions'), this.textSearch.model.attributes);
     delete attrs.term;
+    if (this.config.get('levels').length > 0) {
+      attrs.sortParameters = [];
+      _ref = this.config.get('levels');
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        level = _ref[_i];
+        attrs.sortParameters.push({
+          fieldname: level,
+          direction: "asc"
+        });
+      }
+    }
     this.queryOptions = new QueryOptions(attrs);
     if (this.config.get('autoSearch')) {
       return this.listenTo(this.queryOptions, 'change', (function(_this) {
@@ -2586,14 +2737,7 @@ MainView = (function(_super) {
     });
     this.listenToOnce(this.searchResults, 'change:results', (function(_this) {
       return function(responseModel) {
-        var textSearchOptions;
-        if (responseModel.has('fullTextSearchFields')) {
-          textSearchOptions = _.clone(_this.config.get('textSearchOptions'));
-          textSearchOptions.fullTextSearchParameters = responseModel.get('fullTextSearchFields');
-          return _this.config.set({
-            textSearchOptions: textSearchOptions
-          });
-        }
+        return _this.config.handleFirstResponseModel(responseModel);
       };
     })(this));
     this.listenTo(this.searchResults, 'change:results', (function(_this) {
@@ -2789,9 +2933,17 @@ MainView = (function(_super) {
    */
 
   MainView.prototype.sortResultsBy = function(sortParameters) {
+    var param, resultFields, _i, _len;
+    resultFields = ['id'];
+    for (_i = 0, _len = sortParameters.length; _i < _len; _i++) {
+      param = sortParameters[_i];
+      if (param.fieldname !== "") {
+        resultFields.push(param.fieldname);
+      }
+    }
     return this.queryOptions.set({
       sortParameters: sortParameters,
-      resultFields: _.pluck(sortParameters, 'fieldname')
+      resultFields: resultFields
     });
   };
 
@@ -4553,8 +4705,8 @@ FacetView = (function(_super) {
 
   FacetView.prototype.initialize = function(options) {
     this.config = options.config;
-    if (this.config.get('facetTitleMap').hasOwnProperty(options.attrs.name)) {
-      return options.attrs.title = this.config.get('facetTitleMap')[options.attrs.name];
+    if (this.config.get('facetDisplayNames').hasOwnProperty(options.attrs.name)) {
+      return options.attrs.title = this.config.get('facetDisplayNames')[options.attrs.name];
     }
   };
 
@@ -6185,22 +6337,7 @@ SortLevels = (function(_super) {
   SortLevels.prototype.initialize = function(options) {
     this.options = options;
     this.render();
-    this.listenTo(this.options.config, 'change:entryMetadataFields', this.render);
-    return this.listenTo(this.options.config, 'change:levels', (function(_this) {
-      return function(model, sortLevels) {
-        var level, sortParameters, _i, _len;
-        sortParameters = [];
-        for (_i = 0, _len = sortLevels.length; _i < _len; _i++) {
-          level = sortLevels[_i];
-          sortParameters.push({
-            fieldname: level,
-            direction: 'asc'
-          });
-        }
-        _this.trigger('change', sortParameters);
-        return _this.render();
-      };
-    })(this));
+    return this.listenTo(this.options.config, 'change:initLevels', this.render);
   };
 
 
@@ -6212,19 +6349,21 @@ SortLevels = (function(_super) {
 
   SortLevels.prototype.render = function() {
     var leave, levels, rtpl;
-    rtpl = tpl({
-      levels: this.options.config.get('levels'),
-      entryMetadataFields: this.options.config.get('entryMetadataFields')
-    });
-    this.$el.html(rtpl);
-    levels = this.$('div.levels');
-    leave = function(ev) {
-      if (!(el(levels[0]).hasDescendant(ev.target) || levels[0] === ev.target)) {
-        return levels.hide();
-      }
-    };
-    this.onMouseleave = leave.bind(this);
-    levels.on('mouseleave', this.onMouseleave);
+    if (Object.keys(this.options.config.get('initLevels')).length > 0) {
+      rtpl = tpl({
+        initLevels: this.options.config.get('initLevels'),
+        levels: this.options.config.get('levels')
+      });
+      this.$el.html(rtpl);
+      levels = this.$('div.levels');
+      leave = function(ev) {
+        if (!(el(levels[0]).hasDescendant(ev.target) || levels[0] === ev.target)) {
+          return levels.hide();
+        }
+      };
+      this.onMouseleave = leave.bind(this);
+      levels.on('mouseleave', this.onMouseleave);
+    }
     return this;
   };
 
@@ -6307,16 +6446,19 @@ SortLevels = (function(_super) {
    */
 
   SortLevels.prototype.saveLevels = function() {
-    var li, select, sortParameter, sortParameters, _i, _len, _ref;
+    var fieldName, li, select, sortParameter, sortParameters, _i, _len, _ref;
     sortParameters = [];
     _ref = this.el.querySelectorAll('div.levels li[name]');
     for (_i = 0, _len = _ref.length; _i < _len; _i++) {
       li = _ref[_i];
       select = li.querySelector('select');
-      sortParameter = {};
-      sortParameter.fieldname = select.options[select.selectedIndex].value;
-      sortParameter.direction = $(li).find('i.fa').hasClass('fa-sort-alpha-asc') ? 'asc' : 'desc';
-      sortParameters.push(sortParameter);
+      fieldName = select.options[select.selectedIndex].value;
+      if (fieldName !== "") {
+        sortParameter = {};
+        sortParameter.fieldname = fieldName;
+        sortParameter.direction = $(li).find('i.fa').hasClass('fa-sort-alpha-asc') ? 'asc' : 'desc';
+        sortParameters.push(sortParameter);
+      }
     }
     this.hideLevels();
     return this.trigger('change', sortParameters);
@@ -6347,7 +6489,7 @@ module.exports = function template(locals) {
 var buf = [];
 var jade_mixins = {};
 var jade_interp;
-;var locals_for_with = (locals || {});(function (entryMetadataFields, levels, undefined) {
+;var locals_for_with = (locals || {});(function (Object, initLevels, levels, undefined) {
 buf.push("<button class=\"toggle\">Sort<i class=\"fa fa-caret-down\"></i></button><div class=\"levels\"><ul>");
 // iterate [1, 2, 3]
 ;(function(){
@@ -6358,15 +6500,16 @@ buf.push("<button class=\"toggle\">Sort<i class=\"fa fa-caret-down\"></i></butto
       var i = $$obj[$index];
 
 buf.push("<li" + (jade.attr("name", 'level'+i, true, false)) + "><label>" + (jade.escape(null == (jade_interp = 'Level '+i) ? "" : jade_interp)) + "</label><select" + (jade.attr("name", 'level'+i, true, false)) + "><option></option>");
-// iterate entryMetadataFields
+// iterate Object.keys(levels)
 ;(function(){
-  var $$obj = entryMetadataFields;
+  var $$obj = Object.keys(levels);
   if ('number' == typeof $$obj.length) {
 
     for (var $index = 0, $$l = $$obj.length; $index < $$l; $index++) {
       var field = $$obj[$index];
 
-buf.push("<option" + (jade.attr("value", field, true, false)) + (jade.attr("selected", field==levels[i-1], true, false)) + ">" + (jade.escape(null == (jade_interp = field) ? "" : jade_interp)) + "</option>");
+var selected = field == Object.keys(initLevels)[i - 1]
+buf.push("<option" + (jade.attr("value", field, true, false)) + (jade.attr("selected", selected, true, false)) + ">" + (jade.escape(null == (jade_interp = levels[field]) ? "" : jade_interp)) + "</option>");
     }
 
   } else {
@@ -6374,7 +6517,8 @@ buf.push("<option" + (jade.attr("value", field, true, false)) + (jade.attr("sele
     for (var $index in $$obj) {
       $$l++;      var field = $$obj[$index];
 
-buf.push("<option" + (jade.attr("value", field, true, false)) + (jade.attr("selected", field==levels[i-1], true, false)) + ">" + (jade.escape(null == (jade_interp = field) ? "" : jade_interp)) + "</option>");
+var selected = field == Object.keys(initLevels)[i - 1]
+buf.push("<option" + (jade.attr("value", field, true, false)) + (jade.attr("selected", selected, true, false)) + ">" + (jade.escape(null == (jade_interp = levels[field]) ? "" : jade_interp)) + "</option>");
     }
 
   }
@@ -6389,15 +6533,16 @@ buf.push("</select><i class=\"fa fa-sort-alpha-asc\"></i></li>");
       $$l++;      var i = $$obj[$index];
 
 buf.push("<li" + (jade.attr("name", 'level'+i, true, false)) + "><label>" + (jade.escape(null == (jade_interp = 'Level '+i) ? "" : jade_interp)) + "</label><select" + (jade.attr("name", 'level'+i, true, false)) + "><option></option>");
-// iterate entryMetadataFields
+// iterate Object.keys(levels)
 ;(function(){
-  var $$obj = entryMetadataFields;
+  var $$obj = Object.keys(levels);
   if ('number' == typeof $$obj.length) {
 
     for (var $index = 0, $$l = $$obj.length; $index < $$l; $index++) {
       var field = $$obj[$index];
 
-buf.push("<option" + (jade.attr("value", field, true, false)) + (jade.attr("selected", field==levels[i-1], true, false)) + ">" + (jade.escape(null == (jade_interp = field) ? "" : jade_interp)) + "</option>");
+var selected = field == Object.keys(initLevels)[i - 1]
+buf.push("<option" + (jade.attr("value", field, true, false)) + (jade.attr("selected", selected, true, false)) + ">" + (jade.escape(null == (jade_interp = levels[field]) ? "" : jade_interp)) + "</option>");
     }
 
   } else {
@@ -6405,7 +6550,8 @@ buf.push("<option" + (jade.attr("value", field, true, false)) + (jade.attr("sele
     for (var $index in $$obj) {
       $$l++;      var field = $$obj[$index];
 
-buf.push("<option" + (jade.attr("value", field, true, false)) + (jade.attr("selected", field==levels[i-1], true, false)) + ">" + (jade.escape(null == (jade_interp = field) ? "" : jade_interp)) + "</option>");
+var selected = field == Object.keys(initLevels)[i - 1]
+buf.push("<option" + (jade.attr("value", field, true, false)) + (jade.attr("selected", selected, true, false)) + ">" + (jade.escape(null == (jade_interp = levels[field]) ? "" : jade_interp)) + "</option>");
     }
 
   }
@@ -6417,7 +6563,7 @@ buf.push("</select><i class=\"fa fa-sort-alpha-asc\"></i></li>");
   }
 }).call(this);
 
-buf.push("<li class=\"search\">&nbsp;<button>Change levels</button></li></ul></div>");}.call(this,"entryMetadataFields" in locals_for_with?locals_for_with.entryMetadataFields:typeof entryMetadataFields!=="undefined"?entryMetadataFields:undefined,"levels" in locals_for_with?locals_for_with.levels:typeof levels!=="undefined"?levels:undefined,"undefined" in locals_for_with?locals_for_with.undefined:typeof undefined!=="undefined"?undefined:undefined));;return buf.join("");
+buf.push("<li class=\"search\">&nbsp;<button>Change levels</button></li></ul></div>");}.call(this,"Object" in locals_for_with?locals_for_with.Object:typeof Object!=="undefined"?Object:undefined,"initLevels" in locals_for_with?locals_for_with.initLevels:typeof initLevels!=="undefined"?initLevels:undefined,"levels" in locals_for_with?locals_for_with.levels:typeof levels!=="undefined"?levels:undefined,"undefined" in locals_for_with?locals_for_with.undefined:typeof undefined!=="undefined"?undefined:undefined));;return buf.join("");
 };
 },{"jade/runtime":11}],40:[function(_dereq_,module,exports){
 var Backbone, SearchModel, TextSearch, funcky, tpl, _,
@@ -6708,7 +6854,7 @@ var fields = config.get('textSearchOptions').fullTextSearchParameters;
 buf.push("<div class=\"placeholder\">");
 if ( fields != null && fields.length === 1)
 {
-buf.push("<header><h3>" + (jade.escape(null == (jade_interp = config.get('facetTitleMap')[fields[0]]) ? "" : jade_interp)) + "</h3></header>");
+buf.push("<header><h3>" + (jade.escape(null == (jade_interp = config.get('facetDisplayNames')[fields[0]]) ? "" : jade_interp)) + "</h3></header>");
 }
 buf.push("<div class=\"body\"><div class=\"search-input\"><input type=\"text\" name=\"search\"/><i class=\"fa fa-search\"></i></div><div class=\"menu\"><i class=\"fa fa-times\"></i><div class=\"close\"></div><ul class=\"options\">");
 if ( config.get('textSearchOptions').caseSensitive)
@@ -6777,7 +6923,7 @@ buf.push("<h4>" + (jade.escape(null == (jade_interp = config.get('labels').fullT
       var field = $$obj[i];
 
 id = generateId()
-buf.push("<li><input type=\"radio\"" + (jade.attr("checked", field==currentField?true:false, true, false)) + (jade.attr("name", "textsearchoptions-"+textSearchId, true, false)) + (jade.attr("id", id, true, false)) + " data-attr-array=\"fullTextSearchParameters\"" + (jade.attr("data-value", field, true, false)) + "/><label" + (jade.attr("for", id, true, false)) + ">" + (jade.escape(null == (jade_interp = config.get('facetTitleMap')[field]) ? "" : jade_interp)) + "</label></li>");
+buf.push("<li><input type=\"radio\"" + (jade.attr("checked", field==currentField?true:false, true, false)) + (jade.attr("name", "textsearchoptions-"+textSearchId, true, false)) + (jade.attr("id", id, true, false)) + " data-attr-array=\"fullTextSearchParameters\"" + (jade.attr("data-value", field, true, false)) + "/><label" + (jade.attr("for", id, true, false)) + ">" + (jade.escape(null == (jade_interp = config.get('facetDisplayNames')[field]) ? "" : jade_interp)) + "</label></li>");
     }
 
   } else {
@@ -6786,7 +6932,7 @@ buf.push("<li><input type=\"radio\"" + (jade.attr("checked", field==currentField
       $$l++;      var field = $$obj[i];
 
 id = generateId()
-buf.push("<li><input type=\"radio\"" + (jade.attr("checked", field==currentField?true:false, true, false)) + (jade.attr("name", "textsearchoptions-"+textSearchId, true, false)) + (jade.attr("id", id, true, false)) + " data-attr-array=\"fullTextSearchParameters\"" + (jade.attr("data-value", field, true, false)) + "/><label" + (jade.attr("for", id, true, false)) + ">" + (jade.escape(null == (jade_interp = config.get('facetTitleMap')[field]) ? "" : jade_interp)) + "</label></li>");
+buf.push("<li><input type=\"radio\"" + (jade.attr("checked", field==currentField?true:false, true, false)) + (jade.attr("name", "textsearchoptions-"+textSearchId, true, false)) + (jade.attr("id", id, true, false)) + " data-attr-array=\"fullTextSearchParameters\"" + (jade.attr("data-value", field, true, false)) + "/><label" + (jade.attr("for", id, true, false)) + ">" + (jade.escape(null == (jade_interp = config.get('facetDisplayNames')[field]) ? "" : jade_interp)) + "</label></li>");
     }
 
   }

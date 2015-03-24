@@ -147,7 +147,6 @@ class MainView extends Backbone.View
 	###
 	events: ->
 		'click ul.facets-menu li.collapse-expand': (ev) -> @facets.toggle ev
-		# Don't use @refresh as String, because the ev object will be passed.
 		'click ul.facets-menu li.reset': 'onReset'
 		'click ul.facets-menu li.switch button': 'onSwitchType'
 
@@ -184,8 +183,9 @@ class MainView extends Backbone.View
 	###
 	extendConfig: (options) ->
 		# Create a map of properties which need to be extended (not overriden)
+		# TODO ERROR PRONE!
 		toBeExtended = 
-			facetTitleMap: null
+			facetDisplayNames: null
 			textSearchOptions: null
 			labels: null
 
@@ -215,6 +215,15 @@ class MainView extends Backbone.View
 		attrs = _.extend @config.get('queryOptions'), @textSearch.model.attributes
 		# attrs = @config.get('queryOptions')
 		delete attrs.term
+
+		if @config.get('levels').length > 0
+			attrs.sortParameters = []
+
+			for level in @config.get('levels')
+				attrs.sortParameters.push
+					fieldname: level
+					direction: "asc"
+
 		@queryOptions = new QueryOptions attrs
 
 		if @config.get 'autoSearch'
@@ -228,13 +237,7 @@ class MainView extends Backbone.View
 		@searchResults = new SearchResults null, config: @config
 
 		@listenToOnce @searchResults, 'change:results', (responseModel) =>
-			# TODO move to config
-			if responseModel.has 'fullTextSearchFields'
-				# Clone textSearchOptions to force Backbone's change event to fire.
-				textSearchOptions = _.clone(@config.get('textSearchOptions'))
-				textSearchOptions.fullTextSearchParameters = responseModel.get('fullTextSearchFields')
-
-				@config.set textSearchOptions: textSearchOptions
+			@config.handleFirstResponseModel responseModel
 
 		# Listen to the change:results event and (re)render the facets everytime the result changes.
 		@listenTo @searchResults, 'change:results', (responseModel) =>
@@ -381,13 +384,17 @@ class MainView extends Backbone.View
 	# @method
 	###
 	sortResultsBy: (sortParameters) ->
+		# resultFields = _.pluck(sortParameters, 'fieldname')
+		resultFields = ['id']
+		resultFields.push param.fieldname for param in sortParameters when param.fieldname isnt ""
+
 		@queryOptions.set
 			sortParameters: sortParameters
 			# The resultFields are changed when the sortParameters are changed,
 			# because the server only returns the given fields. If we do this in
 			# the model on change, the change event would be triggered twice.
 			# An alternative is creating a method for it.
-			resultFields: _.pluck(sortParameters, 'fieldname')
+			resultFields: resultFields
 
 	###
 	# Silently change @attributes and trigger a change event manually afterwards.
