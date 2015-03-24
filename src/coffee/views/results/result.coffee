@@ -1,6 +1,7 @@
 Backbone = require 'backbone'
+_ = require 'underscore'
 
-tpl = require './result.jade'
+
 
 ###
 # The view of one result item < li >.
@@ -10,6 +11,9 @@ tpl = require './result.jade'
 # @todo Rename to ResultItem
 ###
 class Result extends Backbone.View
+	
+	template: require './result.jade'
+
 	###
 	# @property
 	# @type {String}
@@ -43,16 +47,19 @@ class Result extends Backbone.View
 	render: ->
 		found = []
 		found.push "#{count}x #{term}" for own term, count of @options.data.terms
-	
-		if @options.config.get('templates').hasOwnProperty 'result'
-			tpl = @options.config.get('templates').result
 
-		rtpl = tpl
+		if @options.config.get('templates').hasOwnProperty 'result'
+			@template = @options.config.get('templates').result
+
+		tplData =
 			data: @options.data
 			fulltext: @options.fulltext
 			found: found.join(', ')
 
-		@$el.html rtpl
+		if @options.config.get('templateData').hasOwnProperty 'result'
+			tplData = _.extend tplData, @options.config.get('templateData').result
+
+		@$el.html @template tplData
 
 		@
 

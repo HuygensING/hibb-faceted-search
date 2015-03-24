@@ -22,7 +22,6 @@ class Config extends Backbone.Model
 	# @param {Object} [queryOptions={}]
 	# @param {Array<Object>} [queryOptions.facetValues=[]] Array of objects containing a facet name and values: {name: 'facet_s_writers', values: ['pietje', 'pukje']}
 	# @param {Array<Object>} [queryOptions.sortParameters=[]] Array of objects containing fieldname and direction: {fieldname: 'language', direction: 'desc'}
-
 	# @param {Array<String>} [queryOptions.resultFields] List of metadata fields to be returned by the server for every result.
 	# @param {Object} [requestOptions={}] Send extra options to the POST query call, such as setting custom headers (e.g., VRE_ID for Timbuctoo).
 	# @param {Array<String>} [entryMetadataFields=[]] A list of all the entries metadata fields. This list corresponds to the facets and is used to populate the sortLevels in the  result view.
@@ -46,7 +45,8 @@ class Config extends Backbone.Model
 	# @param {Boolean} [showMetadata=true] Render show metadata toggle in the results header
 	#
 	# OTHER RENDERING OPTIONS
-	# @param {Object} [templates={}] Hash of templates. The templates should be functions which take a hash as argument to render vars. Possible keys: main, facets, text-search, facets.main, list.menu, list.body and range.body.
+	# @param {Object} [templates={}] Hash of templates. The templates should be functions which take a hash as argument to render vars. Possible keys: main, facets, text-search, facets.main, list.menu, list.body, range.body and result.
+	# @param {Object} [templateData={}] Hash of template data. The same property names as with templates can be used. The data is passed to the corresponding template.
 	# @param {Object} [labels={}] Hash of labels, used in the interface. Quick 'n dirty way to change the language.
 	# @param {String} [termSingular="entry"] Name of one result, for example: book, woman, country, alumnus, etc.
 	# @param {String} [termPlural="entries"] Name of multiple results, for example: books, women, countries, alunmi, etc.
@@ -69,7 +69,6 @@ class Config extends Backbone.Model
 		textSearchOptions:
 			caseSensitive: false
 			fuzzy: false
-			fullTextSearchParameters: []
 		autoSearch: true
 		facetTitleMap: {}
 		facetOrder: []
@@ -83,6 +82,7 @@ class Config extends Backbone.Model
 		
 		### OTHER RENDERING OPTIONS ###
 		templates: {}
+		templateData: {}
 		labels:
 			fullTextSearchFields: "Search in"
 			numFound: "Found"
