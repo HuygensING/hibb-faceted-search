@@ -27,7 +27,11 @@ class ListFacetOptions extends Backbone.View
 		@config = options.config
 		@facetName = options.facetName
 
-		@listenTo @collection, 'sort', => @rerender()
+		@showingCursor = 0
+		@showingIncrement = 50
+		
+		@listenTo @collection, 'sort', =>
+			@rerender()
 		@listenTo @collection, 'reset', =>
 			@collection.orderBy 'amount_desc', true
 			@render()
@@ -42,9 +46,6 @@ class ListFacetOptions extends Backbone.View
 	# @return {ListFacetOptions}
 	###
 	render: ->
-		@showingCursor = 0
-		@showingIncrement = 50
-
 		bodyTpl = @config.get('templates')['list.body'] if @config.get('templates').hasOwnProperty 'list.body'
 		@$el.html bodyTpl facetName: @facetName
 
@@ -60,7 +61,7 @@ class ListFacetOptions extends Backbone.View
 	# @method
 	###
 	rerender: ->
-		tpl = ''
+		tpl = ""
 
 		i = 0
 		model = @collection.at(i)
@@ -68,17 +69,21 @@ class ListFacetOptions extends Backbone.View
 
 		while visible
 			tpl += optionTpl option: model
+
 			i = i + 1
+
 			model = @collection.at(i)
 			visible = if model? and model.get('visible') then true else false
 
-		@el.querySelector('ul').innerHTML = tpl
+		@$('ul').html tpl
 
 	###
 	# @method
 	# @param {Boolean} all
 	###
 	appendOptions: (all=false) ->
+		return if @$('ul > li').length is @collection.length
+
 		# If true is passed as argument, all options are added.
 		@showingIncrement = @collection.length if all
 
@@ -93,11 +98,12 @@ class ListFacetOptions extends Backbone.View
 		@$('ul').append tpl
 
 	###
+	# When all models are set to visible, the collection is sorted and
+	# this.rerender is called.
+	#
 	# @method
 	###
 	renderAll: ->
-		# When all models are set to visible, the collection is sorted and
-		# @rerender is called.
 		@collection.setAllVisible()
 
 	###

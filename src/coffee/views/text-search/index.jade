@@ -1,7 +1,7 @@
 - var fields = config.get('textSearchOptions').fullTextSearchParameters;
 
 .placeholder
-	if fields.length === 1
+	if fields != null && fields.length === 1
 		header
 			h3= config.get('facetTitleMap')[fields[0]]
 	.body

@@ -1203,7 +1203,7 @@ function hasOwnProperty(obj, prop) {
           if (promise.callAlways != null) {
             promise.callAlways(xhr);
           }
-          if ((200 <= (_ref = xhr.status) && _ref <= 206)) {
+          if ((200 <= (_ref = xhr.status) && _ref <= 206) || xhr.status === 1223) {
             if (promise.callDone != null) {
               return promise.callDone(xhr);
             }
@@ -2201,7 +2201,6 @@ Config = (function(_super) {
   	 * @param {Object} [queryOptions={}]
   	 * @param {Array<Object>} [queryOptions.facetValues=[]] Array of objects containing a facet name and values: {name: 'facet_s_writers', values: ['pietje', 'pukje']}
   	 * @param {Array<Object>} [queryOptions.sortParameters=[]] Array of objects containing fieldname and direction: {fieldname: 'language', direction: 'desc'}
-  
   	 * @param {Array<String>} [queryOptions.resultFields] List of metadata fields to be returned by the server for every result.
   	 * @param {Object} [requestOptions={}] Send extra options to the POST query call, such as setting custom headers (e.g., VRE_ID for Timbuctoo).
   	 * @param {Array<String>} [entryMetadataFields=[]] A list of all the entries metadata fields. This list corresponds to the facets and is used to populate the sortLevels in the  result view.
@@ -2225,7 +2224,8 @@ Config = (function(_super) {
   	 * @param {Boolean} [showMetadata=true] Render show metadata toggle in the results header
   	 *
   	 * OTHER RENDERING OPTIONS
-  	 * @param {Object} [templates={}] Hash of templates. The templates should be functions which take a hash as argument to render vars. Possible keys: main, facets, text-search, facets.main, list.menu, list.body and range.body.
+  	 * @param {Object} [templates={}] Hash of templates. The templates should be functions which take a hash as argument to render vars. Possible keys: main, facets, text-search, facets.main, list.menu, list.body, range.body and result.
+  	 * @param {Object} [templateData={}] Hash of template data. The same property names as with templates can be used. The data is passed to the corresponding template.
   	 * @param {Object} [labels={}] Hash of labels, used in the interface. Quick 'n dirty way to change the language.
   	 * @param {String} [termSingular="entry"] Name of one result, for example: book, woman, country, alumnus, etc.
   	 * @param {String} [termPlural="entries"] Name of multiple results, for example: books, women, countries, alunmi, etc.
@@ -2250,8 +2250,7 @@ Config = (function(_super) {
       textSearch: 'advanced',
       textSearchOptions: {
         caseSensitive: false,
-        fuzzy: false,
-        fullTextSearchParameters: []
+        fuzzy: false
       },
       autoSearch: true,
       facetTitleMap: {},
@@ -2266,6 +2265,7 @@ Config = (function(_super) {
 
       /* OTHER RENDERING OPTIONS */
       templates: {},
+      templateData: {},
       labels: {
         fullTextSearchFields: "Search in",
         numFound: "Found",
@@ -2460,9 +2460,14 @@ MainView = (function(_super) {
     this.listenTo(this.results, 'result:layer-click', function(layer, data) {
       return this.trigger('result:layer-click', layer, data);
     });
-    return this.listenTo(this.results, 'change:sort-levels', function(sortParameters) {
+    this.listenTo(this.results, 'change:sort-levels', function(sortParameters) {
       return this.sortResultsBy(sortParameters);
     });
+    return this.listenTo(this.results, "render:finished", (function(_this) {
+      return function() {
+        return _this.trigger("results:render:finished");
+      };
+    })(this));
   };
 
 
@@ -4242,6 +4247,8 @@ ListFacetOptions = (function(_super) {
   ListFacetOptions.prototype.initialize = function(options) {
     this.config = options.config;
     this.facetName = options.facetName;
+    this.showingCursor = 0;
+    this.showingIncrement = 50;
     this.listenTo(this.collection, 'sort', (function(_this) {
       return function() {
         return _this.rerender();
@@ -4267,8 +4274,6 @@ ListFacetOptions = (function(_super) {
    */
 
   ListFacetOptions.prototype.render = function() {
-    this.showingCursor = 0;
-    this.showingIncrement = 50;
     if (this.config.get('templates').hasOwnProperty('list.body')) {
       bodyTpl = this.config.get('templates')['list.body'];
     }
@@ -4286,7 +4291,7 @@ ListFacetOptions = (function(_super) {
 
   ListFacetOptions.prototype.rerender = function() {
     var i, model, tpl, visible;
-    tpl = '';
+    tpl = "";
     i = 0;
     model = this.collection.at(i);
     visible = model.get('visible');
@@ -4298,7 +4303,7 @@ ListFacetOptions = (function(_super) {
       model = this.collection.at(i);
       visible = (model != null) && model.get('visible') ? true : false;
     }
-    return this.el.querySelector('ul').innerHTML = tpl;
+    return this.$('ul').html(tpl);
   };
 
 
@@ -4311,6 +4316,9 @@ ListFacetOptions = (function(_super) {
     var model, tpl;
     if (all == null) {
       all = false;
+    }
+    if (this.$('ul > li').length === this.collection.length) {
+      return;
     }
     if (all) {
       this.showingIncrement = this.collection.length;
@@ -4329,6 +4337,9 @@ ListFacetOptions = (function(_super) {
 
 
   /*
+  	 * When all models are set to visible, the collection is sorted and
+  	 * this.rerender is called.
+  	 *
   	 * @method
    */
 
@@ -5612,7 +5623,7 @@ Results = (function(_super) {
     if (this.subviews.sortLevels != null) {
       this.subviews.sortLevels.destroy();
     }
-    this.subviews.sortLevels = new Views.SortLevels({
+    this.subviews.sortLevels = new SortLevels({
       config: this.options.config
     });
     this.$('header nav ul').prepend(this.subviews.sortLevels.$el);
@@ -5661,7 +5672,8 @@ Results = (function(_super) {
     pageNumber = this.subviews.pagination.getCurrentPageNumber();
     ul = $("<ul class=\"page\" data-page-number=\"" + pageNumber + "\" />");
     ul.html(frag);
-    return this.$("div.pages").append(ul);
+    this.$("div.pages").append(ul);
+    return this.trigger("render:finished");
   };
 
 
@@ -5818,13 +5830,13 @@ buf.push("<li class=\"show-metadata\"><input id=\"o45hes3\" type=\"checkbox\" ch
 buf.push("</ul></nav><div class=\"pagination\"></div></header><div class=\"pages\"></div>");}.call(this,"config" in locals_for_with?locals_for_with.config:typeof config!=="undefined"?config:undefined,"resultsPerPage" in locals_for_with?locals_for_with.resultsPerPage:typeof resultsPerPage!=="undefined"?resultsPerPage:undefined,"showMetadata" in locals_for_with?locals_for_with.showMetadata:typeof showMetadata!=="undefined"?showMetadata:undefined,"undefined" in locals_for_with?locals_for_with.undefined:typeof undefined!=="undefined"?undefined:undefined));;return buf.join("");
 };
 },{"jade/runtime":11}],36:[function(_dereq_,module,exports){
-var Backbone, Result, tpl,
+var Backbone, Result, _,
   __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
 Backbone = _dereq_('backbone');
 
-tpl = _dereq_('./result.jade');
+_ = _dereq_('underscore');
 
 
 /*
@@ -5841,6 +5853,8 @@ Result = (function(_super) {
   function Result() {
     return Result.__super__.constructor.apply(this, arguments);
   }
+
+  Result.prototype.template = _dereq_('./result.jade');
 
 
   /*
@@ -5889,7 +5903,7 @@ Result = (function(_super) {
    */
 
   Result.prototype.render = function() {
-    var count, found, rtpl, term, _ref;
+    var count, found, term, tplData, _ref;
     found = [];
     _ref = this.options.data.terms;
     for (term in _ref) {
@@ -5898,14 +5912,17 @@ Result = (function(_super) {
       found.push("" + count + "x " + term);
     }
     if (this.options.config.get('templates').hasOwnProperty('result')) {
-      tpl = this.options.config.get('templates').result;
+      this.template = this.options.config.get('templates').result;
     }
-    rtpl = tpl({
+    tplData = {
       data: this.options.data,
       fulltext: this.options.fulltext,
       found: found.join(', ')
-    });
-    this.$el.html(rtpl);
+    };
+    if (this.options.config.get('templateData').hasOwnProperty('result')) {
+      tplData = _.extend(tplData, this.options.config.get('templateData').result);
+    }
+    this.$el.html(this.template(tplData));
     return this;
   };
 
@@ -6689,7 +6706,7 @@ var jade_interp;
 ;var locals_for_with = (locals || {});(function (config, currentField, generateId, id, model, textSearchId, undefined) {
 var fields = config.get('textSearchOptions').fullTextSearchParameters;
 buf.push("<div class=\"placeholder\">");
-if ( fields.length === 1)
+if ( fields != null && fields.length === 1)
 {
 buf.push("<header><h3>" + (jade.escape(null == (jade_interp = config.get('facetTitleMap')[fields[0]]) ? "" : jade_interp)) + "</h3></header>");
 }
