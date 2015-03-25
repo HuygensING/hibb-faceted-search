@@ -490,6 +490,9 @@
   -moz-user-select: none;
   -ms-user-select: none;
   user-select: none;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
   height: 6px;
   background: #eee;
   -webkit-border-radius: 6px;
@@ -543,14 +546,23 @@
   top: -3px;
   right: -6px;
 }
+.facet.range .body .slider .handle.edit input {
+  display: block;
+}
+.facet.range .body .slider .handle.edit label {
+  display: none;
+}
 .facet.range .body .slider .handle input.min,
+.facet.range .body .slider .handle label.min,
 .facet.range .body .slider .handle input.max,
-.facet.range .body .slider .handle input.single {
+.facet.range .body .slider .handle label.max {
   position: absolute;
   top: 20px;
 }
 .facet.range .body .slider .handle input.min,
-.facet.range .body .slider .handle input.max {
+.facet.range .body .slider .handle label.min,
+.facet.range .body .slider .handle input.max,
+.facet.range .body .slider .handle label.max {
   cursor: pointer;
   border: 1px solid #eee;
   padding: 0 3px;
@@ -575,14 +587,19 @@
   user-select: none;
 }
 .facet.range .body .slider .handle input.min.overlap,
-.facet.range .body .slider .handle input.max.overlap {
+.facet.range .body .slider .handle label.min.overlap,
+.facet.range .body .slider .handle input.max.overlap,
+.facet.range .body .slider .handle label.max.overlap {
   border: 1px solid #fff;
 }
 .facet.range .body .slider .handle input.min.edit,
-.facet.range .body .slider .handle input.max.edit {
+.facet.range .body .slider .handle label.min.edit,
+.facet.range .body .slider .handle input.max.edit,
+.facet.range .body .slider .handle label.max.edit {
   background: rgba(255,189,223,0.3);
 }
-.facet.range .body .slider .handle input.min {
+.facet.range .body .slider .handle input.min,
+.facet.range .body .slider .handle label.min {
   left: -20px;
   -webkit-transition: left 150ms;
   -moz-transition: left 150ms;
@@ -590,8 +607,12 @@
   -ms-transition: left 150ms;
   transition: left 150ms;
 }
-.facet.range .body .slider .handle input.max {
+.facet.range .body .slider .handle input.max,
+.facet.range .body .slider .handle label.max {
   right: -20px;
+}
+.facet.range .body .slider .handle input {
+  display: none;
 }
 .facet.range .body .slider .dash {
   display: none;
@@ -697,6 +718,14 @@
 }
 .faceted-search.search-type-none ul.facets-menu li.switch {
   display: none;
+}
+.faceted-search .text-search header h3 {
+  padding: 0;
+  margin: 0;
+  width: calc(100% - 60px);
+  overflow: hidden;
+  -o-text-overflow: ellipsis;
+  text-overflow: ellipsis;
 }
 .faceted-search .text-search .search-input input {
   -webkit-box-sizing: border-box;
