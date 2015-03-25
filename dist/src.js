@@ -2164,269 +2164,6 @@ module.exports = SearchResults;
 
 
 },{"../models/searchresult":19,"funcky.req":8}],13:[function(_dereq_,module,exports){
-var Backbone, Config, _,
-  __hasProp = {}.hasOwnProperty,
-  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
-
-Backbone = _dereq_('backbone');
-
-_ = _dereq_('underscore');
-
-
-/*
- * @class
- * @namespace Models
- * @todo Move to ./models
- */
-
-Config = (function(_super) {
-  __extends(Config, _super);
-
-  function Config() {
-    return Config.__super__.constructor.apply(this, arguments);
-  }
-
-
-  /*
-  	 * Default attributes.
-  	 *
-  	 * Does not require any parameters, but the @param tag is (ab)used to document
-  	 * the default values.
-  	 *
-  	 * @method
-  	 *
-  	 * REQUEST OPTIONS
-  	 * @param {String} baseUrl Base of the URL to perform searches.
-  	 * @param {String} searchPath Path of the URL to perform searches.
-  	 * @param {Number} [resultRows=10] Number of results per query/page.
-  	 * @param {String} [authorizationHeaderToken] If set, an Authorization header with given token will be send along with each request.
-  	 * @param {Object} [queryOptions={}]
-  	 * @param {Array<Object>} [queryOptions.facetValues=[]] Array of objects containing a facet name and values: {name: 'facet_s_writers', values: ['pietje', 'pukje']}
-  	 * @param {Array<String>} [queryOptions.resultFields] List of metadata fields to be returned by the server for every result.
-  	 * @param {Object} [requestOptions={}] Send extra options to the POST query call, such as setting custom headers (e.g., VRE_ID for Timbuctoo).
-  	 * @param {Array<String>} [entryMetadataFields=[]] A list of all the entries metadata fields. This list corresponds to the facets and is used to populate the sortLevels in the  result view.
-  	 * @param {Array<String>} [levels=[]] An array of max three strings. Determine the three levels of sorting the results. The three levels are entry metadata fields and are also present in the entryMetadataFields array.
-  	 *
-  	 * FACETS OPTIONS
-  	 * @param {String} [textSearch='advanced'] One of 'none', 'simple' or 'advanced'. None: text search is hidden, facets are shown, loader is shown. Simple: text search is shown, facets are hidden, loader is hidden. Advanced: text search is shown, facets are shown, loader is shown.
-  	 * @param {Object} [textSearchOptions] Options that are passed to the text search component
-  	 * @param {Boolean} [textSearchOptions.caseSensitive=false] Render caseSensitive option.
-  	 * @param {Boolean} [textSearchOptions.fuzzy=false] Render fuzzy option.
-  	 * @param {Array<Object>} [textSearchOptions.fullTextSearchParameters] Search in multiple full text fields. Objects passed have a name and term attribute.
-  	 * @param {Boolean} [autoSearch=true] # When set to true, a search is performed whenever the mainModel (queryOptions) change.
-  	 * @param {Object} [facetDisplayNames={}] Map of facet names, mapping to facet titles. Use this map to give user friendly display names to facets in case the server doesn't give them.
-  	 * @param {Array<String>} [facetOrder=[]] Define the rendering order of the facets. If undefined, the facets are rendered in the order returned by the backend.
-  	 * @param {Object} [parsers={}] Hash of parser functions. Takes the options from the result and parses the options before rendering. Use sparsely, because with large option lists, the perfomance penalty can become great.
-  	 * @param {Boolean} [collapsed=false] collapsed Start the faceted search with the facets collapsed.
-  	 *
-  	 * RESULTS OPTIONS
-  	 * @param {Boolean} [results=false] Render the results. When kept to false, the showing of the results has to be taken care of in the application.
-  	 * @param {Boolean} [sortLevels=true] Render sort levels in the results header
-  	 * @param {Boolean} [showMetadata=true] Render show metadata toggle in the results header
-  	 *
-  	 * OTHER RENDERING OPTIONS
-  	 * @param {Object} [templates={}] Hash of templates. The templates should be functions which take a hash as argument to render vars. Possible keys: main, facets, text-search, facets.main, list.menu, list.body, range.body and result.
-  	 * @param {Object} [templateData={}] Hash of template data. The same property names as with templates can be used. The data is passed to the corresponding template.
-  	 * @param {Object} [labels={}] Hash of labels, used in the interface. Quick 'n dirty way to change the language.
-  	 * @param {String} [termSingular="entry"] Name of one result, for example: book, woman, country, alumnus, etc.
-  	 * @param {String} [termPlural="entries"] Name of multiple results, for example: books, women, countries, alunmi, etc.
-  	 *
-  	 * @return {Object} A hash of default attributes and their values. Documentated as @param's.
-   */
-
-  Config.prototype.defaults = function() {
-    return {
-
-      /* REQUEST OPTIONS */
-      baseUrl: null,
-      searchPath: null,
-      resultRows: 10,
-      authorizationHeaderToken: null,
-      queryOptions: {
-        facetValues: []
-      },
-      requestOptions: {},
-      entryMetadataFields: [],
-      levelDisplayNames: {},
-      levels: [],
-      initLevels: {},
-
-      /* FACETS OPTIONS */
-      textSearch: 'advanced',
-      textSearchOptions: {
-        caseSensitive: false,
-        fuzzy: false
-      },
-      autoSearch: true,
-      facetDisplayNames: {},
-      facetOrder: [],
-      parsers: {},
-      collapse: false,
-
-      /* RESULTS OPTIONS */
-      results: false,
-      sortLevels: true,
-      showMetadata: true,
-
-      /* OTHER RENDERING OPTIONS */
-      templates: {},
-      templateData: {},
-      labels: {
-        fullTextSearchFields: "Search in",
-        numFound: "Found",
-        filterOptions: "Filter options",
-        sortAlphabetically: "Sort alphabetically",
-        sortNumerically: "Sort numerically"
-      },
-      termSingular: 'entry',
-      termPlural: 'entries'
-    };
-  };
-
-
-  /*
-  	 * Communication with the server relies on the facets field name. But the UI
-  	 * has to show the displayName. There are three ways to retrieve the displayName.
-  	 * First: get from the levelDisplayNames
-  	 * Second: get from the facetDisplayNames
-  	 * Third: get from the facetData returned in the first responseModel
-  	 *
-  	 * @method
-  	 * @param {Object} responseModel
-   */
-
-  Config.prototype.handleFirstResponseModel = function(responseModel) {
-    var fieldMap, initLevelMap, levelMap, textSearchOptions;
-    if (responseModel.has('fullTextSearchFields')) {
-      textSearchOptions = _.clone(this.get('textSearchOptions'));
-      textSearchOptions.fullTextSearchParameters = responseModel.get('fullTextSearchFields');
-      this.set({
-        textSearchOptions: textSearchOptions
-      });
-    }
-    if (Object.keys(this.get('levelDisplayNames')).length > 0) {
-      initLevelMap = this._createDisplayNameMapFromMap('levels', this.get('levelDisplayNames'));
-      levelMap = this._createLevelMapFromMap(responseModel.get('sortableFields'), this.get('levelDisplayNames'));
-    } else if (Object.keys(this.get('facetDisplayNames')).length > 0) {
-      initLevelMap = this._createDisplayNameMapFromMap('levels', this.get('facetDisplayNames'));
-      levelMap = this._createLevelMapFromMap(responseModel.get('sortableFields'), this.get('facetDisplayNames'));
-    } else {
-      initLevelMap = this._createDisplayNameMapFromFacetData('levels', responseModel.get('facets'));
-      levelMap = this._createLevelMapFromFacetData(responseModel.get('sortableFields'), responseModel.get('facets'));
-    }
-    if (Object.keys(this.get('facetDisplayNames')).length > 0) {
-      fieldMap = this._createDisplayNameMapFromMap('entryMetadataFields', this.get('facetDisplayNames'));
-    } else {
-      fieldMap = this._createDisplayNameMapFromFacetData('entryMetadataFields', responseModel.get('facets'));
-    }
-    this.set({
-      entryMetadataFields: fieldMap
-    });
-    this.set({
-      levels: levelMap
-    });
-    return this.set({
-      initLevels: initLevelMap
-    });
-  };
-
-
-  /*
-  	 * @method
-   */
-
-  Config.prototype._createLevelMapFromMap = function(sortableFields, map) {
-    var field, levelMap, _i, _len;
-    levelMap = {};
-    for (_i = 0, _len = sortableFields.length; _i < _len; _i++) {
-      field = sortableFields[_i];
-      if (!map.hasOwnProperty(field)) {
-        console.warn("Sortable field " + field + " not found in map!");
-      }
-      levelMap[field] = map[field];
-    }
-    return levelMap;
-  };
-
-
-  /*
-  	 *
-  	 * @method
-  	 * @param {String} prop
-  	 * @param {Object} map
-   */
-
-  Config.prototype._createDisplayNameMapFromMap = function(prop, map) {
-    var j, newPropValues, oldPropValues, value, _i, _len;
-    newPropValues = {};
-    oldPropValues = _.clone(this.get(prop));
-    if (oldPropValues.length > 0) {
-      for (j = _i = 0, _len = oldPropValues.length; _i < _len; j = ++_i) {
-        value = oldPropValues[j];
-        if (map.hasOwnProperty(value)) {
-          newPropValues[value] = map[value];
-        }
-      }
-    }
-    return newPropValues;
-  };
-
-
-  /*
-  	 * @method
-   */
-
-  Config.prototype._createLevelMapFromFacetData = function(sortableFields, facetsData) {
-    var facetData, field, levelMap, _i, _j, _len, _len1;
-    levelMap = {};
-    for (_i = 0, _len = sortableFields.length; _i < _len; _i++) {
-      field = sortableFields[_i];
-      for (_j = 0, _len1 = facetsData.length; _j < _len1; _j++) {
-        facetData = facetsData[_j];
-        if (facetData.name === field) {
-          levelMap[field] = facetData.title;
-        }
-      }
-    }
-    return levelMap;
-  };
-
-
-  /*
-  	 *
-  	 * @method
-  	 * @param {String} prop
-  	 * @param {Object} facetsData
-  	 * @return {Object}
-   */
-
-  Config.prototype._createDisplayNameMapFromFacetData = function(prop, facetsData) {
-    var facetData, i, j, newPropValues, oldPropValues, value, _i, _j, _len, _len1;
-    newPropValues = {};
-    oldPropValues = _.clone(this.get(prop));
-    if (oldPropValues.length > 0) {
-      for (i = _i = 0, _len = facetsData.length; _i < _len; i = ++_i) {
-        facetData = facetsData[i];
-        for (j = _j = 0, _len1 = oldPropValues.length; _j < _len1; j = ++_j) {
-          value = oldPropValues[j];
-          if (facetData.name === value) {
-            newPropValues[value] = facetData.title;
-          }
-        }
-      }
-    }
-    return newPropValues;
-  };
-
-  return Config;
-
-})(Backbone.Model);
-
-module.exports = Config;
-
-
-
-},{}],14:[function(_dereq_,module,exports){
 var $, Backbone, BooleanFacet, Config, Facets, ListFacet, MainView, QueryOptions, Results, SearchResults, TextSearch, assert, funcky, tpl, _,
   __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
@@ -2443,7 +2180,7 @@ _ = _dereq_('underscore');
 
 funcky = _dereq_('funcky.el').el;
 
-Config = _dereq_('./config');
+Config = _dereq_('./models/config');
 
 QueryOptions = _dereq_('./models/query-options');
 
@@ -3063,7 +2800,275 @@ module.exports = MainView;
 
 
 
-},{"../jade/main.jade":44,"./collections/searchresults":12,"./config":13,"./models/query-options":17,"./views/facets":20,"./views/facets/boolean":21,"./views/facets/list":23,"./views/results":34,"./views/text-search":40,"assert":1,"funcky.el":7}],15:[function(_dereq_,module,exports){
+},{"../jade/main.jade":44,"./collections/searchresults":12,"./models/config":14,"./models/query-options":17,"./views/facets":20,"./views/facets/boolean":21,"./views/facets/list":23,"./views/results":34,"./views/text-search":40,"assert":1,"funcky.el":7}],14:[function(_dereq_,module,exports){
+var Backbone, Config, _,
+  __hasProp = {}.hasOwnProperty,
+  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
+
+Backbone = _dereq_('backbone');
+
+_ = _dereq_('underscore');
+
+
+/*
+ * @class
+ * @namespace Models
+ * @todo Move to ./models
+ */
+
+Config = (function(_super) {
+  __extends(Config, _super);
+
+  function Config() {
+    return Config.__super__.constructor.apply(this, arguments);
+  }
+
+
+  /*
+  	 * Default attributes.
+  	 *
+  	 * Does not require any parameters, but the @param tag is (ab)used to document
+  	 * the default values.
+  	 *
+  	 * @method
+  	 *
+  	 * REQUEST OPTIONS
+  	 * @param {String} baseUrl Base of the URL to perform searches.
+  	 * @param {String} searchPath Path of the URL to perform searches.
+  	 * @param {Number} [resultRows=10] Number of results per query/page.
+  	 * @param {String} [authorizationHeaderToken] If set, an Authorization header with given token will be send along with each request.
+  	 * @param {Object} [queryOptions={}]
+  	 * @param {Array<Object>} [queryOptions.facetValues=[]] Array of objects containing a facet name and values: {name: 'facet_s_writers', values: ['pietje', 'pukje']}
+  	 * @param {Array<String>} [queryOptions.resultFields] List of metadata fields to be returned by the server for every result.
+  	 * @param {Object} [requestOptions={}] Send extra options to the POST query call, such as setting custom headers (e.g., VRE_ID for Timbuctoo).
+  	 * @param {Array<String>} [entryMetadataFields=[]] A list of all the entries metadata fields. This list corresponds to the facets and is used to populate the sortLevels in the  result view.
+  	 * @param {Array<String>} [levels=[]] An array of max three strings. Determine the three levels of sorting the results. The three levels are entry metadata fields and are also present in the entryMetadataFields array.
+  	 *
+  	 * FACETS OPTIONS
+  	 * @param {String} [textSearch='advanced'] One of 'none', 'simple' or 'advanced'. None: text search is hidden, facets are shown, loader is shown. Simple: text search is shown, facets are hidden, loader is hidden. Advanced: text search is shown, facets are shown, loader is shown.
+  	 * @param {Object} [textSearchOptions] Options that are passed to the text search component
+  	 * @param {Boolean} [textSearchOptions.caseSensitive=false] Render caseSensitive option.
+  	 * @param {Boolean} [textSearchOptions.fuzzy=false] Render fuzzy option.
+  	 * @param {Array<Object>} [textSearchOptions.fullTextSearchParameters] Search in multiple full text fields. Objects passed have a name and term attribute.
+  	 * @param {Boolean} [autoSearch=true] # When set to true, a search is performed whenever the mainModel (queryOptions) change.
+  	 * @param {Object} [facetDisplayNames={}] Map of facet names, mapping to facet titles. Use this map to give user friendly display names to facets in case the server doesn't give them.
+  	 * @param {Array<String>} [facetOrder=[]] Define the rendering order of the facets. If undefined, the facets are rendered in the order returned by the backend.
+  	 * @param {Object} [parsers={}] Hash of parser functions. Takes the options from the result and parses the options before rendering. Use sparsely, because with large option lists, the perfomance penalty can become great.
+  	 * @param {Boolean} [collapsed=false] collapsed Start the faceted search with the facets collapsed.
+  	 *
+  	 * RESULTS OPTIONS
+  	 * @param {Boolean} [results=false] Render the results. When kept to false, the showing of the results has to be taken care of in the application.
+  	 * @param {Boolean} [sortLevels=true] Render sort levels in the results header
+  	 * @param {Boolean} [showMetadata=true] Render show metadata toggle in the results header
+  	 *
+  	 * OTHER RENDERING OPTIONS
+  	 * @param {Object} [templates={}] Hash of templates. The templates should be functions which take a hash as argument to render vars. Possible keys: main, facets, text-search, facets.main, list.menu, list.body, range.body and result.
+  	 * @param {Object} [templateData={}] Hash of template data. The same property names as with templates can be used. The data is passed to the corresponding template.
+  	 * @param {Object} [labels={}] Hash of labels, used in the interface. Quick 'n dirty way to change the language.
+  	 * @param {String} [termSingular="entry"] Name of one result, for example: book, woman, country, alumnus, etc.
+  	 * @param {String} [termPlural="entries"] Name of multiple results, for example: books, women, countries, alunmi, etc.
+  	 *
+  	 * @return {Object} A hash of default attributes and their values. Documentated as @param's.
+   */
+
+  Config.prototype.defaults = function() {
+    return {
+
+      /* REQUEST OPTIONS */
+      baseUrl: null,
+      searchPath: null,
+      resultRows: 10,
+      authorizationHeaderToken: null,
+      queryOptions: {
+        facetValues: []
+      },
+      requestOptions: {},
+      entryMetadataFields: [],
+      levelDisplayNames: {},
+      levels: [],
+      initLevels: {},
+
+      /* FACETS OPTIONS */
+      textSearch: 'advanced',
+      textSearchOptions: {
+        caseSensitive: false,
+        fuzzy: false
+      },
+      autoSearch: true,
+      facetDisplayNames: {},
+      facetOrder: [],
+      parsers: {},
+      collapse: false,
+
+      /* RESULTS OPTIONS */
+      results: false,
+      sortLevels: true,
+      showMetadata: true,
+
+      /* OTHER RENDERING OPTIONS */
+      templates: {},
+      templateData: {},
+      labels: {
+        fullTextSearchFields: "Search in",
+        numFound: "Found",
+        filterOptions: "Filter options",
+        sortAlphabetically: "Sort alphabetically",
+        sortNumerically: "Sort numerically"
+      },
+      termSingular: 'entry',
+      termPlural: 'entries'
+    };
+  };
+
+
+  /*
+  	 * Communication with the server relies on the facets field name. But the UI
+  	 * has to show the displayName. There are three ways to retrieve the displayName.
+  	 * First: get from the levelDisplayNames
+  	 * Second: get from the facetDisplayNames
+  	 * Third: get from the facetData returned in the first responseModel
+  	 *
+  	 * @method
+  	 * @param {Object} responseModel
+   */
+
+  Config.prototype.handleFirstResponseModel = function(responseModel) {
+    var fieldMap, initLevelMap, levelMap, textSearchOptions;
+    textSearchOptions = _.clone(this.get('textSearchOptions'));
+    if (responseModel.has('fullTextSearchFields')) {
+      textSearchOptions.fullTextSearchParameters = responseModel.get('fullTextSearchFields');
+    } else {
+      textSearchOptions.term = "";
+      if (this.has('textLayers')) {
+        textSearchOptions.textLayers = this.get('textLayers');
+      }
+    }
+    this.set({
+      textSearchOptions: textSearchOptions
+    });
+    if (Object.keys(this.get('levelDisplayNames')).length > 0) {
+      initLevelMap = this._createDisplayNameMapFromMap('levels', this.get('levelDisplayNames'));
+      levelMap = this._createLevelMapFromMap(responseModel.get('sortableFields'), this.get('levelDisplayNames'));
+    } else if (Object.keys(this.get('facetDisplayNames')).length > 0) {
+      initLevelMap = this._createDisplayNameMapFromMap('levels', this.get('facetDisplayNames'));
+      levelMap = this._createLevelMapFromMap(responseModel.get('sortableFields'), this.get('facetDisplayNames'));
+    } else {
+      initLevelMap = this._createDisplayNameMapFromFacetData('levels', responseModel.get('facets'));
+      levelMap = this._createLevelMapFromFacetData(responseModel.get('sortableFields'), responseModel.get('facets'));
+    }
+    if (Object.keys(this.get('facetDisplayNames')).length > 0) {
+      fieldMap = this._createDisplayNameMapFromMap('entryMetadataFields', this.get('facetDisplayNames'));
+    } else {
+      fieldMap = this._createDisplayNameMapFromFacetData('entryMetadataFields', responseModel.get('facets'));
+    }
+    this.set({
+      entryMetadataFields: fieldMap
+    });
+    this.set({
+      levels: levelMap
+    });
+    return this.set({
+      initLevels: initLevelMap
+    });
+  };
+
+
+  /*
+  	 * @method
+   */
+
+  Config.prototype._createLevelMapFromMap = function(sortableFields, map) {
+    var field, levelMap, _i, _len;
+    levelMap = {};
+    for (_i = 0, _len = sortableFields.length; _i < _len; _i++) {
+      field = sortableFields[_i];
+      if (!map.hasOwnProperty(field)) {
+        console.warn("Sortable field " + field + " not found in map!");
+      }
+      levelMap[field] = map[field];
+    }
+    return levelMap;
+  };
+
+
+  /*
+  	 *
+  	 * @method
+  	 * @param {String} prop
+  	 * @param {Object} map
+   */
+
+  Config.prototype._createDisplayNameMapFromMap = function(prop, map) {
+    var j, newPropValues, oldPropValues, value, _i, _len;
+    newPropValues = {};
+    oldPropValues = _.clone(this.get(prop));
+    if (oldPropValues.length > 0) {
+      for (j = _i = 0, _len = oldPropValues.length; _i < _len; j = ++_i) {
+        value = oldPropValues[j];
+        if (map.hasOwnProperty(value)) {
+          newPropValues[value] = map[value];
+        }
+      }
+    }
+    return newPropValues;
+  };
+
+
+  /*
+  	 * @method
+   */
+
+  Config.prototype._createLevelMapFromFacetData = function(sortableFields, facetsData) {
+    var facetData, field, levelMap, _i, _j, _len, _len1;
+    levelMap = {};
+    for (_i = 0, _len = sortableFields.length; _i < _len; _i++) {
+      field = sortableFields[_i];
+      for (_j = 0, _len1 = facetsData.length; _j < _len1; _j++) {
+        facetData = facetsData[_j];
+        if (facetData.name === field) {
+          levelMap[field] = facetData.title;
+        }
+      }
+    }
+    return levelMap;
+  };
+
+
+  /*
+  	 *
+  	 * @method
+  	 * @param {String} prop
+  	 * @param {Object} facetsData
+  	 * @return {Object}
+   */
+
+  Config.prototype._createDisplayNameMapFromFacetData = function(prop, facetsData) {
+    var facetData, i, j, newPropValues, oldPropValues, value, _i, _j, _len, _len1;
+    newPropValues = {};
+    oldPropValues = _.clone(this.get(prop));
+    if (oldPropValues.length > 0) {
+      for (i = _i = 0, _len = facetsData.length; _i < _len; i = ++_i) {
+        facetData = facetsData[i];
+        for (j = _j = 0, _len1 = oldPropValues.length; _j < _len1; j = ++_j) {
+          value = oldPropValues[j];
+          if (facetData.name === value) {
+            newPropValues[value] = facetData.title;
+          }
+        }
+      }
+    }
+    return newPropValues;
+  };
+
+  return Config;
+
+})(Backbone.Model);
+
+module.exports = Config;
+
+
+
+},{}],15:[function(_dereq_,module,exports){
 var BooleanFacet, FacetModel,
   __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
@@ -6692,7 +6697,7 @@ TextSearch = (function(_super) {
    */
 
   TextSearch.prototype.setModel = function() {
-    var attrs, hasFullTextSearchParameters, textSearchOptions;
+    var attrs, textSearchOptions;
     if (this.model != null) {
       this.stopListening(this.model);
     }
@@ -6709,27 +6714,28 @@ TextSearch = (function(_super) {
       delete attrs.fuzzy;
     }
     this.model = new SearchModel(attrs);
-    hasFullTextSearchParameters = this.options.config.get('textSearchOptions').fullTextSearchParameters != null;
-    this.listenTo(this.options.config, "change:textSearchOptions", (function(_this) {
-      return function() {
-        if (hasFullTextSearchParameters) {
-          _this._addFullTextSearchParameters();
+    return this.listenTo(this.options.config, "change:textSearchOptions", (function(_this) {
+      return function(config, textSearchOptions, options) {
+        var fullTextSearchParameters, param, params, _i, _len;
+        _this.model.set(textSearchOptions);
+        fullTextSearchParameters = _this.options.config.get('textSearchOptions').fullTextSearchParameters;
+        if (fullTextSearchParameters != null) {
+          _this.currentField = ftsp[0];
+          params = [];
+          for (_i = 0, _len = ftsp.length; _i < _len; _i++) {
+            param = ftsp[_i];
+            params.push({
+              name: param,
+              term: "*"
+            });
+          }
+          _this.model.set({
+            fullTextSearchParameters: params
+          });
         }
         return _this.render();
       };
     })(this));
-    if (hasFullTextSearchParameters) {
-      this._addFullTextSearchParameters();
-    } else {
-      this.model.set({
-        term: ""
-      });
-    }
-    if (this.options.config.has('textLayers')) {
-      return this.model.set({
-        textLayers: this.options.config.get('textLayers')
-      });
-    }
   };
 
 
@@ -7017,6 +7023,6 @@ var jade_interp;
 
 buf.push("<div class=\"overlay\"><div><i class=\"fa fa-spinner fa-spin fa-2x\"></i></div></div><div class=\"faceted-search\"><div class=\"text-search-placeholder\"></div><ul class=\"facets-menu\"><li class=\"reset\"><button><i class=\"fa fa-refresh\"></i><span>New search</span></button></li><li class=\"switch\"><button><i class=\"fa fa-angle-double-up\"></i><i class=\"fa fa-angle-double-down\"></i><span class=\"simple\">Simple search</span><span class=\"advanced\">Advanced search</span></button></li><li class=\"collapse-expand\"><button><i class=\"fa fa-compress\"></i><span>Collapse filters</span></button></li></ul><div class=\"facets-placeholder\"></div></div><div class=\"results\"></div>");;return buf.join("");
 };
-},{"jade/runtime":11}]},{},[14])
-(14)
+},{"jade/runtime":11}]},{},[13])
+(13)
 });

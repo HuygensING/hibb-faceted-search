@@ -20,8 +20,15 @@ Backbone based library
 ## Changelog
 
 ### DEV
+- :sparkles: Option to collapse all facets on init
+- :sparkles: Add a parser option to parse server data before rendering
+- :sparkles: Trigger event when rendering of the results has finished
+- :sparkles: Add template data to the config
+- :bug: Fix editting range labels
+- :bug: Parse list options on facet search reset
 - :bug: Select max one text search field per search (for Timbuctoo).
 - :lipstick: Remove dirty implementation of _searchValue and add clean version.
+- :lipstick: Move config
 - :fire: Remove date facet
 - :memo: Add jsdocs (with crojsdoc)
 - :arrow_up: Hibb-pagination to 1.2.0
