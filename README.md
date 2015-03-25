@@ -19,7 +19,7 @@ Backbone based library
 
 ## Changelog
 
-### DEV
+### v2.4.0
 - :sparkles: Option to collapse all facets on init
 - :sparkles: Add a parser option to parse server data before rendering
 - :sparkles: Trigger event when rendering of the results has finished

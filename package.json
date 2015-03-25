@@ -1,6 +1,6 @@
 {
   "name": "huygens-faceted-search",
-  "version": "2.3.1",
+  "version": "2.4.0",
   "description": "Faceted search library from Huygens ING.",
   "author": {
     "name": "Gijsjan Brouwer",
@@ -13,8 +13,9 @@
     "url": "https://github.com/HuygensING/faceted-search"
   },
   "scripts": {
-    "test": "mocha --recursive -w --compilers coffee:coffee-script/register,jade:jade --reporter spec tests/unit/*",
-    "coverage": "gulp prepare-coverage && jscoverage --no-highlight compiled coverage && COVERAGE=true mocha --compilers coffee:coffee-script/register,jade:jade --reporter html-cov tests/unit/* > coverage.html && rm -rf compiled && rm -rf coverage"
+    "docs": "crojsdoc ./src && http-server ./doc -o",
+    "link": "npm link funcky.el funcky.util funcky.req funcky.arr hibb-pagination",
+    "unlink": "npm unlink funcky.el funcky.util funcky.req funcky.arr hibb-pagination && npm i"
   },
   "dependencies": {
     "backbone": "^1.1.2",
