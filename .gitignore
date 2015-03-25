@@ -2,3 +2,4 @@ node_modules
 coverage.html
 .idea
 doc
+README-INTERNAL.md
