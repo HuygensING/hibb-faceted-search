@@ -1055,14 +1055,19 @@ function hasOwnProperty(obj, prop) {
     el: function(el) {
       return {
         closest: function(selector) {
-          var matchesSelector;
-          matchesSelector = el.matches || el.webkitMatchesSelector || el.mozMatchesSelector || el.msMatchesSelector;
+          var getMatcher, isMatch, matcher;
+          getMatcher = function(el) {
+            return el.matches || el.webkitMatchesSelector || el.mozMatchesSelector || el.msMatchesSelector;
+          };
           while (el) {
-            if (matchesSelector.bind(el)(selector)) {
-              return el;
-            } else {
-              el = el.parentNode;
+            matcher = getMatcher(el);
+            if (matcher != null) {
+              isMatch = matcher.bind(el)(selector);
+              if (isMatch) {
+                return el;
+              }
             }
+            el = el.parentNode;
           }
         },
 
@@ -1198,7 +1203,7 @@ function hasOwnProperty(obj, prop) {
           if (promise.callAlways != null) {
             promise.callAlways(xhr);
           }
-          if ((200 <= (_ref = xhr.status) && _ref <= 206)) {
+          if ((200 <= (_ref = xhr.status) && _ref <= 206) || xhr.status === 1223) {
             if (promise.callDone != null) {
               return promise.callDone(xhr);
             }
@@ -1639,22 +1644,22 @@ var jade_interp;
 ;var locals_for_with = (locals || {});(function (step10, pageCount, currentPageNumber, showPageNames) {
 if ( (step10 && pageCount >= 10))
 {
-buf.push("<li" + (jade.cls(['prev10',currentPageNumber>10?'active':''], [null,true])) + ">&laquo;</li>");
+buf.push("<li title=\"Jump 10 pages back\"" + (jade.cls(['prev10',currentPageNumber>10?'active':''], [null,true])) + ">&laquo;</li>");
 }
-buf.push("<li" + (jade.cls(['prev',currentPageNumber>1?'active':''], [null,true])) + ">&lsaquo;</li>");
+buf.push("<li title=\"Previous page\"" + (jade.cls(['prev',currentPageNumber>1?'active':''], [null,true])) + ">&lsaquo;</li>");
 if ( (showPageNames != null))
 {
 buf.push("<li class=\"pageNameSingular\">" + (jade.escape(null == (jade_interp = showPageNames[0]) ? "" : jade_interp)) + "</li>");
 }
-buf.push("<li class=\"current\"><input type=\"text\"" + (jade.attr("value", currentPageNumber, true, false)) + "/><span>" + (jade.escape(null == (jade_interp = currentPageNumber) ? "" : jade_interp)) + "</span></li><li class=\"text\">of</li><li class=\"pagecount\">" + (jade.escape(null == (jade_interp = pageCount) ? "" : jade_interp)) + "</li>");
+buf.push("<li title=\"Edit current page\" class=\"current\"><input type=\"text\"" + (jade.attr("value", currentPageNumber, true, false)) + "/><span>" + (jade.escape(null == (jade_interp = currentPageNumber) ? "" : jade_interp)) + "</span></li><li class=\"text\">of</li><li class=\"pagecount\">" + (jade.escape(null == (jade_interp = pageCount) ? "" : jade_interp)) + "</li>");
 if ( (showPageNames != null))
 {
 buf.push("<li class=\"pageNamePlural\">" + (jade.escape(null == (jade_interp = showPageNames[1]) ? "" : jade_interp)) + "</li>");
 }
-buf.push("<li" + (jade.cls(['next',currentPageNumber<pageCount?'active':''], [null,true])) + ">&rsaquo;</li>");
+buf.push("<li title=\"Next page\"" + (jade.cls(['next',currentPageNumber<pageCount?'active':''], [null,true])) + ">&rsaquo;</li>");
 if ( (step10 && pageCount >= 10))
 {
-buf.push("<li" + (jade.cls(['next10',currentPageNumber<=pageCount-10?'active':''], [null,true])) + ">&raquo;</li>");
+buf.push("<li title=\"Jump 10 pages forward\"" + (jade.cls(['next10',currentPageNumber<=pageCount-10?'active':''], [null,true])) + ">&raquo;</li>");
 }}.call(this,"step10" in locals_for_with?locals_for_with.step10:typeof step10!=="undefined"?step10:undefined,"pageCount" in locals_for_with?locals_for_with.pageCount:typeof pageCount!=="undefined"?pageCount:undefined,"currentPageNumber" in locals_for_with?locals_for_with.currentPageNumber:typeof currentPageNumber!=="undefined"?currentPageNumber:undefined,"showPageNames" in locals_for_with?locals_for_with.showPageNames:typeof showPageNames!=="undefined"?showPageNames:undefined));;return buf.join("");
 };
 },{"jade/runtime":2}]},{},[3])
