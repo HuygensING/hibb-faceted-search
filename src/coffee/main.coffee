@@ -8,7 +8,7 @@ _ = require 'underscore'
 
 funcky = require('funcky.el').el
 
-Config = require './config'
+Config = require './models/config'
 
 QueryOptions = require './models/query-options'
 SearchResults = require './collections/searchresults'
