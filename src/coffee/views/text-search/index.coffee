@@ -101,23 +101,33 @@ class TextSearch extends Backbone.View
 
 		@model = new SearchModel attrs
 
-		# @listenTo @model, "change:fullTextSearchParameters", (model, values) =>
-		# 	@currentField = values[0].name
-		hasFullTextSearchParameters = @options.config.get('textSearchOptions').fullTextSearchParameters?
 
-		@listenTo @options.config, "change:textSearchOptions", =>
-			if hasFullTextSearchParameters
-				@_addFullTextSearchParameters()
+		@listenTo @options.config, "change:textSearchOptions", (config, textSearchOptions, options) =>
+			@model.set textSearchOptions
+
+			fullTextSearchParameters = @options.config.get('textSearchOptions').fullTextSearchParameters
+			if fullTextSearchParameters?
+				@currentField = ftsp[0]
+
+				params = []
+				for param in ftsp
+					params.push
+						name: param
+						term: "*"
+
+				@model.set fullTextSearchParameters: params
 
 			@render()
 
-		if hasFullTextSearchParameters
-			@_addFullTextSearchParameters()
-		else
-			@model.set term: ""
 
-		if @options.config.has('textLayers')
-			@model.set textLayers: @options.config.get('textLayers')
+		# console.log @options.config
+		# console.log hasFullTextSearchParameters
+		# # HACK
+		# # Because textLayers are eLaborate specific and in the correspondentienetwerk
+		# # template the elaborate and timbuctoo version are both used side by side,
+		# # we have to do an extra check if the FS is of the elaborate type.
+		# if @options.config.has('textLayers') and not hasFullTextSearchParameters
+		# 	@model.set textLayers: @options.config.get('textLayers')
 
 	###
 	# @method

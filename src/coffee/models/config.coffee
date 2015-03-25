@@ -107,12 +107,18 @@ class Config extends Backbone.Model
 	# @param {Object} responseModel
 	###
 	handleFirstResponseModel: (responseModel) ->
+		# Clone textSearchOptions to force Backbone's change event to fire.
+		textSearchOptions = _.clone(@get('textSearchOptions'))
+		
 		if responseModel.has 'fullTextSearchFields'
-			# Clone textSearchOptions to force Backbone's change event to fire.
-			textSearchOptions = _.clone(@get('textSearchOptions'))
 			textSearchOptions.fullTextSearchParameters = responseModel.get('fullTextSearchFields')
+		else
+			textSearchOptions.term = ""
+			
+			if @has('textLayers')
+				textSearchOptions.textLayers = @get('textLayers')
 
-			@set textSearchOptions: textSearchOptions
+		@set textSearchOptions: textSearchOptions
 
 		if Object.keys(@get('levelDisplayNames')).length > 0
 			initLevelMap = @_createDisplayNameMapFromMap 'levels', @get('levelDisplayNames')
