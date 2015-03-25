@@ -107,10 +107,10 @@ class TextSearch extends Backbone.View
 
 			fullTextSearchParameters = @options.config.get('textSearchOptions').fullTextSearchParameters
 			if fullTextSearchParameters?
-				@currentField = ftsp[0]
+				@currentField = fullTextSearchParameters[0]
 
 				params = []
-				for param in ftsp
+				for param in fullTextSearchParameters
 					params.push
 						name: param
 						term: "*"
@@ -118,7 +118,6 @@ class TextSearch extends Backbone.View
 				@model.set fullTextSearchParameters: params
 
 			@render()
-
 
 		# console.log @options.config
 		# console.log hasFullTextSearchParameters
@@ -158,23 +157,6 @@ class TextSearch extends Backbone.View
 				@model.set term: ev.currentTarget.value
 		else
 			@_updateFullTextSearchParameters()
-
-			# ftsp = @model.get("fullTextSearchParameters")
-			# parameter = _.find ftsp, name: @currentField
-			# parameter.term = ev.currentTarget.value
-			# console.log parameter
-			# for cb in @el.querySelectorAll '[data-attr-array="fullTextSearchParameters"]'
-			# 	if cb.checked
-			# 		@model.set fullTextSearchParameters: [
-			# 			name: cb.getAttribute('data-value')
-			# 			term: ev.currentTarget.value
-			# 		]
-					
-
-			# for field in clone
-			# 	console.log field
-			# 	field.term = ev.currentTarget.value
-			# 	
 
 		@updateQueryModel()
 

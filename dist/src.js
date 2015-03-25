@@ -6715,10 +6715,10 @@ TextSearch = (function(_super) {
         _this.model.set(textSearchOptions);
         fullTextSearchParameters = _this.options.config.get('textSearchOptions').fullTextSearchParameters;
         if (fullTextSearchParameters != null) {
-          _this.currentField = ftsp[0];
+          _this.currentField = fullTextSearchParameters[0];
           params = [];
-          for (_i = 0, _len = ftsp.length; _i < _len; _i++) {
-            param = ftsp[_i];
+          for (_i = 0, _len = fullTextSearchParameters.length; _i < _len; _i++) {
+            param = fullTextSearchParameters[_i];
             params.push({
               name: param,
               term: "*"
