@@ -115,12 +115,13 @@ createBundle = (watch=false) ->
 	args =
 		entries: './src/coffee/main.coffee'
 		extensions: ['.coffee', '.jade']
+		standalone: 'FacetedSearch'
 
 	args = extend args, watchify.args if watch
 
 	bundle = ->
 		gutil.log('Browserify: bundling')
-		bundler.bundle(standalone: 'FacetedSearch')
+		bundler.bundle()
 			.on('error', ((err) -> gutil.log("Bundling error ::: "+err)))
 			.pipe(source("src.js"))
 			.pipe(derequire())
