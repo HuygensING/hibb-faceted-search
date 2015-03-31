@@ -24,6 +24,8 @@ async = require 'async'
 rimraf = require 'rimraf'
 extend = require 'extend'
 
+derequire = require('gulp-derequire')
+
 connectRewrite = require './connect-rewrite'
 pkg = require './package.json'
 cfg = require './config.json'
@@ -121,6 +123,7 @@ createBundle = (watch=false) ->
 		bundler.bundle(standalone: 'FacetedSearch')
 			.on('error', ((err) -> gutil.log("Bundling error ::: "+err)))
 			.pipe(source("src.js"))
+			.pipe(derequire())
 			.pipe(gulp.dest("./dist"))
 			.pipe(streamify(uglify()))
 			.pipe(rename(extname: '.min.js'))

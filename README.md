@@ -21,6 +21,7 @@ Backbone based library
 
 ### DEV
 - Rename repo to hibb-faceted-search (Huygens Ing BackBone)
+- :lipstick: Run through derequire (required for standalone module)
 
 ### v2.4.0
 - :sparkles: Option to collapse all facets on init
