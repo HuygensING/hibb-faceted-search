@@ -96,12 +96,15 @@ class Range extends FacetModel
 	convertLimit2Year: (limit) ->
 		year = limit + ''
 
-		if year.length is 8
-			year = year.substr 0, 4
-		else if year.length is 7
-			year = year.substr 0, 3
-		else
-			throw new Error "Range: lower or upper limit is not 7 or 8 chars!"
+		year = "0" if year.length is 0
+
+		if year.length > 4
+			if year.length is 8
+				year = year.substr 0, 4
+			else if year.length is 7
+				year = year.substr 0, 3
+			else
+				throw new Error "Range: lower or upper limit is not 0, 1, 2, 3, 4, 7 or 8 chars!"
 
 		+year
 

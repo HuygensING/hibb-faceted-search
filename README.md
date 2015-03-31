@@ -23,6 +23,7 @@ Backbone based library
 - Rename repo to hibb-faceted-search (Huygens Ing BackBone)
 - :lipstick: Run through derequire (required for standalone module)
 - :arrow_up: Upgrade browserify (9.0.3) and watchify (3.0.0)
+- :sparkles: Let the range facet parse limits of length 0, 1, 2, 3 and 4 (was only 7 or 8)
 
 ### v2.4.0
 - :sparkles: Option to collapse all facets on init
