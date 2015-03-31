@@ -35,31 +35,6 @@ cfg = require './config.json'
 # 	'./node_modules/huygens-backbone-pagination/dist/main.css'
 # ]
 
-gulp.task 'link', (done) ->
-	removeModules = (cb) ->
-		modulePaths = cfg['local-modules'].map (module) -> "./node_modules/#{module}"
-		async.each modulePaths , rimraf, (err) -> cb()
-
-	linkModules = (cb) ->
-		moduleCommands = cfg['local-modules'].map (module) -> "npm link #{module}"
-		async.each moduleCommands, exec, (err) -> cb()
-
-	async.series [removeModules, linkModules], (err) ->
-		return gutil.log err if err?
-		done()
-
-gulp.task 'unlink', (done) ->
-	unlinkModules = (cb) ->
-		moduleCommands = cfg['local-modules'].map (module) -> "npm unlink #{module}"
-		async.each moduleCommands, exec, (err) -> cb()
-
-	installModules = (cb) ->
-		exec 'npm i', cb
-
-	async.series [unlinkModules, installModules], (err) ->
-		return gutil.log err if err?
-		done()
-
 gulp.task 'server', ['concat-css', 'watch', 'watchify'], ->
 	proxyOptions = url.parse('http://localhost:3000')
 	proxyOptions.route = '/api'

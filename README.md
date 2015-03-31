@@ -25,6 +25,7 @@ Backbone based library
 - :sparkles: Let stylus inline images (base64 encoded)
 - :lipstick: Replace fontawesome search icon with inline svg
 - :lipstick: Run through derequire (required for standalone module)
+- :fire: Remove link and unlink tasks from Gulpfile
 - :arrow_up: Upgrade browserify (9.0.3) and watchify (3.0.0)
 
 ### v2.4.0
