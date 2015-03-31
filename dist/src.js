@@ -6906,7 +6906,7 @@ if ( fields != null && fields.length === 1)
 {
 buf.push("<header><h3>" + (jade.escape(null == (jade_interp = config.get('facetDisplayNames')[fields[0]]) ? "" : jade_interp)) + "</h3></header>");
 }
-buf.push("<div class=\"body\"><div class=\"search-input\"><input type=\"text\" name=\"search\"/><i class=\"fa fa-search\"></i></div><div class=\"menu\"><i class=\"fa fa-times\"></i><div class=\"close\"></div><ul class=\"options\">");
+buf.push("<div class=\"body\"><div class=\"search-input\"><input type=\"text\" name=\"search\"/><div class=\"search-icon\"></div></div><div class=\"menu\"><i class=\"fa fa-times\"></i><div class=\"close\"></div><ul class=\"options\">");
 if ( config.get('textSearchOptions').caseSensitive)
 {
 id = generateId()
