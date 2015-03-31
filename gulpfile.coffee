@@ -49,8 +49,6 @@ gulp.task 'stylus', ->
 		.pipe(stylus(
 			use: [nib()]
 			errors: true
-			url: 'embedurl',
-			'include css': true
 		))
 		.pipe(gulp.dest('./dist'))
 		.pipe(minifyCss())
