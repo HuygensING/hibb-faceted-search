@@ -19,6 +19,9 @@ Backbone based library
 
 ## Changelog
 
+### DEV
+- Rename repo to hibb-faceted-search (Huygens Ing BackBone)
+
 ### v2.4.0
 - :sparkles: Option to collapse all facets on init
 - :sparkles: Add a parser option to parse server data before rendering
