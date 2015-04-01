@@ -1,3 +1,5 @@
+include ../svg-icons.jade
+
 - options = model.get('options')
 
 .placeholder
@@ -5,9 +7,14 @@
 		h3(title=model.get('title'))= model.get('title')
 		.menu
 			if options != null && options.length != null && options.length > 9
-				i.filter.fa.fa-filter(title=config.get('labels').filterOptions)
-				i.alpha.fa.fa-sort-alpha-asc(title=config.get('labels').sortAlphabetically)
-				i.amount.active.fa.fa-sort-amount-desc(title=config.get('labels').sortNumerically)
+				+filter-icon
+				+sort-count-ascending-icon
+				+sort-count-descending-icon
+				+sort-alphabetically-ascending-icon
+				+sort-alphabetically-descending-icon
+				//- i.filter.fa.fa-filter(title=config.get('labels').filterOptions)
+				//- i.alpha.fa.fa-sort-alpha-asc(title=config.get('labels').sortAlphabetically)
+				//- i.amount.active.fa.fa-sort-amount-desc(title=config.get('labels').sortNumerically)
 		.options
 
 	.body

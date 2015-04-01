@@ -1,3 +1,5 @@
+include ../../../../../jade/svg-icons.jade
+
 - var displayName = option.id
 
 if option.id === ':empty' || option.id === '(empty)'
@@ -8,7 +10,9 @@ if option.get('displayName') != null
 
 
 li(data-count=option.get('count'), data-value=option.id, class=option.get('checked')?'checked':null)
-	i.unchecked.fa.fa-square-o(data-value=option.id)
-	i.checked.fa.fa-check-square-o(data-value=option.id)
+	+unchecked-icon
+	+checked-icon
+	//- i.unchecked.fa.fa-square-o(data-value=option.id)
+	//- i.checked.fa.fa-check-square-o(data-value=option.id)
 	label(data-value=option.id)!= displayName
 	.count= option.get('count') === 0 ? option.get('total') : option.get('count')
