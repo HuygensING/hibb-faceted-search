@@ -23,6 +23,7 @@ Backbone based library
 - Rename repo to hibb-faceted-search (Huygens Ing BackBone)
 - :sparkles: Let the range facet parse limits of length 0, 1, 2, 3 and 4 (was only 7 or 8)
 - :sparkles: Let stylus inline images (base64 encoded)
+- :bug: Don't extend queryOptions with textSearch options when textSearch: 'none'
 - :lipstick: Replace fontawesome icons with svg icons
 - :lipstick: Run through derequire (required for standalone module)
 - :fire: Remove link and unlink tasks from Gulpfile

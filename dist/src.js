@@ -274,8 +274,10 @@ MainView = (function(superClass) {
 
   MainView.prototype.initQueryOptions = function() {
     var attrs, i, len, level, ref;
-    attrs = _.extend(this.config.get('queryOptions'), this.textSearch.model.attributes);
-    delete attrs.term;
+    if (this.textSearch != null) {
+      attrs = _.extend(this.config.get('queryOptions'), this.textSearch.model.attributes);
+      delete attrs.term;
+    }
     if (this.config.get('levels').length > 0) {
       attrs.sortParameters = [];
       ref = this.config.get('levels');

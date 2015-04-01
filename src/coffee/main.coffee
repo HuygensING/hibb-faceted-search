@@ -212,9 +212,10 @@ class MainView extends Backbone.View
 	# @private
 	###
 	initQueryOptions: ->
-		attrs = _.extend @config.get('queryOptions'), @textSearch.model.attributes
-		# attrs = @config.get('queryOptions')
-		delete attrs.term
+		if @textSearch?
+			attrs = _.extend @config.get('queryOptions'), @textSearch.model.attributes
+			# attrs = @config.get('queryOptions')
+			delete attrs.term
 
 		if @config.get('levels').length > 0
 			attrs.sortParameters = []
