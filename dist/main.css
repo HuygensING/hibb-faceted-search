@@ -459,14 +459,14 @@
   overflow-y: auto;
   overflow-x: hidden;
 }
-.facet.list .body .container li.checked i.checked {
+.facet.list .body .container li.checked svg.checked {
   display: inline-block;
   -webkit-box-sizing: border-box;
   -moz-box-sizing: border-box;
   box-sizing: border-box;
   vertical-align: top;
 }
-.facet.list .body .container li.checked i.unchecked {
+.facet.list .body .container li.checked svg.unchecked {
   display: none;
 }
 .facet.list .body .container li svg {
