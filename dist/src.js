@@ -274,6 +274,7 @@ MainView = (function(superClass) {
 
   MainView.prototype.initQueryOptions = function() {
     var attrs, i, len, level, ref;
+    attrs = this.config.get('queryOptions');
     if (this.textSearch != null) {
       attrs = _.extend(this.config.get('queryOptions'), this.textSearch.model.attributes);
       delete attrs.term;

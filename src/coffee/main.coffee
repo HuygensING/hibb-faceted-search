@@ -212,6 +212,8 @@ class MainView extends Backbone.View
 	# @private
 	###
 	initQueryOptions: ->
+		attrs = @config.get('queryOptions')
+
 		if @textSearch?
 			attrs = _.extend @config.get('queryOptions'), @textSearch.model.attributes
 			# attrs = @config.get('queryOptions')
