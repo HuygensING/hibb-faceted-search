@@ -4727,7 +4727,8 @@ buf.push("<svg viewBox=\"0 0 401.998 401.998\" class=\"unchecked\"><path d=\"M37
 
 
 var displayName = option.id
-if ( option.id === ':empty' || option.id === '(empty)')
+var emptyValues = ["", ":empty", "(empty)"]
+if ( emptyValues.indexOf(option.id) > -1)
 {
 displayName = '<em>(empty)</em>'
 }

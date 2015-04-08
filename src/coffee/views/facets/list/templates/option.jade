@@ -1,8 +1,9 @@
 include ../../../../../jade/svg-icons.jade
 
 - var displayName = option.id
+- var emptyValues = ["", ":empty", "(empty)"]
 
-if option.id === ':empty' || option.id === '(empty)'
+if emptyValues.indexOf(option.id) > -1
 	- displayName = '<em>(empty)</em>'
 
 if option.get('displayName') != null
