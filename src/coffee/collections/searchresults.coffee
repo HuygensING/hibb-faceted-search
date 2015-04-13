@@ -28,7 +28,7 @@ class SearchResults extends Backbone.Collection
 	# @property
 	# @type {Object}
 	###
-	cachedModels: null
+	_cachedModels: null
 
 	###
 	# @construct
@@ -40,21 +40,28 @@ class SearchResults extends Backbone.Collection
 		# Set cachedModels to an empty object. If it was assigned on object
 		# creation it would have been passed by reference and thus shared
 		# by instances of SearchResults.
-		@cachedModels = {}
+		@_cachedModels = {}
 
 	###
 	# @method
 	###
 	clearCache: ->
-		@cachedModels = {}
+		@_cachedModels = {}
 
 	###
+	# Get the current result.
+	#
+	# This is not equivalent to @last()! The current result can also be a
+	# cached result, which does not have to be the last.
+	#
 	# @method
 	###
 	getCurrent: ->
 		@_current
 
 	###
+	# Set the current result.
+	#
 	# @method
 	# @private
 	###
@@ -73,10 +80,10 @@ class SearchResults extends Backbone.Collection
 	###
 	_addModel: (url, attrs, cacheId, changeMessage) ->
 		attrs.location = url
-		@cachedModels[cacheId] = new @model attrs
-		@add @cachedModels[cacheId]
-		@_setCurrent @cachedModels[cacheId], changeMessage
-		# @trigger changeMessage, @cachedModels[cacheId]
+		@_cachedModels[cacheId] = new @model attrs
+		@add @_cachedModels[cacheId]
+		@_setCurrent @_cachedModels[cacheId], changeMessage
+		# @trigger changeMessage, @_cachedModels[cacheId]
 
 
 	###
@@ -100,8 +107,8 @@ class SearchResults extends Backbone.Collection
 
 		# The search results are cached by the query options string,
 		# so we check if there is such a string to find the cached result.
-		if options.cache and @cachedModels.hasOwnProperty queryOptionsString
-			@_setCurrent @cachedModels[queryOptionsString], changeMessage
+		if options.cache and @_cachedModels.hasOwnProperty queryOptionsString
+			@_setCurrent @_cachedModels[queryOptionsString], changeMessage
 		else
 			@postQuery queryOptions, (url) =>
 				getUrl = "#{url}?rows=#{@options.config.get('resultRows')}"
@@ -118,8 +125,8 @@ class SearchResults extends Backbone.Collection
 		changeMessage = 'change:cursor'
 
 		if url?
-			if @cachedModels.hasOwnProperty url
-				@_setCurrent @cachedModels[url], changeMessage
+			if @_cachedModels.hasOwnProperty url
+				@_setCurrent @_cachedModels[url], changeMessage
 			else
 				@getResults url, (response) =>
 					@_addModel @_current.get('location'), response, url, changeMessage
@@ -132,8 +139,8 @@ class SearchResults extends Backbone.Collection
 		url = @_current.get('location') + "?rows=#{@options.config.get('resultRows')}&start=#{start}"
 		url += "&database=#{database}" if database?
 
-		if @cachedModels.hasOwnProperty url
-			@_setCurrent @cachedModels[url], changeMessage
+		if @_cachedModels.hasOwnProperty url
+			@_setCurrent @_cachedModels[url], changeMessage
 		else
 			@getResults url, (response) =>
 				@_addModel @_current.get('location'), response, url, changeMessage
