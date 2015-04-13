@@ -88,10 +88,8 @@ class ListFacet extends FacetView
 	# @method
 	###
 	renderFilteredOptionCount: ->
-		# filteredLength = @optionsView.filtered_items.length
-		# collectionLength = @optionsView.collection.length
 		visibleModels = @collection.filter (model) -> model.get('visible')
-		value = if 0 < visibleModels.length < 21 then 'visible' else 'hidden'
+		value = if 0 < visibleModels.length < 51 then 'visible' else 'hidden'
 		@$('input[type="checkbox"][name="all"]').css 'visibility', value
 
 		filteredModels = @collection.filter (model) -> model.get('visible')
@@ -117,23 +115,23 @@ class ListFacet extends FacetView
 	events: -> _.extend {}, super,
 		'keyup input[name="filter"]': (ev) -> @optionsView.filterOptions ev.currentTarget.value
 		'change header .options input[type="checkbox"][name="all"]': (ev) -> @optionsView.setCheckboxes ev
-		'click header .menu i.filter': '_toggleFilterMenu'
-		'click header .menu i.alpha': '_changeOrder'
-		'click header .menu i.amount': '_changeOrder'
+		'click header .menu svg.filter': '_toggleFilterMenu'
+		'click header .menu svg.alpha': '_changeOrder'
+		'click header .menu svg.count': '_changeOrder'
 
 	###
 	# @method
 	# @private
 	###
-	_toggleFilterMenu: ->
+	_toggleFilterMenu: (ev) ->
 		optionsDiv = @$('header .options')
-		filterIcon = @$('i.filter')
-		filterIcon.toggleClass 'active'
+		filterIcon = ev.currentTarget
+		filterIcon.classList.toggle 'active'
 
 		optionsDiv.slideToggle 150, =>
 			input = optionsDiv.find('input[name="filter"]')
 
-			if filterIcon.hasClass 'active'
+			if filterIcon.contains 'active'
 				input.focus()
 				@optionsView.appendOptions true
 				@renderFilteredOptionCount()
@@ -150,26 +148,39 @@ class ListFacet extends FacetView
 		# When changing the order, all the items must be active (set to visible).
 		# Unless the filter menu is active, than we only change the order of the
 		# filtered items.
-		@optionsView.renderAll() unless @$('i.filter').hasClass 'active'
+		@optionsView.renderAll() unless @$("svg.filter").hasClass "active"
 
-		$target = $(ev.currentTarget)
+		# Set type and order vars before changing the className
+		type = if ev.currentTarget.getAttribute("class").indexOf("alphabetically") > -1 then "alpha" else "count"
 
-		if $target.hasClass 'active'
-			if $target.hasClass 'alpha'
-				$target.toggleClass 'fa-sort-alpha-desc'
-				$target.toggleClass 'fa-sort-alpha-asc'
-			else if $target.hasClass 'amount'
-				$target.toggleClass 'fa-sort-amount-desc'
-				$target.toggleClass 'fa-sort-amount-asc'
+		if ev.currentTarget.classList.contains("active")
+			order = if ev.currentTarget.getAttribute("class").indexOf("descending") > -1 then "asc" else "desc"
+			
+			if ev.currentTarget.classList.contains("alpha")
+				for el in @el.querySelectorAll("svg.alpha")
+					el.classList.toggle("visible")
+
+					if el isnt ev.currentTarget
+						el.classList.add("active")
+					else
+						el.classList.remove("active")
+			else if ev.currentTarget.classList.contains("count")
+
+				for el in @el.querySelectorAll("svg.count")
+					el.classList.toggle("visible")
+
+					if el isnt ev.currentTarget
+						el.classList.add("active")
+					else
+						el.classList.remove("active")
 		else
-			# Use amount and alpha in selectors, because otherwise an active
+			order = if ev.currentTarget.getAttribute("class").indexOf("descending") > -1 then "desc" else "asc"
+			# Use count and alpha in selectors, because otherwise an active
 			# filter would also be removed
-			@$('i.amount.active').removeClass 'active'
-			@$('i.alpha.active').removeClass 'active'
-			$target.addClass 'active'
+			el.classList.remove("active") for el in @el.querySelectorAll("svg.count.active")
+			el.classList.remove("active") for el in @el.querySelectorAll("svg.alpha.active")
 
-		type = if $target.hasClass 'alpha' then 'alpha' else 'amount'
-		order = if $target.hasClass 'fa-sort-'+type+'-desc' then 'desc' else 'asc'
+			ev.currentTarget.classList.add "active"
 
 		@collection.orderBy type+'_'+order
 

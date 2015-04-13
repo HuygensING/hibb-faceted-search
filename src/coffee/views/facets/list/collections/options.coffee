@@ -30,7 +30,7 @@ class ListOptions extends Backbone.Collection
 	###
 	initialize: ->
 		# Set the default comparator
-		@comparator = @strategies.amount_desc
+		@comparator = @strategies.count_desc
 
 	
 	###
@@ -39,7 +39,7 @@ class ListOptions extends Backbone.Collection
 	# @method
 	###
 	revert: ->
-		@comparator = @strategies.amount_desc
+		@comparator = @strategies.count_desc
 
 		@each (option) => option.set 'checked', false, silent: true
 
@@ -80,26 +80,27 @@ class ListOptions extends Backbone.Collection
 		# +!!53 == +true = 1 // Everything above 0.
 		# Visible models and models with a count > 0 get preference over name.
 		alpha_asc: (model) -> +!model.get('visible') + (+!model.get('count') + model.get('name'))
+		
 		# Name from Z to A
 		# Visible models and models with a count > 0 get preference over name.
 		alpha_desc: (model) ->
 			# http://stackoverflow.com/questions/5636812/sorting-strings-in-reverse-order-with-backbone-js/5639070#5639070
 			str = String.fromCharCode.apply String, _.map model.get('name').split(''), (c) -> 0xffff - c.charCodeAt()
 			+!model.get('visible') + (+!model.get('count') + str)
+		
 		# Count from low to high
-		amount_asc: (model) ->
+		count_asc: (model) ->
 			tmp = if model.get('visible') then 0 else 10
 			tmp += +!model.get('count')
 			cnt = if model.get('count') is 0 then model.get('total') else model.get('count')
 			tmp -= 1/cnt
+		
 		# Count from high to low (default)
-		amount_desc: (model) ->
+		count_desc: (model) ->
 			tmp = if model.get('visible') then 0 else 10
 			tmp += +!model.get('count')
 			cnt = if model.get('count') is 0 then model.get('total') else model.get('count')
 			tmp += 1/cnt
-#      add = if model.get('visible') then -10000000 else 0
-#      add + (-1 * +model.get('count'))
 
 	###
 	# @method

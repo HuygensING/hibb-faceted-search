@@ -7,14 +7,11 @@ include ../svg-icons.jade
 		h3(title=model.get('title'))= model.get('title')
 		.menu
 			if options != null && options.length != null && options.length > 9
-				+filter-icon
-				+sort-count-ascending-icon
-				+sort-count-descending-icon
-				+sort-alphabetically-ascending-icon
-				+sort-alphabetically-descending-icon
-				//- i.filter.fa.fa-filter(title=config.get('labels').filterOptions)
-				//- i.alpha.fa.fa-sort-alpha-asc(title=config.get('labels').sortAlphabetically)
-				//- i.amount.active.fa.fa-sort-amount-desc(title=config.get('labels').sortNumerically)
+				+filter-icon(title=config.get('labels').filterOptions)
+				+sort-count-ascending-icon(className="count", title=config.get('labels').sortNumerically)
+				+sort-count-descending-icon(className="count visible active", title=config.get('labels').sortNumerically)
+				+sort-alphabetically-ascending-icon(className="alpha visible", title=config.get('labels').sortAlphabetically)
+				+sort-alphabetically-descending-icon(className="alpha", title=config.get('labels').sortAlphabetically)
 		.options
 
 	.body

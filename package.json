@@ -13,6 +13,7 @@
     "url": "https://github.com/HuygensING/faceted-search"
   },
   "scripts": {
+    "start": "gulp",
     "docs": "crojsdoc ./src && http-server ./doc -o",
     "link": "npm link funcky.el funcky.util funcky.req funcky.arr hibb-pagination",
     "unlink": "npm unlink funcky.el funcky.util funcky.req funcky.arr hibb-pagination && npm i"

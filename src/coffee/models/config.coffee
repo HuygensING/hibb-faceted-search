@@ -43,6 +43,7 @@ class Config extends Backbone.Model
 	# @param {Boolean} [results=false] Render the results. When kept to false, the showing of the results has to be taken care of in the application.
 	# @param {Boolean} [sortLevels=true] Render sort levels in the results header
 	# @param {Boolean} [showMetadata=true] Render show metadata toggle in the results header
+	# @param {Boolean} [showPageNames] Show `page 1 of 23 pages` instead of `1 of 23`.
 	#
 	# OTHER RENDERING OPTIONS
 	# @param {Object} [templates={}] Hash of templates. The templates should be functions which take a hash as argument to render vars. Possible keys: main, facets, text-search, facets.main, list.menu, list.body, range.body and result.
@@ -83,6 +84,7 @@ class Config extends Backbone.Model
 		results: false
 		sortLevels: true
 		showMetadata: true
+		showPageNames: null
 		
 		### OTHER RENDERING OPTIONS ###
 		templates: {}

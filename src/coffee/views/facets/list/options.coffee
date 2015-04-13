@@ -33,7 +33,7 @@ class ListFacetOptions extends Backbone.View
 		@listenTo @collection, 'sort', =>
 			@rerender()
 		@listenTo @collection, 'reset', =>
-			@collection.orderBy 'amount_desc', true
+			@collection.orderBy 'count_desc', true
 			@render()
 
 		optionTpl = @config.get('templates')['list.option'] if @config.get('templates').hasOwnProperty 'list.option'

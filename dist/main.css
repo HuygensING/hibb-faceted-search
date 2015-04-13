@@ -316,13 +316,20 @@
   top: 0;
   right: 0;
 }
-.faceted-search .facet header div.menu i.fa {
-  font-size: 1.2em;
-  margin: 2px 0 0 4px;
-}
 .faceted-search .facet header div.menu svg {
   width: 14px;
   height: 14px;
+  display: none;
+}
+.faceted-search .facet header div.menu svg.filter {
+  display: inline;
+}
+.faceted-search .facet header div.menu svg.visible {
+  display: inline;
+}
+.faceted-search .facet header div.menu svg.active rect {
+  fill: #add8e6;
+  fill-opacity: 0.5;
 }
 .faceted-search .facet header .options {
   display: none;

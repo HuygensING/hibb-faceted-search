@@ -170,6 +170,7 @@ class Results extends Backbone.View
 			resultsStart: responseModel.get('start')
 			resultsPerPage: @options.config.get 'resultRows'
 			resultsTotal: responseModel.get('numFound')
+			showPageNames: @options.config.get('showPageNames')
 		@listenTo @subviews.pagination, 'change:pagenumber', @changePage
 		@$('header .pagination').html @subviews.pagination.el
 

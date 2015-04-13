@@ -1873,8 +1873,8 @@ function hasOwnProperty(obj, prop) {
 (function (global){
 (function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g.Pagination = f()}})(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof _dereq_=="function"&&_dereq_;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof _dereq_=="function"&&_dereq_;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(_dereq_,module,exports){
 var $, Backbone, Pagination, tpl, util,
-  __hasProp = {}.hasOwnProperty,
-  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
+  extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
+  hasProp = {}.hasOwnProperty;
 
 Backbone = _dereq_('backbone');
 
@@ -1893,8 +1893,8 @@ Create a pagination view.
 @extends Backbone.View
  */
 
-Pagination = (function(_super) {
-  __extends(Pagination, _super);
+Pagination = (function(superClass) {
+  extend(Pagination, superClass);
 
   function Pagination() {
     return Pagination.__super__.constructor.apply(this, arguments);
@@ -1913,16 +1913,17 @@ Pagination = (function(_super) {
   	@prop {number} [options.resultsStart=0] - The result item to start at. Not the start page!
   	@prop {boolean} [options.step10=true] - Render (<< and >>) for steps of 10.
   	@prop {boolean} [options.triggerPageNumber=true] - Trigger the new pageNumber (true) or prev/next (false).
+  	@prop {array<String>} [options.showPageNames] - Show `1 page of 23 pages` instead of `1 of 23`. Array contains the singular and plural version, ie: ["page", "pages"]
    */
 
   Pagination.prototype.initialize = function(options) {
-    var _base, _base1;
+    var base, base1;
     this.options = options != null ? options : {};
-    if ((_base = this.options).step10 == null) {
-      _base.step10 = true;
+    if ((base = this.options).step10 == null) {
+      base.step10 = true;
     }
-    if ((_base1 = this.options).triggerPageNumber == null) {
-      _base1.triggerPageNumber = true;
+    if ((base1 = this.options).triggerPageNumber == null) {
+      base1.triggerPageNumber = true;
     }
     this._currentPageNumber = (this.options.resultsStart != null) && this.options.resultsStart > 0 ? (this.options.resultsStart / this.options.resultsPerPage) + 1 : 1;
     return this.setPageNumber(this._currentPageNumber, true);
@@ -2899,6 +2900,7 @@ Config = (function(superClass) {
   	 * @param {Boolean} [results=false] Render the results. When kept to false, the showing of the results has to be taken care of in the application.
   	 * @param {Boolean} [sortLevels=true] Render sort levels in the results header
   	 * @param {Boolean} [showMetadata=true] Render show metadata toggle in the results header
+  	 * @param {Boolean} [showPageNames] Show `page 1 of 23 pages` instead of `1 of 23`.
   	#
   	 * OTHER RENDERING OPTIONS
   	 * @param {Object} [templates={}] Hash of templates. The templates should be functions which take a hash as argument to render vars. Possible keys: main, facets, text-search, facets.main, list.menu, list.body, range.body and result.
@@ -2943,6 +2945,7 @@ Config = (function(superClass) {
       results: false,
       sortLevels: true,
       showMetadata: true,
+      showPageNames: null,
 
       /* OTHER RENDERING OPTIONS */
       templates: {},
@@ -3885,7 +3888,7 @@ ListOptions = (function(superClass) {
    */
 
   ListOptions.prototype.initialize = function() {
-    return this.comparator = this.strategies.amount_desc;
+    return this.comparator = this.strategies.count_desc;
   };
 
 
@@ -3896,7 +3899,7 @@ ListOptions = (function(superClass) {
    */
 
   ListOptions.prototype.revert = function() {
-    this.comparator = this.strategies.amount_desc;
+    this.comparator = this.strategies.count_desc;
     return this.each((function(_this) {
       return function(option) {
         return option.set('checked', false, {
@@ -3960,14 +3963,14 @@ ListOptions = (function(superClass) {
       }));
       return +(!model.get('visible')) + (+(!model.get('count')) + str);
     },
-    amount_asc: function(model) {
+    count_asc: function(model) {
       var cnt, tmp;
       tmp = model.get('visible') ? 0 : 10;
       tmp += +(!model.get('count'));
       cnt = model.get('count') === 0 ? model.get('total') : model.get('count');
       return tmp -= 1 / cnt;
     },
-    amount_desc: function(model) {
+    count_desc: function(model) {
       var cnt, tmp;
       tmp = model.get('visible') ? 0 : 10;
       tmp += +(!model.get('count'));
@@ -4145,7 +4148,7 @@ ListFacet = (function(superClass) {
     visibleModels = this.collection.filter(function(model) {
       return model.get('visible');
     });
-    value = (0 < (ref = visibleModels.length) && ref < 21) ? 'visible' : 'hidden';
+    value = (0 < (ref = visibleModels.length) && ref < 51) ? 'visible' : 'hidden';
     this.$('input[type="checkbox"][name="all"]').css('visibility', value);
     filteredModels = this.collection.filter(function(model) {
       return model.get('visible');
@@ -4177,9 +4180,9 @@ ListFacet = (function(superClass) {
       'change header .options input[type="checkbox"][name="all"]': function(ev) {
         return this.optionsView.setCheckboxes(ev);
       },
-      'click header .menu i.filter': '_toggleFilterMenu',
-      'click header .menu i.alpha': '_changeOrder',
-      'click header .menu i.amount': '_changeOrder'
+      'click header .menu svg.filter': '_toggleFilterMenu',
+      'click header .menu svg.alpha': '_changeOrder',
+      'click header .menu svg.count': '_changeOrder'
     });
   };
 
@@ -4189,16 +4192,16 @@ ListFacet = (function(superClass) {
   	 * @private
    */
 
-  ListFacet.prototype._toggleFilterMenu = function() {
+  ListFacet.prototype._toggleFilterMenu = function(ev) {
     var filterIcon, optionsDiv;
     optionsDiv = this.$('header .options');
-    filterIcon = this.$('i.filter');
-    filterIcon.toggleClass('active');
+    filterIcon = ev.currentTarget;
+    filterIcon.classList.toggle('active');
     return optionsDiv.slideToggle(150, (function(_this) {
       return function() {
         var input;
         input = optionsDiv.find('input[name="filter"]');
-        if (filterIcon.hasClass('active')) {
+        if (filterIcon.contains('active')) {
           input.focus();
           _this.optionsView.appendOptions(true);
           return _this.renderFilteredOptionCount();
@@ -4218,26 +4221,50 @@ ListFacet = (function(superClass) {
    */
 
   ListFacet.prototype._changeOrder = function(ev) {
-    var $target, order, type;
-    if (!this.$('i.filter').hasClass('active')) {
+    var el, i, j, k, l, len, len1, len2, len3, order, ref, ref1, ref2, ref3, type;
+    if (!this.$("svg.filter").hasClass("active")) {
       this.optionsView.renderAll();
     }
-    $target = $(ev.currentTarget);
-    if ($target.hasClass('active')) {
-      if ($target.hasClass('alpha')) {
-        $target.toggleClass('fa-sort-alpha-desc');
-        $target.toggleClass('fa-sort-alpha-asc');
-      } else if ($target.hasClass('amount')) {
-        $target.toggleClass('fa-sort-amount-desc');
-        $target.toggleClass('fa-sort-amount-asc');
+    type = ev.currentTarget.getAttribute("class").indexOf("alphabetically") > -1 ? "alpha" : "count";
+    if (ev.currentTarget.classList.contains("active")) {
+      order = ev.currentTarget.getAttribute("class").indexOf("descending") > -1 ? "asc" : "desc";
+      if (ev.currentTarget.classList.contains("alpha")) {
+        ref = this.el.querySelectorAll("svg.alpha");
+        for (i = 0, len = ref.length; i < len; i++) {
+          el = ref[i];
+          el.classList.toggle("visible");
+          if (el !== ev.currentTarget) {
+            el.classList.add("active");
+          } else {
+            el.classList.remove("active");
+          }
+        }
+      } else if (ev.currentTarget.classList.contains("count")) {
+        ref1 = this.el.querySelectorAll("svg.count");
+        for (j = 0, len1 = ref1.length; j < len1; j++) {
+          el = ref1[j];
+          el.classList.toggle("visible");
+          if (el !== ev.currentTarget) {
+            el.classList.add("active");
+          } else {
+            el.classList.remove("active");
+          }
+        }
       }
     } else {
-      this.$('i.amount.active').removeClass('active');
-      this.$('i.alpha.active').removeClass('active');
-      $target.addClass('active');
+      order = ev.currentTarget.getAttribute("class").indexOf("descending") > -1 ? "desc" : "asc";
+      ref2 = this.el.querySelectorAll("svg.count.active");
+      for (k = 0, len2 = ref2.length; k < len2; k++) {
+        el = ref2[k];
+        el.classList.remove("active");
+      }
+      ref3 = this.el.querySelectorAll("svg.alpha.active");
+      for (l = 0, len3 = ref3.length; l < len3; l++) {
+        el = ref3[l];
+        el.classList.remove("active");
+      }
+      ev.currentTarget.classList.add("active");
     }
-    type = $target.hasClass('alpha') ? 'alpha' : 'amount';
-    order = $target.hasClass('fa-sort-' + type + '-desc') ? 'desc' : 'asc';
     return this.collection.orderBy(type + '_' + order);
   };
 
@@ -4452,7 +4479,7 @@ ListFacetOptions = (function(superClass) {
     })(this));
     this.listenTo(this.collection, 'reset', (function(_this) {
       return function() {
-        _this.collection.orderBy('amount_desc', true);
+        _this.collection.orderBy('count_desc', true);
         return _this.render();
       };
     })(this));
@@ -5930,7 +5957,8 @@ Results = (function(superClass) {
     this.subviews.pagination = new HibbPagination({
       resultsStart: responseModel.get('start'),
       resultsPerPage: this.options.config.get('resultRows'),
-      resultsTotal: responseModel.get('numFound')
+      resultsTotal: responseModel.get('numFound'),
+      showPageNames: this.options.config.get('showPageNames')
     });
     this.listenTo(this.subviews.pagination, 'change:pagenumber', this.changePage);
     return this.$('header .pagination').html(this.subviews.pagination.el);
@@ -7126,7 +7154,7 @@ module.exports = function template(locals) {
 var buf = [];
 var jade_mixins = {};
 var jade_interp;
-;var locals_for_with = (locals || {});(function (model, options) {
+;var locals_for_with = (locals || {});(function (config, model, options) {
 
 
 
@@ -7141,23 +7169,23 @@ var jade_interp;
 
 jade_mixins["filter-icon"] = function(){
 var block = (this && this.block), attributes = (this && this.attributes) || {};
-buf.push("<svg viewBox=\"0 0 971.986 971.986\" class=\"filter\"><path d=\"M370.216,459.3c10.2,11.1,15.8,25.6,15.8,40.6v442c0,26.601,32.1,40.101,51.1,21.4l123.3-141.3 c16.5-19.8,25.6-29.601,25.6-49.2V500c0-15,5.7-29.5,15.8-40.601L955.615,75.5c26.5-28.8,6.101-75.5-33.1-75.5h-873 c-39.2,0-59.7,46.6-33.1,75.5L370.216,459.3z\"></path></svg>");
+buf.push("<svg viewBox=\"0 0 971.986 971.986\"" + (jade.cls(['filter',attributes.className], [null,true])) + "><title>" + (jade.escape(null == (jade_interp = attributes.title) ? "" : jade_interp)) + "</title><path d=\"M370.216,459.3c10.2,11.1,15.8,25.6,15.8,40.6v442c0,26.601,32.1,40.101,51.1,21.4l123.3-141.3 c16.5-19.8,25.6-29.601,25.6-49.2V500c0-15,5.7-29.5,15.8-40.601L955.615,75.5c26.5-28.8,6.101-75.5-33.1-75.5h-873 c-39.2,0-59.7,46.6-33.1,75.5L370.216,459.3z\"></path></svg>");
 };
 jade_mixins["sort-count-ascending-icon"] = function(){
 var block = (this && this.block), attributes = (this && this.attributes) || {};
-buf.push("<svg viewBox=\"0 0 511.627 511.627\" class=\"sort-count-ascending\"><g><path d=\"M260.494,219.271H388.4c2.666,0,4.855-0.855,6.563-2.57c1.715-1.713,2.573-3.9,2.573-6.567v-54.816 c0-2.667-0.858-4.854-2.573-6.567c-1.708-1.711-3.897-2.57-6.563-2.57H260.494c-2.666,0-4.853,0.855-6.567,2.57 c-1.71,1.713-2.568,3.9-2.568,6.567v54.816c0,2.667,0.855,4.854,2.568,6.567C255.641,218.413,257.828,219.271,260.494,219.271z\"></path><path d=\"M260.497,73.089h73.087c2.666,0,4.856-0.855,6.563-2.568c1.718-1.714,2.563-3.901,2.563-6.567V9.136 c0-2.663-0.846-4.853-2.563-6.567C338.44,0.859,336.25,0,333.584,0h-73.087c-2.666,0-4.853,0.855-6.567,2.568 c-1.709,1.715-2.568,3.905-2.568,6.567v54.818c0,2.666,0.855,4.853,2.568,6.567C255.645,72.23,257.831,73.089,260.497,73.089z\"></path><path d=\"M196.54,401.991h-54.817V9.136c0-2.663-0.854-4.856-2.568-6.567C137.441,0.859,135.254,0,132.587,0H77.769 c-2.663,0-4.856,0.855-6.567,2.568c-1.709,1.715-2.568,3.905-2.568,6.567v392.855H13.816c-4.184,0-7.04,1.902-8.564,5.708 c-1.525,3.621-0.855,6.95,1.997,9.996l91.361,91.365c2.094,1.707,4.281,2.562,6.567,2.562c2.474,0,4.665-0.855,6.567-2.562 l91.076-91.078c1.906-2.279,2.856-4.571,2.856-6.844c0-2.676-0.859-4.859-2.568-6.584 C201.395,402.847,199.208,401.991,196.54,401.991z\"></path><path d=\"M504.604,441.109c-1.715-1.718-3.901-2.573-6.567-2.573H260.497c-2.666,0-4.853,0.855-6.567,2.573 c-1.709,1.711-2.568,3.901-2.568,6.564v54.815c0,2.673,0.855,4.853,2.568,6.571c1.715,1.711,3.901,2.566,6.567,2.566h237.539 c2.666,0,4.853-0.855,6.567-2.566c1.711-1.719,2.566-3.898,2.566-6.571v-54.815C507.173,445.011,506.314,442.82,504.604,441.109z\"></path><path d=\"M260.494,365.445H443.22c2.663,0,4.853-0.855,6.57-2.566c1.708-1.711,2.563-3.901,2.563-6.563v-54.823 c0-2.662-0.855-4.853-2.563-6.563c-1.718-1.711-3.907-2.566-6.57-2.566H260.494c-2.666,0-4.853,0.855-6.567,2.566 c-1.71,1.711-2.568,3.901-2.568,6.563v54.823c0,2.662,0.855,4.853,2.568,6.563C255.641,364.59,257.828,365.445,260.494,365.445z\"></path></g></svg>");
+buf.push("<svg viewBox=\"0 0 511.627 511.627\"" + (jade.cls(['sort-count-ascending',attributes.className], [null,true])) + "><g><title>" + (jade.escape(null == (jade_interp = attributes.title) ? "" : jade_interp)) + "</title><rect x=\"0\" y=\"0\" width=\"511.627\" height=\"511.627\" fill-opacity=\"0.01\"></rect><path d=\"M260.494,219.271H388.4c2.666,0,4.855-0.855,6.563-2.57c1.715-1.713,2.573-3.9,2.573-6.567v-54.816 c0-2.667-0.858-4.854-2.573-6.567c-1.708-1.711-3.897-2.57-6.563-2.57H260.494c-2.666,0-4.853,0.855-6.567,2.57 c-1.71,1.713-2.568,3.9-2.568,6.567v54.816c0,2.667,0.855,4.854,2.568,6.567C255.641,218.413,257.828,219.271,260.494,219.271z\"></path><path d=\"M260.497,73.089h73.087c2.666,0,4.856-0.855,6.563-2.568c1.718-1.714,2.563-3.901,2.563-6.567V9.136 c0-2.663-0.846-4.853-2.563-6.567C338.44,0.859,336.25,0,333.584,0h-73.087c-2.666,0-4.853,0.855-6.567,2.568 c-1.709,1.715-2.568,3.905-2.568,6.567v54.818c0,2.666,0.855,4.853,2.568,6.567C255.645,72.23,257.831,73.089,260.497,73.089z\"></path><path d=\"M196.54,401.991h-54.817V9.136c0-2.663-0.854-4.856-2.568-6.567C137.441,0.859,135.254,0,132.587,0H77.769 c-2.663,0-4.856,0.855-6.567,2.568c-1.709,1.715-2.568,3.905-2.568,6.567v392.855H13.816c-4.184,0-7.04,1.902-8.564,5.708 c-1.525,3.621-0.855,6.95,1.997,9.996l91.361,91.365c2.094,1.707,4.281,2.562,6.567,2.562c2.474,0,4.665-0.855,6.567-2.562 l91.076-91.078c1.906-2.279,2.856-4.571,2.856-6.844c0-2.676-0.859-4.859-2.568-6.584 C201.395,402.847,199.208,401.991,196.54,401.991z\"></path><path d=\"M504.604,441.109c-1.715-1.718-3.901-2.573-6.567-2.573H260.497c-2.666,0-4.853,0.855-6.567,2.573 c-1.709,1.711-2.568,3.901-2.568,6.564v54.815c0,2.673,0.855,4.853,2.568,6.571c1.715,1.711,3.901,2.566,6.567,2.566h237.539 c2.666,0,4.853-0.855,6.567-2.566c1.711-1.719,2.566-3.898,2.566-6.571v-54.815C507.173,445.011,506.314,442.82,504.604,441.109z\"></path><path d=\"M260.494,365.445H443.22c2.663,0,4.853-0.855,6.57-2.566c1.708-1.711,2.563-3.901,2.563-6.563v-54.823 c0-2.662-0.855-4.853-2.563-6.563c-1.718-1.711-3.907-2.566-6.57-2.566H260.494c-2.666,0-4.853,0.855-6.567,2.566 c-1.71,1.711-2.568,3.901-2.568,6.563v54.823c0,2.662,0.855,4.853,2.568,6.563C255.641,364.59,257.828,365.445,260.494,365.445z\"></path></g></svg>");
 };
 jade_mixins["sort-count-descending-icon"] = function(){
 var block = (this && this.block), attributes = (this && this.attributes) || {};
-buf.push("<svg viewBox=\"0 0 511.627 511.627\" class=\"sort-count-descending\"><g><path d=\"M333.584,438.536h-73.087c-2.666,0-4.853,0.855-6.567,2.573c-1.709,1.711-2.568,3.901-2.568,6.564v54.815 c0,2.673,0.855,4.853,2.568,6.571c1.715,1.711,3.901,2.566,6.567,2.566h73.087c2.666,0,4.856-0.855,6.563-2.566 c1.718-1.719,2.563-3.898,2.563-6.571v-54.815c0-2.663-0.846-4.854-2.563-6.564C338.44,439.392,336.25,438.536,333.584,438.536z\"></path><path d=\"M196.54,401.991h-54.817V9.136c0-2.663-0.854-4.856-2.568-6.567C137.441,0.859,135.254,0,132.587,0H77.769 c-2.663,0-4.856,0.855-6.567,2.568c-1.709,1.715-2.568,3.905-2.568,6.567v392.855H13.816c-4.184,0-7.04,1.902-8.564,5.708 c-1.525,3.621-0.855,6.95,1.997,9.996l91.361,91.365c2.094,1.707,4.281,2.562,6.567,2.562c2.474,0,4.665-0.855,6.567-2.562 l91.076-91.078c1.906-2.279,2.856-4.571,2.856-6.844c0-2.676-0.859-4.859-2.568-6.584 C201.395,402.847,199.208,401.991,196.54,401.991z\"></path><path d=\"M388.4,292.362H260.494c-2.666,0-4.853,0.855-6.567,2.566c-1.71,1.711-2.568,3.901-2.568,6.563v54.823 c0,2.662,0.855,4.853,2.568,6.563c1.714,1.711,3.901,2.566,6.567,2.566H388.4c2.666,0,4.855-0.855,6.563-2.566 c1.715-1.711,2.573-3.901,2.573-6.563v-54.823c0-2.662-0.858-4.853-2.573-6.563C393.256,293.218,391.066,292.362,388.4,292.362z\"></path><path d=\"M504.604,2.568C502.889,0.859,500.702,0,498.036,0H260.497c-2.666,0-4.853,0.855-6.567,2.568 c-1.709,1.715-2.568,3.905-2.568,6.567v54.818c0,2.666,0.855,4.853,2.568,6.567c1.715,1.709,3.901,2.568,6.567,2.568h237.539 c2.666,0,4.853-0.855,6.567-2.568c1.711-1.714,2.566-3.901,2.566-6.567V9.136C507.173,6.473,506.314,4.279,504.604,2.568z\"></path><path d=\"M443.22,146.181H260.494c-2.666,0-4.853,0.855-6.567,2.57c-1.71,1.713-2.568,3.9-2.568,6.567v54.816 c0,2.667,0.855,4.854,2.568,6.567c1.714,1.711,3.901,2.57,6.567,2.57H443.22c2.663,0,4.853-0.855,6.57-2.57 c1.708-1.713,2.563-3.9,2.563-6.567v-54.816c0-2.667-0.855-4.858-2.563-6.567C448.069,147.04,445.879,146.181,443.22,146.181z\"></path></g></svg>");
+buf.push("<svg viewBox=\"0 0 511.627 511.627\"" + (jade.cls(['sort-count-descending',attributes.className], [null,true])) + "><g><title>" + (jade.escape(null == (jade_interp = attributes.title) ? "" : jade_interp)) + "</title><rect x=\"0\" y=\"0\" width=\"511.627\" height=\"511.627\" fill-opacity=\"0\"></rect><path d=\"M333.584,438.536h-73.087c-2.666,0-4.853,0.855-6.567,2.573c-1.709,1.711-2.568,3.901-2.568,6.564v54.815 c0,2.673,0.855,4.853,2.568,6.571c1.715,1.711,3.901,2.566,6.567,2.566h73.087c2.666,0,4.856-0.855,6.563-2.566 c1.718-1.719,2.563-3.898,2.563-6.571v-54.815c0-2.663-0.846-4.854-2.563-6.564C338.44,439.392,336.25,438.536,333.584,438.536z\"></path><path d=\"M196.54,401.991h-54.817V9.136c0-2.663-0.854-4.856-2.568-6.567C137.441,0.859,135.254,0,132.587,0H77.769 c-2.663,0-4.856,0.855-6.567,2.568c-1.709,1.715-2.568,3.905-2.568,6.567v392.855H13.816c-4.184,0-7.04,1.902-8.564,5.708 c-1.525,3.621-0.855,6.95,1.997,9.996l91.361,91.365c2.094,1.707,4.281,2.562,6.567,2.562c2.474,0,4.665-0.855,6.567-2.562 l91.076-91.078c1.906-2.279,2.856-4.571,2.856-6.844c0-2.676-0.859-4.859-2.568-6.584 C201.395,402.847,199.208,401.991,196.54,401.991z\"></path><path d=\"M388.4,292.362H260.494c-2.666,0-4.853,0.855-6.567,2.566c-1.71,1.711-2.568,3.901-2.568,6.563v54.823 c0,2.662,0.855,4.853,2.568,6.563c1.714,1.711,3.901,2.566,6.567,2.566H388.4c2.666,0,4.855-0.855,6.563-2.566 c1.715-1.711,2.573-3.901,2.573-6.563v-54.823c0-2.662-0.858-4.853-2.573-6.563C393.256,293.218,391.066,292.362,388.4,292.362z\"></path><path d=\"M504.604,2.568C502.889,0.859,500.702,0,498.036,0H260.497c-2.666,0-4.853,0.855-6.567,2.568 c-1.709,1.715-2.568,3.905-2.568,6.567v54.818c0,2.666,0.855,4.853,2.568,6.567c1.715,1.709,3.901,2.568,6.567,2.568h237.539 c2.666,0,4.853-0.855,6.567-2.568c1.711-1.714,2.566-3.901,2.566-6.567V9.136C507.173,6.473,506.314,4.279,504.604,2.568z\"></path><path d=\"M443.22,146.181H260.494c-2.666,0-4.853,0.855-6.567,2.57c-1.71,1.713-2.568,3.9-2.568,6.567v54.816 c0,2.667,0.855,4.854,2.568,6.567c1.714,1.711,3.901,2.57,6.567,2.57H443.22c2.663,0,4.853-0.855,6.57-2.57 c1.708-1.713,2.563-3.9,2.563-6.567v-54.816c0-2.667-0.855-4.858-2.563-6.567C448.069,147.04,445.879,146.181,443.22,146.181z\"></path></g></svg>");
 };
 jade_mixins["sort-alphabetically-ascending-icon"] = function(){
 var block = (this && this.block), attributes = (this && this.attributes) || {};
-buf.push("<svg viewBox=\"0 0 511.626 511.627\" class=\"sort-alphabetically-ascending\"><g><path d=\"M215.232,401.991h-54.818V9.136c0-2.663-0.854-4.856-2.568-6.567C156.133,0.859,153.946,0,151.279,0H96.461 c-2.663,0-4.856,0.855-6.567,2.568c-1.709,1.715-2.568,3.905-2.568,6.567v392.855H32.507c-4.184,0-7.039,1.902-8.563,5.708 c-1.525,3.621-0.856,6.95,1.997,9.996l91.361,91.365c2.096,1.707,4.281,2.562,6.567,2.562c2.474,0,4.664-0.855,6.567-2.562 l91.076-91.078c1.906-2.279,2.856-4.571,2.856-6.844c0-2.676-0.854-4.859-2.568-6.584 C220.086,402.847,217.9,401.991,215.232,401.991z\"></path><path d=\"M428.511,479.082h-70.808c-3.997,0-6.852,0.191-8.559,0.568l-4.001,0.571v-0.571l3.142-3.142 c2.848-3.419,4.853-5.896,5.996-7.409l105.344-151.331v-25.406H297.744v65.377h34.263v-32.832h66.236 c3.422,0,6.283-0.288,8.555-0.855c0.572,0,1.287-0.048,2.143-0.145c0.853-0.085,1.475-0.144,1.852-0.144v0.855l-3.142,2.574 c-1.704,1.711-3.713,4.273-5.995,7.706L296.31,485.934v25.693h166.734v-66.521h-34.54v33.976H428.511z\"></path><path d=\"M468.475,189.008L402.807,0h-46.25l-65.664,189.008h-19.979v30.264h81.933v-30.264h-21.409l13.419-41.112h69.381 l13.415,41.112H406.25v30.264h82.228v-30.264H468.475z M354.278,116.487l20.841-62.241c0.76-2.285,1.479-5.046,2.143-8.28 c0.66-3.236,0.996-4.949,0.996-5.139l0.855-5.708h1.143c0,0.761,0.191,2.664,0.562,5.708l3.433,13.418l20.554,62.241H354.278z\"></path></g></svg>");
+buf.push("<svg viewBox=\"0 0 511.626 511.627\"" + (jade.cls(['sort-alphabetically-ascending',attributes.className], [null,true])) + "><g><title>" + (jade.escape(null == (jade_interp = attributes.title) ? "" : jade_interp)) + "</title><rect x=\"0\" y=\"0\" width=\"511.627\" height=\"511.627\" fill-opacity=\"0\"></rect><path d=\"M215.232,401.991h-54.818V9.136c0-2.663-0.854-4.856-2.568-6.567C156.133,0.859,153.946,0,151.279,0H96.461 c-2.663,0-4.856,0.855-6.567,2.568c-1.709,1.715-2.568,3.905-2.568,6.567v392.855H32.507c-4.184,0-7.039,1.902-8.563,5.708 c-1.525,3.621-0.856,6.95,1.997,9.996l91.361,91.365c2.096,1.707,4.281,2.562,6.567,2.562c2.474,0,4.664-0.855,6.567-2.562 l91.076-91.078c1.906-2.279,2.856-4.571,2.856-6.844c0-2.676-0.854-4.859-2.568-6.584 C220.086,402.847,217.9,401.991,215.232,401.991z\"></path><path d=\"M428.511,479.082h-70.808c-3.997,0-6.852,0.191-8.559,0.568l-4.001,0.571v-0.571l3.142-3.142 c2.848-3.419,4.853-5.896,5.996-7.409l105.344-151.331v-25.406H297.744v65.377h34.263v-32.832h66.236 c3.422,0,6.283-0.288,8.555-0.855c0.572,0,1.287-0.048,2.143-0.145c0.853-0.085,1.475-0.144,1.852-0.144v0.855l-3.142,2.574 c-1.704,1.711-3.713,4.273-5.995,7.706L296.31,485.934v25.693h166.734v-66.521h-34.54v33.976H428.511z\"></path><path d=\"M468.475,189.008L402.807,0h-46.25l-65.664,189.008h-19.979v30.264h81.933v-30.264h-21.409l13.419-41.112h69.381 l13.415,41.112H406.25v30.264h82.228v-30.264H468.475z M354.278,116.487l20.841-62.241c0.76-2.285,1.479-5.046,2.143-8.28 c0.66-3.236,0.996-4.949,0.996-5.139l0.855-5.708h1.143c0,0.761,0.191,2.664,0.562,5.708l3.433,13.418l20.554,62.241H354.278z\"></path></g></svg>");
 };
 jade_mixins["sort-alphabetically-descending-icon"] = function(){
 var block = (this && this.block), attributes = (this && this.attributes) || {};
-buf.push("<svg viewBox=\"0 0 511.626 511.627\" class=\"sort-alphabetically-descending\"><g><path d=\"M215.232,401.991h-54.818V9.136c0-2.663-0.854-4.856-2.568-6.567C156.133,0.859,153.946,0,151.279,0H96.461 c-2.663,0-4.856,0.855-6.567,2.568c-1.709,1.715-2.568,3.905-2.568,6.567v392.855H32.507c-4.184,0-7.039,1.902-8.563,5.708 c-1.525,3.621-0.856,6.95,1.997,9.996l91.361,91.365c2.096,1.707,4.281,2.562,6.567,2.562c2.474,0,4.664-0.855,6.567-2.562 l91.076-91.078c1.906-2.279,2.856-4.571,2.856-6.844c0-2.676-0.854-4.859-2.568-6.584 C220.086,402.847,217.9,401.991,215.232,401.991z\"></path><path d=\"M468.475,481.361l-65.664-189.01h-46.25L290.9,481.364H270.92v30.263h81.934v-30.266h-21.412l13.418-41.11h69.381 l13.415,41.11H406.25v30.266h82.228v-30.266H468.475z M354.278,408.846l20.841-62.242c0.76-2.283,1.479-5.045,2.143-8.278 c0.66-3.234,0.996-4.948,0.996-5.137l0.855-5.715h1.143c0,0.767,0.191,2.669,0.562,5.715l3.433,13.415l20.554,62.242H354.278z\"></path><path d=\"M463.055,152.745h-34.537v33.975H357.71c-4.001,0-6.852,0.097-8.556,0.288l-4.004,0.854v-0.854l3.142-2.858 c2.851-3.422,4.853-5.896,5.996-7.421L459.632,25.41V0H297.754v65.387h34.259V32.552h66.232c3.426,0,6.283-0.288,8.56-0.859 c0.571,0,1.286-0.048,2.142-0.144c0.855-0.094,1.476-0.144,1.854-0.144v0.855l-3.141,2.568c-1.708,1.713-3.71,4.283-5.996,7.71 L296.32,193.569v25.697h166.735V152.745z\"></path></g></svg>");
+buf.push("<svg viewBox=\"0 0 511.626 511.627\"" + (jade.cls(['sort-alphabetically-descending',attributes.className], [null,true])) + "><g><title>" + (jade.escape(null == (jade_interp = attributes.title) ? "" : jade_interp)) + "</title><rect x=\"0\" y=\"0\" width=\"511.627\" height=\"511.627\" fill-opacity=\"0\"></rect><path d=\"M215.232,401.991h-54.818V9.136c0-2.663-0.854-4.856-2.568-6.567C156.133,0.859,153.946,0,151.279,0H96.461 c-2.663,0-4.856,0.855-6.567,2.568c-1.709,1.715-2.568,3.905-2.568,6.567v392.855H32.507c-4.184,0-7.039,1.902-8.563,5.708 c-1.525,3.621-0.856,6.95,1.997,9.996l91.361,91.365c2.096,1.707,4.281,2.562,6.567,2.562c2.474,0,4.664-0.855,6.567-2.562 l91.076-91.078c1.906-2.279,2.856-4.571,2.856-6.844c0-2.676-0.854-4.859-2.568-6.584 C220.086,402.847,217.9,401.991,215.232,401.991z\"></path><path d=\"M468.475,481.361l-65.664-189.01h-46.25L290.9,481.364H270.92v30.263h81.934v-30.266h-21.412l13.418-41.11h69.381 l13.415,41.11H406.25v30.266h82.228v-30.266H468.475z M354.278,408.846l20.841-62.242c0.76-2.283,1.479-5.045,2.143-8.278 c0.66-3.234,0.996-4.948,0.996-5.137l0.855-5.715h1.143c0,0.767,0.191,2.669,0.562,5.715l3.433,13.415l20.554,62.242H354.278z\"></path><path d=\"M463.055,152.745h-34.537v33.975H357.71c-4.001,0-6.852,0.097-8.556,0.288l-4.004,0.854v-0.854l3.142-2.858 c2.851-3.422,4.853-5.896,5.996-7.421L459.632,25.41V0H297.754v65.387h34.259V32.552h66.232c3.426,0,6.283-0.288,8.56-0.859 c0.571,0,1.286-0.048,2.142-0.144c0.855-0.094,1.476-0.144,1.854-0.144v0.855l-3.141,2.568c-1.708,1.713-3.71,4.283-5.996,7.71 L296.32,193.569v25.697h166.735V152.745z\"></path></g></svg>");
 };
 
 
@@ -7167,13 +7195,23 @@ options = model.get('options')
 buf.push("<div class=\"placeholder\"><header><h3" + (jade.attr("title", model.get('title'), true, false)) + ">" + (jade.escape(null == (jade_interp = model.get('title')) ? "" : jade_interp)) + "</h3><div class=\"menu\">");
 if ( options != null && options.length != null && options.length > 9)
 {
-jade_mixins["filter-icon"]();
-jade_mixins["sort-count-ascending-icon"]();
-jade_mixins["sort-count-descending-icon"]();
-jade_mixins["sort-alphabetically-ascending-icon"]();
-jade_mixins["sort-alphabetically-descending-icon"]();
+jade_mixins["filter-icon"].call({
+attributes: {"title": jade.escape(config.get('labels').filterOptions)}
+});
+jade_mixins["sort-count-ascending-icon"].call({
+attributes: {"className": "count","title": jade.escape(config.get('labels').sortNumerically)}
+});
+jade_mixins["sort-count-descending-icon"].call({
+attributes: {"className": "count visible active","title": jade.escape(config.get('labels').sortNumerically)}
+});
+jade_mixins["sort-alphabetically-ascending-icon"].call({
+attributes: {"className": "alpha visible","title": jade.escape(config.get('labels').sortAlphabetically)}
+});
+jade_mixins["sort-alphabetically-descending-icon"].call({
+attributes: {"className": "alpha","title": jade.escape(config.get('labels').sortAlphabetically)}
+});
 }
-buf.push("</div><div class=\"options\"></div></header><div class=\"body\"></div></div>");}.call(this,"model" in locals_for_with?locals_for_with.model:typeof model!=="undefined"?model:undefined,"options" in locals_for_with?locals_for_with.options:typeof options!=="undefined"?options:undefined));;return buf.join("");
+buf.push("</div><div class=\"options\"></div></header><div class=\"body\"></div></div>");}.call(this,"config" in locals_for_with?locals_for_with.config:typeof config!=="undefined"?config:undefined,"model" in locals_for_with?locals_for_with.model:typeof model!=="undefined"?model:undefined,"options" in locals_for_with?locals_for_with.options:typeof options!=="undefined"?options:undefined));;return buf.join("");
 };
 },{"jade/runtime":12}],44:[function(_dereq_,module,exports){
 var jade = _dereq_("jade/runtime");

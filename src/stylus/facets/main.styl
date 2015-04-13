@@ -28,14 +28,22 @@
 				cursor pointer
 				top 0
 				right 0
-
-				i.fa
-					font-size 1.2em
-					margin 2px 0 0 4px
 					
 				svg
 					width 14px
 					height 14px
+					display none
+					
+					&.filter
+						display inline
+					
+					&.visible
+						display inline
+						
+					&.active
+						rect
+							fill lightblue
+							fill-opacity 0.5
 
 			.options
 				display none
