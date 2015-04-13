@@ -478,6 +478,9 @@ class MainView extends Backbone.View
 				values: [value]
 			]
 
+	currentResult: ->
+		@searchResults.getCurrent()
+
 module.exports = MainView
 
 # ###

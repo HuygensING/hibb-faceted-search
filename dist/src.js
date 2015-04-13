@@ -630,6 +630,10 @@ MainView = (function(superClass) {
     });
   };
 
+  MainView.prototype.currentResult = function() {
+    return this.searchResults.getCurrent();
+  };
+
   return MainView;
 
 })(Backbone.View);
@@ -1913,7 +1917,7 @@ Pagination = (function(_super) {
 
   Pagination.prototype.initialize = function(options) {
     var _base, _base1;
-    this.options = options;
+    this.options = options != null ? options : {};
     if ((_base = this.options).step10 == null) {
       _base.step10 = true;
     }
@@ -2619,7 +2623,7 @@ SearchResults = (function(superClass) {
   	 * @type {Object}
    */
 
-  SearchResults.prototype.cachedModels = null;
+  SearchResults.prototype._cachedModels = null;
 
 
   /*
@@ -2631,7 +2635,7 @@ SearchResults = (function(superClass) {
 
   SearchResults.prototype.initialize = function(models, options1) {
     this.options = options1;
-    return this.cachedModels = {};
+    return this._cachedModels = {};
   };
 
 
@@ -2640,11 +2644,16 @@ SearchResults = (function(superClass) {
    */
 
   SearchResults.prototype.clearCache = function() {
-    return this.cachedModels = {};
+    return this._cachedModels = {};
   };
 
 
   /*
+  	 * Get the current result.
+  	#
+  	 * This is not equivalent to @last()! The current result can also be a
+  	 * cached result, which does not have to be the last.
+  	#
   	 * @method
    */
 
@@ -2654,6 +2663,8 @@ SearchResults = (function(superClass) {
 
 
   /*
+  	 * Set the current result.
+  	#
   	 * @method
   	 * @private
    */
@@ -2677,9 +2688,9 @@ SearchResults = (function(superClass) {
 
   SearchResults.prototype._addModel = function(url, attrs, cacheId, changeMessage) {
     attrs.location = url;
-    this.cachedModels[cacheId] = new this.model(attrs);
-    this.add(this.cachedModels[cacheId]);
-    return this._setCurrent(this.cachedModels[cacheId], changeMessage);
+    this._cachedModels[cacheId] = new this.model(attrs);
+    this.add(this._cachedModels[cacheId]);
+    return this._setCurrent(this._cachedModels[cacheId], changeMessage);
   };
 
 
@@ -2700,8 +2711,8 @@ SearchResults = (function(superClass) {
     }
     changeMessage = 'change:results';
     queryOptionsString = JSON.stringify(queryOptions);
-    if (options.cache && this.cachedModels.hasOwnProperty(queryOptionsString)) {
-      return this._setCurrent(this.cachedModels[queryOptionsString], changeMessage);
+    if (options.cache && this._cachedModels.hasOwnProperty(queryOptionsString)) {
+      return this._setCurrent(this._cachedModels[queryOptionsString], changeMessage);
     } else {
       return this.postQuery(queryOptions, (function(_this) {
         return function(url) {
@@ -2726,8 +2737,8 @@ SearchResults = (function(superClass) {
     url = direction === '_prev' || direction === '_next' ? this._current.get(direction) : direction;
     changeMessage = 'change:cursor';
     if (url != null) {
-      if (this.cachedModels.hasOwnProperty(url)) {
-        return this._setCurrent(this.cachedModels[url], changeMessage);
+      if (this._cachedModels.hasOwnProperty(url)) {
+        return this._setCurrent(this._cachedModels[url], changeMessage);
       } else {
         return this.getResults(url, (function(_this) {
           return function(response) {
@@ -2746,8 +2757,8 @@ SearchResults = (function(superClass) {
     if (database != null) {
       url += "&database=" + database;
     }
-    if (this.cachedModels.hasOwnProperty(url)) {
-      return this._setCurrent(this.cachedModels[url], changeMessage);
+    if (this._cachedModels.hasOwnProperty(url)) {
+      return this._setCurrent(this._cachedModels[url], changeMessage);
     } else {
       return this.getResults(url, (function(_this) {
         return function(response) {
