@@ -209,7 +209,8 @@ class ListFacet extends FacetView
 	reset: ->
 		@resetActive = true
 
-		@_toggleFilterMenu() if @$('i.filter').hasClass 'active'
+		# console.log @el.querySelector('svg.filter')
+		@_toggleFilterMenu() if @el.querySelector('svg.filter')? and @el.querySelector('svg.filter').classList.contains 'active'
 
 	###
 	# Alias for reset, but used for different implementation. This should be the base
@@ -219,7 +220,7 @@ class ListFacet extends FacetView
 	# @todo refactor @reset.
 	###
 	revert: ->
-		@_toggleFilterMenu() if @$('i.filter').hasClass 'active'
+		@_toggleFilterMenu() if @el.querySelector('svg.filter')? and @el.querySelector('svg.filter').classList.contains 'active'
 		
 		@collection.revert()
 		@collection.sort()

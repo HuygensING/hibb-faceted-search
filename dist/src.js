@@ -4299,7 +4299,7 @@ ListFacet = (function(superClass) {
 
   ListFacet.prototype.reset = function() {
     this.resetActive = true;
-    if (this.$('i.filter').hasClass('active')) {
+    if ((this.el.querySelector('svg.filter') != null) && this.el.querySelector('svg.filter').classList.contains('active')) {
       return this._toggleFilterMenu();
     }
   };
@@ -4314,7 +4314,7 @@ ListFacet = (function(superClass) {
    */
 
   ListFacet.prototype.revert = function() {
-    if (this.$('i.filter').hasClass('active')) {
+    if ((this.el.querySelector('svg.filter') != null) && this.el.querySelector('svg.filter').classList.contains('active')) {
       this._toggleFilterMenu();
     }
     this.collection.revert();
@@ -4470,8 +4470,6 @@ ListFacetOptions = (function(superClass) {
   ListFacetOptions.prototype.initialize = function(options) {
     this.config = options.config;
     this.facetName = options.facetName;
-    this.showingCursor = 0;
-    this.showingIncrement = 50;
     this.listenTo(this.collection, 'sort', (function(_this) {
       return function() {
         return _this.rerender();
@@ -4497,6 +4495,8 @@ ListFacetOptions = (function(superClass) {
    */
 
   ListFacetOptions.prototype.render = function() {
+    this.showingCursor = 0;
+    this.showingIncrement = 50;
     if (this.config.get('templates').hasOwnProperty('list.body')) {
       bodyTpl = this.config.get('templates')['list.body'];
     }
@@ -5162,6 +5162,7 @@ RangeFacet = (function(superClass) {
     this.bar = this.$('.bar');
     this.button = this.el.querySelector('button');
     slider = this.$('.slider');
+    console.log(slider.width());
     if (slider.width() !== 0) {
       return this.model.set({
         sliderWidth: slider.width(),

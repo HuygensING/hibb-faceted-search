@@ -119,7 +119,7 @@ class RangeFacet extends FacetView
 
 		# The root element of the range facet.
 		slider = @$ '.slider'
-
+		console.log slider.width()
 		if slider.width() isnt 0
 			@model.set
 				sliderWidth: slider.width()

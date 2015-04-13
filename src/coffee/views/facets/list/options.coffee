@@ -26,13 +26,10 @@ class ListFacetOptions extends Backbone.View
 	initialize: (options) ->
 		@config = options.config
 		@facetName = options.facetName
-
-		@showingCursor = 0
-		@showingIncrement = 50
 		
 		@listenTo @collection, 'sort', =>
 			@rerender()
-		@listenTo @collection, 'reset', =>
+		@listenTo @collection, 'reset', =>			
 			@collection.orderBy 'count_desc', true
 			@render()
 
@@ -46,6 +43,10 @@ class ListFacetOptions extends Backbone.View
 	# @return {ListFacetOptions}
 	###
 	render: ->
+		# Define in @render, so they are being reset when the collection is reset and view (re)rendered.
+		@showingCursor = 0
+		@showingIncrement = 50
+
 		bodyTpl = @config.get('templates')['list.body'] if @config.get('templates').hasOwnProperty 'list.body'
 		@$el.html bodyTpl facetName: @facetName
 
