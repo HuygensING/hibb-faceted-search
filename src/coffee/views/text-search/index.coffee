@@ -119,8 +119,6 @@ class TextSearch extends Backbone.View
 
 			@render()
 
-		# console.log @options.config
-		# console.log hasFullTextSearchParameters
 		# # HACK
 		# # Because textLayers are eLaborate specific and in the correspondentienetwerk
 		# # template the elaborate and timbuctoo version are both used side by side,
@@ -187,10 +185,6 @@ class TextSearch extends Backbone.View
 			@model.set dataAttrArray, checkedArray
 
 		@updateQueryModel()
-		# else
-		#   console.log attr
-		# console.log @model.attributes
-		# @updateQueryModel()
 
 	###
 	# @method

@@ -34,18 +34,6 @@ class SortLevels extends Backbone.View
 		@render()
 
 		@listenTo @options.config, 'change:initLevels', @render
-		# @listenTo @options.config, 'change:levels', =>
-		# 	console.log 'change:levels'
-		# 	console.log arguments
-		# @listenTo @options.config, 'change:levels', (model, sortLevels) =>
-		# 	sortParameters = []
-
-		# 	for level in sortLevels
-		# 		sortParameters.push fieldname: level, direction: 'asc'
-	
-		# 	@trigger 'change', sortParameters
-
-		# 	@render()
 
 	###
 	# @method

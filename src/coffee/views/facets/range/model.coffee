@@ -22,7 +22,8 @@ class Range extends FacetModel
 			handleMinLeft: null
 			handleMaxLeft: null
 			sliderWidth: null
-			# options: {}
+			lowerLimit: null
+			upperLimit: null
 
 	###
 	# @method
@@ -78,8 +79,11 @@ class Range extends FacetModel
 	parse: (attrs) ->
 		super
 
-		attrs.min = attrs.currentMin = @convertLimit2Year attrs.options[0].lowerLimit
-		attrs.max = attrs.currentMax = @convertLimit2Year attrs.options[0].upperLimit
+		attrs.lowerLimit = attrs.options[0].lowerLimit
+		attrs.upperLimit = attrs.options[0].upperLimit
+
+		attrs.min = attrs.currentMin = @convertLimit2Year attrs.lowerLimit
+		attrs.max = attrs.currentMax = @convertLimit2Year attrs.upperLimit
 
 		delete attrs.options
 
@@ -125,10 +129,22 @@ class Range extends FacetModel
 		+limit
 
 	getLowerLimit: ->
-		@_convertYear2Limit @get('currentMin')
+		limit = @get('currentMin')
+
+		# Only convert the year if the original limit was a limit (not a year).
+		if (@get('lowerLimit') + "").length > 4
+			limit = @_convertYear2Limit @get('currentMin')
+		
+		limit
 	
 	getUpperLimit: ->
-		@_convertYear2Limit @get('currentMax'), false
+		# Only convert the year if the original limit was a limit (not a year).
+		limit = @get('currentMax')
+
+		if (@get('lowerLimit') + "").length > 4
+			limit = @_convertYear2Limit @get('currentMax'), false
+		
+		limit
 
 
 	reset: ->

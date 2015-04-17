@@ -119,7 +119,7 @@ class RangeFacet extends FacetView
 
 		# The root element of the range facet.
 		slider = @$ '.slider'
-		console.log slider.width()
+
 		if slider.width() isnt 0
 			@model.set
 				sliderWidth: slider.width()
@@ -401,17 +401,6 @@ class RangeFacet extends FacetView
 
 		else
 			@model.reset()
-				# newOptions =
-				# 	lowerLimit: @model.get('options').lowerLimit
-				# 	upperLimit: @model.get('options').upperLimit
-
-		# console.log newOptions
-
-		# # Set the current attributes in the range model.
-		# # Only use the years from the newOptions lower and upper limits.
-		# @model.set
-		# 	currentMin: +(newOptions.lowerLimit+'').substr(0, 4)
-		# 	currentMax: +(newOptions.upperLimit+'').substr(0, 4)
 
 		@button.style.display = 'none' if @button?
 

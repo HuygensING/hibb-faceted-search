@@ -331,7 +331,6 @@ class MainView extends Backbone.View
 	###
 	update: ->
 		facets = @searchResults.getCurrent().get('facets')
-		# console.log @searchResults.queryAmount, @searchResults.length
 		# If the size of the searchResults is 1 then it's the first time we render the facets
 		if @searchResults.length is 1
 			@facets.renderFacets facets
@@ -465,6 +464,11 @@ class MainView extends Backbone.View
 
 		unless isListFacet or isBooleanFacet
 			throw "\"facetName\" is not an instance of ListFacet or BooleanFacet"
+
+		# Reset the faceted search with cache set to true. This way,
+		# the reset will be synchronous and faster. Would it be asynchronous,
+		# the setting of the value could be overridden by the @reset
+		@reset true
 
 		@facets.views[facetName].collection.revert()
 		@facets.views[facetName].collection.get(value).set
