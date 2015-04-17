@@ -19,7 +19,7 @@ Backbone based library
 
 ## Changelog
 
-### DEV
+### v2.5.0
 - Rename repo to hibb-faceted-search (Huygens Ing BackBone)
 - :sparkles: Let the range facet parse limits of length 0, 1, 2, 3 and 4 (was only 7 or 8)
 - :sparkles: Let stylus inline images (base64 encoded)
