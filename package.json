@@ -17,6 +17,7 @@
     "docs": "crojsdoc ./src && http-server ./doc -o",
     "link": "npm link funcky.el funcky.util funcky.req funcky.arr hibb-pagination",
     "unlink": "npm unlink funcky.el funcky.util funcky.req funcky.arr hibb-pagination && npm i",
+    "changelog": "git log --pretty=format:"%s" development..master > changelog/($npm_package_version).txt",
     "bump:patch": "npm version patch && git push && git push --tags",
     "bump:minor": "npm version minor && git push && git push --tags",
     "bump:major": "npm version major && git push && git push --tags"

@@ -3025,10 +3025,11 @@ Config = (function(superClass) {
     levelMap = {};
     for (k = 0, len = sortableFields.length; k < len; k++) {
       field = sortableFields[k];
-      if (!map.hasOwnProperty(field)) {
+      if (map.hasOwnProperty(field)) {
+        levelMap[field] = map[field];
+      } else {
         console.warn("Sortable field " + field + " not found in map!");
       }
-      levelMap[field] = map[field];
     }
     return levelMap;
   };
@@ -6625,7 +6626,8 @@ module.exports = function template(locals) {
 var buf = [];
 var jade_mixins = {};
 var jade_interp;
-;var locals_for_with = (locals || {});(function (Object, initLevels, levels, undefined) {
+;var locals_for_with = (locals || {});(function (Object, console, initLevels, levels, undefined) {
+console.log(levels, Object.keys(levels))
 buf.push("<button class=\"toggle\">Sort<i class=\"fa fa-caret-down\"></i></button><div class=\"levels\"><ul>");
 // iterate [1, 2, 3]
 ;(function(){
@@ -6699,7 +6701,7 @@ buf.push("</select><i class=\"fa fa-sort-alpha-asc\"></i></li>");
   }
 }).call(this);
 
-buf.push("<li class=\"search\">&nbsp;<button>Change levels</button></li></ul></div>");}.call(this,"Object" in locals_for_with?locals_for_with.Object:typeof Object!=="undefined"?Object:undefined,"initLevels" in locals_for_with?locals_for_with.initLevels:typeof initLevels!=="undefined"?initLevels:undefined,"levels" in locals_for_with?locals_for_with.levels:typeof levels!=="undefined"?levels:undefined,"undefined" in locals_for_with?locals_for_with.undefined:typeof undefined!=="undefined"?undefined:undefined));;return buf.join("");
+buf.push("<li class=\"search\">&nbsp;<button>Change levels</button></li></ul></div>");}.call(this,"Object" in locals_for_with?locals_for_with.Object:typeof Object!=="undefined"?Object:undefined,"console" in locals_for_with?locals_for_with.console:typeof console!=="undefined"?console:undefined,"initLevels" in locals_for_with?locals_for_with.initLevels:typeof initLevels!=="undefined"?initLevels:undefined,"levels" in locals_for_with?locals_for_with.levels:typeof levels!=="undefined"?levels:undefined,"undefined" in locals_for_with?locals_for_with.undefined:typeof undefined!=="undefined"?undefined:undefined));;return buf.join("");
 };
 },{"jade/runtime":12}],40:[function(_dereq_,module,exports){
 var Backbone, SearchModel, TextSearch, _, funcky, tpl,

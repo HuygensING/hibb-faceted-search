@@ -148,10 +148,11 @@ class Config extends Backbone.Model
 		levelMap = {}
 		
 		for field in sortableFields
-			unless map.hasOwnProperty field
+			if map.hasOwnProperty(field)
+				levelMap[field] = map[field]
+			else
 				console.warn "Sortable field #{field} not found in map!"
 
-			levelMap[field] = map[field]
 
 		levelMap
 
