@@ -19,6 +19,9 @@ Backbone based library
 
 ## Changelog
 
+### v2.5.1
+- Fetch hibb-pagination from NPM registry instead of Github
+
 ### v2.5.0
 - Rename repo to hibb-faceted-search (Huygens Ing BackBone)
 - :sparkles: Let the range facet parse limits of length 0, 1, 2, 3 and 4 (was only 7 or 8)
