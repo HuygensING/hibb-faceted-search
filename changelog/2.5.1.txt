@@ -1,0 +1,1 @@
+:bug: Don't add to levelMap if translation does not exist.
