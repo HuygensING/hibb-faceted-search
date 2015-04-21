@@ -2,29 +2,33 @@
 
 var exec = require('child_process').exec,
 	path = require('path'),
-	fs = require('fs'),
-	child;
+	fs = require('fs');
 
 var pkg = require(path.resolve(__dirname, "package.json"));
 
-child = exec("git log `git describe --tags --abbrev=0`..HEAD --pretty=format:' * %s'",
-	function (error, stdout, stderr) {
-		if (error !== null) {
-		  return console.log('exec error: ' + error);
-		}
-
-		var p = path.resolve(__dirname, 'History.md')
-		fs.readFile(p, "utf-8", function(err, data) {
-			var d = new Date();
-			var formattedDate = "\t(" + d.getFullYear() + "/" + (d.getMonth() + 1) + "/" + d.getDate() + ")";
-			var header = "### v" + pkg.version + formattedDate;
-			var data = header + "\n" + stdout + "\n\n" + data;
-
-			fs.writeFile(p, data, function(err) {
-				if (err == null) {
-					console.log("Changelog written!")
-				}
-			});
-		});
+// Get a list of all commit message between the previous tag and HEAD.
+exec("git log `git describe --tags --abbrev=0`..HEAD --pretty=format:' * %s'", function (error, stdout, stderr) {
+	if (error !== null) {
+		return console.log('exec error: ' + error);
 	}
-);
+
+	var p = path.resolve(__dirname, 'History.md')
+
+	// Read History.md
+	fs.readFile(p, "utf-8", function(err, data) {
+		// Create the header ie: ### v2.5.3 (2015/04/03)
+		var d = new Date();
+		var formattedDate = "\t(" + d.getFullYear() + "/" + (d.getMonth() + 1) + "/" + d.getDate() + ")";
+		var header = "### v" + pkg.version + formattedDate;
+		
+		// Concatenate the header, the commits (stdout) and the old History.md
+		var commits = header + "\n" + stdout + "\n\n" + data;
+
+		// Write the new changelog to History.md
+		fs.writeFile(p, commits, function(err) {
+			if (err == null) {
+				console.log("Changelog written!\n\n"+stdout)
+			}
+		}); // writeFile
+	}); // readFile
+}); // exec
