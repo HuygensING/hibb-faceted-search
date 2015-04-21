@@ -1,25 +1,13 @@
 ### v2.5.10	(2015/4/21)
 * :bug: Pass release to write-changelog.js
-
-### v2.5.8	(2015/4/21)
 * :bug: Fix automatic changelog
-
-### v2.5.7	(2015/4/21)
- * :bug: Remove bump messages from changelog
-
-### v2.5.6	(2015/4/21)
- * :bug: Show version in bump commit message
-
-### v2.5.5	(2015/4/21)
- * Don't generate commit on bump
- * Update changelog
-
-### v2.5.4	(2015/4/21)
- * Rename bump scripts
- * :fire: Clean up code
-
-### v2.5.3	(2015/4/21)
- * Automate changelog
+* :bug: Remove bump messages from changelog
+* :bug: Show version in bump commit message
+* Don't generate commit on bump
+* Update changelog
+* Rename bump scripts
+* :fire: Clean up code
+* Automate changelog
 
 ### v2.5.1
 - Fetch hibb-pagination from NPM registry instead of Github
