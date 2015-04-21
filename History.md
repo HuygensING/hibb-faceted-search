@@ -1,3 +1,6 @@
+### v2.5.11	(2015/4/21)
+* Compress last patches into 1
+
 ### v2.5.10	(2015/4/21)
 * :bug: Pass release to write-changelog.js
 * :bug: Fix automatic changelog
