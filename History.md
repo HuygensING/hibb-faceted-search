@@ -1,3 +1,6 @@
+### v2.5.10	(2015/4/21)
+* :bug: Pass release to write-changelog.js
+
 ### v2.5.8	(2015/4/21)
 * :bug: Fix automatic changelog
 
