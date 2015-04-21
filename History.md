@@ -1,3 +1,6 @@
+### v2.5.12	(2015/4/21)
+* :fire: Remove console.log
+
 ### v2.5.11	(2015/4/21)
 * Compress last patches into 1
 
