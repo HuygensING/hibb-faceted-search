@@ -1,3 +1,7 @@
+### v2.5.5	(2015/4/21)
+ * Don't generate commit on bump
+ * Update changelog
+
 ### v2.5.4	(2015/4/21)
  * Rename bump scripts
  * :fire: Clean up code
