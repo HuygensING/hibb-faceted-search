@@ -17,10 +17,10 @@
     "docs": "crojsdoc ./src && http-server ./doc -o",
     "link": "npm link funcky.el funcky.util funcky.req funcky.arr hibb-pagination",
     "unlink": "npm unlink funcky.el funcky.util funcky.req funcky.arr hibb-pagination && npm i",
-    "changelog": "git log --pretty=format:\"%s\" master..development > changelog/$npm_package_version.txt",
-    "bump:patch": "npm version patch && git push && git push --tags",
-    "bump:minor": "npm version minor && git push && git push --tags",
-    "bump:major": "npm version major && git push && git push --tags"
+    "changelog": "git log `git describe --tags --abbrev=0`..HEAD --pretty=format:\" * %s\" > changelog/$npm_package_version.txt && git add -A && git commit -m 'Update changelog'",
+    "bump:patch": "npm version patch && npm run changelog && git push && git push --tags && npm publish",
+    "bump:minor": "npm version minor && npm run changelog && git push && git push --tags && npm publish",
+    "bump:major": "npm version major && npm run changelog && git push && git push --tags && npm publish"
   },
   "dependencies": {
     "backbone": "^1.1.2",
@@ -63,6 +63,7 @@
     "localStorage": "^1.0.2",
     "mocha": "^1.19.0",
     "nib": "^1.0.2",
+    "prepend-file": "^1.1.0",
     "proxy-middleware": "^0.5.0",
     "require-jade": "0.0.1",
     "rimraf": "^2.2.8",
