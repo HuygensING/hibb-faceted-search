@@ -18,9 +18,9 @@
     "link": "npm link funcky.el funcky.util funcky.req funcky.arr hibb-pagination",
     "unlink": "npm unlink funcky.el funcky.util funcky.req funcky.arr hibb-pagination && npm i",
     "commit:bump": "git add -A && git commit -m \"Bump to $npm_package_version\" && git tag $npm_package_version",
-    "patch": "node ./write-changelog.js && npm --no-git-tag-version version patch && npm run commit:bump && git push && git push --tags && npm publish",
-    "minor": "node ./write-changelog.js && npm --no-git-tag-version version minor && npm run commit:bump && git push && git push --tags && npm publish",
-    "major": "node ./write-changelog.js && npm --no-git-tag-version version major && npm run commit:bump && git push && git push --tags && npm publish"
+    "patch": "node ./write-changelog.js patch && npm --no-git-tag-version version patch && npm run commit:bump && git push && git push --tags && npm publish",
+    "minor": "node ./write-changelog.js minor && npm --no-git-tag-version version minor && npm run commit:bump && git push && git push --tags && npm publish",
+    "major": "node ./write-changelog.js major && npm --no-git-tag-version version major && npm run commit:bump && git push && git push --tags && npm publish"
   },
   "dependencies": {
     "backbone": "^1.1.2",
