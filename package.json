@@ -17,10 +17,10 @@
     "docs": "crojsdoc ./src && http-server ./doc -o",
     "link": "npm link funcky.el funcky.util funcky.req funcky.arr hibb-pagination",
     "unlink": "npm unlink funcky.el funcky.util funcky.req funcky.arr hibb-pagination && npm i",
-    "changelog": "./write-changelog.sh && git add -A && git commit -m 'Update changelog'",
-    "patch": "npm version patch && npm run changelog && git push && git push --tags && npm publish",
-    "minor": "npm version minor && npm run changelog && git push && git push --tags && npm publish",
-    "major": "npm version major && npm run changelog && git push && git push --tags && npm publish"
+    "changelog": "./write-changelog.sh && git add -A && git commit -m 'Bump to v$npm_package_version'",
+    "patch": "npm --no-git-tag-version version patch && npm run changelog && git push && git push --tags && npm publish",
+    "minor": "npm --no-git-tag-version version minor && npm run changelog && git push && git push --tags && npm publish",
+    "major": "npm --no-git-tag-version version major && npm run changelog && git push && git push --tags && npm publish"
   },
   "dependencies": {
     "backbone": "^1.1.2",

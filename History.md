@@ -1,5 +1,6 @@
 ### v2.5.4	(2015/4/21)
-
+ * Rename bump scripts
+ * :fire: Clean up code
 
 ### v2.5.3	(2015/4/21)
  * Automate changelog
