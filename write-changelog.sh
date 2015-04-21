@@ -21,8 +21,14 @@ exec("git log `git describe --tags --abbrev=0`..HEAD --pretty=format:' * %s'", f
 		var formattedDate = "\t(" + d.getFullYear() + "/" + (d.getMonth() + 1) + "/" + d.getDate() + ")";
 		var header = "### v" + pkg.version + formattedDate;
 		
+		var lines = stdout.toString().split('\n');
+
+		lines = lines.filter(function(line) {
+			return line.substr(0, 9) !== "Bump to v"
+		});
+
 		// Concatenate the header, the commits (stdout) and the old History.md
-		var commits = header + "\n" + stdout + "\n\n" + data;
+		var commits = header + "\n" + lines.join("\n") + "\n\n" + data;
 
 		// Write the new changelog to History.md
 		fs.writeFile(p, commits, function(err) {

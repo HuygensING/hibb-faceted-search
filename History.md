@@ -1,8 +1,5 @@
 ### v2.5.6	(2015/4/21)
  * :bug: Show version in bump commit message
- * Bump to v$npm_package_version
- * Don't generate commit on bump
- * Update changelog
 
 ### v2.5.5	(2015/4/21)
  * Don't generate commit on bump
