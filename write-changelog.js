@@ -1,8 +1,17 @@
 var exec = require('child_process').exec,
 	path = require('path'),
-	fs = require('fs');
+	fs = require('fs'),
+	semver = require('semver');
 
 var pkg = require(path.resolve(__dirname, "package.json"));
+
+release = process.argv[2]
+
+if (["major", "minor", "patch"].indexOf(release) == -1) {
+	console.error("Error. Missing an argument. One of: major, minor, patch.")
+	console.error("For example: `node write-changelog.js patch`")
+	process.exit()
+}
 
 // Get a list of all commit message between the previous tag and HEAD.
 exec("git log "+pkg.version+"..HEAD --pretty=format:'* %s'", function (error, stdout, stderr) {
@@ -17,7 +26,7 @@ exec("git log "+pkg.version+"..HEAD --pretty=format:'* %s'", function (error, st
 		// Create the header ie: ### v2.5.3 (2015/04/03)
 		var d = new Date();
 		var formattedDate = "\t(" + d.getFullYear() + "/" + (d.getMonth() + 1) + "/" + d.getDate() + ")";
-		var header = "### v" + pkg.version + formattedDate;
+		var header = "### v" + semver.inc(pkg.version, release) + formattedDate;
 		
 		// Remove all the bump commit messages
 		var lines = stdout.toString().split('\n');

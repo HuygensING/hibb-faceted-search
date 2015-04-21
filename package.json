@@ -66,6 +66,7 @@
     "proxy-middleware": "^0.5.0",
     "require-jade": "0.0.1",
     "rimraf": "^2.2.8",
+    "semver": "^4.3.3",
     "sinon": "^1.10.0",
     "sinon-chai": "^2.5.0",
     "uglifyify": "^2.4.0",
