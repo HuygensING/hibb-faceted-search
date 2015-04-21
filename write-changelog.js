@@ -1,5 +1,3 @@
-#!/usr/bin/env node
-
 var exec = require('child_process').exec,
 	path = require('path'),
 	fs = require('fs');
@@ -7,7 +5,7 @@ var exec = require('child_process').exec,
 var pkg = require(path.resolve(__dirname, "package.json"));
 
 // Get a list of all commit message between the previous tag and HEAD.
-exec("git log `git describe --tags --abbrev=0`..HEAD --pretty=format:' * %s'", function (error, stdout, stderr) {
+exec("git log "+pkg.version+"..HEAD --pretty=format:'* %s'", function (error, stdout, stderr) {
 	if (error !== null) {
 		return console.log('exec error: ' + error);
 	}
@@ -21,10 +19,10 @@ exec("git log `git describe --tags --abbrev=0`..HEAD --pretty=format:' * %s'", f
 		var formattedDate = "\t(" + d.getFullYear() + "/" + (d.getMonth() + 1) + "/" + d.getDate() + ")";
 		var header = "### v" + pkg.version + formattedDate;
 		
+		// Remove all the bump commit messages
 		var lines = stdout.toString().split('\n');
-
 		lines = lines.filter(function(line) {
-			return line.substr(0, 9) !== "Bump to v"
+			return line.substr(0, 11) !== "* Bump to "
 		});
 
 		// Concatenate the header, the commits (stdout) and the old History.md
