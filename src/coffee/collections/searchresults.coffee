@@ -160,13 +160,15 @@ class SearchResults extends Backbone.Collection
 			_.extend ajaxOptions, @options.config.get('requestOptions')
 
 		req = funcky.post @options.config.get('baseUrl') + @options.config.get('searchPath'), ajaxOptions
+
 		req.done (res) =>
 			if res.status is 201
-				# @postURL = res.getResponseHeader('Location')
-				# url = if @options.config.has('resultRows') then @postURL + '?rows=' + @options.config.get('resultRows') else @postURL
-				# Add number of results to fetch.
 				done res.getResponseHeader('Location')
+			else
+				throw new Error "Server should return status: 201.", res
+
 		req.fail (res) =>
+			console.log res
 			if res.status is 401
 				@trigger 'unauthorized'
 			else

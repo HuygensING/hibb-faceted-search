@@ -1838,7 +1838,7 @@ function hasOwnProperty(obj, prop) {
       xhr = new XMLHttpRequest();
       xhr.onreadystatechange = function() {
         var _ref;
-        if (xhr.readyState === XMLHttpRequest.DONE) {
+        if (xhr.readyState === 4) {
           if (promise.callAlways != null) {
             promise.callAlways(xhr);
           }
@@ -2789,11 +2789,14 @@ SearchResults = (function(superClass) {
       return function(res) {
         if (res.status === 201) {
           return done(res.getResponseHeader('Location'));
+        } else {
+          throw new Error("Server should return status: 201.", res);
         }
       };
     })(this));
     return req.fail((function(_this) {
       return function(res) {
+        console.log(res);
         if (res.status === 401) {
           return _this.trigger('unauthorized');
         } else {
