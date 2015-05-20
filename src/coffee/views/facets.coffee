@@ -192,7 +192,7 @@ class Facets extends Backbone.View
 		ev.preventDefault()
 
 		icon = $(ev.currentTarget).find('i.fa')
-		span = $(ev.currentTarget).find('span')
+		span = $(ev.currentTarget).find('button span')
 
 		open = icon.hasClass 'fa-expand'
 		icon.toggleClass 'fa-compress'
@@ -201,6 +201,14 @@ class Facets extends Backbone.View
 		text = if open then 'Collapse' else 'Expand'
 		span.text "#{text} filters"
 
+		@slideFacets open
+
+	###
+	# Slide the facets down/open or up/close.
+	#
+	# @param {Bool} down Slide down (expand, open) or slide up (collapse, close).
+	###
+	slideFacets: (down=true) ->
 		facetNames = _.keys @views
 		index = 0
 
@@ -209,10 +217,12 @@ class Facets extends Backbone.View
 			facet = @views[facetName]
 
 			if facet?
-				if open
-					facet.showBody -> slideFacet()
+				if down
+					facet.showBody ->
+						slideFacet()
 				else
-					facet.hideBody -> slideFacet()
+					facet.hideBody ->
+						slideFacet()
 
 		slideFacet()
 

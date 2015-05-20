@@ -3687,15 +3687,30 @@ Facets = (function(superClass) {
    */
 
   Facets.prototype.toggle = function(ev) {
-    var facetNames, icon, index, open, slideFacet, span, text;
+    var icon, open, span, text;
     ev.preventDefault();
     icon = $(ev.currentTarget).find('i.fa');
-    span = $(ev.currentTarget).find('span');
+    span = $(ev.currentTarget).find('button span');
     open = icon.hasClass('fa-expand');
     icon.toggleClass('fa-compress');
     icon.toggleClass('fa-expand');
     text = open ? 'Collapse' : 'Expand';
     span.text(text + " filters");
+    return this.slideFacets(open);
+  };
+
+
+  /*
+  	 * Slide the facets down/open or up/close.
+  	#
+  	 * @param {Bool} down Slide down (expand, open) or slide up (collapse, close).
+   */
+
+  Facets.prototype.slideFacets = function(down) {
+    var facetNames, index, slideFacet;
+    if (down == null) {
+      down = true;
+    }
     facetNames = _.keys(this.views);
     index = 0;
     slideFacet = (function(_this) {
@@ -3704,7 +3719,7 @@ Facets = (function(superClass) {
         facetName = facetNames[index++];
         facet = _this.views[facetName];
         if (facet != null) {
-          if (open) {
+          if (down) {
             return facet.showBody(function() {
               return slideFacet();
             });
