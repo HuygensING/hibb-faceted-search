@@ -127,7 +127,7 @@ class FacetView extends Backbone.View
 
 		@$('.body').slideUp 100, =>
 			done() if done?
-			@$('header i.fa').fadeOut 100
+			@$('header > .menu').fadeOut 100
 
 	###
 	# @method
@@ -136,7 +136,7 @@ class FacetView extends Backbone.View
 	showBody: (done) ->
 		@$('.body').slideDown 100, =>
 			done() if done?
-			@$('header i.fa').fadeIn 100
+			@$('header > .menu').fadeIn 100
 
 	###
 	# If destroy is not overridden, just call Backbone.View's remove method.

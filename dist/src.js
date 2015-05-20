@@ -4968,7 +4968,7 @@ FacetView = (function(superClass) {
         if (done != null) {
           done();
         }
-        return _this.$('header i.fa').fadeOut(100);
+        return _this.$('header > .menu').fadeOut(100);
       };
     })(this));
   };
@@ -4985,7 +4985,7 @@ FacetView = (function(superClass) {
         if (done != null) {
           done();
         }
-        return _this.$('header i.fa').fadeIn(100);
+        return _this.$('header > .menu').fadeIn(100);
       };
     })(this));
   };
