@@ -1,3 +1,8 @@
+### v2.5.13	(2015/5/20)
+* :sparkles: Add method to slide facets
+* :bug: Fix show/hide of facet menu when collapsing
+* :flashlight: Throw error when status other than 201 is returned
+
 ### v2.5.12	(2015/4/21)
 * :fire: Remove console.log
 
