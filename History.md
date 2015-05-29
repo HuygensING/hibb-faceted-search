@@ -1,3 +1,6 @@
+### v2.5.14	(2015/5/29)
+* :bug: Order list facet alpha case incensitive
+
 ### v2.5.13	(2015/5/20)
 * :sparkles: Add method to slide facets
 * :bug: Fix show/hide of facet menu when collapsing
