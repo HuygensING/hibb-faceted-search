@@ -3974,11 +3974,11 @@ ListOptions = (function(superClass) {
 
   ListOptions.prototype.strategies = {
     alpha_asc: function(model) {
-      return +(!model.get('visible')) + (+(!model.get('count')) + model.get('name'));
+      return +(!model.get('visible')) + (+(!model.get('count')) + model.get('name').toLowerCase());
     },
     alpha_desc: function(model) {
       var str;
-      str = String.fromCharCode.apply(String, _.map(model.get('name').split(''), function(c) {
+      str = String.fromCharCode.apply(String, _.map(model.get('name').toLowerCase().split(''), function(c) {
         return 0xffff - c.charCodeAt();
       }));
       return +(!model.get('visible')) + (+(!model.get('count')) + str);

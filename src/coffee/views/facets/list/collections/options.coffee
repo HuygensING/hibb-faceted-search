@@ -79,13 +79,14 @@ class ListOptions extends Backbone.Collection
 		# +!!0 == +false = 0
 		# +!!53 == +true = 1 // Everything above 0.
 		# Visible models and models with a count > 0 get preference over name.
-		alpha_asc: (model) -> +!model.get('visible') + (+!model.get('count') + model.get('name'))
+		alpha_asc: (model) ->
+			+!model.get('visible') + (+!model.get('count') + model.get('name').toLowerCase())
 		
 		# Name from Z to A
 		# Visible models and models with a count > 0 get preference over name.
 		alpha_desc: (model) ->
 			# http://stackoverflow.com/questions/5636812/sorting-strings-in-reverse-order-with-backbone-js/5639070#5639070
-			str = String.fromCharCode.apply String, _.map model.get('name').split(''), (c) -> 0xffff - c.charCodeAt()
+			str = String.fromCharCode.apply String, _.map model.get('name').toLowerCase().split(''), (c) -> 0xffff - c.charCodeAt()
 			+!model.get('visible') + (+!model.get('count') + str)
 		
 		# Count from low to high
