@@ -1,6 +1,6 @@
 {
   "name": "hibb-faceted-search",
-  "version": "2.5.14",
+  "version": "2.5.15",
   "description": "Faceted search library from Huygens ING.",
   "author": {
     "name": "Gijsjan Brouwer",
@@ -56,6 +56,7 @@
     "gulp-stylus": "^1.0.2",
     "gulp-uglify": "^0.3.0",
     "gulp-util": "~2.2.14",
+    "hi-bump": "^1.1.1",
     "jade": "^1.9.2",
     "jadeify": "^4.1.0",
     "jsdoc": "^3.3.0-alpha10",
