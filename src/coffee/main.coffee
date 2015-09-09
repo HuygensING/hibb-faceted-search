@@ -20,7 +20,6 @@ ListFacet = require './views/facets/list'
 BooleanFacet = require './views/facets/boolean'
 
 tpl = require '../jade/main.jade'
-
 ###
 # @class
 # @namespace Views
@@ -440,7 +439,11 @@ class MainView extends Backbone.View
 	# @param {Object} options
 	###
 	search: (options) ->
-		@searchResults.runQuery @queryOptions.attributes, options
+		attrs = @queryOptions.attributes
+		if attrs.caseSensitive == null
+			delete attrs.caseSensitive
+
+		@searchResults.runQuery attrs, options
 
 	###
 	# Set a single option in a list or boolean facet and perform a search.

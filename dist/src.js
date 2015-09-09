@@ -503,7 +503,7 @@ MainView = (function(superClass) {
   	 * Sort the results by the parameters given. The parameters are an array of
   	 * objects, containing 'fieldName' and 'direction': [{fieldName: "name", direction: "desc"}]
   	 * When the queryOptions are set, a change event is triggered and send to the server.
-  	#
+  	 *
   	 * @method
    */
 
@@ -527,8 +527,8 @@ MainView = (function(superClass) {
   	 * Silently change @attributes and trigger a change event manually afterwards.
   	 * arguments.cache Boolean Tells searchResults if we want to fetch result from cache.
   	 * 	In an app where data is dynamic, we usually don't want cache (get new result from server),
-  	#	in an app where data is static, we can use cache to speed up the app.
-  	#
+  	 *	in an app where data is static, we can use cache to speed up the app.
+  	 *
   	 * @method
    */
 
@@ -559,7 +559,7 @@ MainView = (function(superClass) {
   	 * model, instead of fetching a new one from the server.
   	 * The newQueryOptions are optional. The can be used to add or update one or more queryOptions
   	 * before sending the same (or now altered) queryOptions to the server again.
-  	#
+  	 *
   	 * @method
    */
 
@@ -580,22 +580,27 @@ MainView = (function(superClass) {
 
   /*
   	 * Run a search query using the queryOptions and given options.
-  	#
+  	 *
   	 * @method
   	 * @param {Object} options
    */
 
   MainView.prototype.search = function(options) {
-    return this.searchResults.runQuery(this.queryOptions.attributes, options);
+    var attrs;
+    attrs = this.queryOptions.attributes;
+    if (attrs.caseSensitive === null) {
+      delete attrs.caseSensitive;
+    }
+    return this.searchResults.runQuery(attrs, options);
   };
 
 
   /*
   	 * Set a single option in a list or boolean facet and perform a search.
-  	#
+  	 *
   	 * Equivalent to a user resetting the faceted search and selecting one value.
   	 * This is only usable for LIST and BOOLEAN facets.
-  	#
+  	 *
   	 * @method
   	 * @param {String} facetName
   	 * @param value
@@ -1694,19 +1699,14 @@ function hasOwnProperty(obj, prop) {
     el: function(el) {
       return {
         closest: function(selector) {
-          var getMatcher, isMatch, matcher;
-          getMatcher = function(el) {
-            return el.matches || el.webkitMatchesSelector || el.mozMatchesSelector || el.msMatchesSelector;
-          };
+          var matchesSelector;
+          matchesSelector = el.matches || el.webkitMatchesSelector || el.mozMatchesSelector || el.msMatchesSelector;
           while (el) {
-            matcher = getMatcher(el);
-            if (matcher != null) {
-              isMatch = matcher.bind(el)(selector);
-              if (isMatch) {
-                return el;
-              }
+            if (matchesSelector.bind(el)(selector)) {
+              return el;
+            } else {
+              el = el.parentNode;
             }
-            el = el.parentNode;
           }
         },
 
@@ -2339,7 +2339,7 @@ buf.push("<li title=\"Jump 10 pages forward\"" + (jade.cls(['next10',currentPage
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 },{}],12:[function(_dereq_,module,exports){
 (function (global){
-!function(e){if("object"==typeof exports&&"undefined"!=typeof module)module.exports=e();else if("function"==typeof define&&define.amd)define([],e);else{var f;"undefined"!=typeof window?f=window:"undefined"!=typeof global?f=global:"undefined"!=typeof self&&(f=self),f.jade=e()}}(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof _dereq_=="function"&&_dereq_;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof _dereq_=="function"&&_dereq_;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(_dereq_,module,exports){
+(function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g.jade = f()}})(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof _dereq_=="function"&&_dereq_;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof _dereq_=="function"&&_dereq_;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(_dereq_,module,exports){
 'use strict';
 
 /**
@@ -2521,12 +2521,21 @@ exports.attrs = function attrs(obj, terse){
  * @api private
  */
 
-exports.escape = function escape(html){
-  var result = String(html)
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;');
+var jade_encode_html_rules = {
+  '&': '&amp;',
+  '<': '&lt;',
+  '>': '&gt;',
+  '"': '&quot;'
+};
+var jade_match_html = /[&<>"]/g;
+
+function jade_encode_char(c) {
+  return jade_encode_html_rules[c] || c;
+}
+
+exports.escape = jade_escape;
+function jade_escape(html){
+  var result = String(html).replace(jade_match_html, jade_encode_char);
   if (result === '' + html) return html;
   else return result;
 };
@@ -2573,6 +2582,11 @@ exports.rethrow = function rethrow(err, filename, lineno, str){
   throw err;
 };
 
+exports.DebugItem = function DebugItem(lineno, filename) {
+  this.lineno = lineno;
+  this.filename = filename;
+}
+
 },{"fs":2}],2:[function(_dereq_,module,exports){
 
 },{}]},{},[1])(1)
@@ -2618,9 +2632,9 @@ SearchResults = (function(superClass) {
   	 * Init cachedModels in the initialize function, because when defined in the class
   	 * as a property, it is defined on the prototype and thus not refreshed when we instantiate
   	 * a new Collection.
-  	#
+  	 *
   	 * Should be redefined during initialization to prevent sharing between instances.
-  	#
+  	 *
   	 * @property
   	 * @type {Object}
    */
@@ -2652,10 +2666,10 @@ SearchResults = (function(superClass) {
 
   /*
   	 * Get the current result.
-  	#
+  	 *
   	 * This is not equivalent to @last()! The current result can also be a
   	 * cached result, which does not have to be the last.
-  	#
+  	 *
   	 * @method
    */
 
@@ -2666,7 +2680,7 @@ SearchResults = (function(superClass) {
 
   /*
   	 * Set the current result.
-  	#
+  	 *
   	 * @method
   	 * @private
    */
@@ -2679,7 +2693,7 @@ SearchResults = (function(superClass) {
 
   /*
   	 * Add the latest search result model to a collection for caching.
-  	#
+  	 *
   	 * @method
   	 * @private
   	 * @param {string} url - Base location of the resultModel. Is used to fetch parts of the result which are not prev or next but at a different place (for example: row 100 - 110) in the result set.
@@ -2870,12 +2884,12 @@ Config = (function(superClass) {
 
   /*
   	 * Default attributes.
-  	#
+  	 *
   	 * Does not require any parameters, but the @param tag is (ab)used to document
   	 * the default values.
-  	#
+  	 *
   	 * @method
-  	#
+  	 *
   	 * REQUEST OPTIONS
   	 * @param {String} baseUrl Base of the URL to perform searches.
   	 * @param {String} searchPath Path of the URL to perform searches.
@@ -2887,7 +2901,7 @@ Config = (function(superClass) {
   	 * @param {Object} [requestOptions={}] Send extra options to the POST query call, such as setting custom headers (e.g., VRE_ID for Timbuctoo).
   	 * @param {Array<String>} [entryMetadataFields=[]] A list of all the entries metadata fields. This list corresponds to the facets and is used to populate the sortLevels in the  result view.
   	 * @param {Array<String>} [levels=[]] An array of max three strings. Determine the three levels of sorting the results. The three levels are entry metadata fields and are also present in the entryMetadataFields array.
-  	#
+  	 *
   	 * FACETS OPTIONS
   	 * @param {String} [textSearch='advanced'] One of 'none', 'simple' or 'advanced'. None: text search is hidden, facets are shown, loader is shown. Simple: text search is shown, facets are hidden, loader is hidden. Advanced: text search is shown, facets are shown, loader is shown.
   	 * @param {Object} [textSearchOptions] Options that are passed to the text search component
@@ -2899,20 +2913,20 @@ Config = (function(superClass) {
   	 * @param {Array<String>} [facetOrder=[]] Define the rendering order of the facets. If undefined, the facets are rendered in the order returned by the backend.
   	 * @param {Object} [parsers={}] Hash of parser functions. Takes the options from the result and parses the options before rendering. Use sparsely, because with large option lists, the perfomance penalty can become great.
   	 * @param {Boolean} [collapsed=false] collapsed Start the faceted search with the facets collapsed.
-  	#
+  	 *
   	 * RESULTS OPTIONS
   	 * @param {Boolean} [results=false] Render the results. When kept to false, the showing of the results has to be taken care of in the application.
   	 * @param {Boolean} [sortLevels=true] Render sort levels in the results header
   	 * @param {Boolean} [showMetadata=true] Render show metadata toggle in the results header
   	 * @param {Boolean} [showPageNames] Show `page 1 of 23 pages` instead of `1 of 23`.
-  	#
+  	 *
   	 * OTHER RENDERING OPTIONS
   	 * @param {Object} [templates={}] Hash of templates. The templates should be functions which take a hash as argument to render vars. Possible keys: main, facets, text-search, facets.main, list.menu, list.body, range.body and result.
   	 * @param {Object} [templateData={}] Hash of template data. The same property names as with templates can be used. The data is passed to the corresponding template.
   	 * @param {Object} [labels={}] Hash of labels, used in the interface. Quick 'n dirty way to change the language.
   	 * @param {String} [termSingular="entry"] Name of one result, for example: book, woman, country, alumnus, etc.
   	 * @param {String} [termPlural="entries"] Name of multiple results, for example: books, women, countries, alunmi, etc.
-  	#
+  	 *
   	 * @return {Object} A hash of default attributes and their values. Documentated as @param's.
    */
 
@@ -2973,7 +2987,7 @@ Config = (function(superClass) {
   	 * First: get from the levelDisplayNames
   	 * Second: get from the facetDisplayNames
   	 * Third: get from the facetData returned in the first responseModel
-  	#
+  	 *
   	 * @method
   	 * @param {Object} responseModel
    */
@@ -3039,7 +3053,7 @@ Config = (function(superClass) {
 
 
   /*
-  	#
+  	 *
   	 * @method
   	 * @param {String} prop
   	 * @param {Object} map
@@ -3082,7 +3096,7 @@ Config = (function(superClass) {
 
 
   /*
-  	#
+  	 *
   	 * @method
   	 * @param {String} prop
   	 * @param {Object} facetsData
@@ -3303,7 +3317,7 @@ QueryOptions = (function(superClass) {
 
   /*
   	 * Reset the queryOptions to reflect the initial state.
-  	#
+  	 *
   	 * @method
    */
 
@@ -3450,7 +3464,7 @@ Facets = (function(superClass) {
   	 * Hash of facet views. The faceted search has several types build-in,
   	 * which are the defaults, but this map can be extended, to add or override
   	 * facet views.
-  	#
+  	 *
   	 * @property
   	 * @type {Object} Keys are types in capital, values are Backbone.Views.
   	 * @example {BOOLEAN: MyBooleanView, LIST: MyListView}
@@ -3668,7 +3682,7 @@ Facets = (function(superClass) {
 
   /*
   	 * Destroy the child views (facets) and remove the view.
-  	#
+  	 *
   	 * @method
    */
 
@@ -3681,7 +3695,7 @@ Facets = (function(superClass) {
   /*
   	 * The facets are slided one by one. When the slide of a facet is finished, the
   	 * next facet starts sliding. That's why we use a recursive function.
-  	#
+  	 *
   	 * @method
   	 * @param {Object} ev The event object.
    */
@@ -3702,7 +3716,7 @@ Facets = (function(superClass) {
 
   /*
   	 * Slide the facets down/open or up/close.
-  	#
+  	 *
   	 * @param {Bool} down Slide down (expand, open) or slide up (collapse, close).
    */
 
@@ -3894,7 +3908,7 @@ ListOptions = (function(superClass) {
 
   /*
   	 * Default sorting strategy.
-  	#
+  	 *
   	 * @property
   	 * @type {Function}
    */
@@ -3914,7 +3928,7 @@ ListOptions = (function(superClass) {
 
   /*
   	 * Alias for reset, because a Backbone.Collection already has a reset method.
-  	#
+  	 *
   	 * @method
    */
 
@@ -3967,7 +3981,7 @@ ListOptions = (function(superClass) {
 
   /*
   	 * Hash of sorting strategies.
-  	#
+  	 *
   	 * @property
   	 * @type {Object}
    */
@@ -4019,7 +4033,7 @@ ListOptions = (function(superClass) {
 
   /*
   	 * Set all options to visible and sort afterwards.
-  	#
+  	 *
   	 * @method
    */
 
@@ -4159,7 +4173,7 @@ ListFacet = (function(superClass) {
 
   /*
   	 * Renders the count of the filtered options (ie: "3 of 8") next to the filter < input >
-  	#
+  	 *
   	 * @method
    */
 
@@ -4185,7 +4199,7 @@ ListFacet = (function(superClass) {
 
   /*
   	 * Extend the events of Facet with ListFacet events.
-  	#
+  	 *
   	 * @method
   	 * @override FacetView::events
   	 * @type {Object}
@@ -4328,7 +4342,7 @@ ListFacet = (function(superClass) {
   /*
   	 * Alias for reset, but used for different implementation. This should be the base
   	 * of the original reset, but no time for proper refactor.
-  	#
+  	 *
   	 * @method
   	 * @todo refactor @reset.
    */
@@ -4582,7 +4596,7 @@ ListFacetOptions = (function(superClass) {
   /*
   	 * When all models are set to visible, the collection is sorted and
   	 * this.rerender is called.
-  	#
+  	 *
   	 * @method
    */
 
@@ -4606,7 +4620,7 @@ ListFacetOptions = (function(superClass) {
 
   /*
   	 * When scolling lazy render the rest of the options. This speeds up page load.
-  	#
+  	 *
   	 * @method
   	 * @param {Object} ev
    */
@@ -4672,7 +4686,7 @@ ListFacetOptions = (function(superClass) {
 
   /*
   	 * Called by parent (ListFacet) when user types in the search input
-  	#
+  	 *
   	 * @method
   	 * @param {String} value Query to filter results on.
    */
@@ -4748,11 +4762,11 @@ var buf = [];
 var jade_mixins = {};
 var jade_interp;
 ;var locals_for_with = (locals || {});(function (option) {
-jade_mixins["checked-icon"] = function(){
+jade_mixins["checked-icon"] = jade_interp = function(){
 var block = (this && this.block), attributes = (this && this.attributes) || {};
 buf.push("<svg viewBox=\"0 0 489 402\" class=\"checked\"><path d=\"M 377.87,24.128 C 361.786,8.044 342.417,0.002 319.769,0.002 H 82.227 C 59.579,0.002 40.211,8.044 24.125,24.128 8.044,40.214 0.002,59.578 0.002,82.23 v 237.543 c 0,22.647 8.042,42.014 24.123,58.101 16.086,16.085 35.454,24.127 58.102,24.127 h 237.542 c 22.648,0 42.011,-8.042 58.102,-24.127 16.085,-16.087 24.126,-35.453 24.126,-58.101 V 82.23 C 401.993,59.582 393.951,40.214 377.87,24.128 z m -12.422,295.645 c 0,12.559 -4.47,23.314 -13.415,32.264 -8.945,8.945 -19.698,13.411 -32.265,13.411 H 82.227 c -12.563,0 -23.317,-4.466 -32.264,-13.411 -8.945,-8.949 -13.418,-19.705 -13.418,-32.264 V 82.23 c 0,-12.562 4.473,-23.316 13.418,-32.264 C 58.91,41.02 69.664,36.548 82.227,36.548 h 237.542 c 12.566,0 23.319,4.473 32.265,13.418 8.945,8.947 13.415,19.701 13.415,32.264 v 237.543 l -0.001,0 z\"></path><path d=\"M 480.59183,75.709029 442.06274,38.831006 c -5.28301,-5.060423 -11.70817,-7.591583 -19.26056,-7.591583 -7.55937,0 -13.98453,2.53116 -19.26753,7.591583 L 217.6825,216.98773 134.38968,136.99258 c -5.28896,-5.06231 -11.71015,-7.59062 -19.26256,-7.59062 -7.55736,0 -13.97854,2.52831 -19.267516,7.59062 l -38.529082,36.87898 c -5.28897,5.06136 -7.932461,11.20929 -7.932461,18.44186 0,7.22686 2.643491,13.38049 7.932461,18.4409 l 102.555358,98.15873 38.53207,36.87803 c 5.28598,5.06421 11.70916,7.59253 19.26455,7.59253 7.5524,0 13.97558,-2.53496 19.26454,-7.59253 l 38.53107,-36.87803 205.11372,-196.32314 c 5.284,-5.06232 7.93246,-11.20929 7.93246,-18.441873 0.005,-7.228765 -2.64846,-13.376685 -7.93246,-18.439008 z\"></path></svg>");
 };
-jade_mixins["unchecked-icon"] = function(){
+jade_mixins["unchecked-icon"] = jade_interp = function(){
 var block = (this && this.block), attributes = (this && this.attributes) || {};
 buf.push("<svg viewBox=\"0 0 401.998 401.998\" class=\"unchecked\"><path d=\"M377.87,24.126C361.786,8.042,342.417,0,319.769,0H82.227C59.579,0,40.211,8.042,24.125,24.126 C8.044,40.212,0.002,59.576,0.002,82.228v237.543c0,22.647,8.042,42.014,24.123,58.101c16.086,16.085,35.454,24.127,58.102,24.127 h237.542c22.648,0,42.011-8.042,58.102-24.127c16.085-16.087,24.126-35.453,24.126-58.101V82.228 C401.993,59.58,393.951,40.212,377.87,24.126z M365.448,319.771c0,12.559-4.47,23.314-13.415,32.264 c-8.945,8.945-19.698,13.411-32.265,13.411H82.227c-12.563,0-23.317-4.466-32.264-13.411c-8.945-8.949-13.418-19.705-13.418-32.264 V82.228c0-12.562,4.473-23.316,13.418-32.264c8.947-8.946,19.701-13.418,32.264-13.418h237.542 c12.566,0,23.319,4.473,32.265,13.418c8.945,8.947,13.415,19.701,13.415,32.264V319.771L365.448,319.771z\"></path></svg>");
 };
@@ -4881,7 +4895,7 @@ FacetView = (function(superClass) {
   /*
   	 * This method is called when the facet has to be updated. For instance after
   	 * the server has returned with new values.
-  	#
+  	 *
   	 * @method
   	 * @abstract
   	 * @param {Object} newOptions
@@ -4892,7 +4906,7 @@ FacetView = (function(superClass) {
 
   /*
   	 * Reset the facet to it's initial state.
-  	#
+  	 *
   	 * @method
   	 * @abstract
    */
@@ -4902,7 +4916,7 @@ FacetView = (function(superClass) {
 
   /*
   	 * The postRender method is being run after render.
-  	#
+  	 *
   	 * @method
   	 * @abstract
    */
@@ -4929,7 +4943,7 @@ FacetView = (function(superClass) {
 
   /*
   	 * Every facet can be minimized by clicking the title of the facet.
-  	#
+  	 *
   	 * @method
   	 * @private
   	 * @param {Object} ev The event object.
@@ -5008,7 +5022,7 @@ FacetView = (function(superClass) {
 
   /*
   	 * If destroy is not overridden, just call Backbone.View's remove method.
-  	#
+  	 *
   	 * @method
    */
 
@@ -5291,7 +5305,7 @@ RangeFacet = (function(superClass) {
 
   /*
   	 * Called on every scroll event! Keep optimized!
-  	#
+  	 *
   	 * @method
   	 * @private
   	 * @return {Object} ev The event object.
@@ -5385,7 +5399,7 @@ RangeFacet = (function(superClass) {
   /*
   	 * Before removing the range facet, the global mouseleave and resize event
   	 * listeners have to be removed.
-  	#
+  	 *
   	 * @method
    */
 
@@ -5676,7 +5690,7 @@ Range = (function(superClass) {
 
   /*
   	 * Convert the lower and upper limit string to a year.
-  	#
+  	 *
   	 * @method
   	 * @param {Number} limit - Lower or upper limit, for example: 20141213
   	 * @return {Number} A year, for example: 2014
@@ -5704,7 +5718,7 @@ Range = (function(superClass) {
 
   /*
   	 * Convert a year to a lower or upper limit string
-  	#
+  	 *
   	 * @method
   	 * @private
   	 * @param {Number} year - A year
@@ -5819,7 +5833,7 @@ listItems = [];
 /*
  * Contains a header and a body. In the header the number of results, sorting and
  * pagination is rendered. In the body a list of results.
-#
+ *
  * @class
  * @namespace Views
  * @uses Result
@@ -5847,9 +5861,9 @@ Results = (function(superClass) {
 
   /*
   	 * Keep track of instanciated result item views.
-  	#
+  	 *
   	 * Should be redefined during initialization to prevent sharing between instances.
-  	#
+  	 *
   	 * @property
   	 * @type {Array<Result>}
    */
@@ -5859,9 +5873,9 @@ Results = (function(superClass) {
 
   /*
   	 * Hash to keep track of instanciated subviews.
-  	#
+  	 *
   	 * Should be redefined during initialization to prevent sharing between instances.
-  	#
+  	 *
   	 * @property
   	 * @type {Object}
    */
@@ -6148,7 +6162,7 @@ _ = _dereq_('underscore');
 
 /*
  * The view of one result item < li >.
-#
+ *
  * @class Result
  * @namespace Views
  * @todo Rename to ResultItem
@@ -6755,7 +6769,7 @@ TextSearch = (function(superClass) {
 
   /*
   	 * The current field to search in.
-  	#
+  	 *
   	 * @property
   	 * @type {String}
    */
@@ -7028,7 +7042,7 @@ var jade_interp;
 
 
 
-jade_mixins["search-icon"] = function(){
+jade_mixins["search-icon"] = jade_interp = function(){
 var block = (this && this.block), attributes = (this && this.attributes) || {};
 buf.push("<svg viewBox=\"0 0 250.313 250.313\" class=\"search\"><path d=\"M244.186,214.604l-54.379-54.378c-0.289-0.289-0.628-0.491-0.93-0.76 c10.7-16.231,16.945-35.66,16.945-56.554C205.822,46.075,159.747,0,102.911,0S0,46.075,0,102.911 c0,56.835,46.074,102.911,102.91,102.911c20.895,0,40.323-6.245,56.554-16.945c0.269,0.301,0.47,0.64,0.759,0.929l54.38,54.38 c8.169,8.168,21.413,8.168,29.583,0C252.354,236.017,252.354,222.773,244.186,214.604z M102.911,170.146 c-37.134,0-67.236-30.102-67.236-67.235c0-37.134,30.103-67.236,67.236-67.236c37.132,0,67.235,30.103,67.235,67.236 C170.146,140.044,140.043,170.146,102.911,170.146z\"></path></svg>");
 };
@@ -7209,23 +7223,23 @@ var jade_interp;
 
 
 
-jade_mixins["filter-icon"] = function(){
+jade_mixins["filter-icon"] = jade_interp = function(){
 var block = (this && this.block), attributes = (this && this.attributes) || {};
 buf.push("<svg viewBox=\"0 0 971.986 971.986\"" + (jade.cls(['filter',attributes.className], [null,true])) + "><title>" + (jade.escape(null == (jade_interp = attributes.title) ? "" : jade_interp)) + "</title><path d=\"M370.216,459.3c10.2,11.1,15.8,25.6,15.8,40.6v442c0,26.601,32.1,40.101,51.1,21.4l123.3-141.3 c16.5-19.8,25.6-29.601,25.6-49.2V500c0-15,5.7-29.5,15.8-40.601L955.615,75.5c26.5-28.8,6.101-75.5-33.1-75.5h-873 c-39.2,0-59.7,46.6-33.1,75.5L370.216,459.3z\"></path></svg>");
 };
-jade_mixins["sort-count-ascending-icon"] = function(){
+jade_mixins["sort-count-ascending-icon"] = jade_interp = function(){
 var block = (this && this.block), attributes = (this && this.attributes) || {};
 buf.push("<svg viewBox=\"0 0 511.627 511.627\"" + (jade.cls(['sort-count-ascending',attributes.className], [null,true])) + "><g><title>" + (jade.escape(null == (jade_interp = attributes.title) ? "" : jade_interp)) + "</title><rect x=\"0\" y=\"0\" width=\"511.627\" height=\"511.627\" fill-opacity=\"0.01\"></rect><path d=\"M260.494,219.271H388.4c2.666,0,4.855-0.855,6.563-2.57c1.715-1.713,2.573-3.9,2.573-6.567v-54.816 c0-2.667-0.858-4.854-2.573-6.567c-1.708-1.711-3.897-2.57-6.563-2.57H260.494c-2.666,0-4.853,0.855-6.567,2.57 c-1.71,1.713-2.568,3.9-2.568,6.567v54.816c0,2.667,0.855,4.854,2.568,6.567C255.641,218.413,257.828,219.271,260.494,219.271z\"></path><path d=\"M260.497,73.089h73.087c2.666,0,4.856-0.855,6.563-2.568c1.718-1.714,2.563-3.901,2.563-6.567V9.136 c0-2.663-0.846-4.853-2.563-6.567C338.44,0.859,336.25,0,333.584,0h-73.087c-2.666,0-4.853,0.855-6.567,2.568 c-1.709,1.715-2.568,3.905-2.568,6.567v54.818c0,2.666,0.855,4.853,2.568,6.567C255.645,72.23,257.831,73.089,260.497,73.089z\"></path><path d=\"M196.54,401.991h-54.817V9.136c0-2.663-0.854-4.856-2.568-6.567C137.441,0.859,135.254,0,132.587,0H77.769 c-2.663,0-4.856,0.855-6.567,2.568c-1.709,1.715-2.568,3.905-2.568,6.567v392.855H13.816c-4.184,0-7.04,1.902-8.564,5.708 c-1.525,3.621-0.855,6.95,1.997,9.996l91.361,91.365c2.094,1.707,4.281,2.562,6.567,2.562c2.474,0,4.665-0.855,6.567-2.562 l91.076-91.078c1.906-2.279,2.856-4.571,2.856-6.844c0-2.676-0.859-4.859-2.568-6.584 C201.395,402.847,199.208,401.991,196.54,401.991z\"></path><path d=\"M504.604,441.109c-1.715-1.718-3.901-2.573-6.567-2.573H260.497c-2.666,0-4.853,0.855-6.567,2.573 c-1.709,1.711-2.568,3.901-2.568,6.564v54.815c0,2.673,0.855,4.853,2.568,6.571c1.715,1.711,3.901,2.566,6.567,2.566h237.539 c2.666,0,4.853-0.855,6.567-2.566c1.711-1.719,2.566-3.898,2.566-6.571v-54.815C507.173,445.011,506.314,442.82,504.604,441.109z\"></path><path d=\"M260.494,365.445H443.22c2.663,0,4.853-0.855,6.57-2.566c1.708-1.711,2.563-3.901,2.563-6.563v-54.823 c0-2.662-0.855-4.853-2.563-6.563c-1.718-1.711-3.907-2.566-6.57-2.566H260.494c-2.666,0-4.853,0.855-6.567,2.566 c-1.71,1.711-2.568,3.901-2.568,6.563v54.823c0,2.662,0.855,4.853,2.568,6.563C255.641,364.59,257.828,365.445,260.494,365.445z\"></path></g></svg>");
 };
-jade_mixins["sort-count-descending-icon"] = function(){
+jade_mixins["sort-count-descending-icon"] = jade_interp = function(){
 var block = (this && this.block), attributes = (this && this.attributes) || {};
 buf.push("<svg viewBox=\"0 0 511.627 511.627\"" + (jade.cls(['sort-count-descending',attributes.className], [null,true])) + "><g><title>" + (jade.escape(null == (jade_interp = attributes.title) ? "" : jade_interp)) + "</title><rect x=\"0\" y=\"0\" width=\"511.627\" height=\"511.627\" fill-opacity=\"0\"></rect><path d=\"M333.584,438.536h-73.087c-2.666,0-4.853,0.855-6.567,2.573c-1.709,1.711-2.568,3.901-2.568,6.564v54.815 c0,2.673,0.855,4.853,2.568,6.571c1.715,1.711,3.901,2.566,6.567,2.566h73.087c2.666,0,4.856-0.855,6.563-2.566 c1.718-1.719,2.563-3.898,2.563-6.571v-54.815c0-2.663-0.846-4.854-2.563-6.564C338.44,439.392,336.25,438.536,333.584,438.536z\"></path><path d=\"M196.54,401.991h-54.817V9.136c0-2.663-0.854-4.856-2.568-6.567C137.441,0.859,135.254,0,132.587,0H77.769 c-2.663,0-4.856,0.855-6.567,2.568c-1.709,1.715-2.568,3.905-2.568,6.567v392.855H13.816c-4.184,0-7.04,1.902-8.564,5.708 c-1.525,3.621-0.855,6.95,1.997,9.996l91.361,91.365c2.094,1.707,4.281,2.562,6.567,2.562c2.474,0,4.665-0.855,6.567-2.562 l91.076-91.078c1.906-2.279,2.856-4.571,2.856-6.844c0-2.676-0.859-4.859-2.568-6.584 C201.395,402.847,199.208,401.991,196.54,401.991z\"></path><path d=\"M388.4,292.362H260.494c-2.666,0-4.853,0.855-6.567,2.566c-1.71,1.711-2.568,3.901-2.568,6.563v54.823 c0,2.662,0.855,4.853,2.568,6.563c1.714,1.711,3.901,2.566,6.567,2.566H388.4c2.666,0,4.855-0.855,6.563-2.566 c1.715-1.711,2.573-3.901,2.573-6.563v-54.823c0-2.662-0.858-4.853-2.573-6.563C393.256,293.218,391.066,292.362,388.4,292.362z\"></path><path d=\"M504.604,2.568C502.889,0.859,500.702,0,498.036,0H260.497c-2.666,0-4.853,0.855-6.567,2.568 c-1.709,1.715-2.568,3.905-2.568,6.567v54.818c0,2.666,0.855,4.853,2.568,6.567c1.715,1.709,3.901,2.568,6.567,2.568h237.539 c2.666,0,4.853-0.855,6.567-2.568c1.711-1.714,2.566-3.901,2.566-6.567V9.136C507.173,6.473,506.314,4.279,504.604,2.568z\"></path><path d=\"M443.22,146.181H260.494c-2.666,0-4.853,0.855-6.567,2.57c-1.71,1.713-2.568,3.9-2.568,6.567v54.816 c0,2.667,0.855,4.854,2.568,6.567c1.714,1.711,3.901,2.57,6.567,2.57H443.22c2.663,0,4.853-0.855,6.57-2.57 c1.708-1.713,2.563-3.9,2.563-6.567v-54.816c0-2.667-0.855-4.858-2.563-6.567C448.069,147.04,445.879,146.181,443.22,146.181z\"></path></g></svg>");
 };
-jade_mixins["sort-alphabetically-ascending-icon"] = function(){
+jade_mixins["sort-alphabetically-ascending-icon"] = jade_interp = function(){
 var block = (this && this.block), attributes = (this && this.attributes) || {};
 buf.push("<svg viewBox=\"0 0 511.626 511.627\"" + (jade.cls(['sort-alphabetically-ascending',attributes.className], [null,true])) + "><g><title>" + (jade.escape(null == (jade_interp = attributes.title) ? "" : jade_interp)) + "</title><rect x=\"0\" y=\"0\" width=\"511.627\" height=\"511.627\" fill-opacity=\"0\"></rect><path d=\"M215.232,401.991h-54.818V9.136c0-2.663-0.854-4.856-2.568-6.567C156.133,0.859,153.946,0,151.279,0H96.461 c-2.663,0-4.856,0.855-6.567,2.568c-1.709,1.715-2.568,3.905-2.568,6.567v392.855H32.507c-4.184,0-7.039,1.902-8.563,5.708 c-1.525,3.621-0.856,6.95,1.997,9.996l91.361,91.365c2.096,1.707,4.281,2.562,6.567,2.562c2.474,0,4.664-0.855,6.567-2.562 l91.076-91.078c1.906-2.279,2.856-4.571,2.856-6.844c0-2.676-0.854-4.859-2.568-6.584 C220.086,402.847,217.9,401.991,215.232,401.991z\"></path><path d=\"M428.511,479.082h-70.808c-3.997,0-6.852,0.191-8.559,0.568l-4.001,0.571v-0.571l3.142-3.142 c2.848-3.419,4.853-5.896,5.996-7.409l105.344-151.331v-25.406H297.744v65.377h34.263v-32.832h66.236 c3.422,0,6.283-0.288,8.555-0.855c0.572,0,1.287-0.048,2.143-0.145c0.853-0.085,1.475-0.144,1.852-0.144v0.855l-3.142,2.574 c-1.704,1.711-3.713,4.273-5.995,7.706L296.31,485.934v25.693h166.734v-66.521h-34.54v33.976H428.511z\"></path><path d=\"M468.475,189.008L402.807,0h-46.25l-65.664,189.008h-19.979v30.264h81.933v-30.264h-21.409l13.419-41.112h69.381 l13.415,41.112H406.25v30.264h82.228v-30.264H468.475z M354.278,116.487l20.841-62.241c0.76-2.285,1.479-5.046,2.143-8.28 c0.66-3.236,0.996-4.949,0.996-5.139l0.855-5.708h1.143c0,0.761,0.191,2.664,0.562,5.708l3.433,13.418l20.554,62.241H354.278z\"></path></g></svg>");
 };
-jade_mixins["sort-alphabetically-descending-icon"] = function(){
+jade_mixins["sort-alphabetically-descending-icon"] = jade_interp = function(){
 var block = (this && this.block), attributes = (this && this.attributes) || {};
 buf.push("<svg viewBox=\"0 0 511.626 511.627\"" + (jade.cls(['sort-alphabetically-descending',attributes.className], [null,true])) + "><g><title>" + (jade.escape(null == (jade_interp = attributes.title) ? "" : jade_interp)) + "</title><rect x=\"0\" y=\"0\" width=\"511.627\" height=\"511.627\" fill-opacity=\"0\"></rect><path d=\"M215.232,401.991h-54.818V9.136c0-2.663-0.854-4.856-2.568-6.567C156.133,0.859,153.946,0,151.279,0H96.461 c-2.663,0-4.856,0.855-6.567,2.568c-1.709,1.715-2.568,3.905-2.568,6.567v392.855H32.507c-4.184,0-7.039,1.902-8.563,5.708 c-1.525,3.621-0.856,6.95,1.997,9.996l91.361,91.365c2.096,1.707,4.281,2.562,6.567,2.562c2.474,0,4.664-0.855,6.567-2.562 l91.076-91.078c1.906-2.279,2.856-4.571,2.856-6.844c0-2.676-0.854-4.859-2.568-6.584 C220.086,402.847,217.9,401.991,215.232,401.991z\"></path><path d=\"M468.475,481.361l-65.664-189.01h-46.25L290.9,481.364H270.92v30.263h81.934v-30.266h-21.412l13.418-41.11h69.381 l13.415,41.11H406.25v30.266h82.228v-30.266H468.475z M354.278,408.846l20.841-62.242c0.76-2.283,1.479-5.045,2.143-8.278 c0.66-3.234,0.996-4.948,0.996-5.137l0.855-5.715h1.143c0,0.767,0.191,2.669,0.562,5.715l3.433,13.415l20.554,62.242H354.278z\"></path><path d=\"M463.055,152.745h-34.537v33.975H357.71c-4.001,0-6.852,0.097-8.556,0.288l-4.004,0.854v-0.854l3.142-2.858 c2.851-3.422,4.853-5.896,5.996-7.421L459.632,25.41V0H297.754v65.387h34.259V32.552h66.232c3.426,0,6.283-0.288,8.56-0.859 c0.571,0,1.286-0.048,2.142-0.144c0.855-0.094,1.476-0.144,1.854-0.144v0.855l-3.141,2.568c-1.708,1.713-3.71,4.283-5.996,7.71 L296.32,193.569v25.697h166.735V152.745z\"></path></g></svg>");
 };
@@ -7299,7 +7313,7 @@ var jade_interp;
 
 
 
-jade_mixins["tail-spin-loader-icon"] = function(){
+jade_mixins["tail-spin-loader-icon"] = jade_interp = function(){
 var block = (this && this.block), attributes = (this && this.attributes) || {};
 buf.push("<svg viewBox=\"0 0 38 38\"><defs><linearGradient x1=\"8.042%\" y1=\"0%\" x2=\"65.682%\" y2=\"23.865%\" id=\"z8dZZfS3A\"><stop stop-color=\"#666\" stop-opacity=\"0\" offset=\"0%\"></stop><stop stop-color=\"#666\" stop-opacity=\".631\" offset=\"63.146%\"></stop><stop stop-color=\"#666\" offset=\"100%\"></stop></linearGradient></defs><g fill=\"none\" fill-rule=\"evenodd\"><g transform=\"translate(1 1)\"><path d=\"M33 18c0-9.94-8.06-18-18-18\" stroke=\"url(#z8dZZfS3A)\" stroke-width=\"4\"><animateTransform attributeName=\"transform\" type=\"rotate\" from=\"0 18 18\" to=\"360 18 18\" dur=\"0.9s\" repeatCount=\"indefinite\"></animateTransform></path><circle fill=\"#666\" cx=\"33\" cy=\"18\" r=\"2\"><animateTransform attributeName=\"transform\" type=\"rotate\" from=\"0 18 18\" to=\"360 18 18\" dur=\"0.9s\" repeatCount=\"indefinite\"></animateTransform></circle></g></g></svg>");
 };
