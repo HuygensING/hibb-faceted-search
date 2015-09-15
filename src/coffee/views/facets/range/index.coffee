@@ -7,6 +7,7 @@ MonthRange = require './month-model'
 FacetView = require '../main'
 
 bodyTpl = require './body.jade'
+monthRangeTpl = require './month-body.jade'
 
 ###
 # @class
@@ -91,6 +92,7 @@ class RangeFacet extends FacetView
 		super
 
 		bodyTpl = @options.config.get('templates')['range.body'] if @options.config.get('templates').hasOwnProperty 'range.body'
+		bodyTpl = monthRangeTpl if @options.config.get('rangeMonthMode')
 		rtpl = bodyTpl @model.attributes
 		@$('.body').html rtpl
 

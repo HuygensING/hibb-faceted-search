@@ -570,14 +570,22 @@
 .facet.range .body .slider .handle input.min,
 .facet.range .body .slider .handle label.min,
 .facet.range .body .slider .handle input.max,
-.facet.range .body .slider .handle label.max {
+.facet.range .body .slider .handle label.max,
+.facet.range .body .slider .handle input.month-min,
+.facet.range .body .slider .handle label.month-min,
+.facet.range .body .slider .handle input.month-max,
+.facet.range .body .slider .handle label.month-max {
   position: absolute;
   top: 20px;
 }
 .facet.range .body .slider .handle input.min,
 .facet.range .body .slider .handle label.min,
 .facet.range .body .slider .handle input.max,
-.facet.range .body .slider .handle label.max {
+.facet.range .body .slider .handle label.max,
+.facet.range .body .slider .handle input.month-min,
+.facet.range .body .slider .handle label.month-min,
+.facet.range .body .slider .handle input.month-max,
+.facet.range .body .slider .handle label.month-max {
   cursor: pointer;
   border: 1px solid #eee;
   padding: 0 3px;
@@ -604,17 +612,29 @@
 .facet.range .body .slider .handle input.min.overlap,
 .facet.range .body .slider .handle label.min.overlap,
 .facet.range .body .slider .handle input.max.overlap,
-.facet.range .body .slider .handle label.max.overlap {
+.facet.range .body .slider .handle label.max.overlap,
+.facet.range .body .slider .handle input.month-min.overlap,
+.facet.range .body .slider .handle label.month-min.overlap,
+.facet.range .body .slider .handle input.month-max.overlap,
+.facet.range .body .slider .handle label.month-max.overlap {
   border: 1px solid #fff;
 }
 .facet.range .body .slider .handle input.min.edit,
 .facet.range .body .slider .handle label.min.edit,
 .facet.range .body .slider .handle input.max.edit,
-.facet.range .body .slider .handle label.max.edit {
+.facet.range .body .slider .handle label.max.edit,
+.facet.range .body .slider .handle input.month-min.edit,
+.facet.range .body .slider .handle label.month-min.edit,
+.facet.range .body .slider .handle input.month-max.edit,
+.facet.range .body .slider .handle label.month-max.edit {
   background: rgba(255,189,223,0.3);
 }
 .facet.range .body .slider .handle input.min,
-.facet.range .body .slider .handle label.min {
+.facet.range .body .slider .handle label.min,
+.facet.range .body .slider .handle input.month-min,
+.facet.range .body .slider .handle label.month-min,
+.facet.range .body .slider .handle input.month-max,
+.facet.range .body .slider .handle label.month-max {
   left: -20px;
   -webkit-transition: left 150ms;
   -moz-transition: left 150ms;
@@ -623,7 +643,11 @@
   transition: left 150ms;
 }
 .facet.range .body .slider .handle input.max,
-.facet.range .body .slider .handle label.max {
+.facet.range .body .slider .handle label.max,
+.facet.range .body .slider .handle input.month-min,
+.facet.range .body .slider .handle label.month-min,
+.facet.range .body .slider .handle input.month-max,
+.facet.range .body .slider .handle label.month-max {
   right: -20px;
 }
 .facet.range .body .slider .handle input {

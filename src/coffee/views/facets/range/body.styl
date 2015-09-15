@@ -78,11 +78,11 @@ sliderHeight = 6px
 						display none
 
 				input, label
-					&.min, &.max
+					&.min, &.max, &.month-min, &.month-max
 						position: absolute
 						top 20px
 
-					&.min, &.max
+					&.min, &.max, &.month-min, &.month-max
 						cursor pointer
 						border 1px solid #eeeeee
 						padding 0 3px
@@ -100,11 +100,11 @@ sliderHeight = 6px
 							background rgba(255, 189, 223, 0.3)
 						
 
-					&.min
+					&.min, &.month-min, &.month-max
 						left -20px
 						transition left 150ms
 						
-					&.max
+					&.max, &.month-min, &.month-max
 						right -20px
 						
 				input
