@@ -2,6 +2,7 @@ $ = require 'jquery'
 _ = require 'underscore'
 
 Range = require './model'
+MonthRange = require './month-model'
 
 FacetView = require '../main'
 
@@ -49,8 +50,10 @@ class RangeFacet extends FacetView
 	###
 	initialize: (@options) ->
 		super
-
-		@model = new Range @options.attrs, parse: true
+		if @options.config.get('rangeMonthMode')
+			@model = new MonthRange @options.attrs, parse: true
+		else
+			@model = new Range @options.attrs, parse: true
 
 		@listenTo @model, 'change:options', @render
 		
@@ -68,9 +71,13 @@ class RangeFacet extends FacetView
 
 		@listenTo @model, 'change:currentMin', (model, value) =>
 			@labelMin.html Math.ceil value
-
+			if @options.config.get('rangeMonthMode')
+				@labelMonthMin.html(@model.getMonthLabel(value, true))
+		
 		@listenTo @model, 'change:currentMax', (model, value) =>
 			@labelMax.html Math.ceil value
+			if @options.config.get('rangeMonthMode')
+				@labelMonthMax.html(@model.getMonthLabel(value, true))
 
 		@render()
 
@@ -84,7 +91,6 @@ class RangeFacet extends FacetView
 		super
 
 		bodyTpl = @options.config.get('templates')['range.body'] if @options.config.get('templates').hasOwnProperty 'range.body'
-
 		rtpl = bodyTpl @model.attributes
 		@$('.body').html rtpl
 
@@ -111,6 +117,11 @@ class RangeFacet extends FacetView
 		# The labels holding the min and max value.
 		@labelMin = @$ 'label.min'
 		@labelMax = @$ 'label.max'
+		if @options.config.get('rangeMonthMode')
+			@labelMonthMin = @$ 'label.month-min'
+			@labelMonthMax = @$ 'label.month-max'
+			@labelMonthMin.html(@model.getMonthLabel(@model.get('currentMin')))
+			@labelMonthMax.html(@model.getMonthLabel(@model.get('currentMax')))
 
 		# The space (selected range) between the min and max handle.
 		@bar = @$ '.bar'

@@ -648,7 +648,7 @@ module.exports = MainView;
 
 
 
-},{"../jade/main.jade":44,"./collections/searchresults":13,"./models/config":14,"./models/query-options":17,"./views/facets":20,"./views/facets/boolean":21,"./views/facets/list":23,"./views/results":34,"./views/text-search":40,"assert":2,"backbone":undefined,"funcky.el":8,"jquery":undefined,"underscore":undefined}],2:[function(_dereq_,module,exports){
+},{"../jade/main.jade":45,"./collections/searchresults":13,"./models/config":14,"./models/query-options":17,"./views/facets":20,"./views/facets/boolean":21,"./views/facets/list":23,"./views/results":35,"./views/text-search":41,"assert":2,"backbone":undefined,"funcky.el":8,"jquery":undefined,"underscore":undefined}],2:[function(_dereq_,module,exports){
 // http://wiki.commonjs.org/wiki/Unit_Testing/1.0
 //
 // THIS IS NOT TESTED NOR LIKELY TO WORK OUTSIDE V8!
@@ -3872,7 +3872,7 @@ module.exports = BooleanFacet;
 
 
 
-},{"../../../jade/facets/boolean.body.jade":42,"../../models/facets/boolean":15,"./main":30,"jquery":undefined,"underscore":undefined}],22:[function(_dereq_,module,exports){
+},{"../../../jade/facets/boolean.body.jade":43,"../../models/facets/boolean":15,"./main":30,"jquery":undefined,"underscore":undefined}],22:[function(_dereq_,module,exports){
 var Backbone, ListOption, ListOptions, _,
   extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
   hasProp = {}.hasOwnProperty;
@@ -5038,7 +5038,7 @@ module.exports = FacetView;
 
 
 
-},{"../../../jade/facets/main.jade":43,"backbone":undefined,"jquery":undefined,"underscore":undefined}],31:[function(_dereq_,module,exports){
+},{"../../../jade/facets/main.jade":44,"backbone":undefined,"jquery":undefined,"underscore":undefined}],31:[function(_dereq_,module,exports){
 var jade = _dereq_("jade/runtime");
 
 module.exports = function template(locals) {
@@ -5049,7 +5049,7 @@ var jade_interp;
 buf.push("<div class=\"slider\"><span class=\"dash\">-</span><div class=\"handle-min handle\"><input" + (jade.attr("value", min, true, false)) + " class=\"min\"/><label class=\"min\">" + (jade.escape(null == (jade_interp = min) ? "" : jade_interp)) + "</label></div><div class=\"handle-max handle\"><input" + (jade.attr("value", max, true, false)) + " class=\"max\"/><label class=\"max\">" + (jade.escape(null == (jade_interp = max) ? "" : jade_interp)) + "</label></div><div class=\"bar\">&nbsp;</div><button title=\"Search within given range\"><svg version=\"1.1\" xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" viewBox=\"0 0 216 146\" xml:space=\"preserve\"><path d=\"M172.77,123.025L144.825,95.08c6.735-9.722,10.104-20.559,10.104-32.508c0-7.767-1.508-15.195-4.523-22.283c-3.014-7.089-7.088-13.199-12.221-18.332s-11.242-9.207-18.33-12.221c-7.09-3.015-14.518-4.522-22.285-4.522c-7.767,0-15.195,1.507-22.283,4.522c-7.089,3.014-13.199,7.088-18.332,12.221c-5.133,5.133-9.207,11.244-12.221,18.332c-3.015,7.089-4.522,14.516-4.522,22.283c0,7.767,1.507,15.193,4.522,22.283c3.014,7.088,7.088,13.197,12.221,18.33c5.133,5.134,11.244,9.207,18.332,12.222c7.089,3.015,14.516,4.522,22.283,4.522c11.951,0,22.787-3.369,32.509-10.104l27.945,27.863c1.955,2.064,4.397,3.096,7.332,3.096c2.824,0,5.27-1.032,7.332-3.096c2.064-2.063,3.096-4.508,3.096-7.332C175.785,127.479,174.781,125.034,172.77,123.025z M123.357,88.357c-7.143,7.143-15.738,10.714-25.787,10.714c-10.048,0-18.643-3.572-25.786-10.714c-7.143-7.143-10.714-15.737-10.714-25.786c0-10.048,3.572-18.644,10.714-25.786c7.142-7.143,15.738-10.714,25.786-10.714c10.048,0,18.643,3.572,25.787,10.714c7.143,7.142,10.715,15.738,10.715,25.786C134.072,72.62,130.499,81.214,123.357,88.357z\"></path></svg></button></div>");}.call(this,"max" in locals_for_with?locals_for_with.max:typeof max!=="undefined"?max:undefined,"min" in locals_for_with?locals_for_with.min:typeof min!=="undefined"?min:undefined));;return buf.join("");
 };
 },{"jade/runtime":12}],32:[function(_dereq_,module,exports){
-var $, FacetView, Range, RangeFacet, _, bodyTpl,
+var $, FacetView, MonthRange, Range, RangeFacet, _, bodyTpl,
   extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
   hasProp = {}.hasOwnProperty;
 
@@ -5058,6 +5058,8 @@ $ = _dereq_('jquery');
 _ = _dereq_('underscore');
 
 Range = _dereq_('./model');
+
+MonthRange = _dereq_('./month-model');
 
 FacetView = _dereq_('../main');
 
@@ -5123,9 +5125,15 @@ RangeFacet = (function(superClass) {
   RangeFacet.prototype.initialize = function(options1) {
     this.options = options1;
     RangeFacet.__super__.initialize.apply(this, arguments);
-    this.model = new Range(this.options.attrs, {
-      parse: true
-    });
+    if (this.options.config.get('rangeMonthMode')) {
+      this.model = new MonthRange(this.options.attrs, {
+        parse: true
+      });
+    } else {
+      this.model = new Range(this.options.attrs, {
+        parse: true
+      });
+    }
     this.listenTo(this.model, 'change:options', this.render);
     this.listenTo(this.model, 'change', (function(_this) {
       return function(model) {
@@ -5150,12 +5158,18 @@ RangeFacet = (function(superClass) {
     })(this));
     this.listenTo(this.model, 'change:currentMin', (function(_this) {
       return function(model, value) {
-        return _this.labelMin.html(Math.ceil(value));
+        _this.labelMin.html(Math.ceil(value));
+        if (_this.options.config.get('rangeMonthMode')) {
+          return _this.labelMonthMin.html(_this.model.getMonthLabel(value, true));
+        }
       };
     })(this));
     this.listenTo(this.model, 'change:currentMax', (function(_this) {
       return function(model, value) {
-        return _this.labelMax.html(Math.ceil(value));
+        _this.labelMax.html(Math.ceil(value));
+        if (_this.options.config.get('rangeMonthMode')) {
+          return _this.labelMonthMax.html(_this.model.getMonthLabel(value, true));
+        }
       };
     })(this));
     return this.render();
@@ -5197,6 +5211,12 @@ RangeFacet = (function(superClass) {
     this.handleMax = this.$('.handle-max');
     this.labelMin = this.$('label.min');
     this.labelMax = this.$('label.max');
+    if (this.options.config.get('rangeMonthMode')) {
+      this.labelMonthMin = this.$('label.month-min');
+      this.labelMonthMax = this.$('label.month-max');
+      this.labelMonthMin.html(this.model.getMonthLabel(this.model.get('currentMin')));
+      this.labelMonthMax.html(this.model.getMonthLabel(this.model.get('currentMax')));
+    }
     this.bar = this.$('.bar');
     this.button = this.el.querySelector('button');
     slider = this.$('.slider');
@@ -5561,7 +5581,7 @@ module.exports = RangeFacet;
 
 
 
-},{"../main":30,"./body.jade":31,"./model":33,"jquery":undefined,"underscore":undefined}],33:[function(_dereq_,module,exports){
+},{"../main":30,"./body.jade":31,"./model":33,"./month-model":34,"jquery":undefined,"underscore":undefined}],33:[function(_dereq_,module,exports){
 var FacetModel, Range, _,
   bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
   extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
@@ -5809,6 +5829,89 @@ module.exports = Range;
 
 
 },{"../../../models/facets/main":16,"underscore":undefined}],34:[function(_dereq_,module,exports){
+var MonthRange, Range,
+  extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
+  hasProp = {}.hasOwnProperty;
+
+Range = _dereq_('./model');
+
+MonthRange = (function(superClass) {
+  extend(MonthRange, superClass);
+
+  function MonthRange() {
+    return MonthRange.__super__.constructor.apply(this, arguments);
+  }
+
+  MonthRange.prototype.convertLimit2Year = function(limit) {
+    var year;
+    year = limit + '';
+    if (year.length === 0) {
+      year = "0";
+    }
+    if (year.length > 6) {
+      if (year.length === 8) {
+        year = year.substr(0, 6);
+      } else if (year.length === 7) {
+        year = year.substr(0, 5);
+      } else {
+        throw new Error("Range: lower or upper limit is not 0, 1, 2, 3, 4, 7 or 8 chars!");
+      }
+    }
+    return +year;
+  };
+
+  MonthRange.prototype._convertYear2Limit = function(year, from) {
+    var limit;
+    if (from == null) {
+      from = true;
+    }
+    limit = year + '';
+    limit += from ? "01" : "31";
+    return +limit;
+  };
+
+  MonthRange.prototype.getLowerLimit = function() {
+    var monthPart, unit;
+    unit = this.get('currentMin');
+    monthPart = "" + (parseInt((parseInt(("" + unit).substr(4, 2)) / 100) * 12) + 1);
+    if (monthPart.length === 1) {
+      monthPart = "0" + monthPart;
+    }
+    return parseInt(("" + unit).substr(0, 4) + monthPart + "31");
+  };
+
+  MonthRange.prototype.getUpperLimit = function() {
+    var monthPart, unit;
+    unit = this.get('currentMax');
+    monthPart = "" + (parseInt((parseInt(("" + unit).substr(4, 2)) / 100) * 12) + 1);
+    if (monthPart.length === 1) {
+      monthPart = "0" + monthPart;
+    }
+    return parseInt(("" + unit).substr(0, 4) + monthPart + "31");
+  };
+
+  MonthRange.prototype.getMonthLabel = function(unit, conv) {
+    var monthPart;
+    if (conv) {
+      monthPart = "" + (parseInt((parseInt(("" + unit).substr(4, 2)) / 100) * 12) + 1);
+    } else {
+      monthPart = ("" + unit).substr(4, 2);
+    }
+    if (monthPart.length === 1) {
+      monthPart = "0" + monthPart;
+    }
+    return ("" + unit).substr(0, 4) + "-" + monthPart;
+  };
+
+  return MonthRange;
+
+})(Range);
+
+module.exports = MonthRange;
+
+
+
+},{"./model":33}],35:[function(_dereq_,module,exports){
 var $, Backbone, HibbPagination, Result, Results, SortLevels, _, listItems, tpl,
   extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
   hasProp = {}.hasOwnProperty;
@@ -6112,7 +6215,7 @@ module.exports = Results;
 
 
 
-},{"./index.jade":35,"./result":36,"./sort":38,"backbone":undefined,"hibb-pagination":11,"jquery":undefined,"underscore":undefined}],35:[function(_dereq_,module,exports){
+},{"./index.jade":36,"./result":37,"./sort":39,"backbone":undefined,"hibb-pagination":11,"jquery":undefined,"underscore":undefined}],36:[function(_dereq_,module,exports){
 var jade = _dereq_("jade/runtime");
 
 module.exports = function template(locals) {
@@ -6150,7 +6253,7 @@ buf.push("<li class=\"show-metadata\"><input id=\"o45hes3\" type=\"checkbox\" ch
 }
 buf.push("</ul></nav><div class=\"pagination\"></div></header><div class=\"pages\"></div>");}.call(this,"config" in locals_for_with?locals_for_with.config:typeof config!=="undefined"?config:undefined,"resultsPerPage" in locals_for_with?locals_for_with.resultsPerPage:typeof resultsPerPage!=="undefined"?resultsPerPage:undefined,"showMetadata" in locals_for_with?locals_for_with.showMetadata:typeof showMetadata!=="undefined"?showMetadata:undefined,"undefined" in locals_for_with?locals_for_with.undefined:typeof undefined!=="undefined"?undefined:undefined));;return buf.join("");
 };
-},{"jade/runtime":12}],36:[function(_dereq_,module,exports){
+},{"jade/runtime":12}],37:[function(_dereq_,module,exports){
 var Backbone, Result, _,
   extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
   hasProp = {}.hasOwnProperty;
@@ -6341,7 +6444,7 @@ class Result extends Backbone.View
 
 
 
-},{"./result.jade":37,"backbone":undefined,"underscore":undefined}],37:[function(_dereq_,module,exports){
+},{"./result.jade":38,"backbone":undefined,"underscore":undefined}],38:[function(_dereq_,module,exports){
 var jade = _dereq_("jade/runtime");
 
 module.exports = function template(locals) {
@@ -6451,7 +6554,7 @@ buf.push("</ul></li>");
 buf.push("</ul></div>");
 }}.call(this,"data" in locals_for_with?locals_for_with.data:typeof data!=="undefined"?data:undefined,"found" in locals_for_with?locals_for_with.found:typeof found!=="undefined"?found:undefined,"fulltext" in locals_for_with?locals_for_with.fulltext:typeof fulltext!=="undefined"?fulltext:undefined,"undefined" in locals_for_with?locals_for_with.undefined:typeof undefined!=="undefined"?undefined:undefined));;return buf.join("");
 };
-},{"jade/runtime":12}],38:[function(_dereq_,module,exports){
+},{"jade/runtime":12}],39:[function(_dereq_,module,exports){
 var $, Backbone, SortLevels, el, tpl,
   extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
   hasProp = {}.hasOwnProperty;
@@ -6651,7 +6754,7 @@ module.exports = SortLevels;
 
 
 
-},{"./sort.jade":39,"backbone":undefined,"funcky.el":8,"jquery":undefined}],39:[function(_dereq_,module,exports){
+},{"./sort.jade":40,"backbone":undefined,"funcky.el":8,"jquery":undefined}],40:[function(_dereq_,module,exports){
 var jade = _dereq_("jade/runtime");
 
 module.exports = function template(locals) {
@@ -6734,7 +6837,7 @@ buf.push("</select><i class=\"fa fa-sort-alpha-asc\"></i></li>");
 
 buf.push("<li class=\"search\">&nbsp;<button>Change levels</button></li></ul></div>");}.call(this,"Object" in locals_for_with?locals_for_with.Object:typeof Object!=="undefined"?Object:undefined,"initLevels" in locals_for_with?locals_for_with.initLevels:typeof initLevels!=="undefined"?initLevels:undefined,"levels" in locals_for_with?locals_for_with.levels:typeof levels!=="undefined"?levels:undefined,"undefined" in locals_for_with?locals_for_with.undefined:typeof undefined!=="undefined"?undefined:undefined));;return buf.join("");
 };
-},{"jade/runtime":12}],40:[function(_dereq_,module,exports){
+},{"jade/runtime":12}],41:[function(_dereq_,module,exports){
 var Backbone, SearchModel, TextSearch, _, funcky, tpl,
   extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
   hasProp = {}.hasOwnProperty;
@@ -7026,7 +7129,7 @@ module.exports = TextSearch;
 
 
 
-},{"../../models/search":18,"./index.jade":41,"backbone":undefined,"funcky.util":10,"underscore":undefined}],41:[function(_dereq_,module,exports){
+},{"../../models/search":18,"./index.jade":42,"backbone":undefined,"funcky.util":10,"underscore":undefined}],42:[function(_dereq_,module,exports){
 var jade = _dereq_("jade/runtime");
 
 module.exports = function template(locals) {
@@ -7168,7 +7271,7 @@ buf.push("</ul></li>");
 }
 buf.push("</ul></div></div></div>");}.call(this,"config" in locals_for_with?locals_for_with.config:typeof config!=="undefined"?config:undefined,"currentField" in locals_for_with?locals_for_with.currentField:typeof currentField!=="undefined"?currentField:undefined,"generateId" in locals_for_with?locals_for_with.generateId:typeof generateId!=="undefined"?generateId:undefined,"id" in locals_for_with?locals_for_with.id:typeof id!=="undefined"?id:undefined,"model" in locals_for_with?locals_for_with.model:typeof model!=="undefined"?model:undefined,"textSearchId" in locals_for_with?locals_for_with.textSearchId:typeof textSearchId!=="undefined"?textSearchId:undefined,"undefined" in locals_for_with?locals_for_with.undefined:typeof undefined!=="undefined"?undefined:undefined));;return buf.join("");
 };
-},{"jade/runtime":12}],42:[function(_dereq_,module,exports){
+},{"jade/runtime":12}],43:[function(_dereq_,module,exports){
 var jade = _dereq_("jade/runtime");
 
 module.exports = function template(locals) {
@@ -7203,7 +7306,7 @@ buf.push("<li><div class=\"row span6\"><div class=\"cell span5\"><i" + (jade.att
 
 buf.push("</ul>");}.call(this,"displayName" in locals_for_with?locals_for_with.displayName:typeof displayName!=="undefined"?displayName:undefined,"options" in locals_for_with?locals_for_with.options:typeof options!=="undefined"?options:undefined,"ucfirst" in locals_for_with?locals_for_with.ucfirst:typeof ucfirst!=="undefined"?ucfirst:undefined,"undefined" in locals_for_with?locals_for_with.undefined:typeof undefined!=="undefined"?undefined:undefined));;return buf.join("");
 };
-},{"jade/runtime":12}],43:[function(_dereq_,module,exports){
+},{"jade/runtime":12}],44:[function(_dereq_,module,exports){
 var jade = _dereq_("jade/runtime");
 
 module.exports = function template(locals) {
@@ -7273,7 +7376,7 @@ attributes: {"className": "alpha","title": jade.escape(config.get('labels').sort
 }
 buf.push("</div><div class=\"options\"></div></header><div class=\"body\"></div></div>");}.call(this,"config" in locals_for_with?locals_for_with.config:typeof config!=="undefined"?config:undefined,"model" in locals_for_with?locals_for_with.model:typeof model!=="undefined"?model:undefined,"options" in locals_for_with?locals_for_with.options:typeof options!=="undefined"?options:undefined));;return buf.join("");
 };
-},{"jade/runtime":12}],44:[function(_dereq_,module,exports){
+},{"jade/runtime":12}],45:[function(_dereq_,module,exports){
 var jade = _dereq_("jade/runtime");
 
 module.exports = function template(locals) {
