@@ -5256,6 +5256,12 @@ RangeFacet = (function(superClass) {
       },
       'dblclick label.max': function(ev) {
         return this.enableInputEditable(this.labelMax);
+      },
+      'dblclick label.month-min': function(ev) {
+        return this.enableInputEditable(this.labelMonthMin);
+      },
+      'dblclick label.month-max': function(ev) {
+        return this.enableInputEditable(this.labelMonthMax);
       }
     });
   };
@@ -5269,7 +5275,17 @@ RangeFacet = (function(superClass) {
 
   RangeFacet.prototype.setYear = function(ev) {
     if (ev.type === 'focusout' || ev.type === 'blur' || (ev.type === 'keyup' && ev.keyCode === 13)) {
-      if (ev.currentTarget.className.indexOf('min') > -1) {
+      if (ev.currentTarget.className.indexOf('month-min') > -1) {
+        this.model.setFromLabel({
+          currentMin: ev.currentTarget.value
+        });
+        return this.disableInputEditable(this.labelMonthMin);
+      } else if (ev.currentTarget.className.indexOf('month-max') > -1) {
+        this.model.setFromLabel({
+          currentMax: ev.currentTarget.value
+        });
+        return this.disableInputEditable(this.labelMonthMax);
+      } else if (ev.currentTarget.className.indexOf('min') > -1) {
         this.model.set({
           currentMin: +ev.currentTarget.value
         });
@@ -5404,6 +5420,7 @@ RangeFacet = (function(superClass) {
     var handle, input;
     handle = label.closest('.handle');
     input = handle.find('input');
+    input.addClass(label.attr("class"));
     handle.addClass('edit');
     return input.focus().val(label.html());
   };
@@ -5903,6 +5920,38 @@ MonthRange = (function(superClass) {
       monthPart = "0" + monthPart;
     }
     return parseInt(("" + unit).substr(0, 4) + monthPart + "31");
+  };
+
+  MonthRange.prototype.setFromLabel = function(data) {
+    var dd, key, mConv, valid;
+    key = 'currentMin';
+    if (data.hasOwnProperty('currentMax')) {
+      key = 'currentMax';
+    }
+    valid = data[key].match(/^[0-9]{4}-[0-9]{2}$/);
+    if (valid != null) {
+      dd = data[key].split("-");
+      mConv = Math.ceil((+dd[1] - 1) / 12 * 100);
+      if (key === 'currentMin') {
+        return this.set({
+          currentMin: +dd[0] * 100 + mConv
+        });
+      } else {
+        return this.set({
+          currentMax: +dd[0] * 100 + mConv
+        });
+      }
+    } else {
+      if (key === 'currentMin') {
+        return this.set({
+          currentMin: this.get('min')
+        });
+      } else {
+        return this.set({
+          currentMax: this.get('max')
+        });
+      }
+    }
   };
 
   MonthRange.prototype.getMonthLabel = function(unit, conv) {

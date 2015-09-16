@@ -37,6 +37,25 @@ class MonthRange extends Range
 		parseInt(("" + unit).substr(0,4) + monthPart + "31")
 
 
+	setFromLabel: (data) ->
+		key = 'currentMin' 
+		if data.hasOwnProperty('currentMax')
+			key = 'currentMax'
+
+		valid = data[key].match(/^[0-9]{4}-[0-9]{2}$/)
+		if valid?
+			dd = data[key].split("-")
+			mConv = Math.ceil((+dd[1]-1) / 12 * 100)
+			if key == 'currentMin'
+				@set currentMin: +dd[0] * 100 + mConv
+			else
+				@set currentMax: +dd[0] * 100 + mConv
+		else
+			if key == 'currentMin'
+				@set currentMin: @get 'min'
+			else
+				@set currentMax: @get 'max'
+
 	getMonthLabel: (unit, conv)->
 		if conv
 			monthPart = "" + (parseInt((parseInt(("" + unit).substr(4,2)) / 100) * 12) + 1)

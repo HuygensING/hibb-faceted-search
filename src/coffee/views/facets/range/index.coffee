@@ -160,6 +160,10 @@ class RangeFacet extends FacetView
 				@enableInputEditable @labelMin
 			'dblclick label.max': (ev) ->
 				@enableInputEditable @labelMax
+			'dblclick label.month-min': (ev) -> 
+				@enableInputEditable @labelMonthMin
+			'dblclick label.month-max': (ev) ->
+				@enableInputEditable @labelMonthMax
 
 	###
 	# @method
@@ -168,7 +172,13 @@ class RangeFacet extends FacetView
 	###
 	setYear: (ev) ->
 		if ev.type is 'focusout' or ev.type is 'blur' or (ev.type is 'keyup' and ev.keyCode is 13)
-			if ev.currentTarget.className.indexOf('min') > -1
+			if ev.currentTarget.className.indexOf('month-min') > -1
+				@model.setFromLabel currentMin: ev.currentTarget.value
+				@disableInputEditable @labelMonthMin
+			else if ev.currentTarget.className.indexOf('month-max') > -1
+				@model.setFromLabel currentMax: ev.currentTarget.value
+				@disableInputEditable @labelMonthMax
+			else if ev.currentTarget.className.indexOf('min') > -1
 				@model.set currentMin: +ev.currentTarget.value
 				@disableInputEditable @labelMin
 			else if ev.currentTarget.className.indexOf('max') > -1
@@ -281,7 +291,7 @@ class RangeFacet extends FacetView
 	enableInputEditable: (label) ->
 		handle = label.closest('.handle')
 		input = handle.find('input')
-
+		input.addClass(label.attr("class"))
 		handle.addClass 'edit'
 
 		# The `.val(label.html())` is used to put the cursor to the end of the input.
