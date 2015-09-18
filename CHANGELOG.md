@@ -1,3 +1,6 @@
+### v2.5.17	(2015/9/18 13:5)
+* fix template bug for range facet
+
 ### v2.5.16	(2015/9/18 12:37)
 * allow custom facet query name through config; month range lowerlimit fix
 * set month and year via double click and text input
