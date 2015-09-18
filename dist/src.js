@@ -5458,13 +5458,17 @@ RangeFacet = (function(superClass) {
    */
 
   RangeFacet.prototype.triggerChange = function(options) {
-    var queryOptions;
+    var name, queryOptions;
     if (options == null) {
       options = {};
     }
+    name = this.model.get('name');
+    if ((this.options.config.get('customQueryNames') != null) && this.options.config.get('customQueryNames')[name]) {
+      name = this.options.config.get('customQueryNames')[name];
+    }
     queryOptions = {
       facetValue: {
-        name: this.model.get('name'),
+        name: name,
         lowerLimit: this.model.getLowerLimit(),
         upperLimit: this.model.getUpperLimit()
       }
@@ -5909,7 +5913,7 @@ MonthRange = (function(superClass) {
     if (monthPart.length === 1) {
       monthPart = "0" + monthPart;
     }
-    return parseInt(("" + unit).substr(0, 4) + monthPart + "31");
+    return parseInt(("" + unit).substr(0, 4) + monthPart + "01");
   };
 
   MonthRange.prototype.getUpperLimit = function() {

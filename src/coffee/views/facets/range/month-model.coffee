@@ -27,7 +27,7 @@ class MonthRange extends Range
 		monthPart = "" + (parseInt((parseInt(("" + unit).substr(4,2)) / 100) * 12) + 1)
 		if(monthPart.length == 1)
 			monthPart = "0" + monthPart
-		parseInt(("" + unit).substr(0,4) + monthPart + "31")
+		parseInt(("" + unit).substr(0,4) + monthPart + "01")
 	
 	getUpperLimit: ->
 		unit = @get('currentMax')

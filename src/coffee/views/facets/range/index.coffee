@@ -322,9 +322,12 @@ class RangeFacet extends FacetView
 	# @param {Object} [options={}]
 	###
 	triggerChange: (options={}) ->
+		name =  @model.get 'name'
+		if @options.config.get('customQueryNames')? && @options.config.get('customQueryNames')[name]
+			name = @options.config.get('customQueryNames')[name]
 		queryOptions =
 			facetValue:
-				name: @model.get 'name'
+				name: name
 				lowerLimit: @model.getLowerLimit()
 				upperLimit: @model.getUpperLimit()
 
