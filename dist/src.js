@@ -5192,9 +5192,10 @@ RangeFacet = (function(superClass) {
       bodyTpl = this.options.config.get('templates')['range.body'];
     }
     if (this.options.config.get('rangeMonthMode')) {
-      bodyTpl = monthRangeTpl;
+      rtpl = monthRangeTpl(this.model.attributes);
+    } else {
+      rtpl = bodyTpl(this.model.attributes);
     }
-    rtpl = bodyTpl(this.model.attributes);
     this.$('.body').html(rtpl);
     this.$('header .menu').hide();
     this.dragStopper = this.stopDragging.bind(this);

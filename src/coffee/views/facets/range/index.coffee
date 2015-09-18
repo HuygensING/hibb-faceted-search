@@ -92,8 +92,11 @@ class RangeFacet extends FacetView
 		super
 
 		bodyTpl = @options.config.get('templates')['range.body'] if @options.config.get('templates').hasOwnProperty 'range.body'
-		bodyTpl = monthRangeTpl if @options.config.get('rangeMonthMode')
-		rtpl = bodyTpl @model.attributes
+		
+		if @options.config.get('rangeMonthMode')
+			rtpl = monthRangeTpl @model.attributes
+		else
+			rtpl = bodyTpl @model.attributes
 		@$('.body').html rtpl
 
 		@$('header .menu').hide()
