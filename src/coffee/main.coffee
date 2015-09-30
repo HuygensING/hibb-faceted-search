@@ -453,9 +453,11 @@ class MainView extends Backbone.View
 	#
 	# @method
 	# @param {String} facetName
-	# @param value
+	# @param values
 	###
-	searchValue: (facetName, value) ->
+	searchValue: (facetName, values) ->
+		values = [values] if typeof values is 'string'
+
 		hasProp = @facets.views.hasOwnProperty facetName 
 
 		if hasProp
@@ -470,19 +472,19 @@ class MainView extends Backbone.View
 
 		# Reset the faceted search with cache set to true. This way,
 		# the reset will be synchronous and faster. Would it be asynchronous,
-		# the setting of the value could be overridden by the @reset
+		# the setting of the values could be overridden by the @reset
 		@reset true
-
 		@facets.views[facetName].collection.revert()
-		@facets.views[facetName].collection.get(value).set
-			checked: true
-			visible: true
+		for value in values
+			@facets.views[facetName].collection.get(value).set
+				checked: true
+				visible: true
 
 		@queryOptions.reset()
 		@refresh
 			facetValues: [
 				name: facetName
-				values: [value]
+				values: values
 			]
 
 	currentResult: ->

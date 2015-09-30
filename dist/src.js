@@ -603,11 +603,14 @@ MainView = (function(superClass) {
   	 *
   	 * @method
   	 * @param {String} facetName
-  	 * @param value
+  	 * @param values
    */
 
-  MainView.prototype.searchValue = function(facetName, value) {
-    var hasProp, isBooleanFacet, isListFacet;
+  MainView.prototype.searchValue = function(facetName, values) {
+    var hasProp, i, isBooleanFacet, isListFacet, len, value;
+    if (typeof values === 'string') {
+      values = [values];
+    }
     hasProp = this.facets.views.hasOwnProperty(facetName);
     if (hasProp) {
       isListFacet = this.facets.views[facetName] instanceof ListFacet;
@@ -621,16 +624,19 @@ MainView = (function(superClass) {
     }
     this.reset(true);
     this.facets.views[facetName].collection.revert();
-    this.facets.views[facetName].collection.get(value).set({
-      checked: true,
-      visible: true
-    });
+    for (i = 0, len = values.length; i < len; i++) {
+      value = values[i];
+      this.facets.views[facetName].collection.get(value).set({
+        checked: true,
+        visible: true
+      });
+    }
     this.queryOptions.reset();
     return this.refresh({
       facetValues: [
         {
           name: facetName,
-          values: [value]
+          values: values
         }
       ]
     });
