@@ -1,3 +1,6 @@
+### v2.6.0	(2015/9/30 11:16)
+* extended searchValue on main view to support multiple values
+
 ### v2.5.17	(2015/9/18 13:5)
 * fix template bug for range facet
 
