@@ -51,6 +51,7 @@ class RangeFacet extends FacetView
 	###
 	initialize: (@options) ->
 		super
+
 		if @options.config.get('rangeMonthMode')
 			@model = new MonthRange @options.attrs, parse: true
 		else
@@ -132,6 +133,8 @@ class RangeFacet extends FacetView
 		@bar = @$ '.bar'
 
 		@button = @el.querySelector('button')
+		if @options.config.get("rangeFacetAlwaysShowButton")
+			@button.style.display = 'block'
 
 		# The root element of the range facet.
 		slider = @$ '.slider'
@@ -431,7 +434,7 @@ class RangeFacet extends FacetView
 		else
 			@model.reset()
 
-		@button.style.display = 'none' if @button?
+		@button.style.display = 'none' if @button? and !@options.config.get("rangeFacetAlwaysShowButton")
 
 	###
 	# @method

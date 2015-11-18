@@ -5231,6 +5231,9 @@ RangeFacet = (function(superClass) {
     }
     this.bar = this.$('.bar');
     this.button = this.el.querySelector('button');
+    if (this.options.config.get("rangeFacetAlwaysShowButton")) {
+      this.button.style.display = 'block';
+    }
     slider = this.$('.slider');
     if (slider.width() !== 0) {
       return this.model.set({
@@ -5580,7 +5583,7 @@ RangeFacet = (function(superClass) {
     } else {
       this.model.reset();
     }
-    if (this.button != null) {
+    if ((this.button != null) && !this.options.config.get("rangeFacetAlwaysShowButton")) {
       return this.button.style.display = 'none';
     }
   };
