@@ -1,3 +1,6 @@
+### v2.6.2	(2015/11/18)
+
+
 ### v2.5.14	(2015/5/29)
 * :bug: Order list facet alpha case incensitive
 
