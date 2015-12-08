@@ -4236,12 +4236,12 @@ ListFacet = (function(superClass) {
     var filterIcon, optionsDiv;
     optionsDiv = this.$('header .options');
     filterIcon = ev.currentTarget;
-    filterIcon.classList.toggle('active');
+    $(filterIcon).toggleClass('active');
     return optionsDiv.slideToggle(150, (function(_this) {
       return function() {
         var input;
         input = optionsDiv.find('input[name="filter"]');
-        if (filterIcon.contains('active')) {
+        if ($(filterIcon).hasClass('active')) {
           input.focus();
           _this.optionsView.appendOptions(true);
           return _this.renderFilteredOptionCount();
@@ -4266,28 +4266,28 @@ ListFacet = (function(superClass) {
       this.optionsView.renderAll();
     }
     type = ev.currentTarget.getAttribute("class").indexOf("alphabetically") > -1 ? "alpha" : "count";
-    if (ev.currentTarget.classList.contains("active")) {
+    if ($(ev.currentTarget).hasClass("active")) {
       order = ev.currentTarget.getAttribute("class").indexOf("descending") > -1 ? "asc" : "desc";
-      if (ev.currentTarget.classList.contains("alpha")) {
+      if ($(ev.currentTarget).hasClass("alpha")) {
         ref = this.el.querySelectorAll("svg.alpha");
         for (i = 0, len = ref.length; i < len; i++) {
           el = ref[i];
-          el.classList.toggle("visible");
+          $(el).toggleClass("visible");
           if (el !== ev.currentTarget) {
-            el.classList.add("active");
+            $(el).addClass("active");
           } else {
-            el.classList.remove("active");
+            $(el).removeClass("active");
           }
         }
-      } else if (ev.currentTarget.classList.contains("count")) {
+      } else if ($(ev.currentTarget).hasClass("count")) {
         ref1 = this.el.querySelectorAll("svg.count");
         for (j = 0, len1 = ref1.length; j < len1; j++) {
           el = ref1[j];
-          el.classList.toggle("visible");
+          $(el).toggleClass("visible");
           if (el !== ev.currentTarget) {
-            el.classList.add("active");
+            $(el).addClass("active");
           } else {
-            el.classList.remove("active");
+            $(el).removeClass("active");
           }
         }
       }
@@ -4296,14 +4296,14 @@ ListFacet = (function(superClass) {
       ref2 = this.el.querySelectorAll("svg.count.active");
       for (k = 0, len2 = ref2.length; k < len2; k++) {
         el = ref2[k];
-        el.classList.remove("active");
+        $(el).removeClass("active");
       }
       ref3 = this.el.querySelectorAll("svg.alpha.active");
       for (l = 0, len3 = ref3.length; l < len3; l++) {
         el = ref3[l];
-        el.classList.remove("active");
+        $(el).removeClass("active");
       }
-      ev.currentTarget.classList.add("active");
+      $(ev.currentTarget).addClass("active");
     }
     return this.collection.orderBy(type + '_' + order);
   };
@@ -4339,7 +4339,7 @@ ListFacet = (function(superClass) {
 
   ListFacet.prototype.reset = function() {
     this.resetActive = true;
-    if ((this.el.querySelector('svg.filter') != null) && this.el.querySelector('svg.filter').classList.contains('active')) {
+    if ((this.el.querySelector('svg.filter') != null) && $('svg.filter').hasClass('active')) {
       return this._toggleFilterMenu();
     }
   };
@@ -4354,7 +4354,7 @@ ListFacet = (function(superClass) {
    */
 
   ListFacet.prototype.revert = function() {
-    if ((this.el.querySelector('svg.filter') != null) && this.el.querySelector('svg.filter').classList.contains('active')) {
+    if ((this.el.querySelector('svg.filter') != null) && $('svg.filter').hasClass('active')) {
       this._toggleFilterMenu();
     }
     this.collection.revert();

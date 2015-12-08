@@ -126,12 +126,12 @@ class ListFacet extends FacetView
 	_toggleFilterMenu: (ev) ->
 		optionsDiv = @$('header .options')
 		filterIcon = ev.currentTarget
-		filterIcon.classList.toggle 'active'
+		$(filterIcon).toggleClass 'active'
 
 		optionsDiv.slideToggle 150, =>
 			input = optionsDiv.find('input[name="filter"]')
 
-			if filterIcon.contains 'active'
+			if $(filterIcon).hasClass 'active'
 				input.focus()
 				@optionsView.appendOptions true
 				@renderFilteredOptionCount()
@@ -153,34 +153,34 @@ class ListFacet extends FacetView
 		# Set type and order vars before changing the className
 		type = if ev.currentTarget.getAttribute("class").indexOf("alphabetically") > -1 then "alpha" else "count"
 
-		if ev.currentTarget.classList.contains("active")
+		if $(ev.currentTarget).hasClass("active")
 			order = if ev.currentTarget.getAttribute("class").indexOf("descending") > -1 then "asc" else "desc"
 			
-			if ev.currentTarget.classList.contains("alpha")
+			if $(ev.currentTarget).hasClass("alpha")
 				for el in @el.querySelectorAll("svg.alpha")
-					el.classList.toggle("visible")
+					$(el).toggleClass("visible")
 
 					if el isnt ev.currentTarget
-						el.classList.add("active")
+						$(el).addClass("active")
 					else
-						el.classList.remove("active")
-			else if ev.currentTarget.classList.contains("count")
+						$(el).removeClass("active")
+			else if $(ev.currentTarget).hasClass("count")
 
 				for el in @el.querySelectorAll("svg.count")
-					el.classList.toggle("visible")
+					$(el).toggleClass("visible")
 
 					if el isnt ev.currentTarget
-						el.classList.add("active")
+						$(el).addClass("active")
 					else
-						el.classList.remove("active")
+						$(el).removeClass("active")
 		else
 			order = if ev.currentTarget.getAttribute("class").indexOf("descending") > -1 then "desc" else "asc"
 			# Use count and alpha in selectors, because otherwise an active
 			# filter would also be removed
-			el.classList.remove("active") for el in @el.querySelectorAll("svg.count.active")
-			el.classList.remove("active") for el in @el.querySelectorAll("svg.alpha.active")
+			$(el).removeClass("active") for el in @el.querySelectorAll("svg.count.active")
+			$(el).removeClass("active") for el in @el.querySelectorAll("svg.alpha.active")
 
-			ev.currentTarget.classList.add "active"
+			$(ev.currentTarget).addClass "active"
 
 		@collection.orderBy type+'_'+order
 
@@ -209,7 +209,7 @@ class ListFacet extends FacetView
 	reset: ->
 		@resetActive = true
 
-		@_toggleFilterMenu() if @el.querySelector('svg.filter')? and @el.querySelector('svg.filter').classList.contains 'active'
+		@_toggleFilterMenu() if @el.querySelector('svg.filter')? and $('svg.filter').hasClass 'active'
 
 	###
 	# Alias for reset, but used for different implementation. This should be the base
@@ -219,7 +219,7 @@ class ListFacet extends FacetView
 	# @todo refactor @reset.
 	###
 	revert: ->
-		@_toggleFilterMenu() if @el.querySelector('svg.filter')? and @el.querySelector('svg.filter').classList.contains 'active'
+		@_toggleFilterMenu() if @el.querySelector('svg.filter')? and $('svg.filter').hasClass 'active'
 		
 		@collection.revert()
 		@collection.sort()
