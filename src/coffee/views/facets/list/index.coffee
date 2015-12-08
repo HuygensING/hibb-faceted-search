@@ -148,39 +148,38 @@ class ListFacet extends FacetView
 		# When changing the order, all the items must be active (set to visible).
 		# Unless the filter menu is active, than we only change the order of the
 		# filtered items.
-		@optionsView.renderAll() unless @$("svg.filter").hasClass "active"
+		@optionsView.renderAll() unless @$("svg.filter").is(".active")
 
 		# Set type and order vars before changing the className
-		type = if ev.currentTarget.getAttribute("class").indexOf("alphabetically") > -1 then "alpha" else "count"
+		type = if $(ev.currentTarget).attr("class").indexOf("alphabetically") > -1 then "alpha" else "count"
 
-		if $(ev.currentTarget).hasClass("active")
-			order = if ev.currentTarget.getAttribute("class").indexOf("descending") > -1 then "asc" else "desc"
+		if $(ev.currentTarget).is(".active")
+			order = if $(ev.currentTarget).attr("class").indexOf("descending") > -1 then "asc" else "desc"
 			
-			if $(ev.currentTarget).hasClass("alpha")
-				for el in @el.querySelectorAll("svg.alpha")
-					$(el).toggleClass("visible")
-
+			if $(ev.currentTarget).is(".alpha")
+				$(@el).find("svg.alpha").each((i, el) => 
+					$(el).attr("class", $(el).attr("class").replace(" visible", ""))
 					if el isnt ev.currentTarget
-						$(el).addClass("active")
+						$(el).attr("class", $(el).attr("class") + " visible active");
 					else
-						$(el).removeClass("active")
-			else if $(ev.currentTarget).hasClass("count")
-
-				for el in @el.querySelectorAll("svg.count")
-					$(el).toggleClass("visible")
-
+						$(el).attr("class", $(el).attr("class").replace(" active", ""))
+				)
+			else if $(ev.currentTarget).is(".count")
+				$(@el).find("svg.count").each((i, el) => 
+					$(el).attr("class", $(el).attr("class").replace(" visible", ""))
 					if el isnt ev.currentTarget
-						$(el).addClass("active")
+						$(el).attr("class", $(el).attr("class") + " visible active");
 					else
-						$(el).removeClass("active")
+						$(el).attr("class", $(el).attr("class").replace(" active", ""))
+				)
 		else
-			order = if ev.currentTarget.getAttribute("class").indexOf("descending") > -1 then "desc" else "asc"
+			order = if $(ev.currentTarget).attr("class").indexOf("descending") > -1 then "desc" else "asc"
+
 			# Use count and alpha in selectors, because otherwise an active
 			# filter would also be removed
-			$(el).removeClass("active") for el in @el.querySelectorAll("svg.count.active")
-			$(el).removeClass("active") for el in @el.querySelectorAll("svg.alpha.active")
-
-			$(ev.currentTarget).addClass "active"
+			$(el).attr("class", $(el).attr("class").replace(" active", "")) for el in $(@el).find("svg.count.active").toArray()
+			$(el).attr("class", $(el).attr("class").replace(" active", "")) for el in $(@el).find("svg.alpha.active").toArray()
+			$(ev.currentTarget).attr("class", $(ev.currentTarget).attr("class") + " active")
 
 		@collection.orderBy type+'_'+order
 
@@ -209,7 +208,7 @@ class ListFacet extends FacetView
 	reset: ->
 		@resetActive = true
 
-		@_toggleFilterMenu() if @el.querySelector('svg.filter')? and $('svg.filter').hasClass 'active'
+		@_toggleFilterMenu() if @el.querySelector('svg.filter')? and $('svg.filter').is('.active')
 
 	###
 	# Alias for reset, but used for different implementation. This should be the base
@@ -219,7 +218,7 @@ class ListFacet extends FacetView
 	# @todo refactor @reset.
 	###
 	revert: ->
-		@_toggleFilterMenu() if @el.querySelector('svg.filter')? and $('svg.filter').hasClass 'active'
+		@_toggleFilterMenu() if @el.querySelector('svg.filter')? and $('svg.filter').is('.active')
 		
 		@collection.revert()
 		@collection.sort()

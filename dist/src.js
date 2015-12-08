@@ -4261,49 +4261,49 @@ ListFacet = (function(superClass) {
    */
 
   ListFacet.prototype._changeOrder = function(ev) {
-    var el, i, j, k, l, len, len1, len2, len3, order, ref, ref1, ref2, ref3, type;
-    if (!this.$("svg.filter").hasClass("active")) {
+    var el, j, k, len, len1, order, ref, ref1, type;
+    if (!this.$("svg.filter").is(".active")) {
       this.optionsView.renderAll();
     }
-    type = ev.currentTarget.getAttribute("class").indexOf("alphabetically") > -1 ? "alpha" : "count";
-    if ($(ev.currentTarget).hasClass("active")) {
-      order = ev.currentTarget.getAttribute("class").indexOf("descending") > -1 ? "asc" : "desc";
-      if ($(ev.currentTarget).hasClass("alpha")) {
-        ref = this.el.querySelectorAll("svg.alpha");
-        for (i = 0, len = ref.length; i < len; i++) {
-          el = ref[i];
-          $(el).toggleClass("visible");
-          if (el !== ev.currentTarget) {
-            $(el).addClass("active");
-          } else {
-            $(el).removeClass("active");
-          }
-        }
-      } else if ($(ev.currentTarget).hasClass("count")) {
-        ref1 = this.el.querySelectorAll("svg.count");
-        for (j = 0, len1 = ref1.length; j < len1; j++) {
-          el = ref1[j];
-          $(el).toggleClass("visible");
-          if (el !== ev.currentTarget) {
-            $(el).addClass("active");
-          } else {
-            $(el).removeClass("active");
-          }
-        }
+    type = $(ev.currentTarget).attr("class").indexOf("alphabetically") > -1 ? "alpha" : "count";
+    if ($(ev.currentTarget).is(".active")) {
+      order = $(ev.currentTarget).attr("class").indexOf("descending") > -1 ? "asc" : "desc";
+      if ($(ev.currentTarget).is(".alpha")) {
+        $(this.el).find("svg.alpha").each((function(_this) {
+          return function(i, el) {
+            $(el).attr("class", $(el).attr("class").replace(" visible", ""));
+            if (el !== ev.currentTarget) {
+              return $(el).attr("class", $(el).attr("class") + " visible active");
+            } else {
+              return $(el).attr("class", $(el).attr("class").replace(" active", ""));
+            }
+          };
+        })(this));
+      } else if ($(ev.currentTarget).is(".count")) {
+        $(this.el).find("svg.count").each((function(_this) {
+          return function(i, el) {
+            $(el).attr("class", $(el).attr("class").replace(" visible", ""));
+            if (el !== ev.currentTarget) {
+              return $(el).attr("class", $(el).attr("class") + " visible active");
+            } else {
+              return $(el).attr("class", $(el).attr("class").replace(" active", ""));
+            }
+          };
+        })(this));
       }
     } else {
-      order = ev.currentTarget.getAttribute("class").indexOf("descending") > -1 ? "desc" : "asc";
-      ref2 = this.el.querySelectorAll("svg.count.active");
-      for (k = 0, len2 = ref2.length; k < len2; k++) {
-        el = ref2[k];
-        $(el).removeClass("active");
+      order = $(ev.currentTarget).attr("class").indexOf("descending") > -1 ? "desc" : "asc";
+      ref = $(this.el).find("svg.count.active").toArray();
+      for (j = 0, len = ref.length; j < len; j++) {
+        el = ref[j];
+        $(el).attr("class", $(el).attr("class").replace(" active", ""));
       }
-      ref3 = this.el.querySelectorAll("svg.alpha.active");
-      for (l = 0, len3 = ref3.length; l < len3; l++) {
-        el = ref3[l];
-        $(el).removeClass("active");
+      ref1 = $(this.el).find("svg.alpha.active").toArray();
+      for (k = 0, len1 = ref1.length; k < len1; k++) {
+        el = ref1[k];
+        $(el).attr("class", $(el).attr("class").replace(" active", ""));
       }
-      $(ev.currentTarget).addClass("active");
+      $(ev.currentTarget).attr("class", $(ev.currentTarget).attr("class") + " active");
     }
     return this.collection.orderBy(type + '_' + order);
   };
@@ -4339,7 +4339,7 @@ ListFacet = (function(superClass) {
 
   ListFacet.prototype.reset = function() {
     this.resetActive = true;
-    if ((this.el.querySelector('svg.filter') != null) && $('svg.filter').hasClass('active')) {
+    if ((this.el.querySelector('svg.filter') != null) && $('svg.filter').is('.active')) {
       return this._toggleFilterMenu();
     }
   };
@@ -4354,7 +4354,7 @@ ListFacet = (function(superClass) {
    */
 
   ListFacet.prototype.revert = function() {
-    if ((this.el.querySelector('svg.filter') != null) && $('svg.filter').hasClass('active')) {
+    if ((this.el.querySelector('svg.filter') != null) && $('svg.filter').is('.active')) {
       this._toggleFilterMenu();
     }
     this.collection.revert();
