@@ -1,3 +1,6 @@
+### v2.6.4	(2015/12/8)
+* ie bugfix classList not supported
+
 ### v2.6.3	(2015/12/8)
 * ie bugfix classList not supported
 
