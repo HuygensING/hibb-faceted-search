@@ -503,7 +503,7 @@ MainView = (function(superClass) {
   	 * Sort the results by the parameters given. The parameters are an array of
   	 * objects, containing 'fieldName' and 'direction': [{fieldName: "name", direction: "desc"}]
   	 * When the queryOptions are set, a change event is triggered and send to the server.
-  	#
+  	 *
   	 * @method
    */
 
@@ -527,8 +527,8 @@ MainView = (function(superClass) {
   	 * Silently change @attributes and trigger a change event manually afterwards.
   	 * arguments.cache Boolean Tells searchResults if we want to fetch result from cache.
   	 * 	In an app where data is dynamic, we usually don't want cache (get new result from server),
-  	#	in an app where data is static, we can use cache to speed up the app.
-  	#
+  	 *	in an app where data is static, we can use cache to speed up the app.
+  	 *
   	 * @method
    */
 
@@ -559,7 +559,7 @@ MainView = (function(superClass) {
   	 * model, instead of fetching a new one from the server.
   	 * The newQueryOptions are optional. The can be used to add or update one or more queryOptions
   	 * before sending the same (or now altered) queryOptions to the server again.
-  	#
+  	 *
   	 * @method
    */
 
@@ -580,7 +580,7 @@ MainView = (function(superClass) {
 
   /*
   	 * Run a search query using the queryOptions and given options.
-  	#
+  	 *
   	 * @method
   	 * @param {Object} options
    */
@@ -592,10 +592,10 @@ MainView = (function(superClass) {
 
   /*
   	 * Set a single option in a list or boolean facet and perform a search.
-  	#
+  	 *
   	 * Equivalent to a user resetting the faceted search and selecting one value.
   	 * This is only usable for LIST and BOOLEAN facets.
-  	#
+  	 *
   	 * @method
   	 * @param {String} facetName
   	 * @param value
@@ -643,7 +643,7 @@ module.exports = MainView;
 
 
 
-},{"../jade/main.jade":44,"./collections/searchresults":13,"./models/config":14,"./models/query-options":17,"./views/facets":20,"./views/facets/boolean":21,"./views/facets/list":23,"./views/results":34,"./views/text-search":40,"assert":2,"backbone":undefined,"funcky.el":8,"jquery":undefined,"underscore":undefined}],2:[function(_dereq_,module,exports){
+},{"../jade/main.jade":44,"./collections/searchresults":13,"./models/config":14,"./models/query-options":17,"./views/facets":20,"./views/facets/boolean":21,"./views/facets/list":23,"./views/results":34,"./views/text-search":40,"assert":2,"backbone":undefined,"funcky.el":4,"jquery":undefined,"underscore":undefined}],2:[function(_dereq_,module,exports){
 // http://wiki.commonjs.org/wiki/Unit_Testing/1.0
 //
 // THIS IS NOT TESTED NOR LIKELY TO WORK OUTSIDE V8!
@@ -1004,9 +1004,653 @@ var objectKeys = Object.keys || function (obj) {
   return keys;
 };
 
-},{"util/":7}],3:[function(_dereq_,module,exports){
+},{"util/":12}],3:[function(_dereq_,module,exports){
 
 },{}],4:[function(_dereq_,module,exports){
+(function() {
+  module.exports = {
+    el: function(el) {
+      return {
+        closest: function(selector) {
+          var matchesSelector;
+          matchesSelector = el.matches || el.webkitMatchesSelector || el.mozMatchesSelector || el.msMatchesSelector;
+          while (el) {
+            if (matchesSelector.bind(el)(selector)) {
+              return el;
+            } else {
+              el = el.parentNode;
+            }
+          }
+        },
+
+        /*
+        		Native alternative to jQuery's $.offset()
+        
+        		http://www.quirksmode.org/js/findpos.html
+         */
+        position: function(parent) {
+          var left, loopEl, top;
+          if (parent == null) {
+            parent = document.body;
+          }
+          left = 0;
+          top = 0;
+          loopEl = el;
+          while ((loopEl != null) && loopEl !== parent) {
+            if (this.hasDescendant(parent)) {
+              break;
+            }
+            left += loopEl.offsetLeft;
+            top += loopEl.offsetTop;
+            loopEl = loopEl.offsetParent;
+          }
+          return {
+            left: left,
+            top: top
+          };
+        },
+        boundingBox: function() {
+          var box;
+          box = this.position();
+          box.width = el.clientWidth;
+          box.height = el.clientHeight;
+          box.right = box.left + box.width;
+          box.bottom = box.top + box.height;
+          return box;
+        },
+
+        /*
+        		Is child el a descendant of parent el?
+        
+        		http://stackoverflow.com/questions/2234979/how-to-check-in-javascript-if-one-element-is-a-child-of-another
+         */
+        hasDescendant: function(child) {
+          var node;
+          node = child.parentNode;
+          while (node != null) {
+            if (node === el) {
+              return true;
+            }
+            node = node.parentNode;
+          }
+          return false;
+        },
+        insertAfter: function(referenceElement) {
+          return referenceElement.parentNode.insertBefore(el, referenceElement.nextSibling);
+        },
+        hasScrollBar: function(el) {
+          return hasScrollBarX(el) || hasScrollBarY(el);
+        },
+        hasScrollBarX: function(el) {
+          return el.scrollWidth > el.clientWidth;
+        },
+        hasScrollBarY: function(el) {
+          return el.scrollHeight > el.clientHeight;
+        },
+        inViewport: function(parent) {
+          var doc, rect, win;
+          win = parent != null ? parent : window;
+          doc = parent != null ? parent : document.documentElement;
+          rect = el.getBoundingClientRect();
+          return rect.top >= 0 && rect.left >= 0 && rect.bottom <= (win.innerHeight || doc.clientHeight) && rect.right <= (win.innerWidth || doc.clientWidth);
+        }
+      };
+    }
+  };
+
+}).call(this);
+
+},{}],5:[function(_dereq_,module,exports){
+(function() {
+  var __hasProp = {}.hasOwnProperty;
+
+  module.exports = {
+    get: function(url, options) {
+      if (options == null) {
+        options = {};
+      }
+      return this._sendRequest('GET', url, options);
+    },
+    post: function(url, options) {
+      if (options == null) {
+        options = {};
+      }
+      return this._sendRequest('POST', url, options);
+    },
+    put: function(url, options) {
+      if (options == null) {
+        options = {};
+      }
+      return this._sendRequest('PUT', url, options);
+    },
+    _promise: function() {
+      return {
+        done: function(fn) {
+          return this.callDone = fn;
+        },
+        callDone: null,
+        fail: function(fn) {
+          return this.callFail = fn;
+        },
+        callFail: null,
+        always: function(fn) {
+          return this.callAlways = fn;
+        },
+        callAlways: null
+      };
+    },
+    _sendRequest: function(method, url, options) {
+      var header, promise, value, xhr, _ref;
+      if (options == null) {
+        options = {};
+      }
+      promise = this._promise();
+      if (options.headers == null) {
+        options.headers = {};
+      }
+      xhr = new XMLHttpRequest();
+      xhr.onreadystatechange = function() {
+        var _ref;
+        if (xhr.readyState === 4) {
+          if (promise.callAlways != null) {
+            promise.callAlways(xhr);
+          }
+          if ((200 <= (_ref = xhr.status) && _ref <= 206) || xhr.status === 1223) {
+            if (promise.callDone != null) {
+              return promise.callDone(xhr);
+            }
+          } else {
+            if (promise.callFail != null) {
+              return promise.callFail(xhr);
+            }
+          }
+        }
+      };
+      xhr.open(method, url, true);
+      xhr.setRequestHeader("Content-type", "application/json");
+      _ref = options.headers;
+      for (header in _ref) {
+        if (!__hasProp.call(_ref, header)) continue;
+        value = _ref[header];
+        xhr.setRequestHeader(header, value);
+      }
+      xhr.send(options.data);
+      return promise;
+    }
+  };
+
+}).call(this);
+
+},{}],6:[function(_dereq_,module,exports){
+(function(){module.exports={generateID:function(t){var n,r;for(t=null!=t&&t>0?t-1:7,n="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789",r=n.charAt(Math.floor(52*Math.random()));t--;)r+=n.charAt(Math.floor(Math.random()*n.length));return r},setResetTimeout:function(){var t;return t=null,function(n,r,e){return null!=t&&(null!=e&&e(),clearTimeout(t)),t=setTimeout(function(){return t=null,r()},n)}}()}}).call(this);
+},{}],7:[function(_dereq_,module,exports){
+(function (global){
+(function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g.Pagination = f()}})(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof _dereq_=="function"&&_dereq_;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof _dereq_=="function"&&_dereq_;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(_dereq_,module,exports){
+var $, Backbone, Pagination, tpl, util,
+  extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
+  hasProp = {}.hasOwnProperty;
+
+Backbone = _dereq_('backbone');
+
+$ = _dereq_('jquery');
+
+Backbone.$ = $;
+
+util = _dereq_('funcky.util');
+
+tpl = _dereq_('./main.jade');
+
+
+/*
+Create a pagination view.
+@class
+@extends Backbone.View
+ */
+
+Pagination = (function(superClass) {
+  extend(Pagination, superClass);
+
+  function Pagination() {
+    return Pagination.__super__.constructor.apply(this, arguments);
+  }
+
+  Pagination.prototype.tagName = 'ul';
+
+  Pagination.prototype.className = 'hibb-pagination';
+
+
+  /*
+  	@constructs
+  	@param {object} this.options
+  	@prop {number} options.resultsTotal - Total number of results.
+  	@prop {number} options.resultsPerPage - Number of results per page.
+  	@prop {number} [options.resultsStart=0] - The result item to start at. Not the start page!
+  	@prop {boolean} [options.step10=true] - Render (<< and >>) for steps of 10.
+  	@prop {boolean} [options.triggerPageNumber=true] - Trigger the new pageNumber (true) or prev/next (false).
+  	@prop {array<String>} [options.showPageNames] - Show `1 page of 23 pages` instead of `1 of 23`. Array contains the singular and plural version, ie: ["page", "pages"]
+   */
+
+  Pagination.prototype.initialize = function(options) {
+    var base, base1;
+    this.options = options != null ? options : {};
+    if ((base = this.options).step10 == null) {
+      base.step10 = true;
+    }
+    if ((base1 = this.options).triggerPageNumber == null) {
+      base1.triggerPageNumber = true;
+    }
+    this._currentPageNumber = (this.options.resultsStart != null) && this.options.resultsStart > 0 ? (this.options.resultsStart / this.options.resultsPerPage) + 1 : 1;
+    return this.setPageNumber(this._currentPageNumber, true);
+  };
+
+  Pagination.prototype.render = function() {
+    var attrs;
+    this._pageCount = Math.ceil(this.options.resultsTotal / this.options.resultsPerPage);
+    attrs = $.extend(this.options, {
+      currentPageNumber: this._currentPageNumber,
+      pageCount: this._pageCount
+    });
+    this.el.innerHTML = tpl(attrs);
+    if (this._pageCount <= 1) {
+      this.$el.hide();
+    }
+    return this;
+  };
+
+  Pagination.prototype.events = function() {
+    return {
+      'click li.prev10.active': '_handlePrev10',
+      'click li.prev.active': '_handlePrev',
+      'click li.next.active': '_handleNext',
+      'click li.next10.active': '_handleNext10',
+      'click li.current:not(.active)': '_handleCurrentClick',
+      'blur li.current.active input': '_handleBlur',
+      'keyup li.current.active input': '_handleKeyup'
+    };
+  };
+
+  Pagination.prototype._handlePrev10 = function() {
+    return this.setPageNumber(this._currentPageNumber - 10);
+  };
+
+  Pagination.prototype._handlePrev = function() {
+    return this.setPageNumber(this._currentPageNumber - 1);
+  };
+
+  Pagination.prototype._handleNext = function() {
+    return this.setPageNumber(this._currentPageNumber + 1);
+  };
+
+  Pagination.prototype._handleNext10 = function() {
+    return this.setPageNumber(this._currentPageNumber + 10);
+  };
+
+  Pagination.prototype._handleCurrentClick = function(ev) {
+    var input, span, target;
+    target = this.$(ev.currentTarget);
+    span = target.find('span');
+    input = target.find('input');
+    input.width(span.width());
+    target.addClass('active');
+    input.animate({
+      width: 40
+    }, 'fast');
+    input.focus();
+    return input.val(this._currentPageNumber);
+  };
+
+  Pagination.prototype._handleKeyup = function(ev) {
+    var input, newPageNumber;
+    input = this.$(ev.currentTarget);
+    newPageNumber = +input.val();
+    if (ev.keyCode === 13) {
+      if ((1 <= newPageNumber && newPageNumber <= this._pageCount)) {
+        this.setPageNumber(newPageNumber);
+      }
+      return this._deactivateCurrentLi(input);
+    }
+  };
+
+  Pagination.prototype._handleBlur = function(ev) {
+    return this._deactivateCurrentLi(this.$(ev.currentTarget));
+  };
+
+  Pagination.prototype._deactivateCurrentLi = function(input) {
+    return input.animate({
+      width: 0
+    }, 'fast', function() {
+      var li;
+      li = input.parent();
+      return li.removeClass('active');
+    });
+  };
+
+
+  /*
+  	@method getCurrentPageNumber
+  	@returns {number}
+   */
+
+  Pagination.prototype.getCurrentPageNumber = function() {
+    return this._currentPageNumber;
+  };
+
+
+  /*
+  	@method setPageNumber
+  	@param {number} pageNumber
+  	@param {boolean} [silent=false]
+   */
+
+  Pagination.prototype.setPageNumber = function(pageNumber, silent) {
+    var direction;
+    if (silent == null) {
+      silent = false;
+    }
+    if (!this.triggerPageNumber) {
+      direction = pageNumber < this._currentPageNumber ? 'prev' : 'next';
+      this.trigger(direction);
+    }
+    this._currentPageNumber = pageNumber;
+    this.render();
+    if (!silent) {
+      return util.setResetTimeout(500, (function(_this) {
+        return function() {
+          return _this.trigger('change:pagenumber', pageNumber);
+        };
+      })(this));
+    }
+  };
+
+  Pagination.prototype.destroy = function() {
+    return this.remove();
+  };
+
+  return Pagination;
+
+})(Backbone.View);
+
+module.exports = Pagination;
+
+
+
+},{"./main.jade":5,"backbone":undefined,"funcky.util":3,"jquery":undefined}],2:[function(_dereq_,module,exports){
+
+},{}],3:[function(_dereq_,module,exports){
+(function(){module.exports={generateID:function(t){var n,r;for(t=null!=t&&t>0?t-1:7,n="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789",r=n.charAt(Math.floor(52*Math.random()));t--;)r+=n.charAt(Math.floor(Math.random()*n.length));return r},setResetTimeout:function(){var t;return t=null,function(n,r,e){return null!=t&&(null!=e&&e(),clearTimeout(t)),t=setTimeout(function(){return t=null,r()},n)}}()}}).call(this);
+},{}],4:[function(_dereq_,module,exports){
+(function (global){
+!function(e){if("object"==typeof exports&&"undefined"!=typeof module)module.exports=e();else if("function"==typeof define&&define.amd)define([],e);else{var f;"undefined"!=typeof window?f=window:"undefined"!=typeof global?f=global:"undefined"!=typeof self&&(f=self),f.jade=e()}}(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof _dereq_=="function"&&_dereq_;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof _dereq_=="function"&&_dereq_;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(_dereq_,module,exports){
+'use strict';
+
+/**
+ * Merge two attribute objects giving precedence
+ * to values in object `b`. Classes are special-cased
+ * allowing for arrays and merging/joining appropriately
+ * resulting in a string.
+ *
+ * @param {Object} a
+ * @param {Object} b
+ * @return {Object} a
+ * @api private
+ */
+
+exports.merge = function merge(a, b) {
+  if (arguments.length === 1) {
+    var attrs = a[0];
+    for (var i = 1; i < a.length; i++) {
+      attrs = merge(attrs, a[i]);
+    }
+    return attrs;
+  }
+  var ac = a['class'];
+  var bc = b['class'];
+
+  if (ac || bc) {
+    ac = ac || [];
+    bc = bc || [];
+    if (!Array.isArray(ac)) ac = [ac];
+    if (!Array.isArray(bc)) bc = [bc];
+    a['class'] = ac.concat(bc).filter(nulls);
+  }
+
+  for (var key in b) {
+    if (key != 'class') {
+      a[key] = b[key];
+    }
+  }
+
+  return a;
+};
+
+/**
+ * Filter null `val`s.
+ *
+ * @param {*} val
+ * @return {Boolean}
+ * @api private
+ */
+
+function nulls(val) {
+  return val != null && val !== '';
+}
+
+/**
+ * join array as classes.
+ *
+ * @param {*} val
+ * @return {String}
+ */
+exports.joinClasses = joinClasses;
+function joinClasses(val) {
+  return (Array.isArray(val) ? val.map(joinClasses) :
+    (val && typeof val === 'object') ? Object.keys(val).filter(function (key) { return val[key]; }) :
+    [val]).filter(nulls).join(' ');
+}
+
+/**
+ * Render the given classes.
+ *
+ * @param {Array} classes
+ * @param {Array.<Boolean>} escaped
+ * @return {String}
+ */
+exports.cls = function cls(classes, escaped) {
+  var buf = [];
+  for (var i = 0; i < classes.length; i++) {
+    if (escaped && escaped[i]) {
+      buf.push(exports.escape(joinClasses([classes[i]])));
+    } else {
+      buf.push(joinClasses(classes[i]));
+    }
+  }
+  var text = joinClasses(buf);
+  if (text.length) {
+    return ' class="' + text + '"';
+  } else {
+    return '';
+  }
+};
+
+
+exports.style = function (val) {
+  if (val && typeof val === 'object') {
+    return Object.keys(val).map(function (style) {
+      return style + ':' + val[style];
+    }).join(';');
+  } else {
+    return val;
+  }
+};
+/**
+ * Render the given attribute.
+ *
+ * @param {String} key
+ * @param {String} val
+ * @param {Boolean} escaped
+ * @param {Boolean} terse
+ * @return {String}
+ */
+exports.attr = function attr(key, val, escaped, terse) {
+  if (key === 'style') {
+    val = exports.style(val);
+  }
+  if ('boolean' == typeof val || null == val) {
+    if (val) {
+      return ' ' + (terse ? key : key + '="' + key + '"');
+    } else {
+      return '';
+    }
+  } else if (0 == key.indexOf('data') && 'string' != typeof val) {
+    if (JSON.stringify(val).indexOf('&') !== -1) {
+      console.warn('Since Jade 2.0.0, ampersands (`&`) in data attributes ' +
+                   'will be escaped to `&amp;`');
+    };
+    if (val && typeof val.toISOString === 'function') {
+      console.warn('Jade will eliminate the double quotes around dates in ' +
+                   'ISO form after 2.0.0');
+    }
+    return ' ' + key + "='" + JSON.stringify(val).replace(/'/g, '&apos;') + "'";
+  } else if (escaped) {
+    if (val && typeof val.toISOString === 'function') {
+      console.warn('Jade will stringify dates in ISO form after 2.0.0');
+    }
+    return ' ' + key + '="' + exports.escape(val) + '"';
+  } else {
+    if (val && typeof val.toISOString === 'function') {
+      console.warn('Jade will stringify dates in ISO form after 2.0.0');
+    }
+    return ' ' + key + '="' + val + '"';
+  }
+};
+
+/**
+ * Render the given attributes object.
+ *
+ * @param {Object} obj
+ * @param {Object} escaped
+ * @return {String}
+ */
+exports.attrs = function attrs(obj, terse){
+  var buf = [];
+
+  var keys = Object.keys(obj);
+
+  if (keys.length) {
+    for (var i = 0; i < keys.length; ++i) {
+      var key = keys[i]
+        , val = obj[key];
+
+      if ('class' == key) {
+        if (val = joinClasses(val)) {
+          buf.push(' ' + key + '="' + val + '"');
+        }
+      } else {
+        buf.push(exports.attr(key, val, false, terse));
+      }
+    }
+  }
+
+  return buf.join('');
+};
+
+/**
+ * Escape the given string of `html`.
+ *
+ * @param {String} html
+ * @return {String}
+ * @api private
+ */
+
+exports.escape = function escape(html){
+  var result = String(html)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+  if (result === '' + html) return html;
+  else return result;
+};
+
+/**
+ * Re-throw the given `err` in context to the
+ * the jade in `filename` at the given `lineno`.
+ *
+ * @param {Error} err
+ * @param {String} filename
+ * @param {String} lineno
+ * @api private
+ */
+
+exports.rethrow = function rethrow(err, filename, lineno, str){
+  if (!(err instanceof Error)) throw err;
+  if ((typeof window != 'undefined' || !filename) && !str) {
+    err.message += ' on line ' + lineno;
+    throw err;
+  }
+  try {
+    str = str || _dereq_('fs').readFileSync(filename, 'utf8')
+  } catch (ex) {
+    rethrow(err, null, lineno)
+  }
+  var context = 3
+    , lines = str.split('\n')
+    , start = Math.max(lineno - context, 0)
+    , end = Math.min(lines.length, lineno + context);
+
+  // Error context
+  var context = lines.slice(start, end).map(function(line, i){
+    var curr = i + start + 1;
+    return (curr == lineno ? '  > ' : '    ')
+      + curr
+      + '| '
+      + line;
+  }).join('\n');
+
+  // Alter exception message
+  err.path = filename;
+  err.message = (filename || 'Jade') + ':' + lineno
+    + '\n' + context + '\n\n' + err.message;
+  throw err;
+};
+
+},{"fs":2}],2:[function(_dereq_,module,exports){
+
+},{}]},{},[1])(1)
+});
+}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
+},{"fs":2}],5:[function(_dereq_,module,exports){
+var jade = _dereq_("jade/runtime");
+
+module.exports = function template(locals) {
+var buf = [];
+var jade_mixins = {};
+var jade_interp;
+;var locals_for_with = (locals || {});(function (currentPageNumber, pageCount, showPageNames, step10) {
+if ( (step10 && pageCount >= 10))
+{
+buf.push("<li title=\"Jump 10 pages back\"" + (jade.cls(['prev10',currentPageNumber>10?'active':''], [null,true])) + ">&laquo;</li>");
+}
+buf.push("<li title=\"Previous page\"" + (jade.cls(['prev',currentPageNumber>1?'active':''], [null,true])) + ">&lsaquo;</li>");
+if ( (showPageNames != null))
+{
+buf.push("<li class=\"pageNameSingular\">" + (jade.escape(null == (jade_interp = showPageNames[0]) ? "" : jade_interp)) + "</li>");
+}
+buf.push("<li title=\"Edit current page\" class=\"current\"><input type=\"text\"" + (jade.attr("value", currentPageNumber, true, false)) + "/><span>" + (jade.escape(null == (jade_interp = currentPageNumber) ? "" : jade_interp)) + "</span></li><li class=\"text\">of</li><li class=\"pagecount\">" + (jade.escape(null == (jade_interp = pageCount) ? "" : jade_interp)) + "</li>");
+if ( (showPageNames != null))
+{
+buf.push("<li class=\"pageNamePlural\">" + (jade.escape(null == (jade_interp = showPageNames[1]) ? "" : jade_interp)) + "</li>");
+}
+buf.push("<li title=\"Next page\"" + (jade.cls(['next',currentPageNumber<pageCount?'active':''], [null,true])) + ">&rsaquo;</li>");
+if ( (step10 && pageCount >= 10))
+{
+buf.push("<li title=\"Jump 10 pages forward\"" + (jade.cls(['next10',currentPageNumber<=pageCount-10?'active':''], [null,true])) + ">&raquo;</li>");
+}}.call(this,"currentPageNumber" in locals_for_with?locals_for_with.currentPageNumber:typeof currentPageNumber!=="undefined"?currentPageNumber:undefined,"pageCount" in locals_for_with?locals_for_with.pageCount:typeof pageCount!=="undefined"?pageCount:undefined,"showPageNames" in locals_for_with?locals_for_with.showPageNames:typeof showPageNames!=="undefined"?showPageNames:undefined,"step10" in locals_for_with?locals_for_with.step10:typeof step10!=="undefined"?step10:undefined));;return buf.join("");
+};
+},{"jade/runtime":4}]},{},[1])(1)
+});
+}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
+},{}],8:[function(_dereq_,module,exports){
 if (typeof Object.create === 'function') {
   // implementation from standard node.js 'util' module
   module.exports = function inherits(ctor, superCtor) {
@@ -1031,7 +1675,262 @@ if (typeof Object.create === 'function') {
   }
 }
 
-},{}],5:[function(_dereq_,module,exports){
+},{}],9:[function(_dereq_,module,exports){
+(function (global){
+(function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g.jade = f()}})(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof _dereq_=="function"&&_dereq_;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof _dereq_=="function"&&_dereq_;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(_dereq_,module,exports){
+'use strict';
+
+/**
+ * Merge two attribute objects giving precedence
+ * to values in object `b`. Classes are special-cased
+ * allowing for arrays and merging/joining appropriately
+ * resulting in a string.
+ *
+ * @param {Object} a
+ * @param {Object} b
+ * @return {Object} a
+ * @api private
+ */
+
+exports.merge = function merge(a, b) {
+  if (arguments.length === 1) {
+    var attrs = a[0];
+    for (var i = 1; i < a.length; i++) {
+      attrs = merge(attrs, a[i]);
+    }
+    return attrs;
+  }
+  var ac = a['class'];
+  var bc = b['class'];
+
+  if (ac || bc) {
+    ac = ac || [];
+    bc = bc || [];
+    if (!Array.isArray(ac)) ac = [ac];
+    if (!Array.isArray(bc)) bc = [bc];
+    a['class'] = ac.concat(bc).filter(nulls);
+  }
+
+  for (var key in b) {
+    if (key != 'class') {
+      a[key] = b[key];
+    }
+  }
+
+  return a;
+};
+
+/**
+ * Filter null `val`s.
+ *
+ * @param {*} val
+ * @return {Boolean}
+ * @api private
+ */
+
+function nulls(val) {
+  return val != null && val !== '';
+}
+
+/**
+ * join array as classes.
+ *
+ * @param {*} val
+ * @return {String}
+ */
+exports.joinClasses = joinClasses;
+function joinClasses(val) {
+  return (Array.isArray(val) ? val.map(joinClasses) :
+    (val && typeof val === 'object') ? Object.keys(val).filter(function (key) { return val[key]; }) :
+    [val]).filter(nulls).join(' ');
+}
+
+/**
+ * Render the given classes.
+ *
+ * @param {Array} classes
+ * @param {Array.<Boolean>} escaped
+ * @return {String}
+ */
+exports.cls = function cls(classes, escaped) {
+  var buf = [];
+  for (var i = 0; i < classes.length; i++) {
+    if (escaped && escaped[i]) {
+      buf.push(exports.escape(joinClasses([classes[i]])));
+    } else {
+      buf.push(joinClasses(classes[i]));
+    }
+  }
+  var text = joinClasses(buf);
+  if (text.length) {
+    return ' class="' + text + '"';
+  } else {
+    return '';
+  }
+};
+
+
+exports.style = function (val) {
+  if (val && typeof val === 'object') {
+    return Object.keys(val).map(function (style) {
+      return style + ':' + val[style];
+    }).join(';');
+  } else {
+    return val;
+  }
+};
+/**
+ * Render the given attribute.
+ *
+ * @param {String} key
+ * @param {String} val
+ * @param {Boolean} escaped
+ * @param {Boolean} terse
+ * @return {String}
+ */
+exports.attr = function attr(key, val, escaped, terse) {
+  if (key === 'style') {
+    val = exports.style(val);
+  }
+  if ('boolean' == typeof val || null == val) {
+    if (val) {
+      return ' ' + (terse ? key : key + '="' + key + '"');
+    } else {
+      return '';
+    }
+  } else if (0 == key.indexOf('data') && 'string' != typeof val) {
+    if (JSON.stringify(val).indexOf('&') !== -1) {
+      console.warn('Since Jade 2.0.0, ampersands (`&`) in data attributes ' +
+                   'will be escaped to `&amp;`');
+    };
+    if (val && typeof val.toISOString === 'function') {
+      console.warn('Jade will eliminate the double quotes around dates in ' +
+                   'ISO form after 2.0.0');
+    }
+    return ' ' + key + "='" + JSON.stringify(val).replace(/'/g, '&apos;') + "'";
+  } else if (escaped) {
+    if (val && typeof val.toISOString === 'function') {
+      console.warn('Jade will stringify dates in ISO form after 2.0.0');
+    }
+    return ' ' + key + '="' + exports.escape(val) + '"';
+  } else {
+    if (val && typeof val.toISOString === 'function') {
+      console.warn('Jade will stringify dates in ISO form after 2.0.0');
+    }
+    return ' ' + key + '="' + val + '"';
+  }
+};
+
+/**
+ * Render the given attributes object.
+ *
+ * @param {Object} obj
+ * @param {Object} escaped
+ * @return {String}
+ */
+exports.attrs = function attrs(obj, terse){
+  var buf = [];
+
+  var keys = Object.keys(obj);
+
+  if (keys.length) {
+    for (var i = 0; i < keys.length; ++i) {
+      var key = keys[i]
+        , val = obj[key];
+
+      if ('class' == key) {
+        if (val = joinClasses(val)) {
+          buf.push(' ' + key + '="' + val + '"');
+        }
+      } else {
+        buf.push(exports.attr(key, val, false, terse));
+      }
+    }
+  }
+
+  return buf.join('');
+};
+
+/**
+ * Escape the given string of `html`.
+ *
+ * @param {String} html
+ * @return {String}
+ * @api private
+ */
+
+var jade_encode_html_rules = {
+  '&': '&amp;',
+  '<': '&lt;',
+  '>': '&gt;',
+  '"': '&quot;'
+};
+var jade_match_html = /[&<>"]/g;
+
+function jade_encode_char(c) {
+  return jade_encode_html_rules[c] || c;
+}
+
+exports.escape = jade_escape;
+function jade_escape(html){
+  var result = String(html).replace(jade_match_html, jade_encode_char);
+  if (result === '' + html) return html;
+  else return result;
+};
+
+/**
+ * Re-throw the given `err` in context to the
+ * the jade in `filename` at the given `lineno`.
+ *
+ * @param {Error} err
+ * @param {String} filename
+ * @param {String} lineno
+ * @api private
+ */
+
+exports.rethrow = function rethrow(err, filename, lineno, str){
+  if (!(err instanceof Error)) throw err;
+  if ((typeof window != 'undefined' || !filename) && !str) {
+    err.message += ' on line ' + lineno;
+    throw err;
+  }
+  try {
+    str = str || _dereq_('fs').readFileSync(filename, 'utf8')
+  } catch (ex) {
+    rethrow(err, null, lineno)
+  }
+  var context = 3
+    , lines = str.split('\n')
+    , start = Math.max(lineno - context, 0)
+    , end = Math.min(lines.length, lineno + context);
+
+  // Error context
+  var context = lines.slice(start, end).map(function(line, i){
+    var curr = i + start + 1;
+    return (curr == lineno ? '  > ' : '    ')
+      + curr
+      + '| '
+      + line;
+  }).join('\n');
+
+  // Alter exception message
+  err.path = filename;
+  err.message = (filename || 'Jade') + ':' + lineno
+    + '\n' + context + '\n\n' + err.message;
+  throw err;
+};
+
+exports.DebugItem = function DebugItem(lineno, filename) {
+  this.lineno = lineno;
+  this.filename = filename;
+}
+
+},{"fs":2}],2:[function(_dereq_,module,exports){
+
+},{}]},{},[1])(1)
+});
+}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
+},{"fs":3}],10:[function(_dereq_,module,exports){
 // shim for using process in browser
 
 var process = module.exports = {};
@@ -1091,14 +1990,14 @@ process.chdir = function (dir) {
 };
 process.umask = function() { return 0; };
 
-},{}],6:[function(_dereq_,module,exports){
+},{}],11:[function(_dereq_,module,exports){
 module.exports = function isBuffer(arg) {
   return arg && typeof arg === 'object'
     && typeof arg.copy === 'function'
     && typeof arg.fill === 'function'
     && typeof arg.readUInt8 === 'function';
 }
-},{}],7:[function(_dereq_,module,exports){
+},{}],12:[function(_dereq_,module,exports){
 (function (process,global){
 // Copyright Joyent, Inc. and other Node contributors.
 //
@@ -1688,897 +2587,7 @@ function hasOwnProperty(obj, prop) {
 }
 
 }).call(this,_dereq_('_process'),typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./support/isBuffer":6,"_process":5,"inherits":4}],8:[function(_dereq_,module,exports){
-(function() {
-  module.exports = {
-    el: function(el) {
-      return {
-        closest: function(selector) {
-          var getMatcher, isMatch, matcher;
-          getMatcher = function(el) {
-            return el.matches || el.webkitMatchesSelector || el.mozMatchesSelector || el.msMatchesSelector;
-          };
-          while (el) {
-            matcher = getMatcher(el);
-            if (matcher != null) {
-              isMatch = matcher.bind(el)(selector);
-              if (isMatch) {
-                return el;
-              }
-            }
-            el = el.parentNode;
-          }
-        },
-
-        /*
-        		Native alternative to jQuery's $.offset()
-        
-        		http://www.quirksmode.org/js/findpos.html
-         */
-        position: function(parent) {
-          var left, loopEl, top;
-          if (parent == null) {
-            parent = document.body;
-          }
-          left = 0;
-          top = 0;
-          loopEl = el;
-          while ((loopEl != null) && loopEl !== parent) {
-            if (this.hasDescendant(parent)) {
-              break;
-            }
-            left += loopEl.offsetLeft;
-            top += loopEl.offsetTop;
-            loopEl = loopEl.offsetParent;
-          }
-          return {
-            left: left,
-            top: top
-          };
-        },
-        boundingBox: function() {
-          var box;
-          box = this.position();
-          box.width = el.clientWidth;
-          box.height = el.clientHeight;
-          box.right = box.left + box.width;
-          box.bottom = box.top + box.height;
-          return box;
-        },
-
-        /*
-        		Is child el a descendant of parent el?
-        
-        		http://stackoverflow.com/questions/2234979/how-to-check-in-javascript-if-one-element-is-a-child-of-another
-         */
-        hasDescendant: function(child) {
-          var node;
-          node = child.parentNode;
-          while (node != null) {
-            if (node === el) {
-              return true;
-            }
-            node = node.parentNode;
-          }
-          return false;
-        },
-        insertAfter: function(referenceElement) {
-          return referenceElement.parentNode.insertBefore(el, referenceElement.nextSibling);
-        },
-        hasScrollBar: function(el) {
-          return hasScrollBarX(el) || hasScrollBarY(el);
-        },
-        hasScrollBarX: function(el) {
-          return el.scrollWidth > el.clientWidth;
-        },
-        hasScrollBarY: function(el) {
-          return el.scrollHeight > el.clientHeight;
-        },
-        inViewport: function(parent) {
-          var doc, rect, win;
-          win = parent != null ? parent : window;
-          doc = parent != null ? parent : document.documentElement;
-          rect = el.getBoundingClientRect();
-          return rect.top >= 0 && rect.left >= 0 && rect.bottom <= (win.innerHeight || doc.clientHeight) && rect.right <= (win.innerWidth || doc.clientWidth);
-        }
-      };
-    }
-  };
-
-}).call(this);
-
-},{}],9:[function(_dereq_,module,exports){
-(function() {
-  var __hasProp = {}.hasOwnProperty;
-
-  module.exports = {
-    get: function(url, options) {
-      if (options == null) {
-        options = {};
-      }
-      return this._sendRequest('GET', url, options);
-    },
-    post: function(url, options) {
-      if (options == null) {
-        options = {};
-      }
-      return this._sendRequest('POST', url, options);
-    },
-    put: function(url, options) {
-      if (options == null) {
-        options = {};
-      }
-      return this._sendRequest('PUT', url, options);
-    },
-    _promise: function() {
-      return {
-        done: function(fn) {
-          return this.callDone = fn;
-        },
-        callDone: null,
-        fail: function(fn) {
-          return this.callFail = fn;
-        },
-        callFail: null,
-        always: function(fn) {
-          return this.callAlways = fn;
-        },
-        callAlways: null
-      };
-    },
-    _sendRequest: function(method, url, options) {
-      var header, promise, value, xhr, _ref;
-      if (options == null) {
-        options = {};
-      }
-      promise = this._promise();
-      if (options.headers == null) {
-        options.headers = {};
-      }
-      xhr = new XMLHttpRequest();
-      xhr.onreadystatechange = function() {
-        var _ref;
-        if (xhr.readyState === 4) {
-          if (promise.callAlways != null) {
-            promise.callAlways(xhr);
-          }
-          if ((200 <= (_ref = xhr.status) && _ref <= 206) || xhr.status === 1223) {
-            if (promise.callDone != null) {
-              return promise.callDone(xhr);
-            }
-          } else {
-            if (promise.callFail != null) {
-              return promise.callFail(xhr);
-            }
-          }
-        }
-      };
-      xhr.open(method, url, true);
-      xhr.setRequestHeader("Content-type", "application/json");
-      _ref = options.headers;
-      for (header in _ref) {
-        if (!__hasProp.call(_ref, header)) continue;
-        value = _ref[header];
-        xhr.setRequestHeader(header, value);
-      }
-      xhr.send(options.data);
-      return promise;
-    }
-  };
-
-}).call(this);
-
-},{}],10:[function(_dereq_,module,exports){
-(function(){module.exports={generateID:function(t){var n,r;for(t=null!=t&&t>0?t-1:7,n="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789",r=n.charAt(Math.floor(52*Math.random()));t--;)r+=n.charAt(Math.floor(Math.random()*n.length));return r},setResetTimeout:function(){var t;return t=null,function(n,r,e){return null!=t&&(null!=e&&e(),clearTimeout(t)),t=setTimeout(function(){return t=null,r()},n)}}()}}).call(this);
-},{}],11:[function(_dereq_,module,exports){
-(function (global){
-(function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g.Pagination = f()}})(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof _dereq_=="function"&&_dereq_;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof _dereq_=="function"&&_dereq_;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(_dereq_,module,exports){
-var $, Backbone, Pagination, tpl, util,
-  extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
-  hasProp = {}.hasOwnProperty;
-
-Backbone = _dereq_('backbone');
-
-$ = _dereq_('jquery');
-
-Backbone.$ = $;
-
-util = _dereq_('funcky.util');
-
-tpl = _dereq_('./main.jade');
-
-
-/*
-Create a pagination view.
-@class
-@extends Backbone.View
- */
-
-Pagination = (function(superClass) {
-  extend(Pagination, superClass);
-
-  function Pagination() {
-    return Pagination.__super__.constructor.apply(this, arguments);
-  }
-
-  Pagination.prototype.tagName = 'ul';
-
-  Pagination.prototype.className = 'hibb-pagination';
-
-
-  /*
-  	@constructs
-  	@param {object} this.options
-  	@prop {number} options.resultsTotal - Total number of results.
-  	@prop {number} options.resultsPerPage - Number of results per page.
-  	@prop {number} [options.resultsStart=0] - The result item to start at. Not the start page!
-  	@prop {boolean} [options.step10=true] - Render (<< and >>) for steps of 10.
-  	@prop {boolean} [options.triggerPageNumber=true] - Trigger the new pageNumber (true) or prev/next (false).
-  	@prop {array<String>} [options.showPageNames] - Show `1 page of 23 pages` instead of `1 of 23`. Array contains the singular and plural version, ie: ["page", "pages"]
-   */
-
-  Pagination.prototype.initialize = function(options) {
-    var base, base1;
-    this.options = options != null ? options : {};
-    if ((base = this.options).step10 == null) {
-      base.step10 = true;
-    }
-    if ((base1 = this.options).triggerPageNumber == null) {
-      base1.triggerPageNumber = true;
-    }
-    this._currentPageNumber = (this.options.resultsStart != null) && this.options.resultsStart > 0 ? (this.options.resultsStart / this.options.resultsPerPage) + 1 : 1;
-    return this.setPageNumber(this._currentPageNumber, true);
-  };
-
-  Pagination.prototype.render = function() {
-    var attrs;
-    this._pageCount = Math.ceil(this.options.resultsTotal / this.options.resultsPerPage);
-    attrs = $.extend(this.options, {
-      currentPageNumber: this._currentPageNumber,
-      pageCount: this._pageCount
-    });
-    this.el.innerHTML = tpl(attrs);
-    if (this._pageCount <= 1) {
-      this.$el.hide();
-    }
-    return this;
-  };
-
-  Pagination.prototype.events = function() {
-    return {
-      'click li.prev10.active': '_handlePrev10',
-      'click li.prev.active': '_handlePrev',
-      'click li.next.active': '_handleNext',
-      'click li.next10.active': '_handleNext10',
-      'click li.current:not(.active)': '_handleCurrentClick',
-      'blur li.current.active input': '_handleBlur',
-      'keyup li.current.active input': '_handleKeyup'
-    };
-  };
-
-  Pagination.prototype._handlePrev10 = function() {
-    return this.setPageNumber(this._currentPageNumber - 10);
-  };
-
-  Pagination.prototype._handlePrev = function() {
-    return this.setPageNumber(this._currentPageNumber - 1);
-  };
-
-  Pagination.prototype._handleNext = function() {
-    return this.setPageNumber(this._currentPageNumber + 1);
-  };
-
-  Pagination.prototype._handleNext10 = function() {
-    return this.setPageNumber(this._currentPageNumber + 10);
-  };
-
-  Pagination.prototype._handleCurrentClick = function(ev) {
-    var input, span, target;
-    target = this.$(ev.currentTarget);
-    span = target.find('span');
-    input = target.find('input');
-    input.width(span.width());
-    target.addClass('active');
-    input.animate({
-      width: 40
-    }, 'fast');
-    input.focus();
-    return input.val(this._currentPageNumber);
-  };
-
-  Pagination.prototype._handleKeyup = function(ev) {
-    var input, newPageNumber;
-    input = this.$(ev.currentTarget);
-    newPageNumber = +input.val();
-    if (ev.keyCode === 13) {
-      if ((1 <= newPageNumber && newPageNumber <= this._pageCount)) {
-        this.setPageNumber(newPageNumber);
-      }
-      return this._deactivateCurrentLi(input);
-    }
-  };
-
-  Pagination.prototype._handleBlur = function(ev) {
-    return this._deactivateCurrentLi(this.$(ev.currentTarget));
-  };
-
-  Pagination.prototype._deactivateCurrentLi = function(input) {
-    return input.animate({
-      width: 0
-    }, 'fast', function() {
-      var li;
-      li = input.parent();
-      return li.removeClass('active');
-    });
-  };
-
-
-  /*
-  	@method getCurrentPageNumber
-  	@returns {number}
-   */
-
-  Pagination.prototype.getCurrentPageNumber = function() {
-    return this._currentPageNumber;
-  };
-
-
-  /*
-  	@method setPageNumber
-  	@param {number} pageNumber
-  	@param {boolean} [silent=false]
-   */
-
-  Pagination.prototype.setPageNumber = function(pageNumber, silent) {
-    var direction;
-    if (silent == null) {
-      silent = false;
-    }
-    if (!this.triggerPageNumber) {
-      direction = pageNumber < this._currentPageNumber ? 'prev' : 'next';
-      this.trigger(direction);
-    }
-    this._currentPageNumber = pageNumber;
-    this.render();
-    if (!silent) {
-      return util.setResetTimeout(500, (function(_this) {
-        return function() {
-          return _this.trigger('change:pagenumber', pageNumber);
-        };
-      })(this));
-    }
-  };
-
-  Pagination.prototype.destroy = function() {
-    return this.remove();
-  };
-
-  return Pagination;
-
-})(Backbone.View);
-
-module.exports = Pagination;
-
-
-
-},{"./main.jade":5,"backbone":undefined,"funcky.util":3,"jquery":undefined}],2:[function(_dereq_,module,exports){
-
-},{}],3:[function(_dereq_,module,exports){
-(function(){module.exports={generateID:function(t){var n,r;for(t=null!=t&&t>0?t-1:7,n="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789",r=n.charAt(Math.floor(52*Math.random()));t--;)r+=n.charAt(Math.floor(Math.random()*n.length));return r},setResetTimeout:function(){var t;return t=null,function(n,r,e){return null!=t&&(null!=e&&e(),clearTimeout(t)),t=setTimeout(function(){return t=null,r()},n)}}()}}).call(this);
-},{}],4:[function(_dereq_,module,exports){
-(function (global){
-!function(e){if("object"==typeof exports&&"undefined"!=typeof module)module.exports=e();else if("function"==typeof define&&define.amd)define([],e);else{var f;"undefined"!=typeof window?f=window:"undefined"!=typeof global?f=global:"undefined"!=typeof self&&(f=self),f.jade=e()}}(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof _dereq_=="function"&&_dereq_;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof _dereq_=="function"&&_dereq_;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(_dereq_,module,exports){
-'use strict';
-
-/**
- * Merge two attribute objects giving precedence
- * to values in object `b`. Classes are special-cased
- * allowing for arrays and merging/joining appropriately
- * resulting in a string.
- *
- * @param {Object} a
- * @param {Object} b
- * @return {Object} a
- * @api private
- */
-
-exports.merge = function merge(a, b) {
-  if (arguments.length === 1) {
-    var attrs = a[0];
-    for (var i = 1; i < a.length; i++) {
-      attrs = merge(attrs, a[i]);
-    }
-    return attrs;
-  }
-  var ac = a['class'];
-  var bc = b['class'];
-
-  if (ac || bc) {
-    ac = ac || [];
-    bc = bc || [];
-    if (!Array.isArray(ac)) ac = [ac];
-    if (!Array.isArray(bc)) bc = [bc];
-    a['class'] = ac.concat(bc).filter(nulls);
-  }
-
-  for (var key in b) {
-    if (key != 'class') {
-      a[key] = b[key];
-    }
-  }
-
-  return a;
-};
-
-/**
- * Filter null `val`s.
- *
- * @param {*} val
- * @return {Boolean}
- * @api private
- */
-
-function nulls(val) {
-  return val != null && val !== '';
-}
-
-/**
- * join array as classes.
- *
- * @param {*} val
- * @return {String}
- */
-exports.joinClasses = joinClasses;
-function joinClasses(val) {
-  return (Array.isArray(val) ? val.map(joinClasses) :
-    (val && typeof val === 'object') ? Object.keys(val).filter(function (key) { return val[key]; }) :
-    [val]).filter(nulls).join(' ');
-}
-
-/**
- * Render the given classes.
- *
- * @param {Array} classes
- * @param {Array.<Boolean>} escaped
- * @return {String}
- */
-exports.cls = function cls(classes, escaped) {
-  var buf = [];
-  for (var i = 0; i < classes.length; i++) {
-    if (escaped && escaped[i]) {
-      buf.push(exports.escape(joinClasses([classes[i]])));
-    } else {
-      buf.push(joinClasses(classes[i]));
-    }
-  }
-  var text = joinClasses(buf);
-  if (text.length) {
-    return ' class="' + text + '"';
-  } else {
-    return '';
-  }
-};
-
-
-exports.style = function (val) {
-  if (val && typeof val === 'object') {
-    return Object.keys(val).map(function (style) {
-      return style + ':' + val[style];
-    }).join(';');
-  } else {
-    return val;
-  }
-};
-/**
- * Render the given attribute.
- *
- * @param {String} key
- * @param {String} val
- * @param {Boolean} escaped
- * @param {Boolean} terse
- * @return {String}
- */
-exports.attr = function attr(key, val, escaped, terse) {
-  if (key === 'style') {
-    val = exports.style(val);
-  }
-  if ('boolean' == typeof val || null == val) {
-    if (val) {
-      return ' ' + (terse ? key : key + '="' + key + '"');
-    } else {
-      return '';
-    }
-  } else if (0 == key.indexOf('data') && 'string' != typeof val) {
-    if (JSON.stringify(val).indexOf('&') !== -1) {
-      console.warn('Since Jade 2.0.0, ampersands (`&`) in data attributes ' +
-                   'will be escaped to `&amp;`');
-    };
-    if (val && typeof val.toISOString === 'function') {
-      console.warn('Jade will eliminate the double quotes around dates in ' +
-                   'ISO form after 2.0.0');
-    }
-    return ' ' + key + "='" + JSON.stringify(val).replace(/'/g, '&apos;') + "'";
-  } else if (escaped) {
-    if (val && typeof val.toISOString === 'function') {
-      console.warn('Jade will stringify dates in ISO form after 2.0.0');
-    }
-    return ' ' + key + '="' + exports.escape(val) + '"';
-  } else {
-    if (val && typeof val.toISOString === 'function') {
-      console.warn('Jade will stringify dates in ISO form after 2.0.0');
-    }
-    return ' ' + key + '="' + val + '"';
-  }
-};
-
-/**
- * Render the given attributes object.
- *
- * @param {Object} obj
- * @param {Object} escaped
- * @return {String}
- */
-exports.attrs = function attrs(obj, terse){
-  var buf = [];
-
-  var keys = Object.keys(obj);
-
-  if (keys.length) {
-    for (var i = 0; i < keys.length; ++i) {
-      var key = keys[i]
-        , val = obj[key];
-
-      if ('class' == key) {
-        if (val = joinClasses(val)) {
-          buf.push(' ' + key + '="' + val + '"');
-        }
-      } else {
-        buf.push(exports.attr(key, val, false, terse));
-      }
-    }
-  }
-
-  return buf.join('');
-};
-
-/**
- * Escape the given string of `html`.
- *
- * @param {String} html
- * @return {String}
- * @api private
- */
-
-exports.escape = function escape(html){
-  var result = String(html)
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;');
-  if (result === '' + html) return html;
-  else return result;
-};
-
-/**
- * Re-throw the given `err` in context to the
- * the jade in `filename` at the given `lineno`.
- *
- * @param {Error} err
- * @param {String} filename
- * @param {String} lineno
- * @api private
- */
-
-exports.rethrow = function rethrow(err, filename, lineno, str){
-  if (!(err instanceof Error)) throw err;
-  if ((typeof window != 'undefined' || !filename) && !str) {
-    err.message += ' on line ' + lineno;
-    throw err;
-  }
-  try {
-    str = str || _dereq_('fs').readFileSync(filename, 'utf8')
-  } catch (ex) {
-    rethrow(err, null, lineno)
-  }
-  var context = 3
-    , lines = str.split('\n')
-    , start = Math.max(lineno - context, 0)
-    , end = Math.min(lines.length, lineno + context);
-
-  // Error context
-  var context = lines.slice(start, end).map(function(line, i){
-    var curr = i + start + 1;
-    return (curr == lineno ? '  > ' : '    ')
-      + curr
-      + '| '
-      + line;
-  }).join('\n');
-
-  // Alter exception message
-  err.path = filename;
-  err.message = (filename || 'Jade') + ':' + lineno
-    + '\n' + context + '\n\n' + err.message;
-  throw err;
-};
-
-},{"fs":2}],2:[function(_dereq_,module,exports){
-
-},{}]},{},[1])(1)
-});
-}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"fs":2}],5:[function(_dereq_,module,exports){
-var jade = _dereq_("jade/runtime");
-
-module.exports = function template(locals) {
-var buf = [];
-var jade_mixins = {};
-var jade_interp;
-;var locals_for_with = (locals || {});(function (currentPageNumber, pageCount, showPageNames, step10) {
-if ( (step10 && pageCount >= 10))
-{
-buf.push("<li title=\"Jump 10 pages back\"" + (jade.cls(['prev10',currentPageNumber>10?'active':''], [null,true])) + ">&laquo;</li>");
-}
-buf.push("<li title=\"Previous page\"" + (jade.cls(['prev',currentPageNumber>1?'active':''], [null,true])) + ">&lsaquo;</li>");
-if ( (showPageNames != null))
-{
-buf.push("<li class=\"pageNameSingular\">" + (jade.escape(null == (jade_interp = showPageNames[0]) ? "" : jade_interp)) + "</li>");
-}
-buf.push("<li title=\"Edit current page\" class=\"current\"><input type=\"text\"" + (jade.attr("value", currentPageNumber, true, false)) + "/><span>" + (jade.escape(null == (jade_interp = currentPageNumber) ? "" : jade_interp)) + "</span></li><li class=\"text\">of</li><li class=\"pagecount\">" + (jade.escape(null == (jade_interp = pageCount) ? "" : jade_interp)) + "</li>");
-if ( (showPageNames != null))
-{
-buf.push("<li class=\"pageNamePlural\">" + (jade.escape(null == (jade_interp = showPageNames[1]) ? "" : jade_interp)) + "</li>");
-}
-buf.push("<li title=\"Next page\"" + (jade.cls(['next',currentPageNumber<pageCount?'active':''], [null,true])) + ">&rsaquo;</li>");
-if ( (step10 && pageCount >= 10))
-{
-buf.push("<li title=\"Jump 10 pages forward\"" + (jade.cls(['next10',currentPageNumber<=pageCount-10?'active':''], [null,true])) + ">&raquo;</li>");
-}}.call(this,"currentPageNumber" in locals_for_with?locals_for_with.currentPageNumber:typeof currentPageNumber!=="undefined"?currentPageNumber:undefined,"pageCount" in locals_for_with?locals_for_with.pageCount:typeof pageCount!=="undefined"?pageCount:undefined,"showPageNames" in locals_for_with?locals_for_with.showPageNames:typeof showPageNames!=="undefined"?showPageNames:undefined,"step10" in locals_for_with?locals_for_with.step10:typeof step10!=="undefined"?step10:undefined));;return buf.join("");
-};
-},{"jade/runtime":4}]},{},[1])(1)
-});
-}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],12:[function(_dereq_,module,exports){
-(function (global){
-!function(e){if("object"==typeof exports&&"undefined"!=typeof module)module.exports=e();else if("function"==typeof define&&define.amd)define([],e);else{var f;"undefined"!=typeof window?f=window:"undefined"!=typeof global?f=global:"undefined"!=typeof self&&(f=self),f.jade=e()}}(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof _dereq_=="function"&&_dereq_;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof _dereq_=="function"&&_dereq_;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(_dereq_,module,exports){
-'use strict';
-
-/**
- * Merge two attribute objects giving precedence
- * to values in object `b`. Classes are special-cased
- * allowing for arrays and merging/joining appropriately
- * resulting in a string.
- *
- * @param {Object} a
- * @param {Object} b
- * @return {Object} a
- * @api private
- */
-
-exports.merge = function merge(a, b) {
-  if (arguments.length === 1) {
-    var attrs = a[0];
-    for (var i = 1; i < a.length; i++) {
-      attrs = merge(attrs, a[i]);
-    }
-    return attrs;
-  }
-  var ac = a['class'];
-  var bc = b['class'];
-
-  if (ac || bc) {
-    ac = ac || [];
-    bc = bc || [];
-    if (!Array.isArray(ac)) ac = [ac];
-    if (!Array.isArray(bc)) bc = [bc];
-    a['class'] = ac.concat(bc).filter(nulls);
-  }
-
-  for (var key in b) {
-    if (key != 'class') {
-      a[key] = b[key];
-    }
-  }
-
-  return a;
-};
-
-/**
- * Filter null `val`s.
- *
- * @param {*} val
- * @return {Boolean}
- * @api private
- */
-
-function nulls(val) {
-  return val != null && val !== '';
-}
-
-/**
- * join array as classes.
- *
- * @param {*} val
- * @return {String}
- */
-exports.joinClasses = joinClasses;
-function joinClasses(val) {
-  return (Array.isArray(val) ? val.map(joinClasses) :
-    (val && typeof val === 'object') ? Object.keys(val).filter(function (key) { return val[key]; }) :
-    [val]).filter(nulls).join(' ');
-}
-
-/**
- * Render the given classes.
- *
- * @param {Array} classes
- * @param {Array.<Boolean>} escaped
- * @return {String}
- */
-exports.cls = function cls(classes, escaped) {
-  var buf = [];
-  for (var i = 0; i < classes.length; i++) {
-    if (escaped && escaped[i]) {
-      buf.push(exports.escape(joinClasses([classes[i]])));
-    } else {
-      buf.push(joinClasses(classes[i]));
-    }
-  }
-  var text = joinClasses(buf);
-  if (text.length) {
-    return ' class="' + text + '"';
-  } else {
-    return '';
-  }
-};
-
-
-exports.style = function (val) {
-  if (val && typeof val === 'object') {
-    return Object.keys(val).map(function (style) {
-      return style + ':' + val[style];
-    }).join(';');
-  } else {
-    return val;
-  }
-};
-/**
- * Render the given attribute.
- *
- * @param {String} key
- * @param {String} val
- * @param {Boolean} escaped
- * @param {Boolean} terse
- * @return {String}
- */
-exports.attr = function attr(key, val, escaped, terse) {
-  if (key === 'style') {
-    val = exports.style(val);
-  }
-  if ('boolean' == typeof val || null == val) {
-    if (val) {
-      return ' ' + (terse ? key : key + '="' + key + '"');
-    } else {
-      return '';
-    }
-  } else if (0 == key.indexOf('data') && 'string' != typeof val) {
-    if (JSON.stringify(val).indexOf('&') !== -1) {
-      console.warn('Since Jade 2.0.0, ampersands (`&`) in data attributes ' +
-                   'will be escaped to `&amp;`');
-    };
-    if (val && typeof val.toISOString === 'function') {
-      console.warn('Jade will eliminate the double quotes around dates in ' +
-                   'ISO form after 2.0.0');
-    }
-    return ' ' + key + "='" + JSON.stringify(val).replace(/'/g, '&apos;') + "'";
-  } else if (escaped) {
-    if (val && typeof val.toISOString === 'function') {
-      console.warn('Jade will stringify dates in ISO form after 2.0.0');
-    }
-    return ' ' + key + '="' + exports.escape(val) + '"';
-  } else {
-    if (val && typeof val.toISOString === 'function') {
-      console.warn('Jade will stringify dates in ISO form after 2.0.0');
-    }
-    return ' ' + key + '="' + val + '"';
-  }
-};
-
-/**
- * Render the given attributes object.
- *
- * @param {Object} obj
- * @param {Object} escaped
- * @return {String}
- */
-exports.attrs = function attrs(obj, terse){
-  var buf = [];
-
-  var keys = Object.keys(obj);
-
-  if (keys.length) {
-    for (var i = 0; i < keys.length; ++i) {
-      var key = keys[i]
-        , val = obj[key];
-
-      if ('class' == key) {
-        if (val = joinClasses(val)) {
-          buf.push(' ' + key + '="' + val + '"');
-        }
-      } else {
-        buf.push(exports.attr(key, val, false, terse));
-      }
-    }
-  }
-
-  return buf.join('');
-};
-
-/**
- * Escape the given string of `html`.
- *
- * @param {String} html
- * @return {String}
- * @api private
- */
-
-exports.escape = function escape(html){
-  var result = String(html)
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;');
-  if (result === '' + html) return html;
-  else return result;
-};
-
-/**
- * Re-throw the given `err` in context to the
- * the jade in `filename` at the given `lineno`.
- *
- * @param {Error} err
- * @param {String} filename
- * @param {String} lineno
- * @api private
- */
-
-exports.rethrow = function rethrow(err, filename, lineno, str){
-  if (!(err instanceof Error)) throw err;
-  if ((typeof window != 'undefined' || !filename) && !str) {
-    err.message += ' on line ' + lineno;
-    throw err;
-  }
-  try {
-    str = str || _dereq_('fs').readFileSync(filename, 'utf8')
-  } catch (ex) {
-    rethrow(err, null, lineno)
-  }
-  var context = 3
-    , lines = str.split('\n')
-    , start = Math.max(lineno - context, 0)
-    , end = Math.min(lines.length, lineno + context);
-
-  // Error context
-  var context = lines.slice(start, end).map(function(line, i){
-    var curr = i + start + 1;
-    return (curr == lineno ? '  > ' : '    ')
-      + curr
-      + '| '
-      + line;
-  }).join('\n');
-
-  // Alter exception message
-  err.path = filename;
-  err.message = (filename || 'Jade') + ':' + lineno
-    + '\n' + context + '\n\n' + err.message;
-  throw err;
-};
-
-},{"fs":2}],2:[function(_dereq_,module,exports){
-
-},{}]},{},[1])(1)
-});
-}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"fs":3}],13:[function(_dereq_,module,exports){
+},{"./support/isBuffer":11,"_process":10,"inherits":8}],13:[function(_dereq_,module,exports){
 var Backbone, SearchResult, SearchResults, _, funcky,
   extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
   hasProp = {}.hasOwnProperty;
@@ -2618,9 +2627,9 @@ SearchResults = (function(superClass) {
   	 * Init cachedModels in the initialize function, because when defined in the class
   	 * as a property, it is defined on the prototype and thus not refreshed when we instantiate
   	 * a new Collection.
-  	#
+  	 *
   	 * Should be redefined during initialization to prevent sharing between instances.
-  	#
+  	 *
   	 * @property
   	 * @type {Object}
    */
@@ -2652,10 +2661,10 @@ SearchResults = (function(superClass) {
 
   /*
   	 * Get the current result.
-  	#
+  	 *
   	 * This is not equivalent to @last()! The current result can also be a
   	 * cached result, which does not have to be the last.
-  	#
+  	 *
   	 * @method
    */
 
@@ -2666,7 +2675,7 @@ SearchResults = (function(superClass) {
 
   /*
   	 * Set the current result.
-  	#
+  	 *
   	 * @method
   	 * @private
    */
@@ -2679,7 +2688,7 @@ SearchResults = (function(superClass) {
 
   /*
   	 * Add the latest search result model to a collection for caching.
-  	#
+  	 *
   	 * @method
   	 * @private
   	 * @param {string} url - Base location of the resultModel. Is used to fetch parts of the result which are not prev or next but at a different place (for example: row 100 - 110) in the result set.
@@ -2796,7 +2805,6 @@ SearchResults = (function(superClass) {
     })(this));
     return req.fail((function(_this) {
       return function(res) {
-        console.log(res);
         if (res.status === 401) {
           return _this.trigger('unauthorized');
         } else {
@@ -2844,7 +2852,7 @@ module.exports = SearchResults;
 
 
 
-},{"../models/searchresult":19,"backbone":undefined,"funcky.req":9,"underscore":undefined}],14:[function(_dereq_,module,exports){
+},{"../models/searchresult":19,"backbone":undefined,"funcky.req":5,"underscore":undefined}],14:[function(_dereq_,module,exports){
 var Backbone, Config, _,
   extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
   hasProp = {}.hasOwnProperty;
@@ -2870,12 +2878,12 @@ Config = (function(superClass) {
 
   /*
   	 * Default attributes.
-  	#
+  	 *
   	 * Does not require any parameters, but the @param tag is (ab)used to document
   	 * the default values.
-  	#
+  	 *
   	 * @method
-  	#
+  	 *
   	 * REQUEST OPTIONS
   	 * @param {String} baseUrl Base of the URL to perform searches.
   	 * @param {String} searchPath Path of the URL to perform searches.
@@ -2887,7 +2895,7 @@ Config = (function(superClass) {
   	 * @param {Object} [requestOptions={}] Send extra options to the POST query call, such as setting custom headers (e.g., VRE_ID for Timbuctoo).
   	 * @param {Array<String>} [entryMetadataFields=[]] A list of all the entries metadata fields. This list corresponds to the facets and is used to populate the sortLevels in the  result view.
   	 * @param {Array<String>} [levels=[]] An array of max three strings. Determine the three levels of sorting the results. The three levels are entry metadata fields and are also present in the entryMetadataFields array.
-  	#
+  	 *
   	 * FACETS OPTIONS
   	 * @param {String} [textSearch='advanced'] One of 'none', 'simple' or 'advanced'. None: text search is hidden, facets are shown, loader is shown. Simple: text search is shown, facets are hidden, loader is hidden. Advanced: text search is shown, facets are shown, loader is shown.
   	 * @param {Object} [textSearchOptions] Options that are passed to the text search component
@@ -2899,20 +2907,20 @@ Config = (function(superClass) {
   	 * @param {Array<String>} [facetOrder=[]] Define the rendering order of the facets. If undefined, the facets are rendered in the order returned by the backend.
   	 * @param {Object} [parsers={}] Hash of parser functions. Takes the options from the result and parses the options before rendering. Use sparsely, because with large option lists, the perfomance penalty can become great.
   	 * @param {Boolean} [collapsed=false] collapsed Start the faceted search with the facets collapsed.
-  	#
+  	 *
   	 * RESULTS OPTIONS
   	 * @param {Boolean} [results=false] Render the results. When kept to false, the showing of the results has to be taken care of in the application.
   	 * @param {Boolean} [sortLevels=true] Render sort levels in the results header
   	 * @param {Boolean} [showMetadata=true] Render show metadata toggle in the results header
   	 * @param {Boolean} [showPageNames] Show `page 1 of 23 pages` instead of `1 of 23`.
-  	#
+  	 *
   	 * OTHER RENDERING OPTIONS
   	 * @param {Object} [templates={}] Hash of templates. The templates should be functions which take a hash as argument to render vars. Possible keys: main, facets, text-search, facets.main, list.menu, list.body, range.body and result.
   	 * @param {Object} [templateData={}] Hash of template data. The same property names as with templates can be used. The data is passed to the corresponding template.
   	 * @param {Object} [labels={}] Hash of labels, used in the interface. Quick 'n dirty way to change the language.
   	 * @param {String} [termSingular="entry"] Name of one result, for example: book, woman, country, alumnus, etc.
   	 * @param {String} [termPlural="entries"] Name of multiple results, for example: books, women, countries, alunmi, etc.
-  	#
+  	 *
   	 * @return {Object} A hash of default attributes and their values. Documentated as @param's.
    */
 
@@ -2973,7 +2981,7 @@ Config = (function(superClass) {
   	 * First: get from the levelDisplayNames
   	 * Second: get from the facetDisplayNames
   	 * Third: get from the facetData returned in the first responseModel
-  	#
+  	 *
   	 * @method
   	 * @param {Object} responseModel
    */
@@ -3039,7 +3047,7 @@ Config = (function(superClass) {
 
 
   /*
-  	#
+  	 *
   	 * @method
   	 * @param {String} prop
   	 * @param {Object} map
@@ -3082,7 +3090,7 @@ Config = (function(superClass) {
 
 
   /*
-  	#
+  	 *
   	 * @method
   	 * @param {String} prop
   	 * @param {Object} facetsData
@@ -3303,7 +3311,7 @@ QueryOptions = (function(superClass) {
 
   /*
   	 * Reset the queryOptions to reflect the initial state.
-  	#
+  	 *
   	 * @method
    */
 
@@ -3450,7 +3458,7 @@ Facets = (function(superClass) {
   	 * Hash of facet views. The faceted search has several types build-in,
   	 * which are the defaults, but this map can be extended, to add or override
   	 * facet views.
-  	#
+  	 *
   	 * @property
   	 * @type {Object} Keys are types in capital, values are Backbone.Views.
   	 * @example {BOOLEAN: MyBooleanView, LIST: MyListView}
@@ -3668,7 +3676,7 @@ Facets = (function(superClass) {
 
   /*
   	 * Destroy the child views (facets) and remove the view.
-  	#
+  	 *
   	 * @method
    */
 
@@ -3681,7 +3689,7 @@ Facets = (function(superClass) {
   /*
   	 * The facets are slided one by one. When the slide of a facet is finished, the
   	 * next facet starts sliding. That's why we use a recursive function.
-  	#
+  	 *
   	 * @method
   	 * @param {Object} ev The event object.
    */
@@ -3702,7 +3710,7 @@ Facets = (function(superClass) {
 
   /*
   	 * Slide the facets down/open or up/close.
-  	#
+  	 *
   	 * @param {Bool} down Slide down (expand, open) or slide up (collapse, close).
    */
 
@@ -3894,7 +3902,7 @@ ListOptions = (function(superClass) {
 
   /*
   	 * Default sorting strategy.
-  	#
+  	 *
   	 * @property
   	 * @type {Function}
    */
@@ -3914,7 +3922,7 @@ ListOptions = (function(superClass) {
 
   /*
   	 * Alias for reset, because a Backbone.Collection already has a reset method.
-  	#
+  	 *
   	 * @method
    */
 
@@ -3967,7 +3975,7 @@ ListOptions = (function(superClass) {
 
   /*
   	 * Hash of sorting strategies.
-  	#
+  	 *
   	 * @property
   	 * @type {Object}
    */
@@ -4019,7 +4027,7 @@ ListOptions = (function(superClass) {
 
   /*
   	 * Set all options to visible and sort afterwards.
-  	#
+  	 *
   	 * @method
    */
 
@@ -4159,7 +4167,7 @@ ListFacet = (function(superClass) {
 
   /*
   	 * Renders the count of the filtered options (ie: "3 of 8") next to the filter < input >
-  	#
+  	 *
   	 * @method
    */
 
@@ -4185,7 +4193,7 @@ ListFacet = (function(superClass) {
 
   /*
   	 * Extend the events of Facet with ListFacet events.
-  	#
+  	 *
   	 * @method
   	 * @override FacetView::events
   	 * @type {Object}
@@ -4328,7 +4336,7 @@ ListFacet = (function(superClass) {
   /*
   	 * Alias for reset, but used for different implementation. This should be the base
   	 * of the original reset, but no time for proper refactor.
-  	#
+  	 *
   	 * @method
   	 * @todo refactor @reset.
    */
@@ -4582,7 +4590,7 @@ ListFacetOptions = (function(superClass) {
   /*
   	 * When all models are set to visible, the collection is sorted and
   	 * this.rerender is called.
-  	#
+  	 *
   	 * @method
    */
 
@@ -4606,7 +4614,7 @@ ListFacetOptions = (function(superClass) {
 
   /*
   	 * When scolling lazy render the rest of the options. This speeds up page load.
-  	#
+  	 *
   	 * @method
   	 * @param {Object} ev
    */
@@ -4672,7 +4680,7 @@ ListFacetOptions = (function(superClass) {
 
   /*
   	 * Called by parent (ListFacet) when user types in the search input
-  	#
+  	 *
   	 * @method
   	 * @param {String} value Query to filter results on.
    */
@@ -4720,7 +4728,7 @@ module.exports = ListFacetOptions;
 
 
 
-},{"./templates/body.jade":27,"./templates/option.jade":29,"backbone":undefined,"funcky.util":10,"jquery":undefined,"underscore":undefined}],27:[function(_dereq_,module,exports){
+},{"./templates/body.jade":27,"./templates/option.jade":29,"backbone":undefined,"funcky.util":6,"jquery":undefined,"underscore":undefined}],27:[function(_dereq_,module,exports){
 var jade = _dereq_("jade/runtime");
 
 module.exports = function template(locals) {
@@ -4730,7 +4738,7 @@ var jade_interp;
 
 buf.push("<ul></ul>");;return buf.join("");
 };
-},{"jade/runtime":12}],28:[function(_dereq_,module,exports){
+},{"jade/runtime":9}],28:[function(_dereq_,module,exports){
 var jade = _dereq_("jade/runtime");
 
 module.exports = function template(locals) {
@@ -4740,7 +4748,7 @@ var jade_interp;
 
 buf.push("<input type=\"checkbox\" name=\"all\"/><input type=\"text\" name=\"filter\"/><small class=\"optioncount\"></small>");;return buf.join("");
 };
-},{"jade/runtime":12}],29:[function(_dereq_,module,exports){
+},{"jade/runtime":9}],29:[function(_dereq_,module,exports){
 var jade = _dereq_("jade/runtime");
 
 module.exports = function template(locals) {
@@ -4748,11 +4756,11 @@ var buf = [];
 var jade_mixins = {};
 var jade_interp;
 ;var locals_for_with = (locals || {});(function (option) {
-jade_mixins["checked-icon"] = function(){
+jade_mixins["checked-icon"] = jade_interp = function(){
 var block = (this && this.block), attributes = (this && this.attributes) || {};
 buf.push("<svg viewBox=\"0 0 489 402\" class=\"checked\"><path d=\"M 377.87,24.128 C 361.786,8.044 342.417,0.002 319.769,0.002 H 82.227 C 59.579,0.002 40.211,8.044 24.125,24.128 8.044,40.214 0.002,59.578 0.002,82.23 v 237.543 c 0,22.647 8.042,42.014 24.123,58.101 16.086,16.085 35.454,24.127 58.102,24.127 h 237.542 c 22.648,0 42.011,-8.042 58.102,-24.127 16.085,-16.087 24.126,-35.453 24.126,-58.101 V 82.23 C 401.993,59.582 393.951,40.214 377.87,24.128 z m -12.422,295.645 c 0,12.559 -4.47,23.314 -13.415,32.264 -8.945,8.945 -19.698,13.411 -32.265,13.411 H 82.227 c -12.563,0 -23.317,-4.466 -32.264,-13.411 -8.945,-8.949 -13.418,-19.705 -13.418,-32.264 V 82.23 c 0,-12.562 4.473,-23.316 13.418,-32.264 C 58.91,41.02 69.664,36.548 82.227,36.548 h 237.542 c 12.566,0 23.319,4.473 32.265,13.418 8.945,8.947 13.415,19.701 13.415,32.264 v 237.543 l -0.001,0 z\"></path><path d=\"M 480.59183,75.709029 442.06274,38.831006 c -5.28301,-5.060423 -11.70817,-7.591583 -19.26056,-7.591583 -7.55937,0 -13.98453,2.53116 -19.26753,7.591583 L 217.6825,216.98773 134.38968,136.99258 c -5.28896,-5.06231 -11.71015,-7.59062 -19.26256,-7.59062 -7.55736,0 -13.97854,2.52831 -19.267516,7.59062 l -38.529082,36.87898 c -5.28897,5.06136 -7.932461,11.20929 -7.932461,18.44186 0,7.22686 2.643491,13.38049 7.932461,18.4409 l 102.555358,98.15873 38.53207,36.87803 c 5.28598,5.06421 11.70916,7.59253 19.26455,7.59253 7.5524,0 13.97558,-2.53496 19.26454,-7.59253 l 38.53107,-36.87803 205.11372,-196.32314 c 5.284,-5.06232 7.93246,-11.20929 7.93246,-18.441873 0.005,-7.228765 -2.64846,-13.376685 -7.93246,-18.439008 z\"></path></svg>");
 };
-jade_mixins["unchecked-icon"] = function(){
+jade_mixins["unchecked-icon"] = jade_interp = function(){
 var block = (this && this.block), attributes = (this && this.attributes) || {};
 buf.push("<svg viewBox=\"0 0 401.998 401.998\" class=\"unchecked\"><path d=\"M377.87,24.126C361.786,8.042,342.417,0,319.769,0H82.227C59.579,0,40.211,8.042,24.125,24.126 C8.044,40.212,0.002,59.576,0.002,82.228v237.543c0,22.647,8.042,42.014,24.123,58.101c16.086,16.085,35.454,24.127,58.102,24.127 h237.542c22.648,0,42.011-8.042,58.102-24.127c16.085-16.087,24.126-35.453,24.126-58.101V82.228 C401.993,59.58,393.951,40.212,377.87,24.126z M365.448,319.771c0,12.559-4.47,23.314-13.415,32.264 c-8.945,8.945-19.698,13.411-32.265,13.411H82.227c-12.563,0-23.317-4.466-32.264-13.411c-8.945-8.949-13.418-19.705-13.418-32.264 V82.228c0-12.562,4.473-23.316,13.418-32.264c8.947-8.946,19.701-13.418,32.264-13.418h237.542 c12.566,0,23.319,4.473,32.265,13.418c8.945,8.947,13.415,19.701,13.415,32.264V319.771L365.448,319.771z\"></path></svg>");
 };
@@ -4803,7 +4811,7 @@ jade_mixins["unchecked-icon"]();
 jade_mixins["checked-icon"]();
 buf.push("<label" + (jade.attr("data-value", option.id, true, false)) + ">" + (null == (jade_interp = displayName) ? "" : jade_interp) + "</label><div class=\"count\">" + (jade.escape(null == (jade_interp = option.get('count') === 0 ? option.get('total') : option.get('count')) ? "" : jade_interp)) + "</div></li>");}.call(this,"option" in locals_for_with?locals_for_with.option:typeof option!=="undefined"?option:undefined));;return buf.join("");
 };
-},{"jade/runtime":12}],30:[function(_dereq_,module,exports){
+},{"jade/runtime":9}],30:[function(_dereq_,module,exports){
 var $, Backbone, FacetView, _, tpl,
   extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
   hasProp = {}.hasOwnProperty;
@@ -4881,7 +4889,7 @@ FacetView = (function(superClass) {
   /*
   	 * This method is called when the facet has to be updated. For instance after
   	 * the server has returned with new values.
-  	#
+  	 *
   	 * @method
   	 * @abstract
   	 * @param {Object} newOptions
@@ -4892,7 +4900,7 @@ FacetView = (function(superClass) {
 
   /*
   	 * Reset the facet to it's initial state.
-  	#
+  	 *
   	 * @method
   	 * @abstract
    */
@@ -4902,7 +4910,7 @@ FacetView = (function(superClass) {
 
   /*
   	 * The postRender method is being run after render.
-  	#
+  	 *
   	 * @method
   	 * @abstract
    */
@@ -4929,7 +4937,7 @@ FacetView = (function(superClass) {
 
   /*
   	 * Every facet can be minimized by clicking the title of the facet.
-  	#
+  	 *
   	 * @method
   	 * @private
   	 * @param {Object} ev The event object.
@@ -5008,7 +5016,7 @@ FacetView = (function(superClass) {
 
   /*
   	 * If destroy is not overridden, just call Backbone.View's remove method.
-  	#
+  	 *
   	 * @method
    */
 
@@ -5034,7 +5042,7 @@ var jade_interp;
 ;var locals_for_with = (locals || {});(function (max, min) {
 buf.push("<div class=\"slider\"><span class=\"dash\">-</span><div class=\"handle-min handle\"><input" + (jade.attr("value", min, true, false)) + " class=\"min\"/><label class=\"min\">" + (jade.escape(null == (jade_interp = min) ? "" : jade_interp)) + "</label></div><div class=\"handle-max handle\"><input" + (jade.attr("value", max, true, false)) + " class=\"max\"/><label class=\"max\">" + (jade.escape(null == (jade_interp = max) ? "" : jade_interp)) + "</label></div><div class=\"bar\">&nbsp;</div><button title=\"Search within given range\"><svg version=\"1.1\" xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" viewBox=\"0 0 216 146\" xml:space=\"preserve\"><path d=\"M172.77,123.025L144.825,95.08c6.735-9.722,10.104-20.559,10.104-32.508c0-7.767-1.508-15.195-4.523-22.283c-3.014-7.089-7.088-13.199-12.221-18.332s-11.242-9.207-18.33-12.221c-7.09-3.015-14.518-4.522-22.285-4.522c-7.767,0-15.195,1.507-22.283,4.522c-7.089,3.014-13.199,7.088-18.332,12.221c-5.133,5.133-9.207,11.244-12.221,18.332c-3.015,7.089-4.522,14.516-4.522,22.283c0,7.767,1.507,15.193,4.522,22.283c3.014,7.088,7.088,13.197,12.221,18.33c5.133,5.134,11.244,9.207,18.332,12.222c7.089,3.015,14.516,4.522,22.283,4.522c11.951,0,22.787-3.369,32.509-10.104l27.945,27.863c1.955,2.064,4.397,3.096,7.332,3.096c2.824,0,5.27-1.032,7.332-3.096c2.064-2.063,3.096-4.508,3.096-7.332C175.785,127.479,174.781,125.034,172.77,123.025z M123.357,88.357c-7.143,7.143-15.738,10.714-25.787,10.714c-10.048,0-18.643-3.572-25.786-10.714c-7.143-7.143-10.714-15.737-10.714-25.786c0-10.048,3.572-18.644,10.714-25.786c7.142-7.143,15.738-10.714,25.786-10.714c10.048,0,18.643,3.572,25.787,10.714c7.143,7.142,10.715,15.738,10.715,25.786C134.072,72.62,130.499,81.214,123.357,88.357z\"></path></svg></button></div>");}.call(this,"max" in locals_for_with?locals_for_with.max:typeof max!=="undefined"?max:undefined,"min" in locals_for_with?locals_for_with.min:typeof min!=="undefined"?min:undefined));;return buf.join("");
 };
-},{"jade/runtime":12}],32:[function(_dereq_,module,exports){
+},{"jade/runtime":9}],32:[function(_dereq_,module,exports){
 var $, FacetView, Range, RangeFacet, _, bodyTpl,
   extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
   hasProp = {}.hasOwnProperty;
@@ -5291,7 +5299,7 @@ RangeFacet = (function(superClass) {
 
   /*
   	 * Called on every scroll event! Keep optimized!
-  	#
+  	 *
   	 * @method
   	 * @private
   	 * @return {Object} ev The event object.
@@ -5385,7 +5393,7 @@ RangeFacet = (function(superClass) {
   /*
   	 * Before removing the range facet, the global mouseleave and resize event
   	 * listeners have to be removed.
-  	#
+  	 *
   	 * @method
    */
 
@@ -5676,7 +5684,7 @@ Range = (function(superClass) {
 
   /*
   	 * Convert the lower and upper limit string to a year.
-  	#
+  	 *
   	 * @method
   	 * @param {Number} limit - Lower or upper limit, for example: 20141213
   	 * @return {Number} A year, for example: 2014
@@ -5704,7 +5712,7 @@ Range = (function(superClass) {
 
   /*
   	 * Convert a year to a lower or upper limit string
-  	#
+  	 *
   	 * @method
   	 * @private
   	 * @param {Number} year - A year
@@ -5819,7 +5827,7 @@ listItems = [];
 /*
  * Contains a header and a body. In the header the number of results, sorting and
  * pagination is rendered. In the body a list of results.
-#
+ *
  * @class
  * @namespace Views
  * @uses Result
@@ -5847,9 +5855,9 @@ Results = (function(superClass) {
 
   /*
   	 * Keep track of instanciated result item views.
-  	#
+  	 *
   	 * Should be redefined during initialization to prevent sharing between instances.
-  	#
+  	 *
   	 * @property
   	 * @type {Array<Result>}
    */
@@ -5859,9 +5867,9 @@ Results = (function(superClass) {
 
   /*
   	 * Hash to keep track of instanciated subviews.
-  	#
+  	 *
   	 * Should be redefined during initialization to prevent sharing between instances.
-  	#
+  	 *
   	 * @property
   	 * @type {Object}
    */
@@ -6098,7 +6106,7 @@ module.exports = Results;
 
 
 
-},{"./index.jade":35,"./result":36,"./sort":38,"backbone":undefined,"hibb-pagination":11,"jquery":undefined,"underscore":undefined}],35:[function(_dereq_,module,exports){
+},{"./index.jade":35,"./result":36,"./sort":38,"backbone":undefined,"hibb-pagination":7,"jquery":undefined,"underscore":undefined}],35:[function(_dereq_,module,exports){
 var jade = _dereq_("jade/runtime");
 
 module.exports = function template(locals) {
@@ -6136,7 +6144,7 @@ buf.push("<li class=\"show-metadata\"><input id=\"o45hes3\" type=\"checkbox\" ch
 }
 buf.push("</ul></nav><div class=\"pagination\"></div></header><div class=\"pages\"></div>");}.call(this,"config" in locals_for_with?locals_for_with.config:typeof config!=="undefined"?config:undefined,"resultsPerPage" in locals_for_with?locals_for_with.resultsPerPage:typeof resultsPerPage!=="undefined"?resultsPerPage:undefined,"showMetadata" in locals_for_with?locals_for_with.showMetadata:typeof showMetadata!=="undefined"?showMetadata:undefined,"undefined" in locals_for_with?locals_for_with.undefined:typeof undefined!=="undefined"?undefined:undefined));;return buf.join("");
 };
-},{"jade/runtime":12}],36:[function(_dereq_,module,exports){
+},{"jade/runtime":9}],36:[function(_dereq_,module,exports){
 var Backbone, Result, _,
   extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
   hasProp = {}.hasOwnProperty;
@@ -6148,7 +6156,7 @@ _ = _dereq_('underscore');
 
 /*
  * The view of one result item < li >.
-#
+ *
  * @class Result
  * @namespace Views
  * @todo Rename to ResultItem
@@ -6437,7 +6445,7 @@ buf.push("</ul></li>");
 buf.push("</ul></div>");
 }}.call(this,"data" in locals_for_with?locals_for_with.data:typeof data!=="undefined"?data:undefined,"found" in locals_for_with?locals_for_with.found:typeof found!=="undefined"?found:undefined,"fulltext" in locals_for_with?locals_for_with.fulltext:typeof fulltext!=="undefined"?fulltext:undefined,"undefined" in locals_for_with?locals_for_with.undefined:typeof undefined!=="undefined"?undefined:undefined));;return buf.join("");
 };
-},{"jade/runtime":12}],38:[function(_dereq_,module,exports){
+},{"jade/runtime":9}],38:[function(_dereq_,module,exports){
 var $, Backbone, SortLevels, el, tpl,
   extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
   hasProp = {}.hasOwnProperty;
@@ -6637,7 +6645,7 @@ module.exports = SortLevels;
 
 
 
-},{"./sort.jade":39,"backbone":undefined,"funcky.el":8,"jquery":undefined}],39:[function(_dereq_,module,exports){
+},{"./sort.jade":39,"backbone":undefined,"funcky.el":4,"jquery":undefined}],39:[function(_dereq_,module,exports){
 var jade = _dereq_("jade/runtime");
 
 module.exports = function template(locals) {
@@ -6720,7 +6728,7 @@ buf.push("</select><i class=\"fa fa-sort-alpha-asc\"></i></li>");
 
 buf.push("<li class=\"search\">&nbsp;<button>Change levels</button></li></ul></div>");}.call(this,"Object" in locals_for_with?locals_for_with.Object:typeof Object!=="undefined"?Object:undefined,"initLevels" in locals_for_with?locals_for_with.initLevels:typeof initLevels!=="undefined"?initLevels:undefined,"levels" in locals_for_with?locals_for_with.levels:typeof levels!=="undefined"?levels:undefined,"undefined" in locals_for_with?locals_for_with.undefined:typeof undefined!=="undefined"?undefined:undefined));;return buf.join("");
 };
-},{"jade/runtime":12}],40:[function(_dereq_,module,exports){
+},{"jade/runtime":9}],40:[function(_dereq_,module,exports){
 var Backbone, SearchModel, TextSearch, _, funcky, tpl,
   extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
   hasProp = {}.hasOwnProperty;
@@ -6755,7 +6763,7 @@ TextSearch = (function(superClass) {
 
   /*
   	 * The current field to search in.
-  	#
+  	 *
   	 * @property
   	 * @type {String}
    */
@@ -6792,6 +6800,7 @@ TextSearch = (function(superClass) {
       generateId: funcky.generateID,
       currentField: this.currentField
     }));
+    console.log("RENDER", this.model.attributes);
     return this;
   };
 
@@ -6841,33 +6850,38 @@ TextSearch = (function(superClass) {
     }
   };
 
+  TextSearch.prototype._parseTextSearchOptions = function(options) {
+    var attrs;
+    attrs = _.clone(options);
+    if (options.caseSensitive) {
+      attrs.caseSensitive = false;
+    } else {
+      delete attrs.caseSensitive;
+    }
+    if (options.fuzzy) {
+      attrs.fuzzy = false;
+    } else {
+      delete attrs.fuzzy;
+    }
+    return attrs;
+  };
+
 
   /*
   	 * @method
    */
 
   TextSearch.prototype.setModel = function() {
-    var attrs, textSearchOptions;
+    var textSearchOptions;
     if (this.model != null) {
       this.stopListening(this.model);
     }
-    textSearchOptions = this.options.config.get('textSearchOptions');
-    attrs = _.clone(textSearchOptions);
-    if (textSearchOptions.caseSensitive) {
-      attrs.caseSensitive = false;
-    } else {
-      delete attrs.caseSensitive;
-    }
-    if (textSearchOptions.fuzzy) {
-      attrs.fuzzy = false;
-    } else {
-      delete attrs.fuzzy;
-    }
-    this.model = new SearchModel(attrs);
+    textSearchOptions = this._parseTextSearchOptions(this.options.config.get('textSearchOptions'));
+    this.model = new SearchModel(textSearchOptions);
     return this.listenTo(this.options.config, "change:textSearchOptions", (function(_this) {
       return function(config, textSearchOptions, options) {
         var fullTextSearchParameters, i, len, param, params;
-        _this.model.set(textSearchOptions);
+        _this.model.set(_this._parseTextSearchOptions(textSearchOptions));
         fullTextSearchParameters = _this.options.config.get('textSearchOptions').fullTextSearchParameters;
         if (fullTextSearchParameters != null) {
           _this.currentField = fullTextSearchParameters[0];
@@ -7012,7 +7026,7 @@ module.exports = TextSearch;
 
 
 
-},{"../../models/search":18,"./index.jade":41,"backbone":undefined,"funcky.util":10,"underscore":undefined}],41:[function(_dereq_,module,exports){
+},{"../../models/search":18,"./index.jade":41,"backbone":undefined,"funcky.util":6,"underscore":undefined}],41:[function(_dereq_,module,exports){
 var jade = _dereq_("jade/runtime");
 
 module.exports = function template(locals) {
@@ -7028,7 +7042,7 @@ var jade_interp;
 
 
 
-jade_mixins["search-icon"] = function(){
+jade_mixins["search-icon"] = jade_interp = function(){
 var block = (this && this.block), attributes = (this && this.attributes) || {};
 buf.push("<svg viewBox=\"0 0 250.313 250.313\" class=\"search\"><path d=\"M244.186,214.604l-54.379-54.378c-0.289-0.289-0.628-0.491-0.93-0.76 c10.7-16.231,16.945-35.66,16.945-56.554C205.822,46.075,159.747,0,102.911,0S0,46.075,0,102.911 c0,56.835,46.074,102.911,102.91,102.911c20.895,0,40.323-6.245,56.554-16.945c0.269,0.301,0.47,0.64,0.759,0.929l54.38,54.38 c8.169,8.168,21.413,8.168,29.583,0C252.354,236.017,252.354,222.773,244.186,214.604z M102.911,170.146 c-37.134,0-67.236-30.102-67.236-67.235c0-37.134,30.103-67.236,67.236-67.236c37.132,0,67.235,30.103,67.235,67.236 C170.146,140.044,140.043,170.146,102.911,170.146z\"></path></svg>");
 };
@@ -7154,7 +7168,7 @@ buf.push("</ul></li>");
 }
 buf.push("</ul></div></div></div>");}.call(this,"config" in locals_for_with?locals_for_with.config:typeof config!=="undefined"?config:undefined,"currentField" in locals_for_with?locals_for_with.currentField:typeof currentField!=="undefined"?currentField:undefined,"generateId" in locals_for_with?locals_for_with.generateId:typeof generateId!=="undefined"?generateId:undefined,"id" in locals_for_with?locals_for_with.id:typeof id!=="undefined"?id:undefined,"model" in locals_for_with?locals_for_with.model:typeof model!=="undefined"?model:undefined,"textSearchId" in locals_for_with?locals_for_with.textSearchId:typeof textSearchId!=="undefined"?textSearchId:undefined,"undefined" in locals_for_with?locals_for_with.undefined:typeof undefined!=="undefined"?undefined:undefined));;return buf.join("");
 };
-},{"jade/runtime":12}],42:[function(_dereq_,module,exports){
+},{"jade/runtime":9}],42:[function(_dereq_,module,exports){
 var jade = _dereq_("jade/runtime");
 
 module.exports = function template(locals) {
@@ -7189,7 +7203,7 @@ buf.push("<li><div class=\"row span6\"><div class=\"cell span5\"><i" + (jade.att
 
 buf.push("</ul>");}.call(this,"displayName" in locals_for_with?locals_for_with.displayName:typeof displayName!=="undefined"?displayName:undefined,"options" in locals_for_with?locals_for_with.options:typeof options!=="undefined"?options:undefined,"ucfirst" in locals_for_with?locals_for_with.ucfirst:typeof ucfirst!=="undefined"?ucfirst:undefined,"undefined" in locals_for_with?locals_for_with.undefined:typeof undefined!=="undefined"?undefined:undefined));;return buf.join("");
 };
-},{"jade/runtime":12}],43:[function(_dereq_,module,exports){
+},{"jade/runtime":9}],43:[function(_dereq_,module,exports){
 var jade = _dereq_("jade/runtime");
 
 module.exports = function template(locals) {
@@ -7209,23 +7223,23 @@ var jade_interp;
 
 
 
-jade_mixins["filter-icon"] = function(){
+jade_mixins["filter-icon"] = jade_interp = function(){
 var block = (this && this.block), attributes = (this && this.attributes) || {};
 buf.push("<svg viewBox=\"0 0 971.986 971.986\"" + (jade.cls(['filter',attributes.className], [null,true])) + "><title>" + (jade.escape(null == (jade_interp = attributes.title) ? "" : jade_interp)) + "</title><path d=\"M370.216,459.3c10.2,11.1,15.8,25.6,15.8,40.6v442c0,26.601,32.1,40.101,51.1,21.4l123.3-141.3 c16.5-19.8,25.6-29.601,25.6-49.2V500c0-15,5.7-29.5,15.8-40.601L955.615,75.5c26.5-28.8,6.101-75.5-33.1-75.5h-873 c-39.2,0-59.7,46.6-33.1,75.5L370.216,459.3z\"></path></svg>");
 };
-jade_mixins["sort-count-ascending-icon"] = function(){
+jade_mixins["sort-count-ascending-icon"] = jade_interp = function(){
 var block = (this && this.block), attributes = (this && this.attributes) || {};
 buf.push("<svg viewBox=\"0 0 511.627 511.627\"" + (jade.cls(['sort-count-ascending',attributes.className], [null,true])) + "><g><title>" + (jade.escape(null == (jade_interp = attributes.title) ? "" : jade_interp)) + "</title><rect x=\"0\" y=\"0\" width=\"511.627\" height=\"511.627\" fill-opacity=\"0.01\"></rect><path d=\"M260.494,219.271H388.4c2.666,0,4.855-0.855,6.563-2.57c1.715-1.713,2.573-3.9,2.573-6.567v-54.816 c0-2.667-0.858-4.854-2.573-6.567c-1.708-1.711-3.897-2.57-6.563-2.57H260.494c-2.666,0-4.853,0.855-6.567,2.57 c-1.71,1.713-2.568,3.9-2.568,6.567v54.816c0,2.667,0.855,4.854,2.568,6.567C255.641,218.413,257.828,219.271,260.494,219.271z\"></path><path d=\"M260.497,73.089h73.087c2.666,0,4.856-0.855,6.563-2.568c1.718-1.714,2.563-3.901,2.563-6.567V9.136 c0-2.663-0.846-4.853-2.563-6.567C338.44,0.859,336.25,0,333.584,0h-73.087c-2.666,0-4.853,0.855-6.567,2.568 c-1.709,1.715-2.568,3.905-2.568,6.567v54.818c0,2.666,0.855,4.853,2.568,6.567C255.645,72.23,257.831,73.089,260.497,73.089z\"></path><path d=\"M196.54,401.991h-54.817V9.136c0-2.663-0.854-4.856-2.568-6.567C137.441,0.859,135.254,0,132.587,0H77.769 c-2.663,0-4.856,0.855-6.567,2.568c-1.709,1.715-2.568,3.905-2.568,6.567v392.855H13.816c-4.184,0-7.04,1.902-8.564,5.708 c-1.525,3.621-0.855,6.95,1.997,9.996l91.361,91.365c2.094,1.707,4.281,2.562,6.567,2.562c2.474,0,4.665-0.855,6.567-2.562 l91.076-91.078c1.906-2.279,2.856-4.571,2.856-6.844c0-2.676-0.859-4.859-2.568-6.584 C201.395,402.847,199.208,401.991,196.54,401.991z\"></path><path d=\"M504.604,441.109c-1.715-1.718-3.901-2.573-6.567-2.573H260.497c-2.666,0-4.853,0.855-6.567,2.573 c-1.709,1.711-2.568,3.901-2.568,6.564v54.815c0,2.673,0.855,4.853,2.568,6.571c1.715,1.711,3.901,2.566,6.567,2.566h237.539 c2.666,0,4.853-0.855,6.567-2.566c1.711-1.719,2.566-3.898,2.566-6.571v-54.815C507.173,445.011,506.314,442.82,504.604,441.109z\"></path><path d=\"M260.494,365.445H443.22c2.663,0,4.853-0.855,6.57-2.566c1.708-1.711,2.563-3.901,2.563-6.563v-54.823 c0-2.662-0.855-4.853-2.563-6.563c-1.718-1.711-3.907-2.566-6.57-2.566H260.494c-2.666,0-4.853,0.855-6.567,2.566 c-1.71,1.711-2.568,3.901-2.568,6.563v54.823c0,2.662,0.855,4.853,2.568,6.563C255.641,364.59,257.828,365.445,260.494,365.445z\"></path></g></svg>");
 };
-jade_mixins["sort-count-descending-icon"] = function(){
+jade_mixins["sort-count-descending-icon"] = jade_interp = function(){
 var block = (this && this.block), attributes = (this && this.attributes) || {};
 buf.push("<svg viewBox=\"0 0 511.627 511.627\"" + (jade.cls(['sort-count-descending',attributes.className], [null,true])) + "><g><title>" + (jade.escape(null == (jade_interp = attributes.title) ? "" : jade_interp)) + "</title><rect x=\"0\" y=\"0\" width=\"511.627\" height=\"511.627\" fill-opacity=\"0\"></rect><path d=\"M333.584,438.536h-73.087c-2.666,0-4.853,0.855-6.567,2.573c-1.709,1.711-2.568,3.901-2.568,6.564v54.815 c0,2.673,0.855,4.853,2.568,6.571c1.715,1.711,3.901,2.566,6.567,2.566h73.087c2.666,0,4.856-0.855,6.563-2.566 c1.718-1.719,2.563-3.898,2.563-6.571v-54.815c0-2.663-0.846-4.854-2.563-6.564C338.44,439.392,336.25,438.536,333.584,438.536z\"></path><path d=\"M196.54,401.991h-54.817V9.136c0-2.663-0.854-4.856-2.568-6.567C137.441,0.859,135.254,0,132.587,0H77.769 c-2.663,0-4.856,0.855-6.567,2.568c-1.709,1.715-2.568,3.905-2.568,6.567v392.855H13.816c-4.184,0-7.04,1.902-8.564,5.708 c-1.525,3.621-0.855,6.95,1.997,9.996l91.361,91.365c2.094,1.707,4.281,2.562,6.567,2.562c2.474,0,4.665-0.855,6.567-2.562 l91.076-91.078c1.906-2.279,2.856-4.571,2.856-6.844c0-2.676-0.859-4.859-2.568-6.584 C201.395,402.847,199.208,401.991,196.54,401.991z\"></path><path d=\"M388.4,292.362H260.494c-2.666,0-4.853,0.855-6.567,2.566c-1.71,1.711-2.568,3.901-2.568,6.563v54.823 c0,2.662,0.855,4.853,2.568,6.563c1.714,1.711,3.901,2.566,6.567,2.566H388.4c2.666,0,4.855-0.855,6.563-2.566 c1.715-1.711,2.573-3.901,2.573-6.563v-54.823c0-2.662-0.858-4.853-2.573-6.563C393.256,293.218,391.066,292.362,388.4,292.362z\"></path><path d=\"M504.604,2.568C502.889,0.859,500.702,0,498.036,0H260.497c-2.666,0-4.853,0.855-6.567,2.568 c-1.709,1.715-2.568,3.905-2.568,6.567v54.818c0,2.666,0.855,4.853,2.568,6.567c1.715,1.709,3.901,2.568,6.567,2.568h237.539 c2.666,0,4.853-0.855,6.567-2.568c1.711-1.714,2.566-3.901,2.566-6.567V9.136C507.173,6.473,506.314,4.279,504.604,2.568z\"></path><path d=\"M443.22,146.181H260.494c-2.666,0-4.853,0.855-6.567,2.57c-1.71,1.713-2.568,3.9-2.568,6.567v54.816 c0,2.667,0.855,4.854,2.568,6.567c1.714,1.711,3.901,2.57,6.567,2.57H443.22c2.663,0,4.853-0.855,6.57-2.57 c1.708-1.713,2.563-3.9,2.563-6.567v-54.816c0-2.667-0.855-4.858-2.563-6.567C448.069,147.04,445.879,146.181,443.22,146.181z\"></path></g></svg>");
 };
-jade_mixins["sort-alphabetically-ascending-icon"] = function(){
+jade_mixins["sort-alphabetically-ascending-icon"] = jade_interp = function(){
 var block = (this && this.block), attributes = (this && this.attributes) || {};
 buf.push("<svg viewBox=\"0 0 511.626 511.627\"" + (jade.cls(['sort-alphabetically-ascending',attributes.className], [null,true])) + "><g><title>" + (jade.escape(null == (jade_interp = attributes.title) ? "" : jade_interp)) + "</title><rect x=\"0\" y=\"0\" width=\"511.627\" height=\"511.627\" fill-opacity=\"0\"></rect><path d=\"M215.232,401.991h-54.818V9.136c0-2.663-0.854-4.856-2.568-6.567C156.133,0.859,153.946,0,151.279,0H96.461 c-2.663,0-4.856,0.855-6.567,2.568c-1.709,1.715-2.568,3.905-2.568,6.567v392.855H32.507c-4.184,0-7.039,1.902-8.563,5.708 c-1.525,3.621-0.856,6.95,1.997,9.996l91.361,91.365c2.096,1.707,4.281,2.562,6.567,2.562c2.474,0,4.664-0.855,6.567-2.562 l91.076-91.078c1.906-2.279,2.856-4.571,2.856-6.844c0-2.676-0.854-4.859-2.568-6.584 C220.086,402.847,217.9,401.991,215.232,401.991z\"></path><path d=\"M428.511,479.082h-70.808c-3.997,0-6.852,0.191-8.559,0.568l-4.001,0.571v-0.571l3.142-3.142 c2.848-3.419,4.853-5.896,5.996-7.409l105.344-151.331v-25.406H297.744v65.377h34.263v-32.832h66.236 c3.422,0,6.283-0.288,8.555-0.855c0.572,0,1.287-0.048,2.143-0.145c0.853-0.085,1.475-0.144,1.852-0.144v0.855l-3.142,2.574 c-1.704,1.711-3.713,4.273-5.995,7.706L296.31,485.934v25.693h166.734v-66.521h-34.54v33.976H428.511z\"></path><path d=\"M468.475,189.008L402.807,0h-46.25l-65.664,189.008h-19.979v30.264h81.933v-30.264h-21.409l13.419-41.112h69.381 l13.415,41.112H406.25v30.264h82.228v-30.264H468.475z M354.278,116.487l20.841-62.241c0.76-2.285,1.479-5.046,2.143-8.28 c0.66-3.236,0.996-4.949,0.996-5.139l0.855-5.708h1.143c0,0.761,0.191,2.664,0.562,5.708l3.433,13.418l20.554,62.241H354.278z\"></path></g></svg>");
 };
-jade_mixins["sort-alphabetically-descending-icon"] = function(){
+jade_mixins["sort-alphabetically-descending-icon"] = jade_interp = function(){
 var block = (this && this.block), attributes = (this && this.attributes) || {};
 buf.push("<svg viewBox=\"0 0 511.626 511.627\"" + (jade.cls(['sort-alphabetically-descending',attributes.className], [null,true])) + "><g><title>" + (jade.escape(null == (jade_interp = attributes.title) ? "" : jade_interp)) + "</title><rect x=\"0\" y=\"0\" width=\"511.627\" height=\"511.627\" fill-opacity=\"0\"></rect><path d=\"M215.232,401.991h-54.818V9.136c0-2.663-0.854-4.856-2.568-6.567C156.133,0.859,153.946,0,151.279,0H96.461 c-2.663,0-4.856,0.855-6.567,2.568c-1.709,1.715-2.568,3.905-2.568,6.567v392.855H32.507c-4.184,0-7.039,1.902-8.563,5.708 c-1.525,3.621-0.856,6.95,1.997,9.996l91.361,91.365c2.096,1.707,4.281,2.562,6.567,2.562c2.474,0,4.664-0.855,6.567-2.562 l91.076-91.078c1.906-2.279,2.856-4.571,2.856-6.844c0-2.676-0.854-4.859-2.568-6.584 C220.086,402.847,217.9,401.991,215.232,401.991z\"></path><path d=\"M468.475,481.361l-65.664-189.01h-46.25L290.9,481.364H270.92v30.263h81.934v-30.266h-21.412l13.418-41.11h69.381 l13.415,41.11H406.25v30.266h82.228v-30.266H468.475z M354.278,408.846l20.841-62.242c0.76-2.283,1.479-5.045,2.143-8.278 c0.66-3.234,0.996-4.948,0.996-5.137l0.855-5.715h1.143c0,0.767,0.191,2.669,0.562,5.715l3.433,13.415l20.554,62.242H354.278z\"></path><path d=\"M463.055,152.745h-34.537v33.975H357.71c-4.001,0-6.852,0.097-8.556,0.288l-4.004,0.854v-0.854l3.142-2.858 c2.851-3.422,4.853-5.896,5.996-7.421L459.632,25.41V0H297.754v65.387h34.259V32.552h66.232c3.426,0,6.283-0.288,8.56-0.859 c0.571,0,1.286-0.048,2.142-0.144c0.855-0.094,1.476-0.144,1.854-0.144v0.855l-3.141,2.568c-1.708,1.713-3.71,4.283-5.996,7.71 L296.32,193.569v25.697h166.735V152.745z\"></path></g></svg>");
 };
@@ -7259,7 +7273,7 @@ attributes: {"className": "alpha","title": jade.escape(config.get('labels').sort
 }
 buf.push("</div><div class=\"options\"></div></header><div class=\"body\"></div></div>");}.call(this,"config" in locals_for_with?locals_for_with.config:typeof config!=="undefined"?config:undefined,"model" in locals_for_with?locals_for_with.model:typeof model!=="undefined"?model:undefined,"options" in locals_for_with?locals_for_with.options:typeof options!=="undefined"?options:undefined));;return buf.join("");
 };
-},{"jade/runtime":12}],44:[function(_dereq_,module,exports){
+},{"jade/runtime":9}],44:[function(_dereq_,module,exports){
 var jade = _dereq_("jade/runtime");
 
 module.exports = function template(locals) {
@@ -7299,7 +7313,7 @@ var jade_interp;
 
 
 
-jade_mixins["tail-spin-loader-icon"] = function(){
+jade_mixins["tail-spin-loader-icon"] = jade_interp = function(){
 var block = (this && this.block), attributes = (this && this.attributes) || {};
 buf.push("<svg viewBox=\"0 0 38 38\"><defs><linearGradient x1=\"8.042%\" y1=\"0%\" x2=\"65.682%\" y2=\"23.865%\" id=\"z8dZZfS3A\"><stop stop-color=\"#666\" stop-opacity=\"0\" offset=\"0%\"></stop><stop stop-color=\"#666\" stop-opacity=\".631\" offset=\"63.146%\"></stop><stop stop-color=\"#666\" offset=\"100%\"></stop></linearGradient></defs><g fill=\"none\" fill-rule=\"evenodd\"><g transform=\"translate(1 1)\"><path d=\"M33 18c0-9.94-8.06-18-18-18\" stroke=\"url(#z8dZZfS3A)\" stroke-width=\"4\"><animateTransform attributeName=\"transform\" type=\"rotate\" from=\"0 18 18\" to=\"360 18 18\" dur=\"0.9s\" repeatCount=\"indefinite\"></animateTransform></path><circle fill=\"#666\" cx=\"33\" cy=\"18\" r=\"2\"><animateTransform attributeName=\"transform\" type=\"rotate\" from=\"0 18 18\" to=\"360 18 18\" dur=\"0.9s\" repeatCount=\"indefinite\"></animateTransform></circle></g></g></svg>");
 };
@@ -7311,5 +7325,5 @@ buf.push("<div class=\"overlay\"><div>");
 jade_mixins["tail-spin-loader-icon"]();
 buf.push("</div></div><div class=\"faceted-search\"><div class=\"text-search-placeholder\"></div><ul class=\"facets-menu\"><li class=\"reset\"><button><i class=\"fa fa-refresh\"></i><span>New search</span></button></li><li class=\"switch\"><button><i class=\"fa fa-angle-double-up\"></i><i class=\"fa fa-angle-double-down\"></i><span class=\"simple\">Simple search</span><span class=\"advanced\">Advanced search</span></button></li><li class=\"collapse-expand\"><button><i class=\"fa fa-compress\"></i><span>Collapse filters</span></button></li></ul><div class=\"facets-placeholder\"></div></div><div class=\"results\"></div>");;return buf.join("");
 };
-},{"jade/runtime":12}]},{},[1])(1)
+},{"jade/runtime":9}]},{},[1])(1)
 });

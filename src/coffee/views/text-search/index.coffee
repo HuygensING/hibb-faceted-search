@@ -48,6 +48,8 @@ class TextSearch extends Backbone.View
 			generateId: funcky.generateID
 			currentField: @currentField
 
+		console.log("RENDER", @model.attributes)
+
 		@
 
 	###
@@ -80,30 +82,32 @@ class TextSearch extends Backbone.View
 
 			@model.set fullTextSearchParameters: params
 
+	_parseTextSearchOptions: (options) ->
+		attrs = _.clone options
+
+		if options.caseSensitive
+			attrs.caseSensitive = false
+		else
+			delete attrs.caseSensitive
+
+		if options.fuzzy
+			attrs.fuzzy = false
+		else
+			delete attrs.fuzzy
+
+		attrs
+
 	###
 	# @method
 	###
 	setModel: ->
 		@stopListening @model if @model?
 
-		textSearchOptions = @options.config.get('textSearchOptions')
-
-		attrs = _.clone textSearchOptions
-		if textSearchOptions.caseSensitive
-			attrs.caseSensitive = false
-		else
-			delete attrs.caseSensitive
-
-		if textSearchOptions.fuzzy
-			attrs.fuzzy = false
-		else
-			delete attrs.fuzzy
-
-		@model = new SearchModel attrs
-
+		textSearchOptions = @_parseTextSearchOptions @options.config.get('textSearchOptions')
+		@model = new SearchModel textSearchOptions
 
 		@listenTo @options.config, "change:textSearchOptions", (config, textSearchOptions, options) =>
-			@model.set textSearchOptions
+			@model.set @_parseTextSearchOptions textSearchOptions
 
 			fullTextSearchParameters = @options.config.get('textSearchOptions').fullTextSearchParameters
 			if fullTextSearchParameters?
@@ -119,19 +123,12 @@ class TextSearch extends Backbone.View
 
 			@render()
 
-		# # HACK
-		# # Because textLayers are eLaborate specific and in the correspondentienetwerk
-		# # template the elaborate and timbuctoo version are both used side by side,
-		# # we have to do an extra check if the FS is of the elaborate type.
-		# if @options.config.has('textLayers') and not hasFullTextSearchParameters
-		# 	@model.set textLayers: @options.config.get('textLayers')
-
 	###
 	# @method
 	# @private
 	###
 	_updateFullTextSearchParameters: ->
-		parameter = 
+		parameter =
 			name: @currentField
 			term: @el.querySelector('input[name="search"]').value
 

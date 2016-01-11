@@ -168,7 +168,7 @@ class SearchResults extends Backbone.Collection
 				throw new Error "Server should return status: 201.", res
 
 		req.fail (res) =>
-			console.log res
+			# console.log res
 			if res.status is 401
 				@trigger 'unauthorized'
 			else

@@ -85,7 +85,7 @@ class Config extends Backbone.Model
 		sortLevels: true
 		showMetadata: true
 		showPageNames: null
-		
+
 		### OTHER RENDERING OPTIONS ###
 		templates: {}
 		templateData: {}
@@ -111,12 +111,12 @@ class Config extends Backbone.Model
 	handleFirstResponseModel: (responseModel) ->
 		# Clone textSearchOptions to force Backbone's change event to fire.
 		textSearchOptions = _.clone(@get('textSearchOptions'))
-		
+
 		if responseModel.has 'fullTextSearchFields'
 			textSearchOptions.fullTextSearchParameters = responseModel.get('fullTextSearchFields')
 		else
 			textSearchOptions.term = ""
-			
+
 			if @has('textLayers')
 				textSearchOptions.textLayers = @get('textLayers')
 
@@ -146,7 +146,7 @@ class Config extends Backbone.Model
 	###
 	_createLevelMapFromMap: (sortableFields, map) ->
 		levelMap = {}
-		
+
 		for field in sortableFields
 			if map.hasOwnProperty(field)
 				levelMap[field] = map[field]
@@ -179,7 +179,7 @@ class Config extends Backbone.Model
 	###
 	_createLevelMapFromFacetData: (sortableFields, facetsData) ->
 		levelMap = {}
-		
+
 		for field in sortableFields
 			for facetData in facetsData
 				if facetData.name is field
