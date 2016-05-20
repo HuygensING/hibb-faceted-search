@@ -22,5 +22,6 @@ class SearchResult extends Backbone.Model
 		start: null
 		# term: ''
 		facets: []
+		refs: []
 
 module.exports = SearchResult

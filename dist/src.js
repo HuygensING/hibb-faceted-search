@@ -3416,7 +3416,8 @@ SearchResult = (function(superClass) {
       solrquery: '',
       sortableFields: [],
       start: null,
-      facets: []
+      facets: [],
+      refs: []
     };
   };
 
@@ -6143,19 +6144,31 @@ Results = (function(superClass) {
    */
 
   Results.prototype._renderResultsPage = function(responseModel) {
-    var frag, fulltext, i, len, pageNumber, ref, result, ul;
+    var dat, frag, fulltext, i, j, k, len, pageNumber, prop, ref, ref1, result, resultArray, ul;
     this._destroyResultItems();
     this.$("div.pages").html('');
     fulltext = false;
-    if (responseModel.get('results').length > 0 && (responseModel.get('results')[0].terms != null)) {
-      if (Object.keys(responseModel.get('results')[0].terms).length > 0) {
+    resultArray = responseModel.get('results');
+    if (resultArray === null || resultArray.length === 0) {
+      resultArray = responseModel.get('refs');
+      for (i = j = 0, ref = resultArray.length - 1; 0 <= ref ? j <= ref : j >= ref; i = 0 <= ref ? ++j : --j) {
+        ref1 = resultArray[i].data;
+        for (prop in ref1) {
+          dat = ref1[prop];
+          console.log("TEST", resultArray[i]);
+          resultArray[i][prop] = resultArray[i].data[prop];
+        }
+      }
+    }
+    if (resultArray.length > 0 && (resultArray[0].terms != null)) {
+      if (Object.keys(resultArray[0].terms).length > 0) {
         fulltext = true;
       }
     }
     frag = document.createDocumentFragment();
-    ref = responseModel.get('results');
-    for (i = 0, len = ref.length; i < len; i++) {
-      result = ref[i];
+    for (k = 0, len = resultArray.length; k < len; k++) {
+      result = resultArray[k];
+      console.log(result);
       result = new Result({
         data: result,
         fulltext: fulltext,
@@ -6275,11 +6288,11 @@ Results = (function(superClass) {
    */
 
   Results.prototype._destroyResultItems = function() {
-    var i, item, len, ref, results;
+    var item, j, len, ref, results;
     ref = this.resultItems;
     results = [];
-    for (i = 0, len = ref.length; i < len; i++) {
-      item = ref[i];
+    for (j = 0, len = ref.length; j < len; j++) {
+      item = ref[j];
       results.push(item.destroy());
     }
     return results;

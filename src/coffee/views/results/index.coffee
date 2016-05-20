@@ -121,15 +121,25 @@ class Results extends Backbone.View
 		# Check if the results are a generated for a full text search.
 		# This is only necessary for eLaborate.
 		fulltext = false
-		if responseModel.get('results').length > 0 and responseModel.get('results')[0].terms?
-			if Object.keys(responseModel.get('results')[0].terms).length > 0
+
+		resultArray = responseModel.get('results')
+		if resultArray == null or resultArray.length == 0
+			resultArray = responseModel.get('refs')
+			for i in [0..resultArray.length - 1]
+				for prop, dat of resultArray[i].data
+					console.log("TEST", resultArray[i])
+					resultArray[i][prop] = resultArray[i].data[prop]
+
+		if resultArray.length > 0 and resultArray[0].terms?
+			if Object.keys(resultArray[0].terms).length > 0
 				fulltext = true
 		
 		# Create a document fragment and append entry listitem views.
 		frag = document.createDocumentFragment()
 
-		for result in responseModel.get 'results'
+		for result in resultArray
 			# Instantiate a new list item.
+			console.log(result)
 			result = new Result
 				data: result
 				fulltext: fulltext
