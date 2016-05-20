@@ -123,7 +123,7 @@ class Results extends Backbone.View
 		fulltext = false
 
 		resultArray = responseModel.get('results')
-		if resultArray == null or resultArray.length == 0
+		if resultArray == null
 			resultArray = responseModel.get('refs')
 			for i in [0..resultArray.length - 1]
 				for prop, dat of resultArray[i].data
