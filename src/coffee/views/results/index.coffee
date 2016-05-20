@@ -123,7 +123,8 @@ class Results extends Backbone.View
 		fulltext = false
 
 		resultArray = responseModel.get('results')
-		if resultArray == null
+		
+		if resultArray.length == 0 && responseModel.get('refs').length > 0
 			resultArray = responseModel.get('refs')
 			for i in [0..resultArray.length - 1]
 				for prop, dat of resultArray[i].data
@@ -138,7 +139,6 @@ class Results extends Backbone.View
 
 		for result in resultArray
 			# Instantiate a new list item.
-			console.log(result)
 			result = new Result
 				data: result
 				fulltext: fulltext

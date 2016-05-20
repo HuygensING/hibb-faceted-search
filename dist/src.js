@@ -6149,7 +6149,7 @@ Results = (function(superClass) {
     this.$("div.pages").html('');
     fulltext = false;
     resultArray = responseModel.get('results');
-    if (resultArray === null) {
+    if (resultArray.length === 0 && responseModel.get('refs').length > 0) {
       resultArray = responseModel.get('refs');
       for (i = j = 0, ref = resultArray.length - 1; 0 <= ref ? j <= ref : j >= ref; i = 0 <= ref ? ++j : --j) {
         ref1 = resultArray[i].data;
@@ -6167,7 +6167,6 @@ Results = (function(superClass) {
     frag = document.createDocumentFragment();
     for (k = 0, len = resultArray.length; k < len; k++) {
       result = resultArray[k];
-      console.log(result);
       result = new Result({
         data: result,
         fulltext: fulltext,
