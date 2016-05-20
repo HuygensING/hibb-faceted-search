@@ -127,7 +127,6 @@ class Results extends Backbone.View
 			resultArray = responseModel.get('refs')
 			for i in [0..resultArray.length - 1]
 				for prop, dat of resultArray[i].data
-					console.log("TEST", resultArray[i])
 					resultArray[i][prop] = resultArray[i].data[prop]
 
 		if resultArray.length > 0 and resultArray[0].terms?

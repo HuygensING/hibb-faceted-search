@@ -6155,7 +6155,6 @@ Results = (function(superClass) {
         ref1 = resultArray[i].data;
         for (prop in ref1) {
           dat = ref1[prop];
-          console.log("TEST", resultArray[i]);
           resultArray[i][prop] = resultArray[i].data[prop];
         }
       }
