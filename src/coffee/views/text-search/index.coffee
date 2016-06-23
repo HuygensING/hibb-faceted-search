@@ -48,8 +48,6 @@ class TextSearch extends Backbone.View
 			generateId: funcky.generateID
 			currentField: @currentField
 
-		console.log("RENDER", @model.attributes)
-
 		@
 
 	###

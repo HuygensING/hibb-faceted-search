@@ -6800,7 +6800,6 @@ TextSearch = (function(superClass) {
       generateId: funcky.generateID,
       currentField: this.currentField
     }));
-    console.log("RENDER", this.model.attributes);
     return this;
   };
 
