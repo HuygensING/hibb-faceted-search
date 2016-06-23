@@ -55,7 +55,7 @@ class TextSearch extends Backbone.View
 	# @return {Object}
 	###
 	events: ->
-		'click i.fa-search': 'search'
+		'click .search-icon': 'search'
 		'keyup input[name="search"]': 'onKeyUp'
 		'focus input[name="search"]': -> @$('.body .menu').slideDown(150)
 		'click .menu .fa-times': -> @$('.body .menu').slideUp(150)
@@ -131,7 +131,7 @@ class TextSearch extends Backbone.View
 	# @private
 	###
 	_updateFullTextSearchParameters: ->
-		parameter = 
+		parameter =
 			name: @currentField
 			term: @el.querySelector('input[name="search"]').value
 
