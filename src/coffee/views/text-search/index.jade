@@ -17,16 +17,16 @@ include ../../../jade/svg-icons.jade
 			.close
 
 			ul.options
-				if config.get('textSearchOptions').caseSensitive
+				if config.get('textSearchOptions').caseSensitive != null
 					- id = generateId()
 					li.option.case-sensitive
-						input(id=id, type="checkbox", data-attr="caseSensitive")
+						input(id=id, type="checkbox", data-attr="caseSensitive", checked=config.get('textSearchOptions').caseSensitive)
 						label(for=id) Match case
 
-				if config.get('textSearchOptions').fuzzy
+				if config.get('textSearchOptions').fuzzy != null
 					- id = generateId()
 					li.option.fuzzy
-						input(id=id, type="checkbox", data-attr="fuzzy")
+						input(id=id, type="checkbox", data-attr="fuzzy", checked=config.get('textSearchOptions').fuzzy)
 						label(for=id) Fuzzy
 
 				//- Specific for eLaborate

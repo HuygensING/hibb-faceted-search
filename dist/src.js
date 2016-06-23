@@ -7275,15 +7275,15 @@ buf.push("<header><h3>" + (jade.escape(null == (jade_interp = config.get('facetD
 buf.push("<div class=\"body\"><div class=\"search-input\"><input type=\"text\" name=\"search\"/><div class=\"search-icon\">");
 jade_mixins["search-icon"]();
 buf.push("</div></div><div class=\"menu\"><i class=\"fa fa-times\"></i><div class=\"close\"></div><ul class=\"options\">");
-if ( config.get('textSearchOptions').caseSensitive)
+if ( config.get('textSearchOptions').caseSensitive != null)
 {
 id = generateId()
-buf.push("<li class=\"option case-sensitive\"><input" + (jade.attr("id", id, true, false)) + " type=\"checkbox\" data-attr=\"caseSensitive\"/><label" + (jade.attr("for", id, true, false)) + ">Match case</label></li>");
+buf.push("<li class=\"option case-sensitive\"><input" + (jade.attr("id", id, true, false)) + " type=\"checkbox\" data-attr=\"caseSensitive\"" + (jade.attr("checked", config.get('textSearchOptions').caseSensitive, true, false)) + "/><label" + (jade.attr("for", id, true, false)) + ">Match case</label></li>");
 }
-if ( config.get('textSearchOptions').fuzzy)
+if ( config.get('textSearchOptions').fuzzy != null)
 {
 id = generateId()
-buf.push("<li class=\"option fuzzy\"><input" + (jade.attr("id", id, true, false)) + " type=\"checkbox\" data-attr=\"fuzzy\"/><label" + (jade.attr("for", id, true, false)) + ">Fuzzy</label></li>");
+buf.push("<li class=\"option fuzzy\"><input" + (jade.attr("id", id, true, false)) + " type=\"checkbox\" data-attr=\"fuzzy\"" + (jade.attr("checked", config.get('textSearchOptions').fuzzy, true, false)) + "/><label" + (jade.attr("for", id, true, false)) + ">Fuzzy</label></li>");
 }
 if ( model.has('searchInAnnotations') || model.has('searchInTranscriptions'))
 {
