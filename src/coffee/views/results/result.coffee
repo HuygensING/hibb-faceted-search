@@ -11,7 +11,7 @@ _ = require 'underscore'
 # @todo Rename to ResultItem
 ###
 class Result extends Backbone.View
-	
+
 	template: require './result.jade'
 
 	###
@@ -52,6 +52,7 @@ class Result extends Backbone.View
 			@template = @options.config.get('templates').result
 
 		tplData =
+			sortParameters: @options.sortParameters
 			data: @options.data
 			fulltext: @options.fulltext
 			found: found.join(', ')
@@ -86,7 +87,7 @@ class Result extends Backbone.View
 	_handleLayerClick: (ev) ->
 		ev.stopPropagation()
 		layer = ev.currentTarget.getAttribute 'data-layer'
-		
+
 		@trigger 'layer:click', layer, @options.data
 
 	###

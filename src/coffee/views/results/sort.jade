@@ -11,7 +11,7 @@ button.toggle Sort
 					//- level1, level2 or level3: select it.
 					option
 					each field in Object.keys(levels)
-						- var selected = field == Object.keys(initLevels)[i - 1]
+						- var selected = field == initLevels[i - 1]
 						option(value=field, selected=selected)= levels[field]
 				i.fa.fa-sort-alpha-asc
 

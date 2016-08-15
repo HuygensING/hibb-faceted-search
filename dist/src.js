@@ -3027,14 +3027,10 @@ Config = (function(superClass) {
     } else {
       fieldMap = this._createDisplayNameMapFromFacetData('entryMetadataFields', responseModel.get('facets'));
     }
-    this.set({
-      entryMetadataFields: fieldMap
-    });
-    this.set({
-      levels: levelMap
-    });
     return this.set({
-      initLevels: initLevelMap
+      entryMetadataFields: fieldMap,
+      levelMap: levelMap,
+      initLevels: this.get('levels')
     });
   };
 
@@ -6074,6 +6070,8 @@ Results = (function(superClass) {
 
   Results.prototype.subviews = null;
 
+  Results.prototype.sortParameters = null;
+
 
   /*
   	 * @method
@@ -6141,6 +6139,11 @@ Results = (function(superClass) {
     this.$('header nav ul').prepend(this.subviews.sortLevels.$el);
     return this.listenTo(this.subviews.sortLevels, 'change', (function(_this) {
       return function(sortParameters) {
+        _this.sortParameters = sortParameters.map(function(sp) {
+          return sp.fieldname;
+        }).map(function(sp) {
+          return _this.options.config.get('levelMap')[sp];
+        });
         return _this.trigger('change:sort-levels', sortParameters);
       };
     })(this));
@@ -6178,6 +6181,11 @@ Results = (function(superClass) {
     for (k = 0, len = resultArray.length; k < len; k++) {
       result = resultArray[k];
       result = new Result({
+        sortParameters: this.sortParameters || this.options.config.get('initLevels').map((function(_this) {
+          return function(il) {
+            return _this.options.config.get('levelMap')[il];
+          };
+        })(this)),
         data: result,
         fulltext: fulltext,
         config: this.options.config
@@ -6438,6 +6446,7 @@ Result = (function(superClass) {
       this.template = this.options.config.get('templates').result;
     }
     tplData = {
+      sortParameters: this.options.sortParameters,
       data: this.options.data,
       fulltext: this.options.fulltext,
       found: found.join(', ')
@@ -6670,7 +6679,7 @@ tpl = _dereq_('./sort.jade');
 /*
  * Input element to set the sorting levels. There are three levels and every
  * level can be set ascending or descending.
- * 
+ *
  * @class
  * @namespace Views
  * @uses Config
@@ -6723,7 +6732,7 @@ SortLevels = (function(superClass) {
     if (Object.keys(this.options.config.get('initLevels')).length > 0) {
       rtpl = tpl({
         initLevels: this.options.config.get('initLevels'),
-        levels: this.options.config.get('levels')
+        levels: this.options.config.get('levelMap')
       });
       this.$el.html(rtpl);
       levels = this.$('div.levels');
@@ -6879,7 +6888,7 @@ buf.push("<li" + (jade.attr("name", 'level'+i, true, false)) + "><label>" + (jad
     for (var $index = 0, $$l = $$obj.length; $index < $$l; $index++) {
       var field = $$obj[$index];
 
-var selected = field == Object.keys(initLevels)[i - 1]
+var selected = field == initLevels[i - 1]
 buf.push("<option" + (jade.attr("value", field, true, false)) + (jade.attr("selected", selected, true, false)) + ">" + (jade.escape(null == (jade_interp = levels[field]) ? "" : jade_interp)) + "</option>");
     }
 
@@ -6888,7 +6897,7 @@ buf.push("<option" + (jade.attr("value", field, true, false)) + (jade.attr("sele
     for (var $index in $$obj) {
       $$l++;      var field = $$obj[$index];
 
-var selected = field == Object.keys(initLevels)[i - 1]
+var selected = field == initLevels[i - 1]
 buf.push("<option" + (jade.attr("value", field, true, false)) + (jade.attr("selected", selected, true, false)) + ">" + (jade.escape(null == (jade_interp = levels[field]) ? "" : jade_interp)) + "</option>");
     }
 
@@ -6912,7 +6921,7 @@ buf.push("<li" + (jade.attr("name", 'level'+i, true, false)) + "><label>" + (jad
     for (var $index = 0, $$l = $$obj.length; $index < $$l; $index++) {
       var field = $$obj[$index];
 
-var selected = field == Object.keys(initLevels)[i - 1]
+var selected = field == initLevels[i - 1]
 buf.push("<option" + (jade.attr("value", field, true, false)) + (jade.attr("selected", selected, true, false)) + ">" + (jade.escape(null == (jade_interp = levels[field]) ? "" : jade_interp)) + "</option>");
     }
 
@@ -6921,7 +6930,7 @@ buf.push("<option" + (jade.attr("value", field, true, false)) + (jade.attr("sele
     for (var $index in $$obj) {
       $$l++;      var field = $$obj[$index];
 
-var selected = field == Object.keys(initLevels)[i - 1]
+var selected = field == initLevels[i - 1]
 buf.push("<option" + (jade.attr("value", field, true, false)) + (jade.attr("selected", selected, true, false)) + ">" + (jade.escape(null == (jade_interp = levels[field]) ? "" : jade_interp)) + "</option>");
     }
 

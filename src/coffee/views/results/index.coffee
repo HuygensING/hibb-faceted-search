@@ -38,16 +38,18 @@ class Results extends Backbone.View
 	# @type {Array<Result>}
 	###
 	resultItems: null
-	
+
 	###
 	# Hash to keep track of instanciated subviews.
 	#
 	# Should be redefined during initialization to prevent sharing between instances.
 	#
 	# @property
-	# @type {Object}	
+	# @type {Object}
 	###
 	subviews: null
+
+	sortParameters: null
 
 	###
 	# @method
@@ -64,7 +66,7 @@ class Results extends Backbone.View
 
 		@listenTo @options.searchResults, 'change:results', (responseModel) =>
 			@$('header h3.numfound').html "#{@options.config.get('labels').numFound} #{responseModel.get('numFound')} #{@options.config.get('termPlural')}"
-			
+
 			@renderPagination responseModel
 
 			@_renderResultsPage responseModel
@@ -105,6 +107,9 @@ class Results extends Backbone.View
 		@$('header nav ul').prepend @subviews.sortLevels.$el
 
 		@listenTo @subviews.sortLevels, 'change', (sortParameters) =>
+			this.sortParameters = sortParameters							# [{fieldname: 'test', direction: 'asc'}]
+				.map((sp) => sp.fieldname)											# ['test']
+				.map((sp) => @options.config.get('levelMap')[sp])	# ['Test']
 			@trigger 'change:sort-levels', sortParameters
 
 	###
@@ -123,7 +128,7 @@ class Results extends Backbone.View
 		fulltext = false
 
 		resultArray = responseModel.get('results')
-		
+
 		if resultArray.length == 0 && responseModel.get('refs').length > 0
 			resultArray = responseModel.get('refs')
 			for i in [0..resultArray.length - 1]
@@ -133,13 +138,14 @@ class Results extends Backbone.View
 		if resultArray.length > 0 and resultArray[0].terms?
 			if Object.keys(resultArray[0].terms).length > 0
 				fulltext = true
-		
+
 		# Create a document fragment and append entry listitem views.
 		frag = document.createDocumentFragment()
 
 		for result in resultArray
 			# Instantiate a new list item.
 			result = new Result
+				sortParameters: this.sortParameters or @options.config.get('initLevels').map((il) => @options.config.get('levelMap')[il])
 				data: result
 				fulltext: fulltext
 				config: @options.config

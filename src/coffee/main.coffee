@@ -48,7 +48,7 @@ class MainView extends Backbone.View
 	initialize: (@options={}) ->
 		configOptions = _.clone @options
 		delete configOptions.facetViewMap
-		
+
 		@extendConfig configOptions
 
 		# The text search is split with an init method and a render method, because
@@ -78,7 +78,7 @@ class MainView extends Backbone.View
 		@el.innerHTML = tpl()
 
 		# Instantiate the Facets view after instantiating the QueryOptions model and
-		# after rendering the main template, but before rendering the textSearch. 
+		# after rendering the main template, but before rendering the textSearch.
 		# The textSearchPlaceholder can be located in the main and in the facets template.
 		# So we render the facets view to get (potentially) the div.text-search-placeholder
 		# and call renderFacets in @update, to actually render the separate facet views.
@@ -104,7 +104,7 @@ class MainView extends Backbone.View
 
 		@listenTo @textSearch, 'search', =>
 			@search()
-		
+
 	###
 	# @method
 	# @private
@@ -130,7 +130,7 @@ class MainView extends Backbone.View
 
 		@listenTo @results, 'result:click', (data) ->
 			@trigger 'result:click', data
-			
+
 		@listenTo @results, 'result:layer-click', (layer, data) ->
 			@trigger 'result:layer-click', layer, data
 
@@ -183,7 +183,7 @@ class MainView extends Backbone.View
 	extendConfig: (options) ->
 		# Create a map of properties which need to be extended (not overriden)
 		# TODO ERROR PRONE!
-		toBeExtended = 
+		toBeExtended =
 			facetDisplayNames: null
 			textSearchOptions: null
 			labels: null
@@ -429,7 +429,7 @@ class MainView extends Backbone.View
 	refresh: (newQueryOptions={}) ->
 		if Object.keys(newQueryOptions).length > 0
 			@queryOptions.set newQueryOptions, silent: true
-			
+
 		@search cache: false
 
 	###
@@ -458,12 +458,12 @@ class MainView extends Backbone.View
 	searchValue: (facetName, values) ->
 		values = [values] if typeof values is 'string'
 
-		hasProp = @facets.views.hasOwnProperty facetName 
+		hasProp = @facets.views.hasOwnProperty facetName
 
 		if hasProp
 			isListFacet = @facets.views[facetName] instanceof ListFacet
 			isBooleanFacet = @facets.views[facetName] instanceof BooleanFacet
-		
+
 		unless hasProp
 			throw "The facets view doesn't have a \"#{facetName}\""
 

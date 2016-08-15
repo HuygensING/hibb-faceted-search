@@ -8,7 +8,7 @@ tpl = require './sort.jade'
 ###
 # Input element to set the sorting levels. There are three levels and every
 # level can be set ascending or descending.
-# 
+#
 # @class
 # @namespace Views
 # @uses Config
@@ -44,7 +44,7 @@ class SortLevels extends Backbone.View
 		if Object.keys(@options.config.get('initLevels')).length > 0
 			rtpl = tpl
 				initLevels: @options.config.get('initLevels')
-				levels: @options.config.get('levels')
+				levels: @options.config.get('levelMap')
 			@$el.html rtpl
 
 
