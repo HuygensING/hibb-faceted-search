@@ -4173,7 +4173,17 @@ ListFacet = (function(superClass) {
     var el;
     el = this.el.querySelector('.body > .container');
     if (el.scrollHeight > el.clientHeight) {
-      return this.$el.addClass('with-scrollbar');
+      this.$el.addClass('with-scrollbar');
+    }
+    if (this.options.attrs.name === 'dynamic_s_koppelnaam') {
+      this._changeOrder({
+        currentTarget: this.$('.alpha')[0]
+      });
+    }
+    if (this.options.attrs.name === 'dynamic_s_altname') {
+      return this._changeOrder({
+        currentTarget: this.$('.alpha')[0]
+      });
     }
   };
 

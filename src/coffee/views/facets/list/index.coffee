@@ -30,7 +30,7 @@ class ListFacet extends FacetView
 	# @construct
 	# @override FacetView::initialize
 	# @param {Object} this.options
-	###	
+	###
 	initialize: (@options) ->
 		super
 
@@ -82,6 +82,11 @@ class ListFacet extends FacetView
 		if el.scrollHeight > el.clientHeight
 			@$el.addClass 'with-scrollbar'
 
+		if @options.attrs.name is 'dynamic_s_koppelnaam'
+			this._changeOrder({currentTarget: @$('.alpha')[0]})
+
+		if @options.attrs.name is 'dynamic_s_altname'
+			this._changeOrder({currentTarget: @$('.alpha')[0]})
 	###
 	# Renders the count of the filtered options (ie: "3 of 8") next to the filter < input >
 	#
@@ -155,9 +160,9 @@ class ListFacet extends FacetView
 
 		if $(ev.currentTarget).is(".active")
 			order = if $(ev.currentTarget).attr("class").indexOf("descending") > -1 then "asc" else "desc"
-			
+
 			if $(ev.currentTarget).is(".alpha")
-				$(@el).find("svg.alpha").each((i, el) => 
+				$(@el).find("svg.alpha").each((i, el) =>
 					$(el).attr("class", $(el).attr("class").replace(" visible", ""))
 					if el isnt ev.currentTarget
 						$(el).attr("class", $(el).attr("class") + " visible active");
@@ -165,7 +170,7 @@ class ListFacet extends FacetView
 						$(el).attr("class", $(el).attr("class").replace(" active", ""))
 				)
 			else if $(ev.currentTarget).is(".count")
-				$(@el).find("svg.count").each((i, el) => 
+				$(@el).find("svg.count").each((i, el) =>
 					$(el).attr("class", $(el).attr("class").replace(" visible", ""))
 					if el isnt ev.currentTarget
 						$(el).attr("class", $(el).attr("class") + " visible active");
@@ -219,7 +224,7 @@ class ListFacet extends FacetView
 	###
 	revert: ->
 		@_toggleFilterMenu() if @el.querySelector('svg.filter')? and $('svg.filter').is('.active')
-		
+
 		@collection.revert()
 		@collection.sort()
 
