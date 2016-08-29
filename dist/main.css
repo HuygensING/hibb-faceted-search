@@ -534,7 +534,7 @@
 }
 .facet.range .body .slider .bar {
   height: 6px;
-  background: rgba(225,9,121,0.3);
+  background: rgba(0,103,193,0.3);
   left: 0;
   right: 0;
   position: absolute;
@@ -627,7 +627,7 @@
 .facet.range .body .slider .handle label.month-min.edit,
 .facet.range .body .slider .handle input.month-max.edit,
 .facet.range .body .slider .handle label.month-max.edit {
-  background: rgba(255,189,223,0.3);
+  background: rgba(0,103,193,0.3);
 }
 .facet.range .body .slider .handle input.min,
 .facet.range .body .slider .handle label.min,
