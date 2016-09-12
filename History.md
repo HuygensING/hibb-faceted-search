@@ -1,3 +1,6 @@
+### v2.6.5	(2016/9/12)
+* Add withCredentials ajax option
+
 ### v2.6.4	(2015/12/8)
 * ie bugfix classList not supported
 
