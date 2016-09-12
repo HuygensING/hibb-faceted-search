@@ -654,7 +654,7 @@ module.exports = MainView;
 
 
 
-},{"../jade/main.jade":46,"./collections/searchresults":13,"./models/config":14,"./models/query-options":17,"./views/facets":20,"./views/facets/boolean":21,"./views/facets/list":23,"./views/results":36,"./views/text-search":42,"assert":2,"backbone":undefined,"funcky.el":8,"jquery":undefined,"underscore":undefined}],2:[function(_dereq_,module,exports){
+},{"../jade/main.jade":46,"./collections/searchresults":13,"./models/config":14,"./models/query-options":17,"./views/facets":20,"./views/facets/boolean":21,"./views/facets/list":23,"./views/results":36,"./views/text-search":42,"assert":2,"backbone":undefined,"funcky.el":4,"jquery":undefined,"underscore":undefined}],2:[function(_dereq_,module,exports){
 // http://wiki.commonjs.org/wiki/Unit_Testing/1.0
 //
 // THIS IS NOT TESTED NOR LIKELY TO WORK OUTSIDE V8!
@@ -1015,9 +1015,653 @@ var objectKeys = Object.keys || function (obj) {
   return keys;
 };
 
-},{"util/":7}],3:[function(_dereq_,module,exports){
+},{"util/":12}],3:[function(_dereq_,module,exports){
 
 },{}],4:[function(_dereq_,module,exports){
+(function() {
+  module.exports = {
+    el: function(el) {
+      return {
+        closest: function(selector) {
+          var matchesSelector;
+          matchesSelector = el.matches || el.webkitMatchesSelector || el.mozMatchesSelector || el.msMatchesSelector;
+          while (el) {
+            if (matchesSelector.bind(el)(selector)) {
+              return el;
+            } else {
+              el = el.parentNode;
+            }
+          }
+        },
+
+        /*
+        		Native alternative to jQuery's $.offset()
+        
+        		http://www.quirksmode.org/js/findpos.html
+         */
+        position: function(parent) {
+          var left, loopEl, top;
+          if (parent == null) {
+            parent = document.body;
+          }
+          left = 0;
+          top = 0;
+          loopEl = el;
+          while ((loopEl != null) && loopEl !== parent) {
+            if (this.hasDescendant(parent)) {
+              break;
+            }
+            left += loopEl.offsetLeft;
+            top += loopEl.offsetTop;
+            loopEl = loopEl.offsetParent;
+          }
+          return {
+            left: left,
+            top: top
+          };
+        },
+        boundingBox: function() {
+          var box;
+          box = this.position();
+          box.width = el.clientWidth;
+          box.height = el.clientHeight;
+          box.right = box.left + box.width;
+          box.bottom = box.top + box.height;
+          return box;
+        },
+
+        /*
+        		Is child el a descendant of parent el?
+        
+        		http://stackoverflow.com/questions/2234979/how-to-check-in-javascript-if-one-element-is-a-child-of-another
+         */
+        hasDescendant: function(child) {
+          var node;
+          node = child.parentNode;
+          while (node != null) {
+            if (node === el) {
+              return true;
+            }
+            node = node.parentNode;
+          }
+          return false;
+        },
+        insertAfter: function(referenceElement) {
+          return referenceElement.parentNode.insertBefore(el, referenceElement.nextSibling);
+        },
+        hasScrollBar: function(el) {
+          return hasScrollBarX(el) || hasScrollBarY(el);
+        },
+        hasScrollBarX: function(el) {
+          return el.scrollWidth > el.clientWidth;
+        },
+        hasScrollBarY: function(el) {
+          return el.scrollHeight > el.clientHeight;
+        },
+        inViewport: function(parent) {
+          var doc, rect, win;
+          win = parent != null ? parent : window;
+          doc = parent != null ? parent : document.documentElement;
+          rect = el.getBoundingClientRect();
+          return rect.top >= 0 && rect.left >= 0 && rect.bottom <= (win.innerHeight || doc.clientHeight) && rect.right <= (win.innerWidth || doc.clientWidth);
+        }
+      };
+    }
+  };
+
+}).call(this);
+
+},{}],5:[function(_dereq_,module,exports){
+(function() {
+  var __hasProp = {}.hasOwnProperty;
+
+  module.exports = {
+    get: function(url, options) {
+      if (options == null) {
+        options = {};
+      }
+      return this._sendRequest('GET', url, options);
+    },
+    post: function(url, options) {
+      if (options == null) {
+        options = {};
+      }
+      return this._sendRequest('POST', url, options);
+    },
+    put: function(url, options) {
+      if (options == null) {
+        options = {};
+      }
+      return this._sendRequest('PUT', url, options);
+    },
+    _promise: function() {
+      return {
+        done: function(fn) {
+          return this.callDone = fn;
+        },
+        callDone: null,
+        fail: function(fn) {
+          return this.callFail = fn;
+        },
+        callFail: null,
+        always: function(fn) {
+          return this.callAlways = fn;
+        },
+        callAlways: null
+      };
+    },
+    _sendRequest: function(method, url, options) {
+      var header, promise, value, xhr, _ref;
+      if (options == null) {
+        options = {};
+      }
+      promise = this._promise();
+      if (options.headers == null) {
+        options.headers = {};
+      }
+      xhr = new XMLHttpRequest();
+      xhr.onreadystatechange = function() {
+        var _ref;
+        if (xhr.readyState === 4) {
+          if (promise.callAlways != null) {
+            promise.callAlways(xhr);
+          }
+          if ((200 <= (_ref = xhr.status) && _ref <= 206) || xhr.status === 1223) {
+            if (promise.callDone != null) {
+              return promise.callDone(xhr);
+            }
+          } else {
+            if (promise.callFail != null) {
+              return promise.callFail(xhr);
+            }
+          }
+        }
+      };
+      xhr.open(method, url, true);
+      xhr.setRequestHeader("Content-type", "application/json");
+      _ref = options.headers;
+      for (header in _ref) {
+        if (!__hasProp.call(_ref, header)) continue;
+        value = _ref[header];
+        xhr.setRequestHeader(header, value);
+      }
+      xhr.send(options.data);
+      return promise;
+    }
+  };
+
+}).call(this);
+
+},{}],6:[function(_dereq_,module,exports){
+(function(){module.exports={generateID:function(t){var n,r;for(t=null!=t&&t>0?t-1:7,n="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789",r=n.charAt(Math.floor(52*Math.random()));t--;)r+=n.charAt(Math.floor(Math.random()*n.length));return r},setResetTimeout:function(){var t;return t=null,function(n,r,e){return null!=t&&(null!=e&&e(),clearTimeout(t)),t=setTimeout(function(){return t=null,r()},n)}}()}}).call(this);
+},{}],7:[function(_dereq_,module,exports){
+(function (global){
+(function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g.Pagination = f()}})(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof _dereq_=="function"&&_dereq_;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof _dereq_=="function"&&_dereq_;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(_dereq_,module,exports){
+var $, Backbone, Pagination, tpl, util,
+  extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
+  hasProp = {}.hasOwnProperty;
+
+Backbone = _dereq_('backbone');
+
+$ = _dereq_('jquery');
+
+Backbone.$ = $;
+
+util = _dereq_('funcky.util');
+
+tpl = _dereq_('./main.jade');
+
+
+/*
+Create a pagination view.
+@class
+@extends Backbone.View
+ */
+
+Pagination = (function(superClass) {
+  extend(Pagination, superClass);
+
+  function Pagination() {
+    return Pagination.__super__.constructor.apply(this, arguments);
+  }
+
+  Pagination.prototype.tagName = 'ul';
+
+  Pagination.prototype.className = 'hibb-pagination';
+
+
+  /*
+  	@constructs
+  	@param {object} this.options
+  	@prop {number} options.resultsTotal - Total number of results.
+  	@prop {number} options.resultsPerPage - Number of results per page.
+  	@prop {number} [options.resultsStart=0] - The result item to start at. Not the start page!
+  	@prop {boolean} [options.step10=true] - Render (<< and >>) for steps of 10.
+  	@prop {boolean} [options.triggerPageNumber=true] - Trigger the new pageNumber (true) or prev/next (false).
+  	@prop {array<String>} [options.showPageNames] - Show `1 page of 23 pages` instead of `1 of 23`. Array contains the singular and plural version, ie: ["page", "pages"]
+   */
+
+  Pagination.prototype.initialize = function(options) {
+    var base, base1;
+    this.options = options != null ? options : {};
+    if ((base = this.options).step10 == null) {
+      base.step10 = true;
+    }
+    if ((base1 = this.options).triggerPageNumber == null) {
+      base1.triggerPageNumber = true;
+    }
+    this._currentPageNumber = (this.options.resultsStart != null) && this.options.resultsStart > 0 ? (this.options.resultsStart / this.options.resultsPerPage) + 1 : 1;
+    return this.setPageNumber(this._currentPageNumber, true);
+  };
+
+  Pagination.prototype.render = function() {
+    var attrs;
+    this._pageCount = Math.ceil(this.options.resultsTotal / this.options.resultsPerPage);
+    attrs = $.extend(this.options, {
+      currentPageNumber: this._currentPageNumber,
+      pageCount: this._pageCount
+    });
+    this.el.innerHTML = tpl(attrs);
+    if (this._pageCount <= 1) {
+      this.$el.hide();
+    }
+    return this;
+  };
+
+  Pagination.prototype.events = function() {
+    return {
+      'click li.prev10.active': '_handlePrev10',
+      'click li.prev.active': '_handlePrev',
+      'click li.next.active': '_handleNext',
+      'click li.next10.active': '_handleNext10',
+      'click li.current:not(.active)': '_handleCurrentClick',
+      'blur li.current.active input': '_handleBlur',
+      'keyup li.current.active input': '_handleKeyup'
+    };
+  };
+
+  Pagination.prototype._handlePrev10 = function() {
+    return this.setPageNumber(this._currentPageNumber - 10);
+  };
+
+  Pagination.prototype._handlePrev = function() {
+    return this.setPageNumber(this._currentPageNumber - 1);
+  };
+
+  Pagination.prototype._handleNext = function() {
+    return this.setPageNumber(this._currentPageNumber + 1);
+  };
+
+  Pagination.prototype._handleNext10 = function() {
+    return this.setPageNumber(this._currentPageNumber + 10);
+  };
+
+  Pagination.prototype._handleCurrentClick = function(ev) {
+    var input, span, target;
+    target = this.$(ev.currentTarget);
+    span = target.find('span');
+    input = target.find('input');
+    input.width(span.width());
+    target.addClass('active');
+    input.animate({
+      width: 40
+    }, 'fast');
+    input.focus();
+    return input.val(this._currentPageNumber);
+  };
+
+  Pagination.prototype._handleKeyup = function(ev) {
+    var input, newPageNumber;
+    input = this.$(ev.currentTarget);
+    newPageNumber = +input.val();
+    if (ev.keyCode === 13) {
+      if ((1 <= newPageNumber && newPageNumber <= this._pageCount)) {
+        this.setPageNumber(newPageNumber);
+      }
+      return this._deactivateCurrentLi(input);
+    }
+  };
+
+  Pagination.prototype._handleBlur = function(ev) {
+    return this._deactivateCurrentLi(this.$(ev.currentTarget));
+  };
+
+  Pagination.prototype._deactivateCurrentLi = function(input) {
+    return input.animate({
+      width: 0
+    }, 'fast', function() {
+      var li;
+      li = input.parent();
+      return li.removeClass('active');
+    });
+  };
+
+
+  /*
+  	@method getCurrentPageNumber
+  	@returns {number}
+   */
+
+  Pagination.prototype.getCurrentPageNumber = function() {
+    return this._currentPageNumber;
+  };
+
+
+  /*
+  	@method setPageNumber
+  	@param {number} pageNumber
+  	@param {boolean} [silent=false]
+   */
+
+  Pagination.prototype.setPageNumber = function(pageNumber, silent) {
+    var direction;
+    if (silent == null) {
+      silent = false;
+    }
+    if (!this.triggerPageNumber) {
+      direction = pageNumber < this._currentPageNumber ? 'prev' : 'next';
+      this.trigger(direction);
+    }
+    this._currentPageNumber = pageNumber;
+    this.render();
+    if (!silent) {
+      return util.setResetTimeout(500, (function(_this) {
+        return function() {
+          return _this.trigger('change:pagenumber', pageNumber);
+        };
+      })(this));
+    }
+  };
+
+  Pagination.prototype.destroy = function() {
+    return this.remove();
+  };
+
+  return Pagination;
+
+})(Backbone.View);
+
+module.exports = Pagination;
+
+
+
+},{"./main.jade":5,"backbone":undefined,"funcky.util":3,"jquery":undefined}],2:[function(_dereq_,module,exports){
+
+},{}],3:[function(_dereq_,module,exports){
+(function(){module.exports={generateID:function(t){var n,r;for(t=null!=t&&t>0?t-1:7,n="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789",r=n.charAt(Math.floor(52*Math.random()));t--;)r+=n.charAt(Math.floor(Math.random()*n.length));return r},setResetTimeout:function(){var t;return t=null,function(n,r,e){return null!=t&&(null!=e&&e(),clearTimeout(t)),t=setTimeout(function(){return t=null,r()},n)}}()}}).call(this);
+},{}],4:[function(_dereq_,module,exports){
+(function (global){
+!function(e){if("object"==typeof exports&&"undefined"!=typeof module)module.exports=e();else if("function"==typeof define&&define.amd)define([],e);else{var f;"undefined"!=typeof window?f=window:"undefined"!=typeof global?f=global:"undefined"!=typeof self&&(f=self),f.jade=e()}}(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof _dereq_=="function"&&_dereq_;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof _dereq_=="function"&&_dereq_;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(_dereq_,module,exports){
+'use strict';
+
+/**
+ * Merge two attribute objects giving precedence
+ * to values in object `b`. Classes are special-cased
+ * allowing for arrays and merging/joining appropriately
+ * resulting in a string.
+ *
+ * @param {Object} a
+ * @param {Object} b
+ * @return {Object} a
+ * @api private
+ */
+
+exports.merge = function merge(a, b) {
+  if (arguments.length === 1) {
+    var attrs = a[0];
+    for (var i = 1; i < a.length; i++) {
+      attrs = merge(attrs, a[i]);
+    }
+    return attrs;
+  }
+  var ac = a['class'];
+  var bc = b['class'];
+
+  if (ac || bc) {
+    ac = ac || [];
+    bc = bc || [];
+    if (!Array.isArray(ac)) ac = [ac];
+    if (!Array.isArray(bc)) bc = [bc];
+    a['class'] = ac.concat(bc).filter(nulls);
+  }
+
+  for (var key in b) {
+    if (key != 'class') {
+      a[key] = b[key];
+    }
+  }
+
+  return a;
+};
+
+/**
+ * Filter null `val`s.
+ *
+ * @param {*} val
+ * @return {Boolean}
+ * @api private
+ */
+
+function nulls(val) {
+  return val != null && val !== '';
+}
+
+/**
+ * join array as classes.
+ *
+ * @param {*} val
+ * @return {String}
+ */
+exports.joinClasses = joinClasses;
+function joinClasses(val) {
+  return (Array.isArray(val) ? val.map(joinClasses) :
+    (val && typeof val === 'object') ? Object.keys(val).filter(function (key) { return val[key]; }) :
+    [val]).filter(nulls).join(' ');
+}
+
+/**
+ * Render the given classes.
+ *
+ * @param {Array} classes
+ * @param {Array.<Boolean>} escaped
+ * @return {String}
+ */
+exports.cls = function cls(classes, escaped) {
+  var buf = [];
+  for (var i = 0; i < classes.length; i++) {
+    if (escaped && escaped[i]) {
+      buf.push(exports.escape(joinClasses([classes[i]])));
+    } else {
+      buf.push(joinClasses(classes[i]));
+    }
+  }
+  var text = joinClasses(buf);
+  if (text.length) {
+    return ' class="' + text + '"';
+  } else {
+    return '';
+  }
+};
+
+
+exports.style = function (val) {
+  if (val && typeof val === 'object') {
+    return Object.keys(val).map(function (style) {
+      return style + ':' + val[style];
+    }).join(';');
+  } else {
+    return val;
+  }
+};
+/**
+ * Render the given attribute.
+ *
+ * @param {String} key
+ * @param {String} val
+ * @param {Boolean} escaped
+ * @param {Boolean} terse
+ * @return {String}
+ */
+exports.attr = function attr(key, val, escaped, terse) {
+  if (key === 'style') {
+    val = exports.style(val);
+  }
+  if ('boolean' == typeof val || null == val) {
+    if (val) {
+      return ' ' + (terse ? key : key + '="' + key + '"');
+    } else {
+      return '';
+    }
+  } else if (0 == key.indexOf('data') && 'string' != typeof val) {
+    if (JSON.stringify(val).indexOf('&') !== -1) {
+      console.warn('Since Jade 2.0.0, ampersands (`&`) in data attributes ' +
+                   'will be escaped to `&amp;`');
+    };
+    if (val && typeof val.toISOString === 'function') {
+      console.warn('Jade will eliminate the double quotes around dates in ' +
+                   'ISO form after 2.0.0');
+    }
+    return ' ' + key + "='" + JSON.stringify(val).replace(/'/g, '&apos;') + "'";
+  } else if (escaped) {
+    if (val && typeof val.toISOString === 'function') {
+      console.warn('Jade will stringify dates in ISO form after 2.0.0');
+    }
+    return ' ' + key + '="' + exports.escape(val) + '"';
+  } else {
+    if (val && typeof val.toISOString === 'function') {
+      console.warn('Jade will stringify dates in ISO form after 2.0.0');
+    }
+    return ' ' + key + '="' + val + '"';
+  }
+};
+
+/**
+ * Render the given attributes object.
+ *
+ * @param {Object} obj
+ * @param {Object} escaped
+ * @return {String}
+ */
+exports.attrs = function attrs(obj, terse){
+  var buf = [];
+
+  var keys = Object.keys(obj);
+
+  if (keys.length) {
+    for (var i = 0; i < keys.length; ++i) {
+      var key = keys[i]
+        , val = obj[key];
+
+      if ('class' == key) {
+        if (val = joinClasses(val)) {
+          buf.push(' ' + key + '="' + val + '"');
+        }
+      } else {
+        buf.push(exports.attr(key, val, false, terse));
+      }
+    }
+  }
+
+  return buf.join('');
+};
+
+/**
+ * Escape the given string of `html`.
+ *
+ * @param {String} html
+ * @return {String}
+ * @api private
+ */
+
+exports.escape = function escape(html){
+  var result = String(html)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+  if (result === '' + html) return html;
+  else return result;
+};
+
+/**
+ * Re-throw the given `err` in context to the
+ * the jade in `filename` at the given `lineno`.
+ *
+ * @param {Error} err
+ * @param {String} filename
+ * @param {String} lineno
+ * @api private
+ */
+
+exports.rethrow = function rethrow(err, filename, lineno, str){
+  if (!(err instanceof Error)) throw err;
+  if ((typeof window != 'undefined' || !filename) && !str) {
+    err.message += ' on line ' + lineno;
+    throw err;
+  }
+  try {
+    str = str || _dereq_('fs').readFileSync(filename, 'utf8')
+  } catch (ex) {
+    rethrow(err, null, lineno)
+  }
+  var context = 3
+    , lines = str.split('\n')
+    , start = Math.max(lineno - context, 0)
+    , end = Math.min(lines.length, lineno + context);
+
+  // Error context
+  var context = lines.slice(start, end).map(function(line, i){
+    var curr = i + start + 1;
+    return (curr == lineno ? '  > ' : '    ')
+      + curr
+      + '| '
+      + line;
+  }).join('\n');
+
+  // Alter exception message
+  err.path = filename;
+  err.message = (filename || 'Jade') + ':' + lineno
+    + '\n' + context + '\n\n' + err.message;
+  throw err;
+};
+
+},{"fs":2}],2:[function(_dereq_,module,exports){
+
+},{}]},{},[1])(1)
+});
+}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
+},{"fs":2}],5:[function(_dereq_,module,exports){
+var jade = _dereq_("jade/runtime");
+
+module.exports = function template(locals) {
+var buf = [];
+var jade_mixins = {};
+var jade_interp;
+;var locals_for_with = (locals || {});(function (currentPageNumber, pageCount, showPageNames, step10) {
+if ( (step10 && pageCount >= 10))
+{
+buf.push("<li title=\"Jump 10 pages back\"" + (jade.cls(['prev10',currentPageNumber>10?'active':''], [null,true])) + ">&laquo;</li>");
+}
+buf.push("<li title=\"Previous page\"" + (jade.cls(['prev',currentPageNumber>1?'active':''], [null,true])) + ">&lsaquo;</li>");
+if ( (showPageNames != null))
+{
+buf.push("<li class=\"pageNameSingular\">" + (jade.escape(null == (jade_interp = showPageNames[0]) ? "" : jade_interp)) + "</li>");
+}
+buf.push("<li title=\"Edit current page\" class=\"current\"><input type=\"text\"" + (jade.attr("value", currentPageNumber, true, false)) + "/><span>" + (jade.escape(null == (jade_interp = currentPageNumber) ? "" : jade_interp)) + "</span></li><li class=\"text\">of</li><li class=\"pagecount\">" + (jade.escape(null == (jade_interp = pageCount) ? "" : jade_interp)) + "</li>");
+if ( (showPageNames != null))
+{
+buf.push("<li class=\"pageNamePlural\">" + (jade.escape(null == (jade_interp = showPageNames[1]) ? "" : jade_interp)) + "</li>");
+}
+buf.push("<li title=\"Next page\"" + (jade.cls(['next',currentPageNumber<pageCount?'active':''], [null,true])) + ">&rsaquo;</li>");
+if ( (step10 && pageCount >= 10))
+{
+buf.push("<li title=\"Jump 10 pages forward\"" + (jade.cls(['next10',currentPageNumber<=pageCount-10?'active':''], [null,true])) + ">&raquo;</li>");
+}}.call(this,"currentPageNumber" in locals_for_with?locals_for_with.currentPageNumber:typeof currentPageNumber!=="undefined"?currentPageNumber:undefined,"pageCount" in locals_for_with?locals_for_with.pageCount:typeof pageCount!=="undefined"?pageCount:undefined,"showPageNames" in locals_for_with?locals_for_with.showPageNames:typeof showPageNames!=="undefined"?showPageNames:undefined,"step10" in locals_for_with?locals_for_with.step10:typeof step10!=="undefined"?step10:undefined));;return buf.join("");
+};
+},{"jade/runtime":4}]},{},[1])(1)
+});
+}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
+},{}],8:[function(_dereq_,module,exports){
 if (typeof Object.create === 'function') {
   // implementation from standard node.js 'util' module
   module.exports = function inherits(ctor, superCtor) {
@@ -1042,7 +1686,262 @@ if (typeof Object.create === 'function') {
   }
 }
 
-},{}],5:[function(_dereq_,module,exports){
+},{}],9:[function(_dereq_,module,exports){
+(function (global){
+(function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g.jade = f()}})(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof _dereq_=="function"&&_dereq_;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof _dereq_=="function"&&_dereq_;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(_dereq_,module,exports){
+'use strict';
+
+/**
+ * Merge two attribute objects giving precedence
+ * to values in object `b`. Classes are special-cased
+ * allowing for arrays and merging/joining appropriately
+ * resulting in a string.
+ *
+ * @param {Object} a
+ * @param {Object} b
+ * @return {Object} a
+ * @api private
+ */
+
+exports.merge = function merge(a, b) {
+  if (arguments.length === 1) {
+    var attrs = a[0];
+    for (var i = 1; i < a.length; i++) {
+      attrs = merge(attrs, a[i]);
+    }
+    return attrs;
+  }
+  var ac = a['class'];
+  var bc = b['class'];
+
+  if (ac || bc) {
+    ac = ac || [];
+    bc = bc || [];
+    if (!Array.isArray(ac)) ac = [ac];
+    if (!Array.isArray(bc)) bc = [bc];
+    a['class'] = ac.concat(bc).filter(nulls);
+  }
+
+  for (var key in b) {
+    if (key != 'class') {
+      a[key] = b[key];
+    }
+  }
+
+  return a;
+};
+
+/**
+ * Filter null `val`s.
+ *
+ * @param {*} val
+ * @return {Boolean}
+ * @api private
+ */
+
+function nulls(val) {
+  return val != null && val !== '';
+}
+
+/**
+ * join array as classes.
+ *
+ * @param {*} val
+ * @return {String}
+ */
+exports.joinClasses = joinClasses;
+function joinClasses(val) {
+  return (Array.isArray(val) ? val.map(joinClasses) :
+    (val && typeof val === 'object') ? Object.keys(val).filter(function (key) { return val[key]; }) :
+    [val]).filter(nulls).join(' ');
+}
+
+/**
+ * Render the given classes.
+ *
+ * @param {Array} classes
+ * @param {Array.<Boolean>} escaped
+ * @return {String}
+ */
+exports.cls = function cls(classes, escaped) {
+  var buf = [];
+  for (var i = 0; i < classes.length; i++) {
+    if (escaped && escaped[i]) {
+      buf.push(exports.escape(joinClasses([classes[i]])));
+    } else {
+      buf.push(joinClasses(classes[i]));
+    }
+  }
+  var text = joinClasses(buf);
+  if (text.length) {
+    return ' class="' + text + '"';
+  } else {
+    return '';
+  }
+};
+
+
+exports.style = function (val) {
+  if (val && typeof val === 'object') {
+    return Object.keys(val).map(function (style) {
+      return style + ':' + val[style];
+    }).join(';');
+  } else {
+    return val;
+  }
+};
+/**
+ * Render the given attribute.
+ *
+ * @param {String} key
+ * @param {String} val
+ * @param {Boolean} escaped
+ * @param {Boolean} terse
+ * @return {String}
+ */
+exports.attr = function attr(key, val, escaped, terse) {
+  if (key === 'style') {
+    val = exports.style(val);
+  }
+  if ('boolean' == typeof val || null == val) {
+    if (val) {
+      return ' ' + (terse ? key : key + '="' + key + '"');
+    } else {
+      return '';
+    }
+  } else if (0 == key.indexOf('data') && 'string' != typeof val) {
+    if (JSON.stringify(val).indexOf('&') !== -1) {
+      console.warn('Since Jade 2.0.0, ampersands (`&`) in data attributes ' +
+                   'will be escaped to `&amp;`');
+    };
+    if (val && typeof val.toISOString === 'function') {
+      console.warn('Jade will eliminate the double quotes around dates in ' +
+                   'ISO form after 2.0.0');
+    }
+    return ' ' + key + "='" + JSON.stringify(val).replace(/'/g, '&apos;') + "'";
+  } else if (escaped) {
+    if (val && typeof val.toISOString === 'function') {
+      console.warn('Jade will stringify dates in ISO form after 2.0.0');
+    }
+    return ' ' + key + '="' + exports.escape(val) + '"';
+  } else {
+    if (val && typeof val.toISOString === 'function') {
+      console.warn('Jade will stringify dates in ISO form after 2.0.0');
+    }
+    return ' ' + key + '="' + val + '"';
+  }
+};
+
+/**
+ * Render the given attributes object.
+ *
+ * @param {Object} obj
+ * @param {Object} escaped
+ * @return {String}
+ */
+exports.attrs = function attrs(obj, terse){
+  var buf = [];
+
+  var keys = Object.keys(obj);
+
+  if (keys.length) {
+    for (var i = 0; i < keys.length; ++i) {
+      var key = keys[i]
+        , val = obj[key];
+
+      if ('class' == key) {
+        if (val = joinClasses(val)) {
+          buf.push(' ' + key + '="' + val + '"');
+        }
+      } else {
+        buf.push(exports.attr(key, val, false, terse));
+      }
+    }
+  }
+
+  return buf.join('');
+};
+
+/**
+ * Escape the given string of `html`.
+ *
+ * @param {String} html
+ * @return {String}
+ * @api private
+ */
+
+var jade_encode_html_rules = {
+  '&': '&amp;',
+  '<': '&lt;',
+  '>': '&gt;',
+  '"': '&quot;'
+};
+var jade_match_html = /[&<>"]/g;
+
+function jade_encode_char(c) {
+  return jade_encode_html_rules[c] || c;
+}
+
+exports.escape = jade_escape;
+function jade_escape(html){
+  var result = String(html).replace(jade_match_html, jade_encode_char);
+  if (result === '' + html) return html;
+  else return result;
+};
+
+/**
+ * Re-throw the given `err` in context to the
+ * the jade in `filename` at the given `lineno`.
+ *
+ * @param {Error} err
+ * @param {String} filename
+ * @param {String} lineno
+ * @api private
+ */
+
+exports.rethrow = function rethrow(err, filename, lineno, str){
+  if (!(err instanceof Error)) throw err;
+  if ((typeof window != 'undefined' || !filename) && !str) {
+    err.message += ' on line ' + lineno;
+    throw err;
+  }
+  try {
+    str = str || _dereq_('fs').readFileSync(filename, 'utf8')
+  } catch (ex) {
+    rethrow(err, null, lineno)
+  }
+  var context = 3
+    , lines = str.split('\n')
+    , start = Math.max(lineno - context, 0)
+    , end = Math.min(lines.length, lineno + context);
+
+  // Error context
+  var context = lines.slice(start, end).map(function(line, i){
+    var curr = i + start + 1;
+    return (curr == lineno ? '  > ' : '    ')
+      + curr
+      + '| '
+      + line;
+  }).join('\n');
+
+  // Alter exception message
+  err.path = filename;
+  err.message = (filename || 'Jade') + ':' + lineno
+    + '\n' + context + '\n\n' + err.message;
+  throw err;
+};
+
+exports.DebugItem = function DebugItem(lineno, filename) {
+  this.lineno = lineno;
+  this.filename = filename;
+}
+
+},{"fs":2}],2:[function(_dereq_,module,exports){
+
+},{}]},{},[1])(1)
+});
+}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
+},{"fs":3}],10:[function(_dereq_,module,exports){
 // shim for using process in browser
 
 var process = module.exports = {};
@@ -1102,14 +2001,14 @@ process.chdir = function (dir) {
 };
 process.umask = function() { return 0; };
 
-},{}],6:[function(_dereq_,module,exports){
+},{}],11:[function(_dereq_,module,exports){
 module.exports = function isBuffer(arg) {
   return arg && typeof arg === 'object'
     && typeof arg.copy === 'function'
     && typeof arg.fill === 'function'
     && typeof arg.readUInt8 === 'function';
 }
-},{}],7:[function(_dereq_,module,exports){
+},{}],12:[function(_dereq_,module,exports){
 (function (process,global){
 // Copyright Joyent, Inc. and other Node contributors.
 //
@@ -1699,906 +2598,7 @@ function hasOwnProperty(obj, prop) {
 }
 
 }).call(this,_dereq_('_process'),typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./support/isBuffer":6,"_process":5,"inherits":4}],8:[function(_dereq_,module,exports){
-(function() {
-  module.exports = {
-    el: function(el) {
-      return {
-        closest: function(selector) {
-          var matchesSelector;
-          matchesSelector = el.matches || el.webkitMatchesSelector || el.mozMatchesSelector || el.msMatchesSelector;
-          while (el) {
-            if (matchesSelector.bind(el)(selector)) {
-              return el;
-            } else {
-              el = el.parentNode;
-            }
-          }
-        },
-
-        /*
-        		Native alternative to jQuery's $.offset()
-        
-        		http://www.quirksmode.org/js/findpos.html
-         */
-        position: function(parent) {
-          var left, loopEl, top;
-          if (parent == null) {
-            parent = document.body;
-          }
-          left = 0;
-          top = 0;
-          loopEl = el;
-          while ((loopEl != null) && loopEl !== parent) {
-            if (this.hasDescendant(parent)) {
-              break;
-            }
-            left += loopEl.offsetLeft;
-            top += loopEl.offsetTop;
-            loopEl = loopEl.offsetParent;
-          }
-          return {
-            left: left,
-            top: top
-          };
-        },
-        boundingBox: function() {
-          var box;
-          box = this.position();
-          box.width = el.clientWidth;
-          box.height = el.clientHeight;
-          box.right = box.left + box.width;
-          box.bottom = box.top + box.height;
-          return box;
-        },
-
-        /*
-        		Is child el a descendant of parent el?
-        
-        		http://stackoverflow.com/questions/2234979/how-to-check-in-javascript-if-one-element-is-a-child-of-another
-         */
-        hasDescendant: function(child) {
-          var node;
-          node = child.parentNode;
-          while (node != null) {
-            if (node === el) {
-              return true;
-            }
-            node = node.parentNode;
-          }
-          return false;
-        },
-        insertAfter: function(referenceElement) {
-          return referenceElement.parentNode.insertBefore(el, referenceElement.nextSibling);
-        },
-        hasScrollBar: function(el) {
-          return hasScrollBarX(el) || hasScrollBarY(el);
-        },
-        hasScrollBarX: function(el) {
-          return el.scrollWidth > el.clientWidth;
-        },
-        hasScrollBarY: function(el) {
-          return el.scrollHeight > el.clientHeight;
-        },
-        inViewport: function(parent) {
-          var doc, rect, win;
-          win = parent != null ? parent : window;
-          doc = parent != null ? parent : document.documentElement;
-          rect = el.getBoundingClientRect();
-          return rect.top >= 0 && rect.left >= 0 && rect.bottom <= (win.innerHeight || doc.clientHeight) && rect.right <= (win.innerWidth || doc.clientWidth);
-        }
-      };
-    }
-  };
-
-}).call(this);
-
-},{}],9:[function(_dereq_,module,exports){
-(function() {
-  var __hasProp = {}.hasOwnProperty;
-
-  module.exports = {
-    get: function(url, options) {
-      if (options == null) {
-        options = {};
-      }
-      return this._sendRequest('GET', url, options);
-    },
-    post: function(url, options) {
-      if (options == null) {
-        options = {};
-      }
-      return this._sendRequest('POST', url, options);
-    },
-    put: function(url, options) {
-      if (options == null) {
-        options = {};
-      }
-      return this._sendRequest('PUT', url, options);
-    },
-    _promise: function() {
-      return {
-        done: function(fn) {
-          return this.callDone = fn;
-        },
-        callDone: null,
-        fail: function(fn) {
-          return this.callFail = fn;
-        },
-        callFail: null,
-        always: function(fn) {
-          return this.callAlways = fn;
-        },
-        callAlways: null
-      };
-    },
-    _sendRequest: function(method, url, options) {
-      var header, promise, value, xhr, _ref;
-      if (options == null) {
-        options = {};
-      }
-      promise = this._promise();
-      if (options.headers == null) {
-        options.headers = {};
-      }
-      xhr = new XMLHttpRequest();
-      xhr.onreadystatechange = function() {
-        var _ref;
-        if (xhr.readyState === 4) {
-          if (promise.callAlways != null) {
-            promise.callAlways(xhr);
-          }
-          if ((200 <= (_ref = xhr.status) && _ref <= 206) || xhr.status === 1223) {
-            if (promise.callDone != null) {
-              return promise.callDone(xhr);
-            }
-          } else {
-            if (promise.callFail != null) {
-              return promise.callFail(xhr);
-            }
-          }
-        }
-      };
-      xhr.open(method, url, true);
-      xhr.setRequestHeader("Content-type", "application/json");
-      _ref = options.headers;
-      for (header in _ref) {
-        if (!__hasProp.call(_ref, header)) continue;
-        value = _ref[header];
-        xhr.setRequestHeader(header, value);
-      }
-      xhr.send(options.data);
-      return promise;
-    }
-  };
-
-}).call(this);
-
-},{}],10:[function(_dereq_,module,exports){
-(function(){module.exports={generateID:function(t){var n,r;for(t=null!=t&&t>0?t-1:7,n="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789",r=n.charAt(Math.floor(52*Math.random()));t--;)r+=n.charAt(Math.floor(Math.random()*n.length));return r},setResetTimeout:function(){var t;return t=null,function(n,r,e){return null!=t&&(null!=e&&e(),clearTimeout(t)),t=setTimeout(function(){return t=null,r()},n)}}()}}).call(this);
-},{}],11:[function(_dereq_,module,exports){
-(function (global){
-(function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g.Pagination = f()}})(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof _dereq_=="function"&&_dereq_;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof _dereq_=="function"&&_dereq_;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(_dereq_,module,exports){
-var $, Backbone, Pagination, tpl, util,
-  extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
-  hasProp = {}.hasOwnProperty;
-
-Backbone = _dereq_('backbone');
-
-$ = _dereq_('jquery');
-
-Backbone.$ = $;
-
-util = _dereq_('funcky.util');
-
-tpl = _dereq_('./main.jade');
-
-
-/*
-Create a pagination view.
-@class
-@extends Backbone.View
- */
-
-Pagination = (function(superClass) {
-  extend(Pagination, superClass);
-
-  function Pagination() {
-    return Pagination.__super__.constructor.apply(this, arguments);
-  }
-
-  Pagination.prototype.tagName = 'ul';
-
-  Pagination.prototype.className = 'hibb-pagination';
-
-
-  /*
-  	@constructs
-  	@param {object} this.options
-  	@prop {number} options.resultsTotal - Total number of results.
-  	@prop {number} options.resultsPerPage - Number of results per page.
-  	@prop {number} [options.resultsStart=0] - The result item to start at. Not the start page!
-  	@prop {boolean} [options.step10=true] - Render (<< and >>) for steps of 10.
-  	@prop {boolean} [options.triggerPageNumber=true] - Trigger the new pageNumber (true) or prev/next (false).
-  	@prop {array<String>} [options.showPageNames] - Show `1 page of 23 pages` instead of `1 of 23`. Array contains the singular and plural version, ie: ["page", "pages"]
-   */
-
-  Pagination.prototype.initialize = function(options) {
-    var base, base1;
-    this.options = options != null ? options : {};
-    if ((base = this.options).step10 == null) {
-      base.step10 = true;
-    }
-    if ((base1 = this.options).triggerPageNumber == null) {
-      base1.triggerPageNumber = true;
-    }
-    this._currentPageNumber = (this.options.resultsStart != null) && this.options.resultsStart > 0 ? (this.options.resultsStart / this.options.resultsPerPage) + 1 : 1;
-    return this.setPageNumber(this._currentPageNumber, true);
-  };
-
-  Pagination.prototype.render = function() {
-    var attrs;
-    this._pageCount = Math.ceil(this.options.resultsTotal / this.options.resultsPerPage);
-    attrs = $.extend(this.options, {
-      currentPageNumber: this._currentPageNumber,
-      pageCount: this._pageCount
-    });
-    this.el.innerHTML = tpl(attrs);
-    if (this._pageCount <= 1) {
-      this.$el.hide();
-    }
-    return this;
-  };
-
-  Pagination.prototype.events = function() {
-    return {
-      'click li.prev10.active': '_handlePrev10',
-      'click li.prev.active': '_handlePrev',
-      'click li.next.active': '_handleNext',
-      'click li.next10.active': '_handleNext10',
-      'click li.current:not(.active)': '_handleCurrentClick',
-      'blur li.current.active input': '_handleBlur',
-      'keyup li.current.active input': '_handleKeyup'
-    };
-  };
-
-  Pagination.prototype._handlePrev10 = function() {
-    return this.setPageNumber(this._currentPageNumber - 10);
-  };
-
-  Pagination.prototype._handlePrev = function() {
-    return this.setPageNumber(this._currentPageNumber - 1);
-  };
-
-  Pagination.prototype._handleNext = function() {
-    return this.setPageNumber(this._currentPageNumber + 1);
-  };
-
-  Pagination.prototype._handleNext10 = function() {
-    return this.setPageNumber(this._currentPageNumber + 10);
-  };
-
-  Pagination.prototype._handleCurrentClick = function(ev) {
-    var input, span, target;
-    target = this.$(ev.currentTarget);
-    span = target.find('span');
-    input = target.find('input');
-    input.width(span.width());
-    target.addClass('active');
-    input.animate({
-      width: 40
-    }, 'fast');
-    input.focus();
-    return input.val(this._currentPageNumber);
-  };
-
-  Pagination.prototype._handleKeyup = function(ev) {
-    var input, newPageNumber;
-    input = this.$(ev.currentTarget);
-    newPageNumber = +input.val();
-    if (ev.keyCode === 13) {
-      if ((1 <= newPageNumber && newPageNumber <= this._pageCount)) {
-        this.setPageNumber(newPageNumber);
-      }
-      return this._deactivateCurrentLi(input);
-    }
-  };
-
-  Pagination.prototype._handleBlur = function(ev) {
-    return this._deactivateCurrentLi(this.$(ev.currentTarget));
-  };
-
-  Pagination.prototype._deactivateCurrentLi = function(input) {
-    return input.animate({
-      width: 0
-    }, 'fast', function() {
-      var li;
-      li = input.parent();
-      return li.removeClass('active');
-    });
-  };
-
-
-  /*
-  	@method getCurrentPageNumber
-  	@returns {number}
-   */
-
-  Pagination.prototype.getCurrentPageNumber = function() {
-    return this._currentPageNumber;
-  };
-
-
-  /*
-  	@method setPageNumber
-  	@param {number} pageNumber
-  	@param {boolean} [silent=false]
-   */
-
-  Pagination.prototype.setPageNumber = function(pageNumber, silent) {
-    var direction;
-    if (silent == null) {
-      silent = false;
-    }
-    if (!this.triggerPageNumber) {
-      direction = pageNumber < this._currentPageNumber ? 'prev' : 'next';
-      this.trigger(direction);
-    }
-    this._currentPageNumber = pageNumber;
-    this.render();
-    if (!silent) {
-      return util.setResetTimeout(500, (function(_this) {
-        return function() {
-          return _this.trigger('change:pagenumber', pageNumber);
-        };
-      })(this));
-    }
-  };
-
-  Pagination.prototype.destroy = function() {
-    return this.remove();
-  };
-
-  return Pagination;
-
-})(Backbone.View);
-
-module.exports = Pagination;
-
-
-
-},{"./main.jade":5,"backbone":undefined,"funcky.util":3,"jquery":undefined}],2:[function(_dereq_,module,exports){
-
-},{}],3:[function(_dereq_,module,exports){
-(function(){module.exports={generateID:function(t){var n,r;for(t=null!=t&&t>0?t-1:7,n="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789",r=n.charAt(Math.floor(52*Math.random()));t--;)r+=n.charAt(Math.floor(Math.random()*n.length));return r},setResetTimeout:function(){var t;return t=null,function(n,r,e){return null!=t&&(null!=e&&e(),clearTimeout(t)),t=setTimeout(function(){return t=null,r()},n)}}()}}).call(this);
-},{}],4:[function(_dereq_,module,exports){
-(function (global){
-!function(e){if("object"==typeof exports&&"undefined"!=typeof module)module.exports=e();else if("function"==typeof define&&define.amd)define([],e);else{var f;"undefined"!=typeof window?f=window:"undefined"!=typeof global?f=global:"undefined"!=typeof self&&(f=self),f.jade=e()}}(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof _dereq_=="function"&&_dereq_;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof _dereq_=="function"&&_dereq_;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(_dereq_,module,exports){
-'use strict';
-
-/**
- * Merge two attribute objects giving precedence
- * to values in object `b`. Classes are special-cased
- * allowing for arrays and merging/joining appropriately
- * resulting in a string.
- *
- * @param {Object} a
- * @param {Object} b
- * @return {Object} a
- * @api private
- */
-
-exports.merge = function merge(a, b) {
-  if (arguments.length === 1) {
-    var attrs = a[0];
-    for (var i = 1; i < a.length; i++) {
-      attrs = merge(attrs, a[i]);
-    }
-    return attrs;
-  }
-  var ac = a['class'];
-  var bc = b['class'];
-
-  if (ac || bc) {
-    ac = ac || [];
-    bc = bc || [];
-    if (!Array.isArray(ac)) ac = [ac];
-    if (!Array.isArray(bc)) bc = [bc];
-    a['class'] = ac.concat(bc).filter(nulls);
-  }
-
-  for (var key in b) {
-    if (key != 'class') {
-      a[key] = b[key];
-    }
-  }
-
-  return a;
-};
-
-/**
- * Filter null `val`s.
- *
- * @param {*} val
- * @return {Boolean}
- * @api private
- */
-
-function nulls(val) {
-  return val != null && val !== '';
-}
-
-/**
- * join array as classes.
- *
- * @param {*} val
- * @return {String}
- */
-exports.joinClasses = joinClasses;
-function joinClasses(val) {
-  return (Array.isArray(val) ? val.map(joinClasses) :
-    (val && typeof val === 'object') ? Object.keys(val).filter(function (key) { return val[key]; }) :
-    [val]).filter(nulls).join(' ');
-}
-
-/**
- * Render the given classes.
- *
- * @param {Array} classes
- * @param {Array.<Boolean>} escaped
- * @return {String}
- */
-exports.cls = function cls(classes, escaped) {
-  var buf = [];
-  for (var i = 0; i < classes.length; i++) {
-    if (escaped && escaped[i]) {
-      buf.push(exports.escape(joinClasses([classes[i]])));
-    } else {
-      buf.push(joinClasses(classes[i]));
-    }
-  }
-  var text = joinClasses(buf);
-  if (text.length) {
-    return ' class="' + text + '"';
-  } else {
-    return '';
-  }
-};
-
-
-exports.style = function (val) {
-  if (val && typeof val === 'object') {
-    return Object.keys(val).map(function (style) {
-      return style + ':' + val[style];
-    }).join(';');
-  } else {
-    return val;
-  }
-};
-/**
- * Render the given attribute.
- *
- * @param {String} key
- * @param {String} val
- * @param {Boolean} escaped
- * @param {Boolean} terse
- * @return {String}
- */
-exports.attr = function attr(key, val, escaped, terse) {
-  if (key === 'style') {
-    val = exports.style(val);
-  }
-  if ('boolean' == typeof val || null == val) {
-    if (val) {
-      return ' ' + (terse ? key : key + '="' + key + '"');
-    } else {
-      return '';
-    }
-  } else if (0 == key.indexOf('data') && 'string' != typeof val) {
-    if (JSON.stringify(val).indexOf('&') !== -1) {
-      console.warn('Since Jade 2.0.0, ampersands (`&`) in data attributes ' +
-                   'will be escaped to `&amp;`');
-    };
-    if (val && typeof val.toISOString === 'function') {
-      console.warn('Jade will eliminate the double quotes around dates in ' +
-                   'ISO form after 2.0.0');
-    }
-    return ' ' + key + "='" + JSON.stringify(val).replace(/'/g, '&apos;') + "'";
-  } else if (escaped) {
-    if (val && typeof val.toISOString === 'function') {
-      console.warn('Jade will stringify dates in ISO form after 2.0.0');
-    }
-    return ' ' + key + '="' + exports.escape(val) + '"';
-  } else {
-    if (val && typeof val.toISOString === 'function') {
-      console.warn('Jade will stringify dates in ISO form after 2.0.0');
-    }
-    return ' ' + key + '="' + val + '"';
-  }
-};
-
-/**
- * Render the given attributes object.
- *
- * @param {Object} obj
- * @param {Object} escaped
- * @return {String}
- */
-exports.attrs = function attrs(obj, terse){
-  var buf = [];
-
-  var keys = Object.keys(obj);
-
-  if (keys.length) {
-    for (var i = 0; i < keys.length; ++i) {
-      var key = keys[i]
-        , val = obj[key];
-
-      if ('class' == key) {
-        if (val = joinClasses(val)) {
-          buf.push(' ' + key + '="' + val + '"');
-        }
-      } else {
-        buf.push(exports.attr(key, val, false, terse));
-      }
-    }
-  }
-
-  return buf.join('');
-};
-
-/**
- * Escape the given string of `html`.
- *
- * @param {String} html
- * @return {String}
- * @api private
- */
-
-exports.escape = function escape(html){
-  var result = String(html)
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;');
-  if (result === '' + html) return html;
-  else return result;
-};
-
-/**
- * Re-throw the given `err` in context to the
- * the jade in `filename` at the given `lineno`.
- *
- * @param {Error} err
- * @param {String} filename
- * @param {String} lineno
- * @api private
- */
-
-exports.rethrow = function rethrow(err, filename, lineno, str){
-  if (!(err instanceof Error)) throw err;
-  if ((typeof window != 'undefined' || !filename) && !str) {
-    err.message += ' on line ' + lineno;
-    throw err;
-  }
-  try {
-    str = str || _dereq_('fs').readFileSync(filename, 'utf8')
-  } catch (ex) {
-    rethrow(err, null, lineno)
-  }
-  var context = 3
-    , lines = str.split('\n')
-    , start = Math.max(lineno - context, 0)
-    , end = Math.min(lines.length, lineno + context);
-
-  // Error context
-  var context = lines.slice(start, end).map(function(line, i){
-    var curr = i + start + 1;
-    return (curr == lineno ? '  > ' : '    ')
-      + curr
-      + '| '
-      + line;
-  }).join('\n');
-
-  // Alter exception message
-  err.path = filename;
-  err.message = (filename || 'Jade') + ':' + lineno
-    + '\n' + context + '\n\n' + err.message;
-  throw err;
-};
-
-},{"fs":2}],2:[function(_dereq_,module,exports){
-
-},{}]},{},[1])(1)
-});
-}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"fs":2}],5:[function(_dereq_,module,exports){
-var jade = _dereq_("jade/runtime");
-
-module.exports = function template(locals) {
-var buf = [];
-var jade_mixins = {};
-var jade_interp;
-;var locals_for_with = (locals || {});(function (currentPageNumber, pageCount, showPageNames, step10) {
-if ( (step10 && pageCount >= 10))
-{
-buf.push("<li title=\"Jump 10 pages back\"" + (jade.cls(['prev10',currentPageNumber>10?'active':''], [null,true])) + ">&laquo;</li>");
-}
-buf.push("<li title=\"Previous page\"" + (jade.cls(['prev',currentPageNumber>1?'active':''], [null,true])) + ">&lsaquo;</li>");
-if ( (showPageNames != null))
-{
-buf.push("<li class=\"pageNameSingular\">" + (jade.escape(null == (jade_interp = showPageNames[0]) ? "" : jade_interp)) + "</li>");
-}
-buf.push("<li title=\"Edit current page\" class=\"current\"><input type=\"text\"" + (jade.attr("value", currentPageNumber, true, false)) + "/><span>" + (jade.escape(null == (jade_interp = currentPageNumber) ? "" : jade_interp)) + "</span></li><li class=\"text\">of</li><li class=\"pagecount\">" + (jade.escape(null == (jade_interp = pageCount) ? "" : jade_interp)) + "</li>");
-if ( (showPageNames != null))
-{
-buf.push("<li class=\"pageNamePlural\">" + (jade.escape(null == (jade_interp = showPageNames[1]) ? "" : jade_interp)) + "</li>");
-}
-buf.push("<li title=\"Next page\"" + (jade.cls(['next',currentPageNumber<pageCount?'active':''], [null,true])) + ">&rsaquo;</li>");
-if ( (step10 && pageCount >= 10))
-{
-buf.push("<li title=\"Jump 10 pages forward\"" + (jade.cls(['next10',currentPageNumber<=pageCount-10?'active':''], [null,true])) + ">&raquo;</li>");
-}}.call(this,"currentPageNumber" in locals_for_with?locals_for_with.currentPageNumber:typeof currentPageNumber!=="undefined"?currentPageNumber:undefined,"pageCount" in locals_for_with?locals_for_with.pageCount:typeof pageCount!=="undefined"?pageCount:undefined,"showPageNames" in locals_for_with?locals_for_with.showPageNames:typeof showPageNames!=="undefined"?showPageNames:undefined,"step10" in locals_for_with?locals_for_with.step10:typeof step10!=="undefined"?step10:undefined));;return buf.join("");
-};
-},{"jade/runtime":4}]},{},[1])(1)
-});
-}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],12:[function(_dereq_,module,exports){
-(function (global){
-(function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g.jade = f()}})(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof _dereq_=="function"&&_dereq_;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof _dereq_=="function"&&_dereq_;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(_dereq_,module,exports){
-'use strict';
-
-/**
- * Merge two attribute objects giving precedence
- * to values in object `b`. Classes are special-cased
- * allowing for arrays and merging/joining appropriately
- * resulting in a string.
- *
- * @param {Object} a
- * @param {Object} b
- * @return {Object} a
- * @api private
- */
-
-exports.merge = function merge(a, b) {
-  if (arguments.length === 1) {
-    var attrs = a[0];
-    for (var i = 1; i < a.length; i++) {
-      attrs = merge(attrs, a[i]);
-    }
-    return attrs;
-  }
-  var ac = a['class'];
-  var bc = b['class'];
-
-  if (ac || bc) {
-    ac = ac || [];
-    bc = bc || [];
-    if (!Array.isArray(ac)) ac = [ac];
-    if (!Array.isArray(bc)) bc = [bc];
-    a['class'] = ac.concat(bc).filter(nulls);
-  }
-
-  for (var key in b) {
-    if (key != 'class') {
-      a[key] = b[key];
-    }
-  }
-
-  return a;
-};
-
-/**
- * Filter null `val`s.
- *
- * @param {*} val
- * @return {Boolean}
- * @api private
- */
-
-function nulls(val) {
-  return val != null && val !== '';
-}
-
-/**
- * join array as classes.
- *
- * @param {*} val
- * @return {String}
- */
-exports.joinClasses = joinClasses;
-function joinClasses(val) {
-  return (Array.isArray(val) ? val.map(joinClasses) :
-    (val && typeof val === 'object') ? Object.keys(val).filter(function (key) { return val[key]; }) :
-    [val]).filter(nulls).join(' ');
-}
-
-/**
- * Render the given classes.
- *
- * @param {Array} classes
- * @param {Array.<Boolean>} escaped
- * @return {String}
- */
-exports.cls = function cls(classes, escaped) {
-  var buf = [];
-  for (var i = 0; i < classes.length; i++) {
-    if (escaped && escaped[i]) {
-      buf.push(exports.escape(joinClasses([classes[i]])));
-    } else {
-      buf.push(joinClasses(classes[i]));
-    }
-  }
-  var text = joinClasses(buf);
-  if (text.length) {
-    return ' class="' + text + '"';
-  } else {
-    return '';
-  }
-};
-
-
-exports.style = function (val) {
-  if (val && typeof val === 'object') {
-    return Object.keys(val).map(function (style) {
-      return style + ':' + val[style];
-    }).join(';');
-  } else {
-    return val;
-  }
-};
-/**
- * Render the given attribute.
- *
- * @param {String} key
- * @param {String} val
- * @param {Boolean} escaped
- * @param {Boolean} terse
- * @return {String}
- */
-exports.attr = function attr(key, val, escaped, terse) {
-  if (key === 'style') {
-    val = exports.style(val);
-  }
-  if ('boolean' == typeof val || null == val) {
-    if (val) {
-      return ' ' + (terse ? key : key + '="' + key + '"');
-    } else {
-      return '';
-    }
-  } else if (0 == key.indexOf('data') && 'string' != typeof val) {
-    if (JSON.stringify(val).indexOf('&') !== -1) {
-      console.warn('Since Jade 2.0.0, ampersands (`&`) in data attributes ' +
-                   'will be escaped to `&amp;`');
-    };
-    if (val && typeof val.toISOString === 'function') {
-      console.warn('Jade will eliminate the double quotes around dates in ' +
-                   'ISO form after 2.0.0');
-    }
-    return ' ' + key + "='" + JSON.stringify(val).replace(/'/g, '&apos;') + "'";
-  } else if (escaped) {
-    if (val && typeof val.toISOString === 'function') {
-      console.warn('Jade will stringify dates in ISO form after 2.0.0');
-    }
-    return ' ' + key + '="' + exports.escape(val) + '"';
-  } else {
-    if (val && typeof val.toISOString === 'function') {
-      console.warn('Jade will stringify dates in ISO form after 2.0.0');
-    }
-    return ' ' + key + '="' + val + '"';
-  }
-};
-
-/**
- * Render the given attributes object.
- *
- * @param {Object} obj
- * @param {Object} escaped
- * @return {String}
- */
-exports.attrs = function attrs(obj, terse){
-  var buf = [];
-
-  var keys = Object.keys(obj);
-
-  if (keys.length) {
-    for (var i = 0; i < keys.length; ++i) {
-      var key = keys[i]
-        , val = obj[key];
-
-      if ('class' == key) {
-        if (val = joinClasses(val)) {
-          buf.push(' ' + key + '="' + val + '"');
-        }
-      } else {
-        buf.push(exports.attr(key, val, false, terse));
-      }
-    }
-  }
-
-  return buf.join('');
-};
-
-/**
- * Escape the given string of `html`.
- *
- * @param {String} html
- * @return {String}
- * @api private
- */
-
-var jade_encode_html_rules = {
-  '&': '&amp;',
-  '<': '&lt;',
-  '>': '&gt;',
-  '"': '&quot;'
-};
-var jade_match_html = /[&<>"]/g;
-
-function jade_encode_char(c) {
-  return jade_encode_html_rules[c] || c;
-}
-
-exports.escape = jade_escape;
-function jade_escape(html){
-  var result = String(html).replace(jade_match_html, jade_encode_char);
-  if (result === '' + html) return html;
-  else return result;
-};
-
-/**
- * Re-throw the given `err` in context to the
- * the jade in `filename` at the given `lineno`.
- *
- * @param {Error} err
- * @param {String} filename
- * @param {String} lineno
- * @api private
- */
-
-exports.rethrow = function rethrow(err, filename, lineno, str){
-  if (!(err instanceof Error)) throw err;
-  if ((typeof window != 'undefined' || !filename) && !str) {
-    err.message += ' on line ' + lineno;
-    throw err;
-  }
-  try {
-    str = str || _dereq_('fs').readFileSync(filename, 'utf8')
-  } catch (ex) {
-    rethrow(err, null, lineno)
-  }
-  var context = 3
-    , lines = str.split('\n')
-    , start = Math.max(lineno - context, 0)
-    , end = Math.min(lines.length, lineno + context);
-
-  // Error context
-  var context = lines.slice(start, end).map(function(line, i){
-    var curr = i + start + 1;
-    return (curr == lineno ? '  > ' : '    ')
-      + curr
-      + '| '
-      + line;
-  }).join('\n');
-
-  // Alter exception message
-  err.path = filename;
-  err.message = (filename || 'Jade') + ':' + lineno
-    + '\n' + context + '\n\n' + err.message;
-  throw err;
-};
-
-exports.DebugItem = function DebugItem(lineno, filename) {
-  this.lineno = lineno;
-  this.filename = filename;
-}
-
-},{"fs":2}],2:[function(_dereq_,module,exports){
-
-},{}]},{},[1])(1)
-});
-}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"fs":3}],13:[function(_dereq_,module,exports){
+},{"./support/isBuffer":11,"_process":10,"inherits":8}],13:[function(_dereq_,module,exports){
 var Backbone, SearchResult, SearchResults, _, funcky,
   extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
   hasProp = {}.hasOwnProperty;
@@ -2794,9 +2794,12 @@ SearchResults = (function(superClass) {
     var ajaxOptions, req;
     this.trigger('request');
     ajaxOptions = {
-      data: JSON.stringify(queryOptions)
+      data: JSON.stringify(queryOptions),
+      xhrFields: {
+        withCredentials: true
+      }
     };
-    if (this.options.config.has('authorizationHeaderToken')) {
+    if (this.options.config.has('authorizationHeaderToken' && this.options.config.get('authorizationHeaderToken') !== 'null null')) {
       ajaxOptions.headers = {
         Authorization: this.options.config.get('authorizationHeaderToken')
       };
@@ -2864,7 +2867,7 @@ module.exports = SearchResults;
 
 
 
-},{"../models/searchresult":19,"backbone":undefined,"funcky.req":9,"underscore":undefined}],14:[function(_dereq_,module,exports){
+},{"../models/searchresult":19,"backbone":undefined,"funcky.req":5,"underscore":undefined}],14:[function(_dereq_,module,exports){
 var Backbone, Config, _,
   extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
   hasProp = {}.hasOwnProperty;
@@ -4740,7 +4743,7 @@ module.exports = ListFacetOptions;
 
 
 
-},{"./templates/body.jade":27,"./templates/option.jade":29,"backbone":undefined,"funcky.util":10,"jquery":undefined,"underscore":undefined}],27:[function(_dereq_,module,exports){
+},{"./templates/body.jade":27,"./templates/option.jade":29,"backbone":undefined,"funcky.util":6,"jquery":undefined,"underscore":undefined}],27:[function(_dereq_,module,exports){
 var jade = _dereq_("jade/runtime");
 
 module.exports = function template(locals) {
@@ -4750,7 +4753,7 @@ var jade_interp;
 
 buf.push("<ul></ul>");;return buf.join("");
 };
-},{"jade/runtime":12}],28:[function(_dereq_,module,exports){
+},{"jade/runtime":9}],28:[function(_dereq_,module,exports){
 var jade = _dereq_("jade/runtime");
 
 module.exports = function template(locals) {
@@ -4760,7 +4763,7 @@ var jade_interp;
 
 buf.push("<input type=\"checkbox\" name=\"all\"/><input type=\"text\" name=\"filter\"/><small class=\"optioncount\"></small>");;return buf.join("");
 };
-},{"jade/runtime":12}],29:[function(_dereq_,module,exports){
+},{"jade/runtime":9}],29:[function(_dereq_,module,exports){
 var jade = _dereq_("jade/runtime");
 
 module.exports = function template(locals) {
@@ -4823,7 +4826,7 @@ jade_mixins["unchecked-icon"]();
 jade_mixins["checked-icon"]();
 buf.push("<label" + (jade.attr("data-value", option.id, true, false)) + ">" + (null == (jade_interp = displayName) ? "" : jade_interp) + "</label><div class=\"count\">" + (jade.escape(null == (jade_interp = option.get('count') === 0 ? option.get('total') : option.get('count')) ? "" : jade_interp)) + "</div></li>");}.call(this,"option" in locals_for_with?locals_for_with.option:typeof option!=="undefined"?option:undefined));;return buf.join("");
 };
-},{"jade/runtime":12}],30:[function(_dereq_,module,exports){
+},{"jade/runtime":9}],30:[function(_dereq_,module,exports){
 var $, Backbone, FacetView, _, tpl,
   extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
   hasProp = {}.hasOwnProperty;
@@ -5054,7 +5057,7 @@ var jade_interp;
 ;var locals_for_with = (locals || {});(function (max, min) {
 buf.push("<div class=\"slider\"><span class=\"dash\">-</span><div class=\"handle-min handle\"><input" + (jade.attr("value", min, true, false)) + " class=\"min\"/><label class=\"min\">" + (jade.escape(null == (jade_interp = min) ? "" : jade_interp)) + "</label></div><div class=\"handle-max handle\"><input" + (jade.attr("value", max, true, false)) + " class=\"max\"/><label class=\"max\">" + (jade.escape(null == (jade_interp = max) ? "" : jade_interp)) + "</label></div><div class=\"bar\">&nbsp;</div><button title=\"Search within given range\"><svg version=\"1.1\" xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" viewBox=\"0 0 216 146\" xml:space=\"preserve\"><path d=\"M172.77,123.025L144.825,95.08c6.735-9.722,10.104-20.559,10.104-32.508c0-7.767-1.508-15.195-4.523-22.283c-3.014-7.089-7.088-13.199-12.221-18.332s-11.242-9.207-18.33-12.221c-7.09-3.015-14.518-4.522-22.285-4.522c-7.767,0-15.195,1.507-22.283,4.522c-7.089,3.014-13.199,7.088-18.332,12.221c-5.133,5.133-9.207,11.244-12.221,18.332c-3.015,7.089-4.522,14.516-4.522,22.283c0,7.767,1.507,15.193,4.522,22.283c3.014,7.088,7.088,13.197,12.221,18.33c5.133,5.134,11.244,9.207,18.332,12.222c7.089,3.015,14.516,4.522,22.283,4.522c11.951,0,22.787-3.369,32.509-10.104l27.945,27.863c1.955,2.064,4.397,3.096,7.332,3.096c2.824,0,5.27-1.032,7.332-3.096c2.064-2.063,3.096-4.508,3.096-7.332C175.785,127.479,174.781,125.034,172.77,123.025z M123.357,88.357c-7.143,7.143-15.738,10.714-25.787,10.714c-10.048,0-18.643-3.572-25.786-10.714c-7.143-7.143-10.714-15.737-10.714-25.786c0-10.048,3.572-18.644,10.714-25.786c7.142-7.143,15.738-10.714,25.786-10.714c10.048,0,18.643,3.572,25.787,10.714c7.143,7.142,10.715,15.738,10.715,25.786C134.072,72.62,130.499,81.214,123.357,88.357z\"></path></svg></button></div>");}.call(this,"max" in locals_for_with?locals_for_with.max:typeof max!=="undefined"?max:undefined,"min" in locals_for_with?locals_for_with.min:typeof min!=="undefined"?min:undefined));;return buf.join("");
 };
-},{"jade/runtime":12}],32:[function(_dereq_,module,exports){
+},{"jade/runtime":9}],32:[function(_dereq_,module,exports){
 var $, FacetView, MonthRange, Range, RangeFacet, _, bodyTpl, monthRangeTpl,
   extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
   hasProp = {}.hasOwnProperty;
@@ -5874,7 +5877,7 @@ var jade_interp;
 ;var locals_for_with = (locals || {});(function (max, min, monthMax, monthMin) {
 buf.push("<div class=\"slider\"><span class=\"dash\">-</span><div class=\"handle-min handle\"><input" + (jade.attr("value", min, true, false)) + " class=\"min\"/><label class=\"min hidden\">" + (jade.escape(null == (jade_interp = min) ? "" : jade_interp)) + "</label><label class=\"month-min\">" + (jade.escape(null == (jade_interp = monthMin) ? "" : jade_interp)) + "</label></div><div class=\"handle-max handle\"><input" + (jade.attr("value", max, true, false)) + " class=\"max\"/><label class=\"max hidden\">" + (jade.escape(null == (jade_interp = max) ? "" : jade_interp)) + "</label><label class=\"month-max\">" + (jade.escape(null == (jade_interp = monthMax) ? "" : jade_interp)) + "</label></div><div class=\"bar\">&nbsp;</div><button title=\"Search within given range\"><svg version=\"1.1\" xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" viewBox=\"0 0 216 146\" xml:space=\"preserve\"><path d=\"M172.77,123.025L144.825,95.08c6.735-9.722,10.104-20.559,10.104-32.508c0-7.767-1.508-15.195-4.523-22.283c-3.014-7.089-7.088-13.199-12.221-18.332s-11.242-9.207-18.33-12.221c-7.09-3.015-14.518-4.522-22.285-4.522c-7.767,0-15.195,1.507-22.283,4.522c-7.089,3.014-13.199,7.088-18.332,12.221c-5.133,5.133-9.207,11.244-12.221,18.332c-3.015,7.089-4.522,14.516-4.522,22.283c0,7.767,1.507,15.193,4.522,22.283c3.014,7.088,7.088,13.197,12.221,18.33c5.133,5.134,11.244,9.207,18.332,12.222c7.089,3.015,14.516,4.522,22.283,4.522c11.951,0,22.787-3.369,32.509-10.104l27.945,27.863c1.955,2.064,4.397,3.096,7.332,3.096c2.824,0,5.27-1.032,7.332-3.096c2.064-2.063,3.096-4.508,3.096-7.332C175.785,127.479,174.781,125.034,172.77,123.025z M123.357,88.357c-7.143,7.143-15.738,10.714-25.787,10.714c-10.048,0-18.643-3.572-25.786-10.714c-7.143-7.143-10.714-15.737-10.714-25.786c0-10.048,3.572-18.644,10.714-25.786c7.142-7.143,15.738-10.714,25.786-10.714c10.048,0,18.643,3.572,25.787,10.714c7.143,7.142,10.715,15.738,10.715,25.786C134.072,72.62,130.499,81.214,123.357,88.357z\"></path></svg></button></div>");}.call(this,"max" in locals_for_with?locals_for_with.max:typeof max!=="undefined"?max:undefined,"min" in locals_for_with?locals_for_with.min:typeof min!=="undefined"?min:undefined,"monthMax" in locals_for_with?locals_for_with.monthMax:typeof monthMax!=="undefined"?monthMax:undefined,"monthMin" in locals_for_with?locals_for_with.monthMin:typeof monthMin!=="undefined"?monthMin:undefined));;return buf.join("");
 };
-},{"jade/runtime":12}],35:[function(_dereq_,module,exports){
+},{"jade/runtime":9}],35:[function(_dereq_,module,exports){
 var MonthRange, Range,
   extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
   hasProp = {}.hasOwnProperty;
@@ -6293,7 +6296,7 @@ module.exports = Results;
 
 
 
-},{"./index.jade":37,"./result":38,"./sort":40,"backbone":undefined,"hibb-pagination":11,"jquery":undefined,"underscore":undefined}],37:[function(_dereq_,module,exports){
+},{"./index.jade":37,"./result":38,"./sort":40,"backbone":undefined,"hibb-pagination":7,"jquery":undefined,"underscore":undefined}],37:[function(_dereq_,module,exports){
 var jade = _dereq_("jade/runtime");
 
 module.exports = function template(locals) {
@@ -6331,7 +6334,7 @@ buf.push("<li class=\"show-metadata\"><input id=\"o45hes3\" type=\"checkbox\" ch
 }
 buf.push("</ul></nav><div class=\"pagination\"></div></header><div class=\"pages\"></div>");}.call(this,"config" in locals_for_with?locals_for_with.config:typeof config!=="undefined"?config:undefined,"resultsPerPage" in locals_for_with?locals_for_with.resultsPerPage:typeof resultsPerPage!=="undefined"?resultsPerPage:undefined,"showMetadata" in locals_for_with?locals_for_with.showMetadata:typeof showMetadata!=="undefined"?showMetadata:undefined,"undefined" in locals_for_with?locals_for_with.undefined:typeof undefined!=="undefined"?undefined:undefined));;return buf.join("");
 };
-},{"jade/runtime":12}],38:[function(_dereq_,module,exports){
+},{"jade/runtime":9}],38:[function(_dereq_,module,exports){
 var Backbone, Result, _,
   extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
   hasProp = {}.hasOwnProperty;
@@ -6632,7 +6635,7 @@ buf.push("</ul></li>");
 buf.push("</ul></div>");
 }}.call(this,"data" in locals_for_with?locals_for_with.data:typeof data!=="undefined"?data:undefined,"found" in locals_for_with?locals_for_with.found:typeof found!=="undefined"?found:undefined,"fulltext" in locals_for_with?locals_for_with.fulltext:typeof fulltext!=="undefined"?fulltext:undefined,"undefined" in locals_for_with?locals_for_with.undefined:typeof undefined!=="undefined"?undefined:undefined));;return buf.join("");
 };
-},{"jade/runtime":12}],40:[function(_dereq_,module,exports){
+},{"jade/runtime":9}],40:[function(_dereq_,module,exports){
 var $, Backbone, SortLevels, el, tpl,
   extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
   hasProp = {}.hasOwnProperty;
@@ -6832,7 +6835,7 @@ module.exports = SortLevels;
 
 
 
-},{"./sort.jade":41,"backbone":undefined,"funcky.el":8,"jquery":undefined}],41:[function(_dereq_,module,exports){
+},{"./sort.jade":41,"backbone":undefined,"funcky.el":4,"jquery":undefined}],41:[function(_dereq_,module,exports){
 var jade = _dereq_("jade/runtime");
 
 module.exports = function template(locals) {
@@ -6915,7 +6918,7 @@ buf.push("</select><i class=\"fa fa-sort-alpha-asc\"></i></li>");
 
 buf.push("<li class=\"search\">&nbsp;<button>Change levels</button></li></ul></div>");}.call(this,"Object" in locals_for_with?locals_for_with.Object:typeof Object!=="undefined"?Object:undefined,"initLevels" in locals_for_with?locals_for_with.initLevels:typeof initLevels!=="undefined"?initLevels:undefined,"levels" in locals_for_with?locals_for_with.levels:typeof levels!=="undefined"?levels:undefined,"undefined" in locals_for_with?locals_for_with.undefined:typeof undefined!=="undefined"?undefined:undefined));;return buf.join("");
 };
-},{"jade/runtime":12}],42:[function(_dereq_,module,exports){
+},{"jade/runtime":9}],42:[function(_dereq_,module,exports){
 var Backbone, SearchModel, TextSearch, _, funcky, tpl,
   extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
   hasProp = {}.hasOwnProperty;
@@ -7207,7 +7210,7 @@ module.exports = TextSearch;
 
 
 
-},{"../../models/search":18,"./index.jade":43,"backbone":undefined,"funcky.util":10,"underscore":undefined}],43:[function(_dereq_,module,exports){
+},{"../../models/search":18,"./index.jade":43,"backbone":undefined,"funcky.util":6,"underscore":undefined}],43:[function(_dereq_,module,exports){
 var jade = _dereq_("jade/runtime");
 
 module.exports = function template(locals) {
@@ -7349,7 +7352,7 @@ buf.push("</ul></li>");
 }
 buf.push("</ul></div></div></div>");}.call(this,"config" in locals_for_with?locals_for_with.config:typeof config!=="undefined"?config:undefined,"currentField" in locals_for_with?locals_for_with.currentField:typeof currentField!=="undefined"?currentField:undefined,"generateId" in locals_for_with?locals_for_with.generateId:typeof generateId!=="undefined"?generateId:undefined,"id" in locals_for_with?locals_for_with.id:typeof id!=="undefined"?id:undefined,"model" in locals_for_with?locals_for_with.model:typeof model!=="undefined"?model:undefined,"textSearchId" in locals_for_with?locals_for_with.textSearchId:typeof textSearchId!=="undefined"?textSearchId:undefined,"undefined" in locals_for_with?locals_for_with.undefined:typeof undefined!=="undefined"?undefined:undefined));;return buf.join("");
 };
-},{"jade/runtime":12}],44:[function(_dereq_,module,exports){
+},{"jade/runtime":9}],44:[function(_dereq_,module,exports){
 var jade = _dereq_("jade/runtime");
 
 module.exports = function template(locals) {
@@ -7384,7 +7387,7 @@ buf.push("<li><div class=\"row span6\"><div class=\"cell span5\"><i" + (jade.att
 
 buf.push("</ul>");}.call(this,"displayName" in locals_for_with?locals_for_with.displayName:typeof displayName!=="undefined"?displayName:undefined,"options" in locals_for_with?locals_for_with.options:typeof options!=="undefined"?options:undefined,"ucfirst" in locals_for_with?locals_for_with.ucfirst:typeof ucfirst!=="undefined"?ucfirst:undefined,"undefined" in locals_for_with?locals_for_with.undefined:typeof undefined!=="undefined"?undefined:undefined));;return buf.join("");
 };
-},{"jade/runtime":12}],45:[function(_dereq_,module,exports){
+},{"jade/runtime":9}],45:[function(_dereq_,module,exports){
 var jade = _dereq_("jade/runtime");
 
 module.exports = function template(locals) {
@@ -7454,7 +7457,7 @@ attributes: {"className": "alpha","title": jade.escape(config.get('labels').sort
 }
 buf.push("</div><div class=\"options\"></div></header><div class=\"body\"></div></div>");}.call(this,"config" in locals_for_with?locals_for_with.config:typeof config!=="undefined"?config:undefined,"model" in locals_for_with?locals_for_with.model:typeof model!=="undefined"?model:undefined,"options" in locals_for_with?locals_for_with.options:typeof options!=="undefined"?options:undefined));;return buf.join("");
 };
-},{"jade/runtime":12}],46:[function(_dereq_,module,exports){
+},{"jade/runtime":9}],46:[function(_dereq_,module,exports){
 var jade = _dereq_("jade/runtime");
 
 module.exports = function template(locals) {
@@ -7506,5 +7509,5 @@ buf.push("<div class=\"overlay\"><div>");
 jade_mixins["tail-spin-loader-icon"]();
 buf.push("</div></div><div class=\"faceted-search\"><div class=\"text-search-placeholder\"></div><ul class=\"facets-menu\"><li class=\"reset\"><button><i class=\"fa fa-refresh\"></i><span>New search</span></button></li><li class=\"switch\"><button><i class=\"fa fa-angle-double-up\"></i><i class=\"fa fa-angle-double-down\"></i><span class=\"simple\">Simple search</span><span class=\"advanced\">Advanced search</span></button></li><li class=\"collapse-expand\"><button><i class=\"fa fa-compress\"></i><span>Collapse filters</span></button></li></ul><div class=\"facets-placeholder\"></div></div><div class=\"results\"></div>");;return buf.join("");
 };
-},{"jade/runtime":12}]},{},[1])(1)
+},{"jade/runtime":9}]},{},[1])(1)
 });

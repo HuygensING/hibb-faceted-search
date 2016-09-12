@@ -150,8 +150,11 @@ class SearchResults extends Backbone.Collection
 
 		ajaxOptions =
 			data: JSON.stringify queryOptions
+			xhrFields: {
+				withCredentials: true
+			}
 
-		if @options.config.has 'authorizationHeaderToken'
+		if @options.config.has 'authorizationHeaderToken' and @options.config.get('authorizationHeaderToken') isnt 'null null'
 			ajaxOptions.headers = Authorization: @options.config.get('authorizationHeaderToken')
 
 		# This is used for extra options to the ajax call,
