@@ -2799,7 +2799,7 @@ SearchResults = (function(superClass) {
         withCredentials: true
       }
     };
-    console.log(ajaxOptions);
+    console.log('POST options: ', ajaxOptions);
     if (this.options.config.has('authorizationHeaderToken' && this.options.config.get('authorizationHeaderToken') !== 'null null')) {
       ajaxOptions.headers = {
         Authorization: this.options.config.get('authorizationHeaderToken')
@@ -2834,13 +2834,17 @@ SearchResults = (function(superClass) {
   SearchResults.prototype.getResults = function(url, done) {
     var options, req;
     this.trigger('request');
+    options = {
+      xhrFields: {
+        withCredentials: true
+      }
+    };
     if (this.options.config.has('authorizationHeaderToken')) {
-      options = {
-        headers: {
-          Authorization: this.options.config.get('authorizationHeaderToken')
-        }
+      options.headers = {
+        Authorization: this.options.config.get('authorizationHeaderToken')
       };
     }
+    console.log('GET options: ', options);
     req = funcky.get(url, options);
     req.done((function(_this) {
       return function(res) {

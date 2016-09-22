@@ -153,7 +153,7 @@ class SearchResults extends Backbone.Collection
 			xhrFields: {
 				withCredentials: true
 			}
-		console.log(ajaxOptions)	
+		console.log('POST options: ', ajaxOptions)
 
 		if @options.config.has 'authorizationHeaderToken' and @options.config.get('authorizationHeaderToken') isnt 'null null'
 			ajaxOptions.headers = Authorization: @options.config.get('authorizationHeaderToken')
@@ -182,10 +182,15 @@ class SearchResults extends Backbone.Collection
 	getResults: (url, done) ->
 		@trigger 'request'
 
+		options =
+			xhrFields:
+				withCredentials: true
+
 		if @options.config.has 'authorizationHeaderToken'
-			options =
-				headers:
-					Authorization: @options.config.get('authorizationHeaderToken')
+			options.headers =
+				Authorization: @options.config.get('authorizationHeaderToken')
+
+		console.log('GET options: ', options)
 
 		# Fire GET request.
 		req = funcky.get url, options
