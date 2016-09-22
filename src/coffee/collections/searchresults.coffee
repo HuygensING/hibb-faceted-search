@@ -153,6 +153,7 @@ class SearchResults extends Backbone.Collection
 			xhrFields: {
 				withCredentials: true
 			}
+		console.log(ajaxOptions)	
 
 		if @options.config.has 'authorizationHeaderToken' and @options.config.get('authorizationHeaderToken') isnt 'null null'
 			ajaxOptions.headers = Authorization: @options.config.get('authorizationHeaderToken')

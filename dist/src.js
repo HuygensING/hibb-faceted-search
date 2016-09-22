@@ -2799,6 +2799,7 @@ SearchResults = (function(superClass) {
         withCredentials: true
       }
     };
+    console.log(ajaxOptions);
     if (this.options.config.has('authorizationHeaderToken' && this.options.config.get('authorizationHeaderToken') !== 'null null')) {
       ajaxOptions.headers = {
         Authorization: this.options.config.get('authorizationHeaderToken')

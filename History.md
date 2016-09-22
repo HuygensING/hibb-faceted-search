@@ -1,3 +1,6 @@
+### v2.6.6	(2016/9/22)
+
+
 ### v2.6.5	(2016/9/12)
 * Add withCredentials ajax option
 
