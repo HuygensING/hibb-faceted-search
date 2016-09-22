@@ -1,3 +1,6 @@
+### v2.6.8	(2016/9/22)
+* Add xhrFields prop to ajax
+
 ### v2.6.7	(2016/9/22)
 
 
