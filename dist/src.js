@@ -2839,7 +2839,7 @@ SearchResults = (function(superClass) {
         withCredentials: true
       }
     };
-    if (this.options.config.has('authorizationHeaderToken')) {
+    if (this.options.config.has('authorizationHeaderToken' && this.options.config.get('authorizationHeaderToken') !== 'null null')) {
       options.headers = {
         Authorization: this.options.config.get('authorizationHeaderToken')
       };
