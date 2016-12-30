@@ -1,3 +1,7 @@
+### v2.7.0	(2016/12/30)
+* Make search icon clickable
+* Add npmdebuglog to gitignore
+
 ### v2.6.8	(2016/9/22)
 * Add xhrFields prop to ajax
 
