@@ -336,7 +336,6 @@
   background-color: #eee;
   margin: 10px -4%;
   padding: 2% 4%;
-  -webkit-border-radius: 4px;
   border-radius: 4px;
   margin-top: 10px;
 }
@@ -510,7 +509,6 @@
   box-sizing: border-box;
   height: 6px;
   background: #eee;
-  -webkit-border-radius: 6px;
   border-radius: 6px;
   -webkit-box-shadow: inset 1px 1px 3px #888;
   box-shadow: inset 1px 1px 3px #888;
@@ -545,7 +543,6 @@
   position: absolute;
   width: 12px;
   height: 12px;
-  -webkit-border-radius: 12px;
   border-radius: 12px;
   background: #ccc;
   -webkit-box-shadow: inset 1px 1px 6px #444;
@@ -581,7 +578,6 @@
   cursor: pointer;
   border: 1px solid #eee;
   padding: 0 3px;
-  -webkit-border-radius: 3px;
   border-radius: 3px;
   width: 50px;
   text-align: center;
@@ -842,7 +838,6 @@ li.sort-levels div.levels {
   padding: 0 40px 40px 40px;
   z-index: 2;
   margin: 2px 0 0 -41px;
-  -webkit-border-radius: 3px;
   border-radius: 3px;
 }
 li.sort-levels div.levels ul {
@@ -892,7 +887,6 @@ li.sort-levels div.levels li select {
   -webkit-box-shadow: none;
   box-shadow: none;
   border: 1px solid #ddd;
-  -webkit-border-radius: 3px;
   border-radius: 3px;
   cursor: pointer;
   width: 100%;
@@ -903,7 +897,6 @@ li.sort-levels div.levels li select {
   background: rgba(0,0,0,0.2);
   position: absolute;
   z-index: 1;
-  -webkit-border-radius: 8px;
   border-radius: 8px;
   display: none;
 }
@@ -911,7 +904,6 @@ li.sort-levels div.levels li select {
   position: fixed;
   padding: 6px;
   background: #fff;
-  -webkit-border-radius: 30px;
   border-radius: 30px;
   -webkit-box-shadow: 1px 1px 10px #000;
   box-shadow: 1px 1px 10px #000;
